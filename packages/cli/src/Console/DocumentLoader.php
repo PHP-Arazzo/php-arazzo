@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Cli\Console;
 
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
+use Alama\Arazzo\Document\Document;
 use Alama\Arazzo\Document\Parser\Exceptions\LoaderException;
 use Alama\Arazzo\Document\Parser\Exceptions\ParserException;
-use Alama\Arazzo\Document\Parser\Loader;
-use Alama\Arazzo\Document\Parser\Parser;
 
 /** Shared document loading for console commands.
  *
@@ -22,8 +21,6 @@ final class DocumentLoader
      */
     public static function load(string $file): ArazzoDocument
     {
-        $loader = Loader::new();
-
-        return (new Parser())->parse($loader->load($file));
+        return Document::create()->load($file);
     }
 }

@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Cli\Console\Command;
 
 use Alama\Arazzo\Cli\Console\DocumentLoader;
+use Alama\Arazzo\Document\Document;
+use Alama\Arazzo\Document\KnownOperations;
 use Alama\Arazzo\Document\Parser\Exceptions\LoaderException;
 use Alama\Arazzo\Document\Parser\Exceptions\ParserException;
-use Alama\Arazzo\Document\Validator\RuleSet;
-use Alama\Arazzo\Document\Validator\Validator;
-use Alama\Arazzo\Expression\ExpressionEngine;
 use Alama\Arazzo\Sources\SourceGraph;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -38,21 +37,16 @@ final class ValidateCommand extends Command
             return Command::FAILURE;
         }
 
-        $engine = new ExpressionEngine();
-
         // Resolve source operations for reference validation (R4/R5).
-        $resolvedOperations = [];
+        $knownOperations = KnownOperations::none();
         try {
             $loader = SourceGraph::loader();
-            $index = $loader->normalizeSources($document, (string) dirname($file));
-            foreach ($index as $key => $resolved) {
-                $resolvedOperations[$resolved->source->name][$key] = true;
-            }
+            $knownOperations = $loader->knownOperations($document, (string) dirname($file));
         } catch (\Throwable $e) {
             // Degrade gracefully: never fail validation due to source loading.
         }
 
-        $result = (new Validator(RuleSet::default($engine), $resolvedOperations))->validate($document);
+        $result = Document::create()->validate($document, $knownOperations);
 
         if ($result->isValid()) {
             $output->writeln('<info>✔ valid</info> '.$file);

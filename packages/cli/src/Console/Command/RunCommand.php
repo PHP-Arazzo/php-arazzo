@@ -87,10 +87,10 @@ final class RunCommand extends Command
 
         $expressionEngine = new ExpressionEngine();
         $engine = new EvaluationEngine(expression: $expressionEngine);
-        $runtime = SourceGraph::runtime(registry: $registry, engine: $expressionEngine);
+        $runtime = SourceGraph::runtime(registry: $registry);
 
         // Preflight input-schema validation before any side effect.
-        $preflightResult = $runtime->document->preflightInputs($document, (string) $workflow->workflowId, $inputs);
+        $preflightResult = $runtime->document->validateInputs($document, (string) $workflow->workflowId, $inputs);
         if (!$preflightResult->isValid()) {
             foreach ($preflightResult->errors as $error) {
                 $output->writeln('<error>'.$error->message.'</error>');
