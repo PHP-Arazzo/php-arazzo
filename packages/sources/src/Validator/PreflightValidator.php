@@ -9,6 +9,7 @@ use Alama\Arazzo\Contracts\Spec\Reusable;
 use Alama\Arazzo\Contracts\Spec\Selector;
 use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Contracts\Spec\Workflow;
+use Alama\Arazzo\Document\OperationResolverInterface;
 use Alama\Arazzo\Document\Validator\Data\Error;
 use Alama\Arazzo\Document\Validator\Data\ValidationResult;
 use Alama\Arazzo\Document\Validator\Data\Warning;
@@ -39,7 +40,7 @@ final class PreflightValidator
      */
     public function __construct(
         private readonly SourceRegistry $sources,
-        private readonly OpenApiOperationResolverInterface $operations,
+        private readonly OperationResolverInterface|OpenApiOperationResolver $operations,
         private array $supportedXPathVersions = ['xpath-10'],
     ) {
         $this->versionDetector = new OpenApiVersionDetector();

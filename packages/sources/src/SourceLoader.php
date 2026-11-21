@@ -8,6 +8,7 @@ use Alama\Arazzo\Contracts\Interfaces\SourceNormalizerRegistryInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Spec\SourceDocument;
+use Alama\Arazzo\Document\KnownOperations;
 use Alama\Arazzo\Document\ResolvedOperation;
 use Alama\Arazzo\Document\Validator\Data\ValidationResult;
 use Alama\Arazzo\Sources\Normalizer\OpenApiVersionDetector;
@@ -85,5 +86,16 @@ final class SourceLoader
         }
 
         return $index;
+    }
+
+    public function knownOperations(ArazzoDocument $document, string $basePath = ''): KnownOperations
+    {
+        $known = KnownOperations::none();
+        $index = $this->normalizeSources($document, $basePath);
+        foreach ($index as $key => $resolved) {
+            $known = $known->withOperation($resolved->source->name, $key);
+        }
+
+        return $known;
     }
 }
