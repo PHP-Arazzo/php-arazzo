@@ -18,7 +18,7 @@ flowchart LR
     contracts_Spec["Alama\Arazzo\Contracts\Spec"]:::coreNode
     contracts_State["Alama\Arazzo\Contracts\State"]:::coreNode
     contracts_Support["Alama\Arazzo\Contracts\Support\Events\Dispatcher"]:::coreNode
-    document_Parser["Alama\Arazzo\Document\Parser"]:::coreNode
+    document_Parser["Alama\Arazzo\Document\Parser\Exceptions"]:::coreNode
     document_Validator["Alama\Arazzo\Document\Validator\Rules"]:::coreNode
     document__["(document package root)"]:::coreNode
     engine_Data["Alama\Arazzo\Engine\Data"]:::coreNode
@@ -162,9 +162,9 @@ flowchart LR
     document_Validator --> expression_Data
     document_Validator --> contracts_Dependency
     document__ --> contracts_Spec
+    document__ --> document_Parser
     document__ --> document_Validator
     document__ --> sources_Normalizer
-    document__ --> document_Parser
     document__ --> expression_Interfaces
     document__ --> sources_Validator
     sources_Normalizer --> contracts_Interfaces

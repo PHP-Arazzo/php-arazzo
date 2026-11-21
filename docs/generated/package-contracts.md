@@ -220,7 +220,10 @@ public contract between packages.
 ### Public entry surface
 
 - `DocumentInterface` (`interface`)
+  - `public function withDecodePolicy(DecodePolicy $policy): self;`
   - `public function load(string $path): ArazzoDocument;`
+  - `public function loadFromYaml(string $content, string $virtualPath = 'inline.yaml'): ArazzoDocument;`
+  - `public function loadFromJson(string $content, string $virtualPath = 'inline.json'): ArazzoDocument;`
   - `public function parse(RawDocument $raw): ArazzoDocument;`
   - `public function validate(ArazzoDocument $document): ValidationResult;`
   - `public function preflight(ArazzoDocument $document): ValidationResult;`

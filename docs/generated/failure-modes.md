@@ -17,6 +17,7 @@ Regenerated before every commit.
 | Exception | Raised by |
 |---|---|
 | **ConditionSyntaxException** | `AccessorParser` <small>evaluation:Condition</small>, `ConditionEvaluator` <small>evaluation:Condition</small>, `Lexer` <small>evaluation:Condition</small>, `Parser` <small>evaluation:Condition</small> |
+| **CustomTagsForbiddenException** | `YamlSecurityScanner` <small>document:Parser</small> |
 | **DecodeException** | `NativeJsonDecoder` <small>document:Parser</small>, `SymfonyYamlDecoder` <small>document:Parser</small> |
 | **ExecutionError** | `WorkflowEngine` <small>runner:Sync</small> |
 | **ExecutionException** | `RpcOperationExecutor` <small>protocol-rpc:Execution</small>, `RpcRequestBuilder` <small>protocol-rpc:Execution</small>, `SoapOperationExecutor` <small>protocol-soap:Execution</small>, `SoapRequestBuilder` <small>protocol-soap:Execution</small>, `AsyncExecutionGraphAssembler` <small>runner:Async</small>, `StepExecutionWorker` <small>runner:Async</small>, `RunnerGraphBuilder` <small>(runner root)</small>, `ExecutionGraphFactory` <small>runner:Sync</small>, `StepExecutor` <small>runner:Sync</small> |
@@ -24,7 +25,12 @@ Regenerated before every commit.
 | **GotoTargetNotFoundException** | `WorkflowEngine` <small>runner:Sync</small> |
 | **InvalidArgumentException** | `SpecVersion` <small>contracts:Spec</small>, `StepTarget` <small>contracts:Spec</small>, `TypeCaster` <small>engine:Execution</small>, `ProtoParser` <small>protocol-rpc:Normalizer</small>, `OpenApi30Normalizer` <small>sources:Normalizer</small>, `OpenApiSourceNormalizer` <small>sources:Normalizer</small>, `OpenApiVersionDetector` <small>sources:Normalizer</small>, `WsdlSourceNormalizer` <small>sources:Normalizer</small> |
 | **LogicException** | `AsyncApiStepExecutor` <small>protocol-http:Protocol</small>, `StepExecutionWorker` <small>runner:Async</small>, `WorkflowExecutor` <small>runner:Sync</small>, `UnifiedStepCarrier` <small>(runner root)</small> |
+| **MaxAliasesExceededException** | `YamlSecurityScanner` <small>document:Parser</small> |
+| **MaxBytesExceededException** | `NativeJsonDecoder` <small>document:Parser</small>, `SymfonyYamlDecoder` <small>document:Parser</small> |
+| **MaxDepthExceededException** | `NativeJsonDecoder` <small>document:Parser</small>, `SymfonyYamlDecoder` <small>document:Parser</small> |
+| **MaxNodesExceededException** | `NativeJsonDecoder` <small>document:Parser</small>, `SymfonyYamlDecoder` <small>document:Parser</small> |
 | **NotImplementedException** | `Swagger2Normalizer` <small>sources:Normalizer</small> |
+| **ObjectDeserializationForbiddenException** | `SymfonyYamlDecoder` <small>document:Parser</small>, `YamlSecurityScanner` <small>document:Parser</small> |
 | **PreflightFailureException** | `StepExecutionWorker` <small>runner:Async</small>, `WorkflowExecutor` <small>runner:Sync</small> |
 | **RuntimeException** | `CliRunner` <small>cli:Console</small>, `OpenAiClient` <small>cli:Generator</small>, `Reusable` <small>contracts:Spec</small>, `Document` <small>(document root)</small>, `ReusableParameterResolver` <small>engine:Execution</small>, `BuiltInCriterionEvaluator` <small>(evaluation root)</small>, `CriteriaEvaluator` <small>(evaluation root)</small>, `Parser` <small>expression:JsonPath</small>, `ProtobufOperationResolver` <small>protocol-rpc:Protocol</small>, `RpcMessageCodec` <small>protocol-rpc:Protocol</small>, `SoapEnvelope` <small>protocol-soap:Execution</small>, `WsdlOperationResolver` <small>protocol-soap:Execution</small>, `RunnerFacade` <small>(runner root)</small>, `FileLockStrategy` <small>engine:Runtime</small>, `FileStateStore` <small>engine:Runtime</small>, `OtelSetup` <small>engine:Runtime</small>, `OpenApiOperationResolver` <small>sources:Normalizer</small> |
 | **SchemaValidationException** | `ResponseSchemaValidator` <small>protocol-http:Execution</small>, `XsdResponseValidator` <small>protocol-soap:Validation</small> |
@@ -37,6 +43,7 @@ Regenerated before every commit.
 | **WorkflowCycleException** | `WorkflowEngine` <small>runner:Sync</small> |
 | **WorkflowDepthExceededException** | `WorkflowEngine` <small>runner:Sync</small> |
 | **ArazzoException** | _(never raised in src)_ |
+| **DecodeLimitException** | _(never raised in src)_ |
 | **DefinitionHydrationException** | _(never raised in src)_ |
 | **LoaderException** | _(never raised in src)_ |
 | **ParserException** | _(never raised in src)_ |
@@ -82,6 +89,10 @@ Regenerated before every commit.
 
 | Guard | Class | Limit expression |
 |---|---|---|
+| throws **MaxAliasesExceededException** | `YamlSecurityScanner` | — |
+| throws **MaxBytesExceededException** | `NativeJsonDecoder`, `SymfonyYamlDecoder` | — |
+| throws **MaxDepthExceededException** | `NativeJsonDecoder`, `SymfonyYamlDecoder` | — |
+| throws **MaxNodesExceededException** | `NativeJsonDecoder`, `SymfonyYamlDecoder` | — |
 | throws **StepBudgetExceededException** | `WorkflowEngine` | — |
 | throws **WorkflowCycleException** | `WorkflowEngine` | — |
 | throws **WorkflowDepthExceededException** | `WorkflowEngine` | — |

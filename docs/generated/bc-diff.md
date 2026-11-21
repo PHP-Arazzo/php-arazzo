@@ -13,4 +13,24 @@ tag (or the second-latest when HEAD sits exactly on a tag).
 
 Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 
-**No breaking changes.**
+**1 breaking change(s):**
+
+| Kind | Class | Member | Detail |
+|---|---|---|---|
+| changed method | `DocumentInterface` | `load` | `public function load(string $path): ArazzoDocument;` → `public function load(string $path): ArazzoDocument` |
+
+**Additions (non-breaking):** 11
+
+| Kind | Class | Member |
+|---|---|---|
+| added method | `DocumentInterface` | `loadFromJson` |
+| added method | `DocumentInterface` | `loadFromYaml` |
+| added method | `DocumentInterface` | `withAllowCustomTags` |
+| added method | `DocumentInterface` | `withAllowObjectDeserialization` |
+| added method | `DocumentInterface` | `withDecodePolicy` |
+| added method | `DocumentInterface` | `withLoader` |
+| added method | `DocumentInterface` | `withMaxAliases` |
+| added method | `DocumentInterface` | `withMaxBytes` |
+| added method | `DocumentInterface` | `withMaxDepth` |
+| added method | `DocumentInterface` | `withMaxNodes` |
+| added method | `DocumentInterface` | `withYamlPolicy` |

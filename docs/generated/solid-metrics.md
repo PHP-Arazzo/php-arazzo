@@ -32,7 +32,7 @@ quadrantChart
     contracts/Spec: [0.023, 0.02]
     contracts/State: [0.063, 0]
     contracts/Support: [0, 0.2]
-    document/Parser: [0.286, 0.167]
+    document/Parser: [0.286, 0.087]
     document/Validator: [0.538, 0.012]
     document/_: [0.375, 0.333]
     engine/Data: [0.75, 0]
@@ -114,6 +114,7 @@ Contracts declaring more than 7 methods:
 | Interface | Methods |
 |---|---:|
 | `ExpressionEngineInterface` <small>expression</small> | 12 |
+| `DocumentInterface` <small>document</small> | 9 |
 | `EvaluationEngineInterface` <small>evaluation</small> | 8 |
 
 ## Concrete hubs (DIP)

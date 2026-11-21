@@ -9,4 +9,4 @@ use RuntimeException;
 /**
  * @internal stays out of the advertised contract; not part of the public API surface
  */
-final class DecodeException extends RuntimeException {}
+class DecodeException extends RuntimeException {}

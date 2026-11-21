@@ -6,6 +6,7 @@ namespace Alama\Arazzo\Sources\Resolver;
 
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Spec\SourceDocument;
+use Alama\Arazzo\Document\Parser\DecodePolicy;
 use Alama\Arazzo\Document\Parser\Decoders\NativeJsonDecoder;
 use Alama\Arazzo\Document\Parser\Decoders\SymfonyYamlDecoder;
 use Alama\Arazzo\Sources\Resolver\Exceptions\SourceFetchException;
@@ -34,6 +35,7 @@ final readonly class DefaultSourceResolver implements SourceResolver
     public function __construct(
         /** @var array<string, SourceFetcher> */
         private array $fetchers,
+        private ?DecodePolicy $decodePolicy = null,
     ) {}
 
     /**
@@ -54,7 +56,7 @@ final readonly class DefaultSourceResolver implements SourceResolver
      * Create a resolver with the standard fetchers (http, https, file).
      * Uses Guzzle Client and PSR-7 HttpFactory internally.
      */
-    public static function withDefaults(): self
+    public static function withDefaults(?DecodePolicy $decodePolicy = null): self
     {
         $client = self::defaultHttpClient();
         $factory = new HttpFactory();
@@ -63,7 +65,7 @@ final readonly class DefaultSourceResolver implements SourceResolver
             'http' => new HttpFetcher($client, $factory),
             'https' => new HttpFetcher($client, $factory),
             'file' => new LocalFetcher(),
-        ]);
+        ], $decodePolicy);
     }
 
     /**
@@ -72,9 +74,9 @@ final readonly class DefaultSourceResolver implements SourceResolver
      *
      * @param  array<string, SourceFetcher>  $fetchers
      */
-    public static function withFetchers(array $fetchers): self
+    public static function withFetchers(array $fetchers, ?DecodePolicy $decodePolicy = null): self
     {
-        return new self($fetchers);
+        return new self($fetchers, $decodePolicy);
     }
 
     public function resolve(SourceDescription $source, string $basePath): SourceDocument
@@ -94,8 +96,8 @@ final readonly class DefaultSourceResolver implements SourceResolver
         $isYaml = !str_starts_with(trim($content), '{');
         try {
             $decoded = $isYaml
-                ? (new SymfonyYamlDecoder())->decode($content)
-                : (new NativeJsonDecoder())->decode($content);
+                ? (new SymfonyYamlDecoder($this->decodePolicy))->decode($content)
+                : (new NativeJsonDecoder($this->decodePolicy))->decode($content);
         } catch (Throwable $e) {
             throw new SourceParseException("Failed to parse source '{$source->name}': ".$e->getMessage(), 0, $e);
         }
