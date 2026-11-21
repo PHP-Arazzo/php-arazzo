@@ -197,6 +197,8 @@ flowchart LR
     C_document_document_Validator_MessageRefRequiresReceiveRule -.->|implements| I_Rule
     C_document_document_Validator_ParameterQuerystringOperationShapeRule["ParameterQuerystringOperationShapeRule<br/><small>document:Validator</small>"]:::implCore
     C_document_document_Validator_ParameterQuerystringOperationShapeRule -.->|implements| I_Rule
+    C_document_document_Validator_ParameterReusableRefResolvesRule["ParameterReusableRefResolvesRule<br/><small>document:Validator</small>"]:::implCore
+    C_document_document_Validator_ParameterReusableRefResolvesRule -.->|implements| I_Rule
     C_document_document_Validator_ReceiveStepSuccessCriteriaRule["ReceiveStepSuccessCriteriaRule<br/><small>document:Validator</small>"]:::implCore
     C_document_document_Validator_ReceiveStepSuccessCriteriaRule -.->|implements| I_Rule
     C_document_document_Validator_RpcStepRule["RpcStepRule<br/><small>document:Validator</small>"]:::implCore
