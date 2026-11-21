@@ -64,9 +64,9 @@ function confExecutor(array $workflows, array $responses = []): array
     );
 
     $documents = Mockery::mock(DocumentInterface::class);
-    $documents->shouldReceive('preflight')->andReturn(new ValidationResult($document, [], []));
 
     $resolver = Mockery::mock(OpenApiOperationResolver::class);
+    $resolver->shouldReceive('supportsStep')->andReturn(true);
     $resolver->shouldReceive('resolve')->andReturn(new OpenApiOperationHandle(
         new ResolvedOperation(
             source: new SourceDescription('api', 'https://api.test/openapi.json', SourceType::Openapi),

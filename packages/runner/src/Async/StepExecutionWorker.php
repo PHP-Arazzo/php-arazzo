@@ -17,7 +17,8 @@ use Alama\Arazzo\Contracts\State\ExecutionState;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
 use Alama\Arazzo\Contracts\Support\Events\Dispatcher\NullEventDispatcher;
 use Alama\Arazzo\Document\DocumentInterface;
-use Alama\Arazzo\Document\Validator\Exceptions\PreflightFailureException;
+use Alama\Arazzo\Runner\Exceptions\PreflightFailureException;
+use Alama\Arazzo\Runner\Preflight\Preflight;
 use Alama\Arazzo\Engine\Exceptions\ExecutionException;
 use Alama\Arazzo\Engine\Execution\StepParameterMerger;
 use Alama\Arazzo\Evaluation\EvaluationEngineInterface;
@@ -53,7 +54,7 @@ class StepExecutionWorker
 {
     private EventDispatcherInterface $events;
 
-    private ?DocumentInterface $preflight;
+    private ?Preflight $preflight;
 
     private StateStoreInterface $stateStore;
 
@@ -400,7 +401,7 @@ class StepExecutionWorker
         if ($this->preflight !== null && $context->getSteps() === []) {
             $documentForPreflight = $this->definitionRegistry->get($context->getDefinitionId());
             if ($documentForPreflight !== null) {
-                $preflightResult = $this->preflight->preflight($documentForPreflight);
+                $preflightResult = $this->preflight->validate($documentForPreflight);
                 if (!$preflightResult->isValid()) {
                     throw new PreflightFailureException(
                         'Preflight validation failed with '.count($preflightResult->errors).' error(s).',

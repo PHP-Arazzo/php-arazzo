@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Sources;
 
 use Alama\Arazzo\Document\DocumentInterface;
-use Alama\Arazzo\Sources\Normalizer\OpenApiOperationResolverInterface;
+use Alama\Arazzo\Document\OperationResolverInterface;
 
 /**
  * A document and the resolver behind it, produced by a single
@@ -22,7 +22,7 @@ use Alama\Arazzo\Sources\Normalizer\OpenApiOperationResolverInterface;
  * `SourceRuntime<OpenApiOperationResolver>`, so `$runtime->operations` stays
  * concrete for the runner without this package importing protocol-http.
  *
- * @template TResolver of OpenApiOperationResolverInterface
+ * @template TResolver of OperationResolverInterface
  */
 final readonly class SourceRuntime
 {
@@ -32,6 +32,6 @@ final readonly class SourceRuntime
     public function __construct(
         public DocumentInterface $document,
         public SourceLoader $loader,
-        public OpenApiOperationResolverInterface $operations,
+        public OperationResolverInterface $operations,
     ) {}
 }

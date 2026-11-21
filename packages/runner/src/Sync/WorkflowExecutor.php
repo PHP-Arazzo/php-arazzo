@@ -11,9 +11,9 @@ use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Contracts\State\ExecutionState;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
 use Alama\Arazzo\Contracts\Support\Events\Dispatcher\NullEventDispatcher;
+use Alama\Arazzo\Document\Document;
 use Alama\Arazzo\Document\DocumentInterface;
 use Alama\Arazzo\Document\Validator\Data\ValidationResult;
-use Alama\Arazzo\Document\Validator\Exceptions\PreflightFailureException;
 use Alama\Arazzo\Engine\Execution\StepParameterMerger;
 use Alama\Arazzo\Events\RunCompletedEvent;
 use Alama\Arazzo\Events\RunFailedEvent;
@@ -25,6 +25,8 @@ use Alama\Arazzo\Events\StepStartedEvent;
 use Alama\Arazzo\Runner\Execution\Data\ExecutionResult;
 use Alama\Arazzo\Runner\Execution\Data\StepResult;
 use Alama\Arazzo\Runner\Execution\Enum\TransitionType;
+use Alama\Arazzo\Runner\Exceptions\PreflightFailureException;
+use Alama\Arazzo\Runner\Preflight\Preflight;
 use DateTimeImmutable;
 use LogicException;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -42,9 +44,11 @@ class WorkflowExecutor
         private StepExecutor $stepExecutor,
         private WorkflowEngine $workflowEngine,
         ?EventDispatcherInterface $events = null,
-        private ?DocumentInterface $preflight = null,
+        private ?Preflight $preflight = null,
+        private ?DocumentInterface $document = null,
     ) {
         $this->events = $events ?? new NullEventDispatcher();
+        $this->document ??= Document::create();
     }
 
     /**
@@ -53,34 +57,34 @@ class WorkflowExecutor
     public function execute(Workflow $workflow, ArazzoDocument $document, array $inputs, ?WorkflowContext $context = null): ExecutionResult
     {
         // Preflight runs before the first side effect (no events, no state).
+        $errors = [];
+        $warnings = [];
+
         if ($this->preflight !== null) {
-            $result = $this->preflightDocument($document);
+            $preflightResult = $this->preflight->validate($document);
+            $errors = $preflightResult->errors;
+            $warnings = $preflightResult->warnings;
+        }
 
-            // Workflow `inputs` JSON-Schema pre-validation (first-mover:
-            // no other Arazzo tool validates inputs before spending calls).
-            $inputsSchema = $workflow->inputs;
-
-            if (is_array($inputsSchema) && $inputsSchema !== []) {
-                $inputResult = $this->preflightInputs($document, $workflow->workflowId, $inputs);
-
-                if ($inputResult->errors !== []) {
-                    $result = new ValidationResult(
-                        $document,
-                        [...$result->errors, ...$inputResult->errors],
-                        [...$result->warnings, ...$inputResult->warnings],
-                    );
-                } elseif ($inputResult->inputs !== []) {
-                    // Use the default-populated input map returned by preflight.
-                    $inputs = $inputResult->inputs;
-                }
+        // Workflow `inputs` JSON-Schema pre-validation (first-mover:
+        // no other Arazzo tool validates inputs before spending calls).
+        $inputsSchema = $workflow->inputs;
+        if (is_array($inputsSchema) && $inputsSchema !== []) {
+            $inputResult = $this->document->validateInputs($document, $workflow->workflowId, $inputs);
+            if ($inputResult->errors !== []) {
+                $errors = [...$errors, ...$inputResult->errors];
+                $warnings = [...$warnings, ...$inputResult->warnings];
+            } elseif ($inputResult->inputs !== []) {
+                $inputs = $inputResult->inputs;
             }
+        }
 
-            if (!$result->isValid()) {
-                throw new PreflightFailureException(
-                    'Preflight validation failed with '.count($result->errors).' error(s).',
-                    $result,
-                );
-            }
+        if ($errors !== []) {
+            $result = new ValidationResult($document, $errors, $warnings);
+            throw new PreflightFailureException(
+                'Preflight validation failed with '.count($result->errors).' error(s).',
+                $result,
+            );
         }
 
         $executionId = is_string($inputs['__executionId'] ?? null) ? $inputs['__executionId'] : bin2hex(random_bytes(8));
@@ -282,28 +286,5 @@ class WorkflowExecutor
                 return $workflow;
             }
         } throw new LogicException("Unknown workflow '{$id}'.");
-    }
-
-    private function preflightDocument(ArazzoDocument $document): ValidationResult
-    {
-        $preflight = $this->preflight;
-        if ($preflight === null) {
-            return new ValidationResult($document, [], []);
-        }
-
-        return $preflight->preflight($document);
-    }
-
-    /**
-     * @param  array<string, mixed>  $inputs
-     */
-    private function preflightInputs(ArazzoDocument $document, string $workflowId, array $inputs): ValidationResult
-    {
-        $preflight = $this->preflight;
-        if ($preflight === null) {
-            return new ValidationResult($document, [], []);
-        }
-
-        return $preflight->preflightInputs($document, $workflowId, $inputs);
     }
 }

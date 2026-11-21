@@ -12,6 +12,8 @@ use Alama\Arazzo\Evaluation\EvaluationEngineInterface;
 use Alama\Arazzo\Protocol\Http\Execution\Interfaces\OpenApiExecutorInterface;
 use Alama\Arazzo\Runner\Execution\OperationRuntime;
 use Alama\Arazzo\Runner\OperationExecutorRegistry;
+use Alama\Arazzo\Runner\Preflight\OperationResolvers;
+use Alama\Arazzo\Runner\Preflight\Preflight;
 
 /**
  * Assembles the runner execution graph.
@@ -57,10 +59,13 @@ final class ExecutionGraphFactory
             executors: $executors,
         );
 
+        $preflight = new Preflight(new OperationResolvers([$this->operations->resolver]));
+
         $workflowExecutor = new WorkflowExecutor(
             $stepExecutor,
             workflowEngine: new WorkflowEngine($this->evaluationEngine),
-            preflight: $this->operations->document,
+            preflight: $preflight,
+            document: $this->operations->document,
         );
 
         // The sub-workflow executor wraps THIS graph's WorkflowExecutor, so it
