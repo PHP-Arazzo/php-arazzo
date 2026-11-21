@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Document;
 
+use Alama\Arazzo\Document\Parser\DecodePolicy;
 use Alama\Arazzo\Document\Parser\Loader;
 use Alama\Arazzo\Document\Parser\Parser;
 use Alama\Arazzo\Document\Validator\RuleSet;
@@ -35,14 +36,27 @@ final readonly class ModelStack
         ExpressionEngineInterface $engine,
         ?PreflightValidator $preflight = null,
         ?OpenApiOperationResolverInterface $operationResolver = null,
+        ?DecodePolicy $decodePolicy = null,
     ): self {
         return new self(
-            loader: Loader::new(),
+            loader: Loader::defineDecodePolicy($decodePolicy),
             parser: new Parser(),
             validator: new Validator(RuleSet::default($engine)),
             engine: $engine,
             preflight: $preflight,
             operationResolver: $operationResolver,
+        );
+    }
+
+    public function withLoader(Loader $loader): self
+    {
+        return new self(
+            loader: $loader,
+            parser: $this->parser,
+            validator: $this->validator,
+            engine: $this->engine,
+            preflight: $this->preflight,
+            operationResolver: $this->operationResolver,
         );
     }
 }

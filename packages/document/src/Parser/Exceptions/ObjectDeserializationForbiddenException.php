@@ -1,0 +1,26 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Alama\Arazzo\Document\Parser\Exceptions;
+
+use Throwable;
+
+/**
+ * @internal stays out of the advertised contract; not part of the public API surface
+ */
+final class ObjectDeserializationForbiddenException extends DecodeLimitException
+{
+    public function __construct(
+        string $codeId = 'document.yaml_limit',
+        ?Throwable $previous = null,
+    ) {
+        parent::__construct(
+            message: "Object deserialization is forbidden by policy allowObjectDeserialization [{$codeId}].",
+            limit: 'allowObjectDeserialization',
+            codeId: $codeId,
+            code: 0,
+            previous: $previous,
+        );
+    }
+}

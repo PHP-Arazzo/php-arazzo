@@ -25,17 +25,26 @@ final class Loader
     }
 
     /**
-     * Create a Loader with the default decoders (Symfony YAML + PHP native JSON).
-     * The decoder implementations are completely hidden from consumers.
+     * Create a Loader with decoders configured via DecodePolicy.
+     */
+    public static function defineDecodePolicy(?DecodePolicy $policy = null): self
+    {
+        $policy ??= DecodePolicy::default();
+
+        return new self(
+            DecoderRegistry::fromArray([
+                Format::Yaml->value => new SymfonyYamlDecoder($policy),
+                Format::Json->value => new NativeJsonDecoder($policy),
+            ]),
+        );
+    }
+
+    /**
+     * @deprecated Use Loader::defineDecodePolicy() instead.
      */
     public static function new(): self
     {
-        return new self(
-            DecoderRegistry::fromArray([
-                Format::Yaml->value => new SymfonyYamlDecoder(),
-                Format::Json->value => new NativeJsonDecoder(),
-            ]),
-        );
+        return self::defineDecodePolicy();
     }
 
     /**
@@ -67,11 +76,36 @@ final class Loader
             throw LoaderException::unsupportedFormat($format);
         }
 
-        $raw = file_get_contents($path);
+        $raw = @file_get_contents($path);
         if ($raw === false) {
             throw LoaderException::readFailed($path);
         }
 
+        return $this->decodeRaw($raw, $path, $format, $decoder);
+    }
+
+    public function loadFromYaml(string $content, string $virtualPath = 'inline.yaml'): RawDocument
+    {
+        $decoder = $this->decoders->all()[Format::Yaml->value] ?? null;
+        if ($decoder === null) {
+            throw LoaderException::unsupportedFormat(Format::Yaml);
+        }
+
+        return $this->decodeRaw($content, $virtualPath, Format::Yaml, $decoder);
+    }
+
+    public function loadFromJson(string $content, string $virtualPath = 'inline.json'): RawDocument
+    {
+        $decoder = $this->decoders->all()[Format::Json->value] ?? null;
+        if ($decoder === null) {
+            throw LoaderException::unsupportedFormat(Format::Json);
+        }
+
+        return $this->decodeRaw($content, $virtualPath, Format::Json, $decoder);
+    }
+
+    private function decodeRaw(string $raw, string $path, Format $format, DecoderInterface $decoder): RawDocument
+    {
         try {
             $data = $decoder->decode($raw);
         } catch (DecodeException $e) {

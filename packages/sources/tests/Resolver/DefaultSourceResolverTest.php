@@ -6,6 +6,8 @@ namespace Alama\Arazzo\Tests\Resolution;
 
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
+use Alama\Arazzo\Document\Parser\DecodePolicy;
+use Alama\Arazzo\Document\Parser\YamlPolicy;
 use Alama\Arazzo\Sources\Resolver\DefaultSourceResolver;
 use Alama\Arazzo\Sources\Resolver\Exceptions\SourceFetchException;
 use Alama\Arazzo\Sources\Resolver\Exceptions\SourceParseException;
@@ -103,4 +105,53 @@ it('bounds default remote fetches so an unreachable source cannot hang validatio
 
     expect($config['connect_timeout'])->toBeFloat()->toBeGreaterThan(0.0)
         ->and($config['timeout'])->toBeFloat()->toBeGreaterThan(0.0);
+});
+
+it('applies yaml policy to source documents', function (): void {
+    $fetcher = new class() implements SourceFetcher
+    {
+        public function fetch(string $urlOrPath, string $basePath): string
+        {
+            return "a: &a [1, 2]\nb: &b [*a, *a]\nc: &c [*b, *b]\nd: [*c, *c]\n";
+        }
+    };
+
+    $policy = DecodePolicy::default()->withYamlPolicy(
+        YamlPolicy::default()->withMaxAliases(5),
+    );
+    $resolver = new DefaultSourceResolver(['file' => $fetcher], $policy);
+    $source = new SourceDescription('openapi', './openapi.yaml', SourceType::Openapi);
+
+    expect(fn () => $resolver->resolve($source, '/base'))
+        ->toThrow(SourceParseException::class, 'maxAliases');
+});
+
+it('creates resolver with custom fetchers via withFetchers', function (): void {
+    $fetcher = new class() implements SourceFetcher
+    {
+        public function fetch(string $urlOrPath, string $basePath): string
+        {
+            return '{"ok": true}';
+        }
+    };
+    $resolver = DefaultSourceResolver::withFetchers(['file' => $fetcher]);
+    $source = new SourceDescription('local', 'file.json', SourceType::Openapi);
+    $result = $resolver->resolve($source, '/base');
+
+    expect($result->content)->toBe(['ok' => true]);
+});
+
+it('throws SourceParseException when decoded document is not an array', function (): void {
+    $fetcher = new class() implements SourceFetcher
+    {
+        public function fetch(string $urlOrPath, string $basePath): string
+        {
+            return '"just a string"';
+        }
+    };
+    $resolver = new DefaultSourceResolver(['file' => $fetcher]);
+    $source = new SourceDescription('local', 'file.json', SourceType::Openapi);
+
+    expect(fn () => $resolver->resolve($source, '/base'))
+        ->toThrow(SourceParseException::class, 'must be an array');
 });

@@ -423,16 +423,22 @@ this file on a commit is a public API change — review it deliberately.
 
 ### `DocumentInterface` interface
 - `public function load(string $path): ArazzoDocument;`
+- `public function loadFromJson(string $content, string $virtualPath = 'inline.json'): ArazzoDocument;`
+- `public function loadFromYaml(string $content, string $virtualPath = 'inline.yaml'): ArazzoDocument;`
 - `public function parse(RawDocument $raw): ArazzoDocument;`
 - `public function preflight(ArazzoDocument $document): ValidationResult;`
 - `public function preflightInputs(ArazzoDocument $document, string $workflowId, array $inputs): ValidationResult;`
 - `public function resolveOperation(Step $step, ArazzoDocument $document): ResolvedOperation;`
 - `public function validate(ArazzoDocument $document): ValidationResult;`
+- `public function withDecodePolicy(DecodePolicy $policy): self;`
 
 ### `Alama\Arazzo\Document`
 
 #### `Document` class
 - `public function __construct(private readonly ModelStack $model, private readonly ?OpenApiOperationResolverInterface $operationResolver = null)`
+- `public function load(string $path): ArazzoDocument`
+- `public function loadFromJson(string $content, string $virtualPath = 'inline.json'): ArazzoDocument`
+- `public function loadFromYaml(string $content, string $virtualPath = 'inline.yaml'): ArazzoDocument`
 - `public function parse(RawDocument $raw): ArazzoDocument`
 - `public function preflight(ArazzoDocument $document): ValidationResult`
 - `public function preflightInputs(ArazzoDocument $document, string $workflowId, array $inputs): ValidationResult`
@@ -441,6 +447,7 @@ this file on a commit is a public API change — review it deliberately.
 
 #### `ModelStack` class
 - `public function __construct(public Loader $loader, public Parser $parser, public Validator $validator, public ExpressionEngineInterface $engine, public ?PreflightValidator $preflight = null, public ?OpenApiOperationResolverInterface $operationResolver = null)`
+- `public function withLoader(Loader $loader): self`
 
 #### `OperationResolverInterface` interface
 - `public function resolve(Step $step, ArazzoDocument $document): ResolvedOperation;`
@@ -449,6 +456,21 @@ this file on a commit is a public API change — review it deliberately.
 #### `ResolvedOperation` class
 - `public function __construct(public readonly SourceDescription $source, public readonly NormalizedOpenApiOperation $normalized, public readonly ?RpcProtocol $rpcProtocol = null, public readonly ?string $operationName = null, public readonly ?string $rpcMethod = null, public readonly ?GraphQlOperation $graphqlOperation = null, public readonly ?Interaction $interaction = null)`
 - `public function binding(): string`
+
+### `Alama\Arazzo\Document\Parser`
+
+#### `DecodePolicy` class
+- `public function __construct(public int $maxBytes = self::DEFAULT_MAX_BYTES, public int $maxDepth = self::DEFAULT_MAX_DEPTH, public int $maxNodes = self::DEFAULT_MAX_NODES, public YamlPolicy $yaml = new YamlPolicy())`
+- `public function withMaxBytes(int $maxBytes): self`
+- `public function withMaxDepth(int $maxDepth): self`
+- `public function withMaxNodes(int $maxNodes): self`
+- `public function withYamlPolicy(YamlPolicy $yaml): self`
+
+#### `YamlPolicy` class
+- `public function __construct(public int $maxAliases = self::DEFAULT_MAX_ALIASES, public bool $allowCustomTags = self::DEFAULT_ALLOW_CUSTOM_TAGS, public bool $allowObjectDeserialization = self::DEFAULT_ALLOW_OBJECT_DESERIALIZATION)`
+- `public function withAllowCustomTags(bool $allowCustomTags): self`
+- `public function withAllowObjectDeserialization(bool $allowObjectDeserialization): self`
+- `public function withMaxAliases(int $maxAliases): self`
 
 ### `Alama\Arazzo\Document\Parser\Exceptions`
 

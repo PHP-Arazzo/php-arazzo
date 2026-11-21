@@ -20,9 +20,9 @@ targets. Regenerated before every commit.
 | `contracts:Spec` | 49 | 1158 | 42 | 1 | 0.02 |  |
 | `contracts:State` | 3 | 974 | 15 | 1 | 0.06 |  |
 | `contracts:Support` | 5 | 180 | 11 | 0 | 0.00 |  |
-| `document:Parser` | 12 | 1441 | 5 | 2 | 0.29 |  |
+| `document:Parser` | 23 | 2196 | 5 | 2 | 0.29 |  |
 | `document:Validator` | 83 | 5490 | 6 | 7 | 0.54 |  |
-| `(document root)` | 6 | 293 | 10 | 6 | 0.38 |  |
+| `(document root)` | 6 | 349 | 10 | 6 | 0.38 |  |
 | `engine:Data` | 2 | 72 | 1 | 3 | 0.75 |  |
 | `engine:Enum` | 1 | 16 | 1 | 0 | 0.00 |  |
 | `engine:Exceptions` | 1 | 41 | 6 | 1 | 0.14 |  |
@@ -69,11 +69,11 @@ targets. Regenerated before every commit.
 | `runner:Sync` | 6 | 1090 | 3 | 18 | 0.86 | ⚠ unstable hub |
 | `(runner root)` | 9 | 522 | 3 | 16 | 0.84 | ⚠ unstable hub |
 | `sources:Normalizer` | 11 | 1271 | 11 | 5 | 0.31 |  |
-| `sources:Resolver` | 13 | 499 | 6 | 3 | 0.33 |  |
+| `sources:Resolver` | 13 | 501 | 6 | 3 | 0.33 |  |
 | `sources:Validator` | 1 | 324 | 2 | 4 | 0.67 |  |
 | `(sources root)` | 3 | 335 | 1 | 10 | 0.91 |  |
 
-Total cross-module edges: **1190**
+Total cross-module edges: **1195**
 
 ## Most entangled module pairs
 

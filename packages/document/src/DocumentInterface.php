@@ -7,6 +7,7 @@ namespace Alama\Arazzo\Document;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\RawDocument;
 use Alama\Arazzo\Contracts\Spec\Step;
+use Alama\Arazzo\Document\Parser\DecodePolicy;
 use Alama\Arazzo\Document\Parser\Exceptions\LoaderException;
 use Alama\Arazzo\Document\Parser\Exceptions\ParserException;
 use Alama\Arazzo\Document\Validator\Data\ValidationResult;
@@ -23,12 +24,33 @@ use RuntimeException;
 interface DocumentInterface
 {
     /**
+     * Return a new Document instance configured with the given DecodePolicy.
+     */
+    public function withDecodePolicy(DecodePolicy $policy): self;
+
+    /**
      * Load and parse an Arazzo document from a YAML/JSON file path.
      *
      * @throws LoaderException
      * @throws ParserException
      */
     public function load(string $path): ArazzoDocument;
+
+    /**
+     * Load and parse an Arazzo document directly from a YAML string.
+     *
+     * @throws LoaderException
+     * @throws ParserException
+     */
+    public function loadFromYaml(string $content, string $virtualPath = 'inline.yaml'): ArazzoDocument;
+
+    /**
+     * Load and parse an Arazzo document directly from a JSON string.
+     *
+     * @throws LoaderException
+     * @throws ParserException
+     */
+    public function loadFromJson(string $content, string $virtualPath = 'inline.json'): ArazzoDocument;
 
     /**
      * Parse an already-decoded raw document.

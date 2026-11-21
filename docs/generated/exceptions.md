@@ -12,13 +12,20 @@ classDiagram
     class E_RuntimeException["RuntimeException"]:::builtin
     class E_ArazzoException["ArazzoException<br/><small>contracts:Support</small>"]:::domain
     class E_ConditionSyntaxException["ConditionSyntaxException<br/><small>evaluation:Condition</small>"]:::domain
+    class E_CustomTagsForbiddenException["CustomTagsForbiddenException<br/><small>document:Parser</small>"]:::domain
     class E_DecodeException["DecodeException<br/><small>document:Parser</small>"]:::domain
+    class E_DecodeLimitException["DecodeLimitException<br/><small>document:Parser</small>"]:::domain
     class E_DefinitionHydrationException["DefinitionHydrationException<br/><small>engine:Runtime</small>"]:::domain
     class E_ExecutionException["ExecutionException<br/><small>engine:Exceptions</small>"]:::domain
     class E_ExpressionSyntaxException["ExpressionSyntaxException<br/><small>expression:Exceptions</small>"]:::domain
     class E_GotoTargetNotFoundException["GotoTargetNotFoundException<br/><small>runner:Execution</small>"]:::domain
     class E_LoaderException["LoaderException<br/><small>document:Parser</small>"]:::domain
+    class E_MaxAliasesExceededException["MaxAliasesExceededException<br/><small>document:Parser</small>"]:::domain
+    class E_MaxBytesExceededException["MaxBytesExceededException<br/><small>document:Parser</small>"]:::domain
+    class E_MaxDepthExceededException["MaxDepthExceededException<br/><small>document:Parser</small>"]:::domain
+    class E_MaxNodesExceededException["MaxNodesExceededException<br/><small>document:Parser</small>"]:::domain
     class E_NotImplementedException["NotImplementedException<br/><small>contracts:Support</small>"]:::domain
+    class E_ObjectDeserializationForbiddenException["ObjectDeserializationForbiddenException<br/><small>document:Parser</small>"]:::domain
     class E_ParserException["ParserException<br/><small>document:Parser</small>"]:::domain
     class E_PreflightFailureException["PreflightFailureException<br/><small>document:Validator</small>"]:::domain
     class E_SchemaValidationException["SchemaValidationException<br/><small>contracts:Exceptions</small>"]:::domain
@@ -34,13 +41,20 @@ classDiagram
     class E_WorkflowDepthExceededException["WorkflowDepthExceededException<br/><small>runner:Execution</small>"]:::domain
     E_RuntimeException <|-- E_ArazzoException
     E_ArazzoException <|-- E_ConditionSyntaxException
+    E_DecodeLimitException <|-- E_CustomTagsForbiddenException
     E_RuntimeException <|-- E_DecodeException
+    E_DecodeException <|-- E_DecodeLimitException
     E_RuntimeException <|-- E_DefinitionHydrationException
     E_ArazzoException <|-- E_ExecutionException
     E_ArazzoException <|-- E_ExpressionSyntaxException
     E_RuntimeException <|-- E_GotoTargetNotFoundException
     E_ArazzoException <|-- E_LoaderException
+    E_DecodeLimitException <|-- E_MaxAliasesExceededException
+    E_DecodeLimitException <|-- E_MaxBytesExceededException
+    E_DecodeLimitException <|-- E_MaxDepthExceededException
+    E_DecodeLimitException <|-- E_MaxNodesExceededException
     E_ArazzoException <|-- E_NotImplementedException
+    E_DecodeLimitException <|-- E_ObjectDeserializationForbiddenException
     E_ArazzoException <|-- E_ParserException
     E_ArazzoException <|-- E_PreflightFailureException
     E_RuntimeException <|-- E_SchemaValidationException
@@ -62,13 +76,20 @@ classDiagram
 |---|---|---|
 | `ArazzoException` | `RuntimeException` | contracts:Support |
 | `ConditionSyntaxException` | `ArazzoException` | evaluation:Condition |
+| `CustomTagsForbiddenException` | `DecodeLimitException` | document:Parser |
 | `DecodeException` | `RuntimeException` | document:Parser |
+| `DecodeLimitException` | `DecodeException` | document:Parser |
 | `DefinitionHydrationException` | `RuntimeException` | engine:Runtime |
 | `ExecutionException` | `ArazzoException` | engine:Exceptions |
 | `ExpressionSyntaxException` | `ArazzoException` | expression:Exceptions |
 | `GotoTargetNotFoundException` | `RuntimeException` | runner:Execution |
 | `LoaderException` | `ArazzoException` | document:Parser |
+| `MaxAliasesExceededException` | `DecodeLimitException` | document:Parser |
+| `MaxBytesExceededException` | `DecodeLimitException` | document:Parser |
+| `MaxDepthExceededException` | `DecodeLimitException` | document:Parser |
+| `MaxNodesExceededException` | `DecodeLimitException` | document:Parser |
 | `NotImplementedException` | `ArazzoException` | contracts:Support |
+| `ObjectDeserializationForbiddenException` | `DecodeLimitException` | document:Parser |
 | `ParserException` | `ArazzoException` | document:Parser |
 | `PreflightFailureException` | `ArazzoException` | document:Validator |
 | `SchemaValidationException` | `RuntimeException` | contracts:Exceptions |

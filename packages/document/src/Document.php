@@ -7,6 +7,8 @@ namespace Alama\Arazzo\Document;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\RawDocument;
 use Alama\Arazzo\Contracts\Spec\Step;
+use Alama\Arazzo\Document\Parser\DecodePolicy;
+use Alama\Arazzo\Document\Parser\Loader;
 use Alama\Arazzo\Document\Validator\Data\ValidationResult;
 use Alama\Arazzo\Sources\Normalizer\OpenApiOperationResolverInterface;
 use RuntimeException;
@@ -23,9 +25,27 @@ final class Document implements DocumentInterface
         private readonly ?OpenApiOperationResolverInterface $operationResolver = null,
     ) {}
 
+    public function withDecodePolicy(DecodePolicy $policy): self
+    {
+        $newLoader = Loader::defineDecodePolicy($policy);
+        $newModel = $this->model->withLoader($newLoader);
+
+        return new self($newModel, $this->operationResolver);
+    }
+
     public function load(string $path): ArazzoDocument
     {
         return $this->model->parser->parse($this->model->loader->load($path));
+    }
+
+    public function loadFromYaml(string $content, string $virtualPath = 'inline.yaml'): ArazzoDocument
+    {
+        return $this->model->parser->parse($this->model->loader->loadFromYaml($content, $virtualPath));
+    }
+
+    public function loadFromJson(string $content, string $virtualPath = 'inline.json'): ArazzoDocument
+    {
+        return $this->model->parser->parse($this->model->loader->loadFromJson($content, $virtualPath));
     }
 
     public function parse(RawDocument $raw): ArazzoDocument

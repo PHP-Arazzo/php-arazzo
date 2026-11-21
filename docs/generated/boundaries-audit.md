@@ -140,6 +140,7 @@ Grouped cross-package uses of concrete internals (AST nodes, evaluators, resolve
 | `runner` | `ReusableParameterResolver` | `engine` | 1 | `SubWorkflowStepExecutor` |
 | `runner` | `StepParameterMerger` | `engine` | 2 | `StepExecutionWorker` |
 | `runner` | `ValidationResult` | `document` | 1 | `WorkflowExecutor` |
+| `sources` | `DecodePolicy` | `document` | 1 | `DefaultSourceResolver` |
 | `sources` | `ErrorCollector` | `document` | 1 | `PreflightValidator` |
 | `sources` | `Loader` | `document` | 1 | `SourceGraph` |
 | `sources` | `ModelStack` | `document` | 1 | `SourceGraph` |

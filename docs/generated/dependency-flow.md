@@ -50,7 +50,7 @@ document-Validator,expression-Enum,11
 document-Validator,expression-Exceptions,2
 document-Validator,expression-Interfaces,15
 document-root,contracts-Spec,13
-document-root,document-Parser,4
+document-root,document-Parser,8
 document-root,document-Validator,4
 document-root,expression-Interfaces,1
 engine-Data,contracts-Spec,3
@@ -275,7 +275,7 @@ sources-Normalizer,document-root,9
 sources-Normalizer,sources-Resolver,4
 sources-Resolver,contracts-Interfaces,2
 sources-Resolver,contracts-Spec,7
-sources-Resolver,document-Parser,2
+sources-Resolver,document-Parser,3
 sources-Validator,contracts-Spec,5
 sources-Validator,document-Validator,5
 sources-Validator,sources-Normalizer,2
