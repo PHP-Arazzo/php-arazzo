@@ -33,6 +33,10 @@ arch('document facade seams are entry-point only')
     ->not->toUse('Alama\Arazzo\Runner\RunnerFacade')
     ->not->toUse('Alama\Arazzo\Expression\Expression');
 
+arch('document package never depends on sources')
+    ->expect('Alama\Arazzo\Document')
+    ->not->toUse('Alama\Arazzo\Sources');
+
 arch('document model is vendor-free')
     ->expect('Alama\Arazzo\Document')
     ->not->toUse('cebe')
@@ -40,3 +44,20 @@ arch('document model is vendor-free')
     ->not->toUse('Psr\Http')
     ->not->toUse('Psr\SimpleCache')
     ->not->toUse('Softcreatr');
+
+arch('Document is final and readonly')
+    ->expect(\Alama\Arazzo\Document\Document::class)
+    ->toBeFinal()
+    ->toBeReadonly();
+
+arch('KnownOperations is final and readonly')
+    ->expect(\Alama\Arazzo\Document\KnownOperations::class)
+    ->toBeFinal()
+    ->toBeReadonly();
+
+test('Decoders class is final and readonly', function (): void {
+    $ref = new ReflectionClass(\Alama\Arazzo\Document\Parser\Decoders::class);
+
+    expect($ref->isFinal())->toBeTrue()
+        ->and($ref->isReadOnly())->toBeTrue();
+});
