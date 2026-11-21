@@ -11,19 +11,34 @@ use Alama\Arazzo\Document\KnownOperations;
 
 final readonly class SymbolTable
 {
+    public KnownOperations $knownOperations;
+
+    /**
+     * @var array<string,array<string,true>>
+     */
+    public array $resolvedOperations;
+
     /**
      * @param  array<string,WorkflowSymbols>  $workflows
      * @param  array<string,true>  $sourceDescriptions
      * @param  array<string,array<string,true>>  $components
+     * @param  KnownOperations|array<string,array<string,true>>  $knownOperations
      * @param  array<string,array<string,true>>  $resolvedOperations
      */
     public function __construct(
         public array $workflows,
         public array $sourceDescriptions,
         public array $components,
-        public KnownOperations $knownOperations = new KnownOperations(),
-        public array $resolvedOperations = [],
-    ) {}
+        KnownOperations|array $knownOperations = new KnownOperations(),
+        array $resolvedOperations = [],
+    ) {
+        $this->knownOperations = $knownOperations instanceof KnownOperations
+            ? $knownOperations
+            : new KnownOperations($knownOperations);
+        $this->resolvedOperations = $resolvedOperations !== []
+            ? $resolvedOperations
+            : $this->knownOperations->toArray();
+    }
 
     /**
      * @param  KnownOperations|array<string,array<string,true>>|null  $resolvedOperations
@@ -53,7 +68,7 @@ final readonly class SymbolTable
             default => KnownOperations::none(),
         };
 
-        return new self($workflows, $sources, $components, $ops, $ops->toArray());
+        return new self($workflows, $sources, $components, $ops);
     }
 
     /**
