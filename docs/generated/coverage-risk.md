@@ -89,7 +89,7 @@ quadrantChart
 | `contracts/State` | 0.06 | 83 | 3 | 100% |
 | `contracts/Support` | 0.00 | 13 | 5 | 100% |
 | `document/Parser` | 0.29 | 61 | 23 | 100% |
-| `document/Validator` | 0.54 | 102 | 83 | 100% |
+| `document/Validator` | 0.54 | 103 | 83 | 100% |
 | `engine/Data` | 0.75 | 2 | 2 | 100% |
 | `engine/Enum` | 0.00 | 1 | 1 | 100% |
 | `engine/Exceptions` | 0.14 | 5 | 1 | 100% |

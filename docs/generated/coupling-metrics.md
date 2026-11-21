@@ -22,7 +22,7 @@ targets. Regenerated before every commit.
 | `contracts:Support` | 5 | 180 | 11 | 0 | 0.00 |  |
 | `document:Parser` | 23 | 2196 | 5 | 2 | 0.29 |  |
 | `document:Validator` | 83 | 5490 | 6 | 7 | 0.54 |  |
-| `(document root)` | 6 | 349 | 10 | 6 | 0.38 |  |
+| `(document root)` | 7 | 409 | 10 | 6 | 0.38 |  |
 | `engine:Data` | 2 | 72 | 1 | 3 | 0.75 |  |
 | `engine:Enum` | 1 | 16 | 1 | 0 | 0.00 |  |
 | `engine:Exceptions` | 1 | 41 | 6 | 1 | 0.14 |  |

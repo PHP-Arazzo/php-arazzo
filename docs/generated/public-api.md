@@ -445,6 +445,14 @@ this file on a commit is a public API change — review it deliberately.
 - `public function resolveOperation(Step $step, ArazzoDocument $document): ResolvedOperation`
 - `public function validate(ArazzoDocument $document): ValidationResult`
 
+#### `KnownOperations` class
+- `public function __construct(private array $operations = [])`
+- `public function covers(string $source): bool`
+- `public function has(string $source, string $operationId): bool`
+- `public function toArray(): array`
+- `public function withOperation(string $source, string $operationId): self`
+- `public function withSource(string $source, array $operationIds): self`
+
 #### `ModelStack` class
 - `public function __construct(public Loader $loader, public Parser $parser, public Validator $validator, public ExpressionEngineInterface $engine, public ?PreflightValidator $preflight = null, public ?OpenApiOperationResolverInterface $operationResolver = null)`
 - `public function withLoader(Loader $loader): self`
