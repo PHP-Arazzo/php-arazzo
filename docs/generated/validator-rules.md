@@ -9,7 +9,7 @@ every commit.
 
 ```mermaid
 flowchart TD
-    ROOT["Validator rules (64)"]
+    ROOT["Validator rules (65)"]
     G_Actions["Actions — 8"]
     ROOT --> G_Actions
     R_ActionDuplicateRule["ActionDuplicate"]
@@ -82,10 +82,12 @@ flowchart TD
     G_General --> R_SuccessCriteriaVersionSupportedRule
     R_WsdlStepRule["WsdlStep"]
     G_General --> R_WsdlStepRule
-    G_Parameters["Parameters — 1"]
+    G_Parameters["Parameters — 2"]
     ROOT --> G_Parameters
     R_ParameterQuerystringOperationShapeRule["ParameterQuerystringOperationShape"]
     G_Parameters --> R_ParameterQuerystringOperationShapeRule
+    R_ParameterReusableRefResolvesRule["ParameterReusableRefResolves"]
+    G_Parameters --> R_ParameterReusableRefResolvesRule
     G_Selectors["Selectors — 1"]
     ROOT --> G_Selectors
     R_SelectorTypeSupportedRule["SelectorTypeSupported"]
@@ -172,7 +174,7 @@ flowchart TD
 | **Document-level** | `DocUnknownFieldRule`, `DocumentArazzoVersionRule`, `DocumentInfoRequiredRule`, `DocumentSourceDescriptionsPresentRule` |
 | **Expressions** | `ExpressionContextMisuseRule`, `ExpressionJsonPointerSyntaxRule`, `ExpressionSyntaxRule`, `ExpressionUnresolvedComponentRefRule`, `ExpressionUnresolvedInputRefRule`, `ExpressionUnresolvedSourceRefRule`, `ExpressionUnresolvedStepRefRule`, `ExpressionUnresolvedWorkflowRefRule` |
 | **General** | `GraphQlStepRule`, `InteractionStepRule`, `MessageRefRequiresReceiveRule`, `ReceiveStepSuccessCriteriaRule`, `RpcStepRule`, `SubWorkflowInvokeTargetResolvesRule`, `SuccessCriteriaVersionSupportedRule`, `WsdlStepRule` |
-| **Parameters** | `ParameterQuerystringOperationShapeRule` |
+| **Parameters** | `ParameterQuerystringOperationShapeRule`, `ParameterReusableRefResolvesRule` |
 | **Selectors** | `SelectorTypeSupportedRule` |
 | **Sources** | `SelfUriSyntaxRule`, `SourceTypeMatchesRule`, `SourceUniqueNameRule`, `SourceUrlSyntaxRule` |
 | **Specification extensions** | `ExtensionsXPrefixRule` |

@@ -33,6 +33,7 @@ use Alama\Arazzo\Document\Validator\Rules\GraphQlStepRule;
 use Alama\Arazzo\Document\Validator\Rules\InteractionStepRule;
 use Alama\Arazzo\Document\Validator\Rules\MessageRefRequiresReceiveRule;
 use Alama\Arazzo\Document\Validator\Rules\ParameterQuerystringOperationShapeRule;
+use Alama\Arazzo\Document\Validator\Rules\ParameterReusableRefResolvesRule;
 use Alama\Arazzo\Document\Validator\Rules\ReceiveStepSuccessCriteriaRule;
 use Alama\Arazzo\Document\Validator\Rules\RpcStepRule;
 use Alama\Arazzo\Document\Validator\Rules\SelectorTypeSupportedRule;
@@ -152,6 +153,7 @@ final readonly class RuleSet
             new StepTimeoutRequires11Rule(),
             new StepOutputsUniqueRule(),
             new StepParameterDuplicateRule(),
+            new ParameterReusableRefResolvesRule(),
             new StepParameterRequiresInRule(),
             new StepParameterInValidRule(),
             new StepRequestBodyWorkflowRule(),
