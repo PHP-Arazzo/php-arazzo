@@ -10,10 +10,8 @@ use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Spec\SourceDocument;
 use Alama\Arazzo\Document\KnownOperations;
 use Alama\Arazzo\Document\ResolvedOperation;
-use Alama\Arazzo\Document\Validator\Data\ValidationResult;
 use Alama\Arazzo\Sources\Normalizer\OpenApiVersionDetector;
 use Alama\Arazzo\Sources\Resolver\SourceRegistry;
-use Alama\Arazzo\Sources\Validator\PreflightValidator;
 
 /**
  * Entry point for the Sources package – pure source resolution and normalization.
@@ -21,7 +19,7 @@ use Alama\Arazzo\Sources\Validator\PreflightValidator;
  *
  * Operation resolution is deliberately absent: returning a cebe-carrying
  * handle would drag `cebe/php-openapi` back into this package. Callers that
- * need one go through `OpenApiOperationResolverInterface::resolveModel()` for
+ * need one go through `OperationResolverInterface::resolve()` for
  * the vendor-free model, or through the protocol package for the handle.
  */
 final class SourceLoader
@@ -29,7 +27,6 @@ final class SourceLoader
     public function __construct(
         private readonly SourceRegistry $sources,
         private readonly OpenApiVersionDetector $versionDetector,
-        private readonly PreflightValidator $preflight,
         private readonly SourceNormalizerRegistryInterface $normalizers,
     ) {}
 
@@ -45,14 +42,6 @@ final class SourceLoader
     public function detectOpenApiVersion(array $document): string
     {
         return $this->versionDetector->detect($document);
-    }
-
-    /* --------------------------------------------------------------- *
-     *  Optional – source‑level preflight that uses source resolution   *
-     * --------------------------------------------------------------- */
-    public function preflightSource(ArazzoDocument $document): ValidationResult
-    {
-        return $this->preflight->validate($document);
     }
 
     /**

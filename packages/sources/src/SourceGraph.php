@@ -17,7 +17,6 @@ use Alama\Arazzo\Sources\Resolver\Fetchers\HttpFetcher;
 use Alama\Arazzo\Sources\Resolver\Fetchers\LocalFetcher;
 use Alama\Arazzo\Sources\Resolver\SourceNormalizerRegistry;
 use Alama\Arazzo\Sources\Resolver\SourceRegistry;
-use Alama\Arazzo\Sources\Validator\PreflightValidator;
 use GuzzleHttp\Psr7\HttpFactory;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
@@ -90,10 +89,6 @@ final class SourceGraph
         $loader = new SourceLoader(
             sources: $defaultRegistry,
             versionDetector: new OpenApiVersionDetector(),
-            preflight: new PreflightValidator(
-                $defaultRegistry,
-                $defaultOperations,
-            ),
             normalizers: $normalizerRegistry,
         );
 
@@ -133,7 +128,6 @@ final class SourceGraph
         $loader = new SourceLoader(
             sources: $sources,
             versionDetector: new OpenApiVersionDetector(),
-            preflight: new PreflightValidator($sources, $operations),
             normalizers: $normalizerRegistry,
         );
         $document = DocumentFacade::create();

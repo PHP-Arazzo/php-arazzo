@@ -18,9 +18,3 @@ parameters:
 			count: 1
 			path: src/Normalizer/OpenApiOperationResolver.php
 
-		-
-			message: '#^Method checkStep has too high cyclomatic complexity \(17\)\. Maximum allowed is 10\.$#'
-			identifier: arazzo.custom.cyclomaticComplexity
-			count: 1
-			path: src/Validator/PreflightValidator.php
-
