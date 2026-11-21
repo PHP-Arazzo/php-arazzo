@@ -1,6 +1,6 @@
 # Ecosystem Feed — Digest
 
-> **Generated:** 2026-11-20T15:23:56+00:00 by `php scripts/ecosystem/poll.php` · **Internal · Daily · Repo-local** via `gh`
+> **Generated:** 2026-11-21T14:36:51+00:00 by `php scripts/ecosystem/poll.php` · **Internal · Daily · Repo-local** via `gh`
 > **Sources:** `config/ecosystem/sources.json` + `config/ecosystem/sources.oai.json` · **Watchlist:** `config/ecosystem/watchlist.json`
 > **Legend:** **Act** = worth a decision · **Watch** = context, collapsed · **Noise** = counted only
 
@@ -29,16 +29,14 @@ _No peer releases in this window._
 
 _No scheduled meeting items._
 
-## Watch — 4 collapsed
+## Watch — 2 collapsed
 
 <details>
-<summary>4 topic-matched items — click to expand</summary>
+<summary>2 topic-matched items — click to expand</summary>
 
-- `2026-11-20` [runner: iterate a step over a list (fan-out), as an extension and upstream in the Arazzo spec](https://github.com/usearazzo/arazzo-toolkit/issues/370) — `usearazzo/arazzo-toolkit` · `entity.created` · state → `open` · topics `loop`, `runner` → `plan:phase-e-runner-oms`
-- `2026-11-20` [ABNF $steps does it need to access through outputs?](https://github.com/OAI/Arazzo-Specification/issues/254) — `OAI/Arazzo-Specification` · `entity.created` · state → `open`
-- `2026-11-19` [v3.3: as per the specification, "security: 1.0.0" is the default for "features"](https://github.com/OAI/OpenAPI-Specification/pull/5597) — `OAI/OpenAPI-Specification` · `entity.created` · state → `open`
-- `2026-11-20` [OAI org diff: +1 -0](https://github.com/orgs/OAI/repositories) — `OAI/org` · `entity.created` · entity.created
+- `2026-11-20` [Registry: ...](https://github.com/OAI/OpenAPI-Specification/issues/5599) — `OAI/OpenAPI-Specification` · `entity.created` · state → `closed`
+- `2026-11-21` [OAI org diff: +1 -0](https://github.com/orgs/OAI/repositories) — `OAI/org` · `entity.created` · entity.created
 
 </details>
 
-suppressed: 5 bot PRs
+suppressed: 3 bot PRs
