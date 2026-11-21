@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Document\Validator;
 
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
+use Alama\Arazzo\Document\KnownOperations;
 use Alama\Arazzo\Document\Validator\Data\SymbolTable;
 use Alama\Arazzo\Document\Validator\Data\ValidationResult;
 
@@ -14,20 +15,26 @@ use Alama\Arazzo\Document\Validator\Data\ValidationResult;
 final readonly class Validator
 {
     /**
-     * @param  array<string,array<string,true>>  $resolvedOperations
+     * @param  KnownOperations|array<string,array<string,true>>|null  $resolvedOperations
      */
     public function __construct(
         private readonly RuleSet $rules,
-        private readonly array $resolvedOperations = [],
+        private readonly KnownOperations|array|null $resolvedOperations = null,
     ) {}
 
     /**
-     * @param  array<string,array<string,true>>|null  $resolvedOperations
+     * @param  KnownOperations|array<string,array<string,true>>|null  $resolvedOperations
      */
-    public function validate(ArazzoDocument $doc, ?array $resolvedOperations = null): ValidationResult
+    public function validate(ArazzoDocument $doc, KnownOperations|array|null $resolvedOperations = null): ValidationResult
     {
-        $resolved = $resolvedOperations ?? $this->resolvedOperations;
-        $symbols = SymbolTable::build($doc, $resolved);
+        $raw = $resolvedOperations ?? $this->resolvedOperations;
+        $ops = match (true) {
+            $raw instanceof KnownOperations => $raw,
+            is_array($raw) => new KnownOperations($raw),
+            default => KnownOperations::none(),
+        };
+
+        $symbols = SymbolTable::build($doc, $ops);
         $collector = new ErrorCollector();
 
         foreach ($this->rules->activeRules() as $rule) {

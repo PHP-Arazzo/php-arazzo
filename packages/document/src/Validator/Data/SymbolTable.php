@@ -7,6 +7,7 @@ namespace Alama\Arazzo\Document\Validator\Data;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Parameter;
 use Alama\Arazzo\Contracts\Spec\Workflow;
+use Alama\Arazzo\Document\KnownOperations;
 
 final readonly class SymbolTable
 {
@@ -20,13 +21,14 @@ final readonly class SymbolTable
         public array $workflows,
         public array $sourceDescriptions,
         public array $components,
+        public KnownOperations $knownOperations = new KnownOperations(),
         public array $resolvedOperations = [],
     ) {}
 
     /**
-     * @param  array<string,array<string,true>>  $resolvedOperations
+     * @param  KnownOperations|array<string,array<string,true>>|null  $resolvedOperations
      */
-    public static function build(ArazzoDocument $doc, array $resolvedOperations = []): self
+    public static function build(ArazzoDocument $doc, KnownOperations|array|null $resolvedOperations = null): self
     {
         $sources = [];
         foreach ($doc->sourceDescriptions as $s) {
@@ -45,7 +47,13 @@ final readonly class SymbolTable
             $workflows[$wf->workflowId] = self::buildWorkflow($wf);
         }
 
-        return new self($workflows, $sources, $components, $resolvedOperations);
+        $ops = match (true) {
+            $resolvedOperations instanceof KnownOperations => $resolvedOperations,
+            is_array($resolvedOperations) => new KnownOperations($resolvedOperations),
+            default => KnownOperations::none(),
+        };
+
+        return new self($workflows, $sources, $components, $ops, $ops->toArray());
     }
 
     /**

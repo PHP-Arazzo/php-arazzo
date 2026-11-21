@@ -47,14 +47,13 @@ final class StepOperationIdResolvesRule implements Rule
                     continue;
                 }
 
-                $resolved = $symbols->resolvedOperations[$sourceName] ?? null;
-                if (!is_array($resolved) || $resolved === []) {
+                if (!$symbols->knownOperations->covers($sourceName)) {
                     // No resolved operations available (unreachable/skipped
-                    // source): skip the existence check (R5).
+                    // source per ADR-005): skip the existence check.
                     continue;
                 }
 
-                if (!isset($resolved[$operation])) {
+                if (!$symbols->knownOperations->has($sourceName, $operation)) {
                     $errors->error(
                         $this->code(),
                         "Step '{$s->stepId}' uses unresolved operationId '{$operationId}'.",
