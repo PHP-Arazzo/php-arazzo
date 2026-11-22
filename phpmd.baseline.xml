@@ -46,7 +46,6 @@
   <violation rule="PHPMD\Rule\CyclomaticComplexity" file="packages/evaluation/src/Condition/Lexer.php" method="expressionEnd"/>
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/evaluation/src/CriteriaEvaluator.php"/>
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/evaluation/src/EvaluationEngine.php"/>
-  <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/expression/src/ExpressionDependencyProvider.php"/>
   <violation rule="PHPMD\Rule\Naming\LongVariable" file="packages/expression/src/ExpressionDependencyProvider.php"/>
   <violation rule="PHPMD\Rule\Design\TooManyPublicMethods" file="packages/expression/src/ExpressionEngine.php"/>
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/expression/src/ExpressionEngine.php"/>

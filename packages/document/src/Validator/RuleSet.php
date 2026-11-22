@@ -71,7 +71,6 @@ use Alama\Arazzo\Document\Validator\Rules\WorkflowInputsValidSchemaRule;
 use Alama\Arazzo\Document\Validator\Rules\WorkflowUniqueIdRule;
 use Alama\Arazzo\Document\Validator\Rules\WsdlStepRule;
 use Alama\Arazzo\Expression\Interfaces\ExpressionEngineInterface;
-use Alama\Arazzo\Expression\Interfaces\SelectorPluginRegistryInterface;
 
 /**
  * The default validator rule set: the single place that names every rule and
@@ -102,12 +101,9 @@ final readonly class RuleSet
      */
     public static function default(
         ExpressionEngineInterface $engine,
-        ?SelectorPluginRegistryInterface $selectorRegistry = null,
         array $disabled = [],
         bool $strict = true,
     ): self {
-        $selectorRegistry ??= $engine->selectorPlugins();
-
         return new self([
             new OfficialSchemaRule($engine),
             new ActionDuplicateRule(),
@@ -134,7 +130,7 @@ final readonly class RuleSet
             new ExpressionUnresolvedWorkflowRefRule($engine),
             new ExtensionsXPrefixRule(),
             new ParameterQuerystringOperationShapeRule(),
-            new SelectorTypeSupportedRule($selectorRegistry->supportedVersions(ExpressionType::JsonPath)),
+            new SelectorTypeSupportedRule($engine->supportedSelectorVersions(ExpressionType::JsonPath)),
             new SelfUriSyntaxRule(),
             new SourceTypeMatchesRule(),
             new SourceUniqueNameRule(),
@@ -167,7 +163,7 @@ final readonly class RuleSet
             new MessageRefRequiresReceiveRule($engine),
             new StepUniqueIdRule(),
             new SubWorkflowInvokeTargetResolvesRule(),
-            new SuccessCriteriaVersionSupportedRule($selectorRegistry->supportedVersions(ExpressionType::XPath)),
+            new SuccessCriteriaVersionSupportedRule($engine->supportedSelectorVersions(ExpressionType::XPath)),
             new WorkflowAtLeastOneRule(),
             new WorkflowDependsOnExistsRule(),
             new WorkflowDependsOnNoCycleRule(),

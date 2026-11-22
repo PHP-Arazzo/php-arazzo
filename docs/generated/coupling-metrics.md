@@ -14,14 +14,15 @@ targets. Regenerated before every commit.
 | `cli:Console` | 11 | 895 | 0 | 18 | 1.00 |  |
 | `cli:Generator` | 2 | 139 | 0 | 1 | 1.00 |  |
 | `cli:Renderer` | 1 | 254 | 1 | 1 | 0.50 |  |
+| `contracts:Attributes` | 1 | 17 | 2 | 1 | 0.33 |  |
 | `contracts:Dependency` | 3 | 333 | 4 | 2 | 0.33 |  |
 | `contracts:Exceptions` | 1 | 30 | 7 | 0 | 0.00 |  |
 | `contracts:Interfaces` | 19 | 348 | 27 | 3 | 0.10 |  |
-| `contracts:Spec` | 49 | 1158 | 42 | 1 | 0.02 |  |
+| `contracts:Spec` | 49 | 1158 | 43 | 1 | 0.02 |  |
 | `contracts:State` | 3 | 974 | 15 | 1 | 0.06 |  |
 | `contracts:Support` | 5 | 180 | 11 | 0 | 0.00 |  |
 | `document:Parser` | 24 | 2217 | 4 | 2 | 0.33 |  |
-| `document:Validator` | 82 | 5600 | 4 | 8 | 0.67 |  |
+| `document:Validator` | 82 | 5596 | 4 | 8 | 0.67 |  |
 | `(document root)` | 6 | 299 | 12 | 4 | 0.25 |  |
 | `engine:Data` | 2 | 72 | 1 | 3 | 0.75 |  |
 | `engine:Enum` | 1 | 16 | 1 | 0 | 0.00 |  |
@@ -36,19 +37,19 @@ targets. Regenerated before every commit.
 | `evaluation:Interfaces` | 2 | 42 | 2 | 3 | 0.60 |  |
 | `evaluation:Plugins` | 2 | 118 | 1 | 3 | 0.75 |  |
 | `evaluation:Registries` | 2 | 119 | 1 | 4 | 0.80 |  |
-| `(evaluation root)` | 6 | 843 | 10 | 13 | 0.57 |  |
+| `(evaluation root)` | 6 | 820 | 10 | 13 | 0.57 |  |
 | `expression:Ast` | 15 | 340 | 4 | 2 | 0.33 |  |
-| `expression:Data` | 6 | 195 | 12 | 4 | 0.25 |  |
+| `expression:Data` | 6 | 192 | 12 | 4 | 0.25 |  |
 | `expression:Enum` | 2 | 45 | 5 | 0 | 0.00 |  |
 | `expression:Exceptions` | 2 | 62 | 9 | 1 | 0.10 |  |
-| `expression:Interfaces` | 5 | 206 | 12 | 5 | 0.29 |  |
+| `expression:Interfaces` | 4 | 204 | 12 | 5 | 0.29 |  |
 | `expression:Internal` | 3 | 430 | 1 | 6 | 0.86 |  |
 | `expression:JsonPath` | 7 | 1371 | 1 | 2 | 0.67 |  |
-| `expression:Plugins` | 3 | 125 | 1 | 4 | 0.80 |  |
-| `expression:Registries` | 1 | 72 | 2 | 2 | 0.50 |  |
+| `expression:Plugins` | 3 | 131 | 1 | 5 | 0.83 |  |
+| `expression:Registries` | 1 | 130 | 2 | 6 | 0.75 |  |
 | `expression:Support` | 1 | 58 | 1 | 1 | 0.50 |  |
-| `expression:Xpath` | 3 | 170 | 2 | 2 | 0.50 |  |
-| `(expression root)` | 9 | 1317 | 5 | 12 | 0.71 |  |
+| `expression:Xpath` | 3 | 170 | 3 | 2 | 0.40 |  |
+| `(expression root)` | 9 | 1326 | 6 | 11 | 0.65 |  |
 | `protocol-http:Execution` | 4 | 532 | 5 | 9 | 0.64 |  |
 | `protocol-http:Protocol` | 2 | 327 | 1 | 9 | 0.90 |  |
 | `protocol-http:Registrar` | 1 | 140 | 0 | 6 | 1.00 |  |
@@ -82,13 +83,13 @@ Total cross-module edges: **1181**
 |---|---:|
 | `document:Validator` → `contracts:Spec` | 148 |
 | `document:Parser` → `contracts:Spec` | 39 |
-| `(evaluation root)` → `contracts:Spec` | 28 |
+| `(evaluation root)` → `contracts:Spec` | 26 |
 | `runner:Sync` → `contracts:Spec` | 25 |
 | `runner:Async` → `contracts:Spec` | 23 |
 | `contracts:Interfaces` → `contracts:Spec` | 22 |
 | `(expression root)` → `expression:Ast` | 20 |
-| `document:Validator` → `expression:Interfaces` | 15 |
 | `(runner root)` → `contracts:Interfaces` | 14 |
+| `document:Validator` → `expression:Interfaces` | 14 |
 | `runner:Async` → `runner:Events` | 14 |
 | `engine:Execution` → `contracts:Spec` | 13 |
 | `sources:Normalizer` → `contracts:Spec` | 13 |

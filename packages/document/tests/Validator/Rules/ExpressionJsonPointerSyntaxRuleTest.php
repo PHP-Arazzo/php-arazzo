@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Tests\Validation\Rules;
 
+use Alama\Arazzo\Contracts\Spec\Enum\ExpressionType;
 use Alama\Arazzo\Contracts\Spec\Enum\SpecVersion;
 use Alama\Arazzo\Contracts\Spec\Expression;
 use Alama\Arazzo\Contracts\Spec\Interfaces\WorkflowContextInterface;
@@ -19,7 +20,6 @@ use Alama\Arazzo\Expression\Exceptions\ExpressionSyntaxException;
 use Alama\Arazzo\Expression\ExpressionEngine;
 use Alama\Arazzo\Expression\Interfaces\EvaluationInputInterface;
 use Alama\Arazzo\Expression\Interfaces\ExpressionEngineInterface;
-use Alama\Arazzo\Expression\Interfaces\SelectorPluginRegistryInterface;
 use Alama\Arazzo\Tests\Support\Fx;
 
 it('flags bad pointer segment in request part; accepts valid response pointer', function (): void {
@@ -101,15 +101,19 @@ it('skips step output references (non request/response part)', function (): void
             return null;
         }
 
-        public function selectorPlugins(): SelectorPluginRegistryInterface
+        public function evaluateRawSelector(ExpressionType $type, string $expression, mixed $data, ?string $version = null, ?array $namespaces = null): mixed
         {
-            return new class() implements SelectorPluginRegistryInterface
-            {
-                public function supportedVersions(int $expressionType): array
-                {
-                    return [];
-                }
-            };
+            return null;
+        }
+
+        public function xpath(string $expression, mixed $data, ?string $version = null, ?array $namespaces = null): mixed
+        {
+            return null;
+        }
+
+        public function supportedSelectorVersions(ExpressionType $type): array
+        {
+            return [];
         }
     };
     $ec = new ErrorCollector();

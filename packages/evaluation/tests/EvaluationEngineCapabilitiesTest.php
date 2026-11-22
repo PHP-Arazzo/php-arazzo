@@ -95,14 +95,12 @@ it('evaluates selectors rooted at the current step', function (): void {
     expect($engine->evaluateSelector($selector, $context, 's1'))->toBe(1);
 });
 
-it('reports xpath supported versions through the selector plugin registry', function (): void {
+it('reports xpath supported versions and evaluates xpath directly through expression engine', function (): void {
     $expressionEngine = new ExpressionEngine();
-    $registry = $expressionEngine->selectorPlugins();
-    $plugin = $registry->get(ExpressionType::XPath);
 
-    expect($registry->supportedVersions(ExpressionType::XPath))->toBe(['xpath-10', 'xpath-31']);
-    expect($plugin->evaluate('<root><user><name>Ada</name></user></root>', '/root/user/name', 'xpath-10'))->toBe('Ada');
-    expect($plugin->evaluate('<root><user><name>Ada</name></user></root>', '/root/user/name', 'xpath-31'))->toBe('Ada');
+    expect($expressionEngine->supportedSelectorVersions(ExpressionType::XPath))->toBe(['xpath-10', 'xpath-31']);
+    expect($expressionEngine->xpath('/root/user/name', '<root><user><name>Ada</name></user></root>', 'xpath-10'))->toBe('Ada');
+    expect($expressionEngine->xpath('/root/user/name', '<root><user><name>Ada</name></user></root>', 'xpath-31'))->toBe('Ada');
 });
 
 it('interpolates expression references into strings', function (): void {

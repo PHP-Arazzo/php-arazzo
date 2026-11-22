@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Evaluation;
 
 use Alama\Arazzo\Contracts\Spec\Enum\CriterionType;
-use Alama\Arazzo\Contracts\Spec\Enum\ExpressionType;
 use Alama\Arazzo\Contracts\Spec\SuccessCriterion;
 use Alama\Arazzo\Evaluation\Condition\ConditionEvaluator;
 use Alama\Arazzo\Expression\Data\EvaluationContext;
-use Alama\Arazzo\Expression\Interfaces\SelectorPluginRegistryInterface;
+use Alama\Arazzo\Expression\Interfaces\ExpressionEngineInterface;
 
 /**
  * Evaluates the built-in criterion types against a root the caller has already
@@ -28,7 +27,7 @@ use Alama\Arazzo\Expression\Interfaces\SelectorPluginRegistryInterface;
 final readonly class BuiltInCriterionEvaluator
 {
     public function __construct(
-        private SelectorPluginRegistryInterface $selectorRegistry,
+        private ExpressionEngineInterface $expression,
         private ConditionEvaluator $conditionEvaluator,
     ) {}
 
@@ -64,25 +63,17 @@ final readonly class BuiltInCriterionEvaluator
 
     private function evaluateJsonPath(SuccessCriterion $criterion, mixed $root): bool
     {
-        $plugin = $this->selectorRegistry->get(ExpressionType::JsonPath);
-
-        if ($plugin === null) {
-            throw new \RuntimeException('No JSONPath selector plugin registered.');
+        if (!is_array($root) && !is_object($root)) {
+            return false;
         }
 
-        $result = $plugin->evaluate($root, $criterion->condition, null);
+        $result = $this->expression->jsonPath($criterion->condition, $root);
 
         return !empty($result);
     }
 
     private function evaluateXPath(SuccessCriterion $criterion, mixed $root): bool
     {
-        $plugin = $this->selectorRegistry->get(ExpressionType::XPath);
-
-        if ($plugin === null) {
-            throw new \RuntimeException('No XPath selector plugin registered.');
-        }
-
         // The Arazzo default is xpath-31, which this engine implements via
         // Xpath31Evaluator (backed by DOMXPath for the XPath 1.0 subset).
         // A versionless criterion therefore runs as xpath-10; explicit
@@ -90,7 +81,7 @@ final readonly class BuiltInCriterionEvaluator
         // at validation time rather than failing here.
         $version = $criterion->version ?? 'xpath-10';
 
-        return ConditionEvaluator::truthy($plugin->evaluate($root, $criterion->condition, $version));
+        return ConditionEvaluator::truthy($this->expression->xpath($criterion->condition, $root, $version));
     }
 
     private static function stringify(mixed $value): string

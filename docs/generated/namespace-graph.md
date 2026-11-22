@@ -12,6 +12,7 @@ flowchart LR
     cli_Console["Alama\Arazzo\Cli\Console\Cli"]:::coreNode
     cli_Generator["Alama\Arazzo\Cli\Generator"]:::coreNode
     cli_Renderer["Alama\Arazzo\Cli\Renderer"]:::coreNode
+    contracts_Attributes["Alama\Arazzo\Contracts\Attributes"]:::coreNode
     contracts_Dependency["Alama\Arazzo\Contracts\Dependency"]:::coreNode
     contracts_Exceptions["Alama\Arazzo\Contracts\Exceptions"]:::coreNode
     contracts_Interfaces["Alama\Arazzo\Contracts\Interfaces"]:::coreNode
@@ -71,6 +72,7 @@ flowchart LR
     sources_Normalizer["Alama\Arazzo\Sources\Normalizer"]:::coreNode
     sources_Resolver["Alama\Arazzo\Sources\Resolver\Exceptions"]:::coreNode
     sources__["(sources package root)"]:::coreNode
+    contracts_Attributes --> contracts_Spec
     contracts_Dependency --> contracts_Spec
     contracts_Dependency --> contracts_State
     contracts_Interfaces --> contracts_Spec
@@ -98,12 +100,17 @@ flowchart LR
     expression_Internal --> expression_Interfaces
     expression_JsonPath --> expression_Data
     expression_JsonPath --> expression_Exceptions
+    expression_Plugins --> contracts_Attributes
     expression_Plugins --> contracts_Spec
     expression_Plugins --> expression_Interfaces
     expression_Plugins --> expression_Xpath
     expression_Plugins --> expression__
+    expression_Registries --> contracts_Attributes
     expression_Registries --> contracts_Spec
     expression_Registries --> expression_Interfaces
+    expression_Registries --> expression__
+    expression_Registries --> expression_Plugins
+    expression_Registries --> expression_Xpath
     expression_Support --> expression_Ast
     expression_Xpath --> contracts_Spec
     expression_Xpath --> expression_Exceptions
@@ -111,9 +118,8 @@ flowchart LR
     expression__ --> expression_Data
     expression__ --> expression_Exceptions
     expression__ --> expression_Interfaces
-    expression__ --> expression_Internal
-    expression__ --> expression_Plugins
     expression__ --> expression_Registries
+    expression__ --> expression_Internal
     expression__ --> expression_Xpath
     expression__ --> expression_Ast
     expression__ --> expression_Enum

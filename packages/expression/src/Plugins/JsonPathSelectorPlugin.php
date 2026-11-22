@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Expression\Plugins;
 
+use Alama\Arazzo\Contracts\Attributes\AsSelectorPlugin;
 use Alama\Arazzo\Contracts\Spec\Enum\ExpressionType;
 use Alama\Arazzo\Expression\Interfaces\SelectorPluginInterface;
 use Alama\Arazzo\Expression\JsonPathEvaluator;
@@ -13,6 +14,7 @@ use Alama\Arazzo\Expression\JsonPathEvaluator;
  *
  * @internal stays out of the advertised contract; not part of the public API surface.
  */
+#[AsSelectorPlugin(ExpressionType::JsonPath, 0)]
 final class JsonPathSelectorPlugin implements SelectorPluginInterface
 {
     public function __construct(private JsonPathEvaluator $evaluator = new JsonPathEvaluator()) {}

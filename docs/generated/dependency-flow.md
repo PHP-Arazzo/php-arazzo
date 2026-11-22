@@ -34,6 +34,7 @@ cli-Console,sources-Resolver,1
 cli-Console,sources-root,2
 cli-Generator,contracts-Interfaces,2
 cli-Renderer,contracts-Spec,8
+contracts-Attributes,contracts-Spec,1
 contracts-Dependency,contracts-Spec,6
 contracts-Dependency,contracts-State,1
 contracts-Interfaces,contracts-Exceptions,1
@@ -48,7 +49,7 @@ document-Validator,contracts-Support,1
 document-Validator,expression-Data,2
 document-Validator,expression-Enum,11
 document-Validator,expression-Exceptions,2
-document-Validator,expression-Interfaces,15
+document-Validator,expression-Interfaces,14
 document-root,contracts-Spec,9
 document-root,document-Parser,5
 document-root,document-Validator,4
@@ -89,7 +90,7 @@ evaluation-Registries,contracts-Spec,3
 evaluation-Registries,evaluation-Plugins,2
 evaluation-Registries,expression-Interfaces,2
 evaluation-root,contracts-Interfaces,1
-evaluation-root,contracts-Spec,28
+evaluation-root,contracts-Spec,26
 evaluation-root,contracts-State,3
 evaluation-root,contracts-Support,2
 evaluation-root,evaluation-Condition,3
@@ -100,7 +101,7 @@ evaluation-root,evaluation-Interfaces,1
 evaluation-root,evaluation-Registries,3
 evaluation-root,expression-Data,4
 evaluation-root,expression-Exceptions,1
-evaluation-root,expression-Interfaces,10
+evaluation-root,expression-Interfaces,7
 expression-Ast,expression-Data,9
 expression-Ast,expression-Enum,9
 expression-Data,contracts-Spec,2
@@ -110,7 +111,7 @@ expression-Exceptions,contracts-Support,2
 expression-Interfaces,contracts-Spec,8
 expression-Interfaces,expression-Ast,1
 expression-Interfaces,expression-Data,3
-expression-Interfaces,expression-Exceptions,1
+expression-Interfaces,expression-Exceptions,2
 expression-Internal,contracts-Spec,1
 expression-Internal,expression-Ast,10
 expression-Internal,expression-Data,1
@@ -118,11 +119,15 @@ expression-Internal,expression-Exceptions,1
 expression-Internal,expression-Interfaces,1
 expression-JsonPath,expression-Data,3
 expression-JsonPath,expression-Exceptions,1
+expression-Plugins,contracts-Attributes,3
 expression-Plugins,contracts-Spec,3
 expression-Plugins,expression-Interfaces,3
 expression-Plugins,expression-Xpath,2
+expression-Registries,contracts-Attributes,1
 expression-Registries,contracts-Spec,1
-expression-Registries,expression-Interfaces,2
+expression-Registries,expression-Interfaces,1
+expression-Registries,expression-Plugins,3
+expression-Registries,expression-Xpath,1
 expression-Support,expression-Ast,1
 expression-Xpath,contracts-Spec,1
 expression-Xpath,expression-Exceptions,2
@@ -130,14 +135,13 @@ expression-root,contracts-Spec,9
 expression-root,expression-Ast,20
 expression-root,expression-Data,9
 expression-root,expression-Enum,2
-expression-root,expression-Exceptions,5
-expression-root,expression-Interfaces,9
+expression-root,expression-Exceptions,6
+expression-root,expression-Interfaces,6
 expression-root,expression-Internal,3
 expression-root,expression-JsonPath,1
-expression-root,expression-Plugins,3
-expression-root,expression-Registries,1
+expression-root,expression-Registries,3
 expression-root,expression-Support,1
-expression-root,expression-Xpath,3
+expression-root,expression-Xpath,2
 protocol-http-Execution,contracts-Exceptions,1
 protocol-http-Execution,contracts-Interfaces,2
 protocol-http-Execution,contracts-Spec,9
@@ -303,6 +307,7 @@ These references exist in the code but are not drawn: drawing them would close a
 | `expression-Interfaces` | `expression-Registries` | 1 |
 | `expression-Internal` | `expression-root` | 2 |
 | `expression-Plugins` | `expression-root` | 2 |
+| `expression-Registries` | `expression-root` | 1 |
 | `runner-Async` | `runner-root` | 4 |
 | `runner-Execution` | `runner-Sync` | 1 |
 | `runner-Sync` | `runner-root` | 2 |

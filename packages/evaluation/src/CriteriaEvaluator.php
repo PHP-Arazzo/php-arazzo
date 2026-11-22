@@ -23,7 +23,6 @@ use Alama\Arazzo\Evaluation\Interfaces\CriteriaEvaluatorInterface;
 use Alama\Arazzo\Evaluation\Registries\CriterionEvaluatorRegistry;
 use Alama\Arazzo\Expression\Data\EvaluationContext;
 use Alama\Arazzo\Expression\Interfaces\ExpressionEngineInterface;
-use Alama\Arazzo\Expression\Interfaces\SelectorPluginRegistryInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -55,13 +54,12 @@ class CriteriaEvaluator implements CriteriaEvaluatorInterface
         private ExpressionEngineInterface $expression,
         ?ConditionEvaluator $conditionEvaluator = null,
         ?CriterionEvaluatorRegistry $criterionRegistry = null,
-        ?SelectorPluginRegistryInterface $selectorRegistry = null,
         ?EventDispatcherInterface $eventDispatcher = null,
     ) {
         $this->conditionEvaluator = $conditionEvaluator ?? new ConditionEvaluator($expression);
         $this->criterionRegistry = $criterionRegistry;
         $this->builtIn = new BuiltInCriterionEvaluator(
-            $selectorRegistry ?? $this->expression->selectorPlugins(),
+            $this->expression,
             $this->conditionEvaluator,
         );
         $this->eventDispatcher = $eventDispatcher ?? new NullEventDispatcher();

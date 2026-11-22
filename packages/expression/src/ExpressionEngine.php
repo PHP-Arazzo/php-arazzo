@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Expression;
 
+use Alama\Arazzo\Contracts\Spec\Enum\ExpressionType;
 use Alama\Arazzo\Contracts\Spec\Enum\SpecVersion;
 use Alama\Arazzo\Contracts\Spec\Expression;
 use Alama\Arazzo\Contracts\Spec\Interfaces\WorkflowContextInterface;
@@ -12,9 +13,10 @@ use Alama\Arazzo\Expression\Data\EmbeddedSegment;
 use Alama\Arazzo\Expression\Data\ExpressionReference;
 use Alama\Arazzo\Expression\Data\InterpolationOptions;
 use Alama\Arazzo\Expression\Exceptions\ExpressionSyntaxException;
+use Alama\Arazzo\Expression\Exceptions\SelectorEvaluationException;
 use Alama\Arazzo\Expression\Interfaces\EvaluationInputInterface;
 use Alama\Arazzo\Expression\Interfaces\ExpressionEngineInterface;
-use Alama\Arazzo\Expression\Interfaces\SelectorPluginRegistryInterface;
+use Alama\Arazzo\Expression\Registries\SelectorPluginRegistry;
 
 /**
  * Concrete expression facade: static parsing and reference projection, plus
@@ -30,10 +32,14 @@ final readonly class ExpressionEngine implements ExpressionEngineInterface
 {
     private ExpressionDependencyProvider $provider;
 
-    public function __construct(
-        private readonly ?SelectorPluginRegistryInterface $selectorPlugins = null,
-    ) {
-        $this->provider = new ExpressionDependencyProvider($this->selectorPlugins);
+    public function __construct()
+    {
+        $this->provider = new ExpressionDependencyProvider();
+    }
+
+    public static function create(): self
+    {
+        return new self();
     }
 
     public function parseExpression(string $raw): ?ExpressionSyntaxException
@@ -98,9 +104,38 @@ final readonly class ExpressionEngine implements ExpressionEngineInterface
         return JsonPointer::resolve($data, $pointer);
     }
 
-    public function selectorPlugins(): SelectorPluginRegistryInterface
+    public function evaluateRawSelector(
+        ExpressionType $type,
+        string $expression,
+        mixed $data,
+        ?string $version = null,
+        ?array $namespaces = null,
+    ): mixed {
+        $plugin = SelectorPluginRegistry::create()->get($type);
+
+        if ($plugin === null) {
+            throw new SelectorEvaluationException(
+                "No selector plugin registered for type '{$type->value}'.",
+                '',
+                'selector.no_plugin',
+            );
+        }
+
+        return $plugin->evaluate($data, $expression, $version, $namespaces);
+    }
+
+    public function xpath(
+        string $expression,
+        mixed $data,
+        ?string $version = null,
+        ?array $namespaces = null,
+    ): mixed {
+        return $this->evaluateRawSelector(ExpressionType::XPath, $expression, $data, $version, $namespaces);
+    }
+
+    public function supportedSelectorVersions(ExpressionType $type): array
     {
-        return $this->selectorPlugins ?? $this->provider->getSelectorPluginRegistry();
+        return SelectorPluginRegistry::create()->supportedVersions($type);
     }
 
     private function getInterpolator(): Interpolator

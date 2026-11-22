@@ -100,6 +100,7 @@ Grouped cross-package uses of concrete internals (AST nodes, evaluators, resolve
 | `document` | `ImplicitDependencies` | `contracts` | 1 | `StepDependsOnNoCycleRule` |
 | `evaluation` | `EvaluationContext` | `expression` | 5 | `ConditionEvaluator` |
 | `evaluation` | `Parser` | `expression` | 1 | `AccessorParser` |
+| `expression` | `AsSelectorPlugin` | `contracts` | 4 | `XpathSelectorPlugin` |
 | `protocol-http` | `EvaluationContext` | `expression` | 2 | `StepOutputExtractor` |
 | `protocol-http` | `IdempotencyKeyInjector` | `engine` | 2 | `HttpStepExecutor` |
 | `protocol-http` | `OpenApi30Normalizer` | `sources` | 1 | `ProtocolHttpRegistrar` |

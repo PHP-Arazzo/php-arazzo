@@ -45,7 +45,7 @@ Evans' first question: does the code speak one language?
 
 ### registry vs store vs repository
 
-- **Registry**: `CriterionEvaluatorRegistry`, `DecoderRegistry`, `DefinitionRegistryInterface`, `ExecutionRegistryInterface` + 13 more (17 types)
+- **Registry**: `CriterionEvaluatorRegistry`, `DecoderRegistry`, `DefinitionRegistryInterface`, `ExecutionRegistryInterface` + 12 more (16 types)
 - **Repository**: `StoredWorkflowStateRepository`, `WorkflowStateRepositoryInterface` (2 types)
 - **Store**: `FileStateStore`, `InMemoryStateStore`, `StateStoreInterface`, `StoredWorkflowStateRepository` (4 types)
 

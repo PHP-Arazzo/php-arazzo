@@ -23,6 +23,7 @@ quadrantChart
     cli/Console: [1, 0.818]
     cli/Generator: [1, 1]
     cli/Renderer: [0.5, 1]
+    contracts/Attributes: [0.333, 1]
     contracts/Dependency: [0.333, 1]
     contracts/Exceptions: [0, 1]
     contracts/Interfaces: [0.1, 1]
@@ -50,10 +51,10 @@ quadrantChart
     expression/Interfaces: [0.294, 1]
     expression/Internal: [0.857, 0.333]
     expression/JsonPath: [0.667, 1]
-    expression/Plugins: [0.8, 0.333]
-    expression/Registries: [0.5, 1]
+    expression/Plugins: [0.833, 0.333]
+    expression/Registries: [0.75, 1]
     expression/Support: [0.5, 1]
-    expression/Xpath: [0.5, 0.667]
+    expression/Xpath: [0.4, 0.667]
     protocol-http/Execution: [0.643, 1]
     protocol-http/Protocol: [0.9, 1]
     protocol-http/Registrar: [1, 1]
@@ -83,10 +84,11 @@ quadrantChart
 | `cli/Console` | 1.00 | 9 | 11 | 82% |
 | `cli/Generator` | 1.00 | 2 | 2 | 100% |
 | `cli/Renderer` | 0.50 | 7 | 1 | 100% |
+| `contracts/Attributes` | 0.33 | 2 | 1 | 100% |
 | `contracts/Dependency` | 0.33 | 6 | 3 | 100% |
 | `contracts/Exceptions` | 0.00 | 5 | 1 | 100% |
 | `contracts/Interfaces` | 0.10 | 43 | 19 | 100% |
-| `contracts/Spec` | 0.02 | 283 | 49 | 100% |
+| `contracts/Spec` | 0.02 | 285 | 49 | 100% |
 | `contracts/State` | 0.06 | 83 | 3 | 100% |
 | `contracts/Support` | 0.00 | 12 | 5 | 100% |
 | `document/Parser` | 0.33 | 61 | 24 | 100% |
@@ -107,13 +109,13 @@ quadrantChart
 | `expression/Data` | 0.25 | 28 | 6 | 100% |
 | `expression/Enum` | 0.00 | 8 | 2 | 100% |
 | `expression/Exceptions` | 0.10 | 17 | 2 | 100% |
-| `expression/Interfaces` | 0.29 | 24 | 5 | 100% |
+| `expression/Interfaces` | 0.29 | 25 | 4 | 100% |
 | `expression/Internal` | 0.86 | 1 | 3 | 33% |
 | `expression/JsonPath` | 0.67 | 62 | 7 | 100% |
-| `expression/Plugins` | 0.80 | 1 | 3 | 33% |
-| `expression/Registries` | 0.50 | 1 | 1 | 100% |
+| `expression/Plugins` | 0.83 | 1 | 3 | 33% |
+| `expression/Registries` | 0.75 | 2 | 1 | 100% |
 | `expression/Support` | 0.50 | 4 | 1 | 100% |
-| `expression/Xpath` | 0.50 | 2 | 3 | 67% |
+| `expression/Xpath` | 0.40 | 2 | 3 | 67% |
 | `protocol-http/Execution` | 0.64 | 28 | 4 | 100% |
 | `protocol-http/Protocol` | 0.90 | 10 | 2 | 100% |
 | `protocol-http/Registrar` | 1.00 | 1 | 1 | 100% |

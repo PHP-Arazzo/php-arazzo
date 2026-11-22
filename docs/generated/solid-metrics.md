@@ -26,6 +26,7 @@ quadrantChart
     cli/Console: [1, 0]
     cli/Generator: [1, 0]
     cli/Renderer: [0.5, 0]
+    contracts/Attributes: [0.333, 0]
     contracts/Dependency: [0.333, 0]
     contracts/Exceptions: [0, 0]
     contracts/Interfaces: [0.1, 1]
@@ -56,11 +57,11 @@ quadrantChart
     expression/Interfaces: [0.294, 1]
     expression/Internal: [0.857, 0]
     expression/JsonPath: [0.667, 0.143]
-    expression/Plugins: [0.8, 0]
-    expression/Registries: [0.5, 0]
+    expression/Plugins: [0.833, 0]
+    expression/Registries: [0.75, 0]
     expression/Support: [0.5, 0]
-    expression/Xpath: [0.5, 0.333]
-    expression/_: [0.706, 0]
+    expression/Xpath: [0.4, 0.333]
+    expression/_: [0.647, 0]
     protocol-http/Execution: [0.643, 0.25]
     protocol-http/Protocol: [0.9, 0]
     protocol-http/Registrar: [1, 0]
@@ -112,7 +113,7 @@ Contracts declaring more than 7 methods:
 
 | Interface | Methods |
 |---|---:|
-| `ExpressionEngineInterface` <small>expression</small> | 12 |
+| `ExpressionEngineInterface` <small>expression</small> | 14 |
 | `EvaluationEngineInterface` <small>evaluation</small> | 8 |
 
 ## Concrete hubs (DIP)

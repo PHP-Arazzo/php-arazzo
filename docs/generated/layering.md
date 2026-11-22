@@ -19,6 +19,7 @@ package boundaries directly, not just a flat list of namespaces.
 ```mermaid
 flowchart TB
     subgraph PKG_M_contracts["contracts"]
+        M_contracts_Attributes["contracts:Attributes"]:::node
         M_contracts_Dependency["contracts:Dependency"]:::node
         M_contracts_Exceptions["contracts:Exceptions"]:::node
         M_contracts_Interfaces["contracts:Interfaces"]:::node
@@ -122,6 +123,7 @@ flowchart TB
     M_cli_Console --> M_sources__
     M_cli_Generator --> M_contracts_Interfaces
     M_cli_Renderer --> M_contracts_Spec
+    M_contracts_Attributes --> M_contracts_Spec
     M_contracts_Dependency --> M_contracts_Spec
     M_contracts_Dependency --> M_contracts_State
     M_contracts_Interfaces --> M_contracts_Exceptions
@@ -211,12 +213,17 @@ flowchart TB
     M_expression_Internal --> M_expression__
     M_expression_JsonPath --> M_expression_Data
     M_expression_JsonPath --> M_expression_Exceptions
+    M_expression_Plugins --> M_contracts_Attributes
     M_expression_Plugins --> M_contracts_Spec
     M_expression_Plugins --> M_expression_Interfaces
     M_expression_Plugins --> M_expression_Xpath
     M_expression_Plugins --> M_expression__
+    M_expression_Registries --> M_contracts_Attributes
     M_expression_Registries --> M_contracts_Spec
     M_expression_Registries --> M_expression_Interfaces
+    M_expression_Registries --> M_expression_Plugins
+    M_expression_Registries --> M_expression_Xpath
+    M_expression_Registries --> M_expression__
     M_expression_Support --> M_expression_Ast
     M_expression_Xpath --> M_contracts_Spec
     M_expression_Xpath --> M_expression_Exceptions
@@ -228,7 +235,6 @@ flowchart TB
     M_expression__ --> M_expression_Interfaces
     M_expression__ --> M_expression_Internal
     M_expression__ --> M_expression_JsonPath
-    M_expression__ --> M_expression_Plugins
     M_expression__ --> M_expression_Registries
     M_expression__ --> M_expression_Support
     M_expression__ --> M_expression_Xpath
@@ -413,13 +419,13 @@ flowchart TB
 | `cli` | `runner` | 9 |
 | `cli` | `sources` | 3 |
 | `document` | `contracts` | 200 |
-| `document` | `expression` | 31 |
+| `document` | `expression` | 30 |
 | `engine` | `contracts` | 47 |
 | `engine` | `document` | 1 |
 | `engine` | `evaluation` | 1 |
-| `evaluation` | `contracts` | 56 |
-| `evaluation` | `expression` | 23 |
-| `expression` | `contracts` | 27 |
+| `evaluation` | `contracts` | 54 |
+| `evaluation` | `expression` | 20 |
+| `expression` | `contracts` | 31 |
 | `protocol-http` | `contracts` | 37 |
 | `protocol-http` | `engine` | 9 |
 | `protocol-http` | `evaluation` | 4 |

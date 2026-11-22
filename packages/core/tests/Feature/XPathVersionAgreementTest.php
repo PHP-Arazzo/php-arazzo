@@ -25,9 +25,8 @@ use Alama\Arazzo\Expression\ExpressionEngine;
 
 const XPATH_VERSION_RULE = 'step.success_criteria_version_supported';
 
-$engine = new ExpressionEngine();
-$registry = $engine->selectorPlugins();
-$supportedVersions = $registry->supportedVersions(ExpressionType::XPath);
+$engine = ExpressionEngine::create();
+$supportedVersions = $engine->supportedSelectorVersions(ExpressionType::XPath);
 
 /**
  * @return array{0: ArazzoDocument, 1: Step}

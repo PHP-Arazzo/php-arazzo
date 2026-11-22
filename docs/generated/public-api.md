@@ -265,8 +265,9 @@ this file on a commit is a public API change — review it deliberately.
 ### `Alama\Arazzo\Expression`
 
 #### `ExpressionEngine` class
-- `public function __construct(private readonly ?SelectorPluginRegistryInterface $selectorPlugins = null)`
+- `public function __construct()`
 - `public function evaluate(Expression $expression, EvaluationInputInterface $context): mixed`
+- `public function evaluateRawSelector(ExpressionType $type, string $expression, mixed $data, ?string $version = null, ?array $namespaces = null, ): mixed`
 - `public function evaluateSelector(Selector $selector, WorkflowContextInterface $context, string $stepId): mixed`
 - `public function expressionReferences(string $raw): ?ExpressionReference`
 - `public function extract(string $template): array`
@@ -276,8 +277,10 @@ this file on a commit is a public API change — review it deliberately.
 - `public function jsonPointer(array $data, ?string $pointer): mixed`
 - `public function parseEmbedded(string $raw, SpecVersion $version = SpecVersion::V1_0): array`
 - `public function parseExpression(string $raw): ?ExpressionSyntaxException`
-- `public function selectorPlugins(): SelectorPluginRegistryInterface`
+- `public function supportedSelectorVersions(ExpressionType $type): array`
 - `public function test(string $raw): bool`
+- `public function xpath(string $expression, mixed $data, ?string $version = null, ?array $namespaces = null, ): mixed`
+- `public static function create(): self`
 
 #### `JsonPathEvaluator` class
 - `public function __construct(private Rfc9535Engine $engine = new Rfc9535Engine())`
@@ -295,6 +298,10 @@ this file on a commit is a public API change — review it deliberately.
 - `public function __construct(public WorkflowContextInterface $workflowContext, public ?string $currentStepId = null, public ?ArazzoDocument $document = null)`
 - `public function getCurrentStepId(): ?string`
 - `public function getDocument(): ?ArazzoDocument`
+
+#### `InterpolationOptions` class
+- `public function __construct(?callable $stringify = null)`
+- `public function getStringify(): ?callable`
 
 ### `Alama\Arazzo\Expression\Enum`
 
@@ -320,6 +327,7 @@ this file on a commit is a public API change — review it deliberately.
 
 #### `ExpressionEngineInterface` interface
 - `public function evaluate(Expression $expression, EvaluationInputInterface $context): mixed;`
+- `public function evaluateRawSelector(ExpressionType $type, string $expression, mixed $data, ?string $version = null, ?array $namespaces = null, ): mixed;`
 - `public function evaluateSelector(Selector $selector, WorkflowContextInterface $context, string $stepId): mixed;`
 - `public function expressionReferences(string $raw): ?ExpressionReference;`
 - `public function extract(string $template): array;`
@@ -329,18 +337,25 @@ this file on a commit is a public API change — review it deliberately.
 - `public function jsonPointer(array $data, ?string $pointer): mixed;`
 - `public function parseEmbedded(string $raw, SpecVersion $version = SpecVersion::V1_0): array;`
 - `public function parseExpression(string $raw): ?ExpressionSyntaxException;`
-- `public function selectorPlugins(): SelectorPluginRegistryInterface;`
+- `public function supportedSelectorVersions(ExpressionType $type): array;`
 - `public function test(string $raw): bool;`
-
-#### `SelectorPluginRegistryInterface` interface
-- `public function get(ExpressionType $type): ?SelectorPluginInterface;`
-- `public function has(ExpressionType $type): bool;`
-- `public function supportedVersions(ExpressionType $type): array;`
+- `public function xpath(string $expression, mixed $data, ?string $version = null, ?array $namespaces = null, ): mixed;`
 
 ### `Alama\Arazzo\Expression\JsonPath`
 
 #### `SelectorContext` interface
 - `public function select(array $ast, array $nodes, string $path, int &$visited, int $depth = 0): array;`
+
+### `Alama\Arazzo\Expression\Registries`
+
+#### `SelectorPluginRegistry` class
+- `public function all(): array`
+- `public function get(ExpressionType $type): ?SelectorPluginInterface`
+- `public function has(ExpressionType $type): bool`
+- `public function register(ExpressionType|SelectorPluginInterface $typeOrPlugin, ?SelectorPluginInterface $plugin = null, int $priority = 0, ): void`
+- `public function supportedVersions(ExpressionType $type): array`
+- `public static function create(): self`
+- `public static function reset(): void`
 
 ### `Alama\Arazzo\Expression\Xpath`
 
@@ -353,7 +368,7 @@ this file on a commit is a public API change — review it deliberately.
 ### `Alama\Arazzo\Evaluation`
 
 #### `EvaluationEngine` class
-- `public function __construct(private readonly ExpressionEngineInterface $expression, ?ExpressionEvaluatorRegistry $expressionRegistry = null, ?CriterionEvaluatorRegistry $criterionRegistry = null, ?SelectorPluginRegistryInterface $selectorRegistry = null, ?EventDispatcherInterface $eventDispatcher = null)`
+- `public function __construct(private readonly ExpressionEngineInterface $expression, ?ExpressionEvaluatorRegistry $expressionRegistry = null, ?CriterionEvaluatorRegistry $criterionRegistry = null, ?EventDispatcherInterface $eventDispatcher = null)`
 - `public function evaluate(Expression $expression, EvaluationInputInterface $context): mixed`
 - `public function evaluateCriteria(array $criteria, Step $step, WorkflowContextInterface $context, ?ArazzoDocument $document = null): CriterionResultCollection`
 - `public function evaluateSelector(Selector $selector, WorkflowContextInterface $context, string $stepId): mixed`

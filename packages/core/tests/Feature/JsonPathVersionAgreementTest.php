@@ -24,9 +24,8 @@ use Alama\Arazzo\Expression\ExpressionEngine;
 
 const JSONPATH_VERSION_RULE = 'selector.type_supported';
 
-$engine = new ExpressionEngine();
-$registry = $engine->selectorPlugins();
-$supportedVersions = $registry->supportedVersions(ExpressionType::JsonPath);
+$engine = ExpressionEngine::create();
+$supportedVersions = $engine->supportedSelectorVersions(ExpressionType::JsonPath);
 
 /**
  * @return array{0: ArazzoDocument}

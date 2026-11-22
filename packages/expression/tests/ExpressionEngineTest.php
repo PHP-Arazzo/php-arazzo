@@ -8,6 +8,7 @@ use Alama\Arazzo\Contracts\Spec\Selector;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
 use Alama\Arazzo\Expression\Data\EvaluationContext;
 use Alama\Arazzo\Expression\Data\ExpressionReference;
+use Alama\Arazzo\Expression\Data\InterpolationOptions;
 use Alama\Arazzo\Expression\Enum\ReferenceKind;
 use Alama\Arazzo\Expression\Exceptions\ExpressionSyntaxException;
 use Alama\Arazzo\Expression\ExpressionEngine;
@@ -38,12 +39,16 @@ it('projects expression references statically', function () {
         ->and($engine->expressionReferences('bad'))->toBeNull();
 });
 
-it('declares evaluate, evaluateSelector and jsonPath on the public interface', function () {
+it('declares evaluate, evaluateSelector, evaluateRawSelector, xpath and jsonPath on the public interface', function () {
     $reflection = new ReflectionClass(ExpressionEngineInterface::class);
 
     expect($reflection->hasMethod('evaluate'))->toBeTrue()
         ->and($reflection->hasMethod('evaluateSelector'))->toBeTrue()
-        ->and($reflection->hasMethod('jsonPath'))->toBeTrue();
+        ->and($reflection->hasMethod('evaluateRawSelector'))->toBeTrue()
+        ->and($reflection->hasMethod('xpath'))->toBeTrue()
+        ->and($reflection->hasMethod('jsonPath'))->toBeTrue()
+        ->and($reflection->hasMethod('supportedSelectorVersions'))->toBeTrue()
+        ->and($reflection->hasMethod('selectorPlugins'))->toBeFalse();
 });
 
 it('evaluates expressions through the public face', function () {
@@ -67,14 +72,31 @@ it('evaluates raw jsonpath queries through the public face', function () {
     ]))->toBe('B');
 });
 
-it('evaluates xpath queries through the selector plugin', function () {
-    $engine = new ExpressionEngine();
-    $registry = $engine->selectorPlugins();
-    $plugin = $registry->get(ExpressionType::XPath);
+it('creates an engine via create() static factory', function () {
+    $engine = ExpressionEngine::create();
 
-    expect($registry->supportedVersions(ExpressionType::XPath))->toBe(['xpath-10', 'xpath-31']);
-    expect($plugin->evaluate('<root><user><name>Ada</name></user></root>', '/root/user/name', 'xpath-10'))->toBe('Ada');
-    expect($plugin->evaluate('<root><user><name>Ada</name></user></root>', '/root/user/name', 'xpath-31'))->toBe('Ada');
+    expect($engine)->toBeInstanceOf(ExpressionEngineInterface::class)
+        ->and($engine)->toBeInstanceOf(ExpressionEngine::class);
+});
+
+it('evaluates xpath queries through the public face', function () {
+    $engine = ExpressionEngine::create();
+
+    expect($engine->supportedSelectorVersions(ExpressionType::XPath))->toBe(['xpath-10', 'xpath-31']);
+    expect($engine->xpath('/root/user/name', '<root><user><name>Ada</name></user></root>', 'xpath-10'))->toBe('Ada');
+    expect($engine->xpath('/root/user/name', '<root><user><name>Ada</name></user></root>', 'xpath-31'))->toBe('Ada');
+});
+
+it('evaluates raw selectors through the public face', function () {
+    $engine = ExpressionEngine::create();
+
+    expect($engine->evaluateRawSelector(ExpressionType::JsonPath, '$.name', ['name' => 'Ada']))->toBe('Ada');
+});
+
+it('promotes InterpolationOptions to public', function () {
+    $options = new InterpolationOptions();
+
+    expect($options)->toBeInstanceOf(InterpolationOptions::class);
 });
 
 it('evaluates selectors through the public face', function () {
