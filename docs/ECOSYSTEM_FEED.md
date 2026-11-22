@@ -1,6 +1,6 @@
 # Ecosystem Feed — Digest
 
-> **Generated:** 2026-11-21T14:36:51+00:00 by `php scripts/ecosystem/poll.php` · **Internal · Daily · Repo-local** via `gh`
+> **Generated:** 2026-11-22T14:30:44+00:00 by `php scripts/ecosystem/poll.php` · **Internal · Daily · Repo-local** via `gh`
 > **Sources:** `config/ecosystem/sources.json` + `config/ecosystem/sources.oai.json` · **Watchlist:** `config/ecosystem/watchlist.json`
 > **Legend:** **Act** = worth a decision · **Watch** = context, collapsed · **Noise** = counted only
 
@@ -29,14 +29,15 @@ _No peer releases in this window._
 
 _No scheduled meeting items._
 
-## Watch — 2 collapsed
+## Watch — 3 collapsed
 
 <details>
-<summary>2 topic-matched items — click to expand</summary>
+<summary>3 topic-matched items — click to expand</summary>
 
-- `2026-11-20` [Registry: ...](https://github.com/OAI/OpenAPI-Specification/issues/5599) — `OAI/OpenAPI-Specification` · `entity.created` · state → `closed`
-- `2026-11-21` [OAI org diff: +1 -0](https://github.com/orgs/OAI/repositories) — `OAI/org` · `entity.created` · entity.created
+- `2026-11-21` [Step Object: criteria checked before the step runs](https://github.com/OAI/Arazzo-Specification/issues/641) — `OAI/Arazzo-Specification` · `entity.created` · state → `open` · topics `loop` → `plan:phase-e-runner-oms`
+- `2026-11-21` [Ship .d.cts declarations for CommonJS consumers](https://github.com/usearazzo/arazzo-toolkit/issues/373) — `usearazzo/arazzo-toolkit` · `entity.created` · state → `open`
+- `2026-11-22` [OAI org diff: +1 -0](https://github.com/orgs/OAI/repositories) — `OAI/org` · `entity.created` · entity.created
 
 </details>
 
-suppressed: 3 bot PRs
+suppressed: none
