@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Sources\Normalizer;
 
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
-use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
-use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Document\OperationResolverInterface;
 use Alama\Arazzo\Document\ResolvedOperation;
@@ -37,18 +35,7 @@ class OpenApiOperationResolver implements OperationResolverInterface
 
     public function supportsStep(Step $step, ArazzoDocument $document): bool
     {
-        $sourceName = $this->resolveSourceName($step, $document);
-        if ($sourceName === null) {
-            return false;
-        }
-
-        foreach ($document->sourceDescriptions as $source) {
-            if ($source->name === $sourceName) {
-                return $source->type === SourceType::Openapi;
-            }
-        }
-
-        return false;
+        return SourceReferenceParser::isOpenApiStep($step, $document);
     }
 
     public function resolveModel(Step $step, ArazzoDocument $document): ResolvedOperation
@@ -58,48 +45,10 @@ class OpenApiOperationResolver implements OperationResolverInterface
 
     public function resolve(Step $step, ArazzoDocument $document): OpenApiOperationHandle
     {
-        $opId = $step->target->operationId;
-        $opPath = $step->target->operationPath;
-
-        if (!$opId && !$opPath) {
-            throw new RuntimeException("Step '{$step->stepId}' must have either operationId or operationPath.");
-        }
-
-        $sourceName = null;
-        $operationReference = null;
-        $isPath = false;
-
-        if ($opPath) {
-            $isPath = true;
-            $parts = explode('#', $opPath, 2);
-            if (count($parts) !== 2 || !str_starts_with($parts[0], '{$sourceDescriptions.') || !str_ends_with($parts[0], '.url}')) {
-                throw new RuntimeException("Invalid operationPath format in step '{$step->stepId}'. Expected {\$sourceDescriptions.NAME.url}#...");
-            }
-            $sourceName = substr($parts[0], 21, -5);
-            $operationReference = $parts[1];
-        } else {
-            if (str_contains($opId, '#')) {
-                $parts = explode('#', $opId, 2);
-                if (!str_starts_with($parts[0], '{$sourceDescriptions.') || !str_ends_with($parts[0], '.url}')) {
-                    throw new RuntimeException("Invalid operationId format in step '{$step->stepId}'. Expected {\$sourceDescriptions.NAME.url}#...");
-                }
-                $sourceName = substr($parts[0], 21, -5);
-                $operationReference = $parts[1];
-            } elseif (preg_match('/^\$sourceDescriptions\.([^.]+)\.(.+)$/', $opId, $m) === 1) {
-                // Spec grammar: `$sourceDescriptions.NAME.OPERATION_ID` (dotted,
-                // no braces) - used by the official OAI examples.
-                $sourceName = $m[1];
-                $operationReference = $m[2];
-            } else {
-                $nonArazzoSources = array_filter($document->sourceDescriptions, fn (SourceDescription $s) => $s->type !== SourceType::Arazzo);
-                if (count($nonArazzoSources) !== 1) {
-                    throw new RuntimeException("Plain operationId '{$opId}' used in step '{$step->stepId}' but there are multiple non-Arazzo sources. Please use source-qualified operationId.");
-                }
-                $source = reset($nonArazzoSources);
-                $sourceName = $source->name;
-                $operationReference = $opId;
-            }
-        }
+        $target = SourceReferenceParser::parseTarget($step, $document);
+        $sourceName = $target['sourceName'];
+        $operationReference = $target['operationReference'];
+        $isPath = $target['isPath'];
 
         $targetSource = null;
         foreach ($document->sourceDescriptions as $source) {
@@ -208,44 +157,5 @@ class OpenApiOperationResolver implements OperationResolverInterface
             $openApi,
             $cebeOperation,
         );
-    }
-
-    private function resolveSourceName(Step $step, ArazzoDocument $document): ?string
-    {
-        $opId = $step->target->operationId;
-        $opPath = $step->target->operationPath;
-
-        if ($opPath) {
-            $parts = explode('#', $opPath, 2);
-            if (count($parts) === 2 && str_starts_with($parts[0], '{$sourceDescriptions.') && str_ends_with($parts[0], '.url}')) {
-                return substr($parts[0], 21, -5);
-            }
-
-            return null;
-        }
-
-        if ($opId) {
-            if (str_contains($opId, '#')) {
-                $parts = explode('#', $opId, 2);
-                if (str_starts_with($parts[0], '{$sourceDescriptions.') && str_ends_with($parts[0], '.url}')) {
-                    return substr($parts[0], 21, -5);
-                }
-
-                return null;
-            }
-
-            if (preg_match('/^\$sourceDescriptions\.([^.]+)\.(.+)$/', $opId, $m) === 1) {
-                return $m[1];
-            }
-
-            $nonArazzoSources = array_filter($document->sourceDescriptions, fn (SourceDescription $s) => $s->type !== SourceType::Arazzo);
-            if (count($nonArazzoSources) === 1) {
-                $source = reset($nonArazzoSources);
-
-                return $source->name;
-            }
-        }
-
-        return null;
     }
 }

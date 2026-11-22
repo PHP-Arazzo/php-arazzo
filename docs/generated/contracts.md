@@ -28,7 +28,6 @@ flowchart LR
     I_LockStrategyInterface["LockStrategyInterface<br/><small>contracts:Interfaces</small>"]:::contract
     I_OpenApiExecutorInterface["OpenApiExecutorInterface<br/><small>runner:Execution</small>"]:::contract
     I_OpenApiNormalizerInterface["OpenApiNormalizerInterface<br/><small>sources:Normalizer</small>"]:::contract
-    I_OpenApiOperationResolverInterface["OpenApiOperationResolverInterface<br/><small>sources:Normalizer</small>"]:::contract
     I_OperationExecutorPluginInterface["OperationExecutorPluginInterface<br/><small>contracts:Interfaces</small>"]:::contract
     I_OperationResolverInterface["OperationResolverInterface<br/><small>(document root)</small>"]:::contract
     I_OutputExtractorInterface["OutputExtractorInterface<br/><small>contracts:Interfaces</small>"]:::contract
@@ -116,7 +115,11 @@ flowchart LR
     C_sources_sources_Normalizer_Swagger2Normalizer["Swagger2Normalizer<br/><small>sources:Normalizer</small>"]:::implCore
     C_sources_sources_Normalizer_Swagger2Normalizer -.->|implements| I_OpenApiNormalizerInterface
     C_sources_sources_Normalizer_OpenApiOperationResolver["OpenApiOperationResolver<br/><small>sources:Normalizer</small>"]:::implCore
-    C_sources_sources_Normalizer_OpenApiOperationResolver -.->|implements| I_OpenApiOperationResolverInterface
+    C_sources_sources_Normalizer_OpenApiOperationResolver -.->|implements| I_OperationResolverInterface
+    C_protocol_rpc_protocol_rpc_Protocol_ProtobufOperationResolver["ProtobufOperationResolver<br/><small>protocol-rpc:Protocol</small>"]:::implCore
+    C_protocol_rpc_protocol_rpc_Protocol_ProtobufOperationResolver -.->|implements| I_OperationResolverInterface
+    C_protocol_soap_protocol_soap_Execution_WsdlOperationResolver["WsdlOperationResolver<br/><small>protocol-soap:Execution</small>"]:::implCore
+    C_protocol_soap_protocol_soap_Execution_WsdlOperationResolver -.->|implements| I_OperationResolverInterface
     C_sources_sources_Normalizer_OpenApiSourceNormalizer["OpenApiSourceNormalizer<br/><small>sources:Normalizer</small>"]:::implCore
     C_sources_sources_Normalizer_OpenApiSourceNormalizer -.->|implements| I_SourceNormalizerInterface
     C_sources_sources_Normalizer_WsdlSourceNormalizer["WsdlSourceNormalizer<br/><small>sources:Normalizer</small>"]:::implCore
@@ -311,10 +314,6 @@ flowchart LR
     C_protocol_http_protocol_http_Protocol_HttpStepExecutor -.->|implements| I_StepProtocolExecutorInterface
     C_runner_runner_Sync_SubWorkflowStepExecutor["SubWorkflowStepExecutor<br/><small>runner:Sync</small>"]:::implCore
     C_runner_runner_Sync_SubWorkflowStepExecutor -.->|implements| I_StepProtocolExecutorInterface
-    C_protocol_rpc_protocol_rpc_Protocol_ProtobufOperationResolver["ProtobufOperationResolver<br/><small>protocol-rpc:Protocol</small>"]:::implCore
-    C_protocol_rpc_protocol_rpc_Protocol_ProtobufOperationResolver -.->|implements| I_OperationResolverInterface
-    C_protocol_soap_protocol_soap_Execution_WsdlOperationResolver["WsdlOperationResolver<br/><small>protocol-soap:Execution</small>"]:::implCore
-    C_protocol_soap_protocol_soap_Execution_WsdlOperationResolver -.->|implements| I_OperationResolverInterface
     C_protocol_soap_protocol_soap_Resolver_XPathReplacementTargetResolver["XPathReplacementTargetResolver<br/><small>protocol-soap:Resolver</small>"]:::implCore
     C_protocol_soap_protocol_soap_Resolver_XPathReplacementTargetResolver -.->|implements| I_ReplacementTargetResolverInterface
     C_runner_runner_Execution_InMemoryDefinitionRegistry["InMemoryDefinitionRegistry<br/><small>runner:Execution</small>"]:::implCore

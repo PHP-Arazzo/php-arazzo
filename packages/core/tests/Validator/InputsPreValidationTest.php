@@ -12,6 +12,8 @@ use Alama\Arazzo\Protocol\Http\Execution\DefaultOpenApiExecutor;
 use Alama\Arazzo\Protocol\Http\Execution\ResponseSchemaValidator;
 use Alama\Arazzo\Protocol\Http\Execution\StepOutputExtractor;
 use Alama\Arazzo\Runner\Exceptions\PreflightFailureException;
+use Alama\Arazzo\Runner\Preflight\OperationResolvers;
+use Alama\Arazzo\Runner\Preflight\Preflight;
 use Alama\Arazzo\Runner\Sync\StepExecutor;
 use Alama\Arazzo\Runner\Sync\WorkflowEngine;
 use Alama\Arazzo\Runner\Sync\WorkflowExecutor;
@@ -78,7 +80,7 @@ it('blocks executor runs on invalid inputs before any event fires', function ():
         ),
         workflowEngine: new WorkflowEngine($engine),
         events: $events,
-        preflight: null,
+        preflight: new Preflight(new OperationResolvers([$runtime->operations])),
         document: $documents,
     );
 

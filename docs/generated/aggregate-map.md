@@ -19,15 +19,15 @@ Where mutable state lives, and which of it crosses process boundaries:
 | contracts | 37 | 10 | 79% |
 | expression | 23 | 25 | 48% |
 | evaluation | 14 | 13 | 52% |
-| sources | 3 | 21 | 12% |
-| document | 14 | 94 | 13% |
+| sources | 2 | 22 | 8% |
+| document | 15 | 92 | 14% |
 | engine | 7 | 20 | 26% |
 | protocol-http | 0 | 6 | 0% |
 | protocol-rpc | 5 | 10 | 33% |
 | protocol-soap | 1 | 9 | 10% |
-| runner | 15 | 29 | 34% |
+| runner | 17 | 30 | 36% |
 | core | 0 | 0 | — |
-| cli | 0 | 15 | 0% |
+| cli | 0 | 14 | 0% |
 
 ## Mutable clusters
 

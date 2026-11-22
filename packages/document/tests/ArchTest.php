@@ -1,6 +1,9 @@
 <?php
 
 declare(strict_types=1);
+use Alama\Arazzo\Document\Document;
+use Alama\Arazzo\Document\KnownOperations;
+use Alama\Arazzo\Document\Parser\Decoders;
 
 arch('document does not depend on illuminate framework')
     ->expect('Alama\Arazzo\Document\Parser')
@@ -46,17 +49,17 @@ arch('document model is vendor-free')
     ->not->toUse('Softcreatr');
 
 arch('Document is final and readonly')
-    ->expect(\Alama\Arazzo\Document\Document::class)
+    ->expect(Document::class)
     ->toBeFinal()
     ->toBeReadonly();
 
 arch('KnownOperations is final and readonly')
-    ->expect(\Alama\Arazzo\Document\KnownOperations::class)
+    ->expect(KnownOperations::class)
     ->toBeFinal()
     ->toBeReadonly();
 
 test('Decoders class is final and readonly', function (): void {
-    $ref = new ReflectionClass(\Alama\Arazzo\Document\Parser\Decoders::class);
+    $ref = new ReflectionClass(Decoders::class);
 
     expect($ref->isFinal())->toBeTrue()
         ->and($ref->isReadOnly())->toBeTrue();

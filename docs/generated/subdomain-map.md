@@ -18,14 +18,13 @@ flowchart LR
         S_contracts_Spec["contracts:Spec<br/><small>1207 LOC</small>"]:::coreDomain
     end
     subgraph S_supporting["Supporting"]
-        S_cli_Console["cli:Console<br/><small>943 LOC</small>"]:::supportingDomain
+        S_cli_Console["cli:Console<br/><small>906 LOC</small>"]:::supportingDomain
         S_cli_Generator["cli:Generator<br/><small>141 LOC</small>"]:::supportingDomain
         S_cli_Renderer["cli:Renderer<br/><small>255 LOC</small>"]:::supportingDomain
-        S_document_Parser["document:Parser<br/><small>2219 LOC</small>"]:::supportingDomain
-        S_document_Validator["document:Validator<br/><small>5573 LOC</small>"]:::supportingDomain
+        S_document_Parser["document:Parser<br/><small>2241 LOC</small>"]:::supportingDomain
+        S_document_Validator["document:Validator<br/><small>5682 LOC</small>"]:::supportingDomain
         S_protocol_soap_Resolver["protocol-soap:Resolver<br/><small>136 LOC</small>"]:::supportingDomain
         S_sources_Resolver["sources:Resolver<br/><small>514 LOC</small>"]:::supportingDomain
-        S_sources_Validator["sources:Validator<br/><small>325 LOC</small>"]:::supportingDomain
     end
     subgraph S_generic["Generic subdomain"]
         S_contracts_State["contracts:State<br/><small>977 LOC</small>"]:::genericDomain
@@ -71,11 +70,13 @@ flowchart LR
         S_protocol_soap_Registrar["protocol-soap:Registrar<br/><small>97 LOC</small>"]:::unknownDomain
         S_protocol_soap_Transfer["protocol-soap:Transfer<br/><small>203 LOC</small>"]:::unknownDomain
         S_protocol_soap_Validation["protocol-soap:Validation<br/><small>139 LOC</small>"]:::unknownDomain
-        S_runner_Async["runner:Async<br/><small>1347 LOC</small>"]:::unknownDomain
-        S_runner_Execution["runner:Execution<br/><small>383 LOC</small>"]:::unknownDomain
+        S_runner_Async["runner:Async<br/><small>1351 LOC</small>"]:::unknownDomain
+        S_runner_Exceptions["runner:Exceptions<br/><small>20 LOC</small>"]:::unknownDomain
+        S_runner_Execution["runner:Execution<br/><small>384 LOC</small>"]:::unknownDomain
         S_runner_Interfaces["runner:Interfaces<br/><small>25 LOC</small>"]:::unknownDomain
-        S_runner_Sync["runner:Sync<br/><small>1096 LOC</small>"]:::unknownDomain
-        S_sources_Normalizer["sources:Normalizer<br/><small>1282 LOC</small>"]:::unknownDomain
+        S_runner_Preflight["runner:Preflight<br/><small>150 LOC</small>"]:::unknownDomain
+        S_runner_Sync["runner:Sync<br/><small>1080 LOC</small>"]:::unknownDomain
+        S_sources_Normalizer["sources:Normalizer<br/><small>1386 LOC</small>"]:::unknownDomain
     end
     classDef coreDomain fill:#e6f4ea,stroke:#34a853,color:#1a1a1a;
     classDef supportingDomain fill:#e8f0fe,stroke:#4285f4,color:#1a1a1a;
@@ -86,9 +87,9 @@ flowchart LR
 | Subdomain | Modules | Core pkg LOC | Laravel pkg LOC | Share |
 |---|---:|---:|---:|---:|
 | Core domain | 1 | 1,207 | 0 | 4% |
-| Supporting | 8 | 10,106 | 0 | 35% |
+| Supporting | 7 | 9,875 | 0 | 34% |
 | Generic subdomain | 5 | 1,576 | 0 | 5% |
-| Unclassified | 41 | 16,092 | 0 | 56% |
+| Unclassified | 43 | 16,355 | 0 | 56% |
 
 **Unclassified modules** — classify them in `SUBDOMAINS` or delete them:
 - `contracts:Dependency`
@@ -128,7 +129,9 @@ flowchart LR
 - `protocol-soap:Transfer`
 - `protocol-soap:Validation`
 - `runner:Async`
+- `runner:Exceptions`
 - `runner:Execution`
 - `runner:Interfaces`
+- `runner:Preflight`
 - `runner:Sync`
 - `sources:Normalizer`

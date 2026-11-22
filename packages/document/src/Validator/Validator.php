@@ -128,9 +128,8 @@ final readonly class Validator
 
         if ($validator->isValid()) {
             $populated = json_decode((string) json_encode($dataObject), true);
-            if (!is_array($populated)) {
-                $populated = [];
-            }
+            /** @var array<string, mixed> $populated */
+            $populated = is_array($populated) ? $populated : [];
             $populatedInputs = $populated;
 
             return [];

@@ -15,11 +15,11 @@ use Alama\Arazzo\Document\Validator\Enum\Severity;
 final readonly class Preflight
 {
     /**
-     * @param  list<string>  $supportedXPathVersions
+     * @param  list<string>  $supportedXPath
      */
     public function __construct(
         private OperationResolvers $resolvers,
-        private array $supportedXPathVersions = ['xpath-10'],
+        private array $supportedXPath = ['xpath-10'],
     ) {}
 
     public function validate(ArazzoDocument $document): ValidationResult
@@ -73,10 +73,10 @@ final readonly class Preflight
         foreach ($this->selectorsOf($step) as $selector) {
             $version = $selector->version ?? null;
             if ($version !== null && $selector->type->value === 'xpath') {
-                if (!in_array($version, $this->supportedXPathVersions, true)) {
+                if (!in_array($version, $this->supportedXPath, true)) {
                     $errors[] = new Error(
                         'preflight.unsupported_selector_version',
-                        "Selector requests XPath version '{$version}'; evaluator supports: ".implode(', ', $this->supportedXPathVersions).'.',
+                        "Selector requests XPath version '{$version}'; evaluator supports: ".implode(', ', $this->supportedXPath).'.',
                         $base.'/parameters',
                         severity: Severity::Error,
                     );

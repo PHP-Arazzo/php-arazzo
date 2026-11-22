@@ -27,7 +27,7 @@ classDiagram
     class E_NotImplementedException["NotImplementedException<br/><small>contracts:Support</small>"]:::domain
     class E_ObjectDeserializationForbiddenException["ObjectDeserializationForbiddenException<br/><small>document:Parser</small>"]:::domain
     class E_ParserException["ParserException<br/><small>document:Parser</small>"]:::domain
-    class E_PreflightFailureException["PreflightFailureException<br/><small>document:Validator</small>"]:::domain
+    class E_PreflightFailureException["PreflightFailureException<br/><small>runner:Exceptions</small>"]:::domain
     class E_SchemaValidationException["SchemaValidationException<br/><small>contracts:Exceptions</small>"]:::domain
     class E_SelectorEvaluationException["SelectorEvaluationException<br/><small>expression:Exceptions</small>"]:::domain
     class E_SourceFetchException["SourceFetchException<br/><small>sources:Resolver</small>"]:::domain
@@ -56,7 +56,7 @@ classDiagram
     E_ArazzoException <|-- E_NotImplementedException
     E_DecodeLimitException <|-- E_ObjectDeserializationForbiddenException
     E_ArazzoException <|-- E_ParserException
-    E_ArazzoException <|-- E_PreflightFailureException
+    E_RuntimeException <|-- E_PreflightFailureException
     E_RuntimeException <|-- E_SchemaValidationException
     E_ArazzoException <|-- E_SelectorEvaluationException
     E_SourceResolutionException <|-- E_SourceFetchException
@@ -91,7 +91,7 @@ classDiagram
 | `NotImplementedException` | `ArazzoException` | contracts:Support |
 | `ObjectDeserializationForbiddenException` | `DecodeLimitException` | document:Parser |
 | `ParserException` | `ArazzoException` | document:Parser |
-| `PreflightFailureException` | `ArazzoException` | document:Validator |
+| `PreflightFailureException` | `RuntimeException` | runner:Exceptions |
 | `SchemaValidationException` | `RuntimeException` | contracts:Exceptions |
 | `SelectorEvaluationException` | `ArazzoException` | expression:Exceptions |
 | `SourceFetchException` | `SourceResolutionException` | sources:Resolver |

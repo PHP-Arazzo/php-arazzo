@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Sources\Resolver;
 
+use Alama\Arazzo\Contracts\Spec\Enum\Format;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Spec\SourceDocument;
-use Alama\Arazzo\Contracts\Spec\Enum\Format;
 use Alama\Arazzo\Document\Parser\DecodePolicy;
 use Alama\Arazzo\Document\Parser\Decoders;
 use Alama\Arazzo\Sources\Resolver\Exceptions\SourceFetchException;

@@ -34,7 +34,7 @@ when a boundary consciously moves.
 | contracts | `contracts:Interfaces` | `Psr` | 2 |
 | contracts | `contracts:Support` | `Psr` | 4 |
 | document | `document:Parser` | `Symfony` | 2 |
-| document | `document:Validator` | `JsonSchema` | 4 |
+| document | `document:Validator` | `JsonSchema` | 7 |
 | engine | `engine:Execution` | `Psr` | 4 |
 | engine | `engine:Execution` | `cebe` | 2 |
 | engine | `engine:Runtime` | `OpenTelemetry` | 23 |
@@ -56,15 +56,14 @@ when a boundary consciously moves.
 | sources | `sources:Normalizer` | `cebe` | 8 |
 | sources | `sources:Resolver` | `GuzzleHttp` | 2 |
 | sources | `sources:Resolver` | `Psr` | 4 |
-| sources | `sources:Validator` | `JsonSchema` | 3 |
 | sources | `sources:_` | `GuzzleHttp` | 1 |
 | sources | `sources:_` | `Psr` | 2 |
 
-**13 library boundary violation(s):**
+**12 library boundary violation(s):**
 - `cli:Console` imports `GuzzleHttp\*` (2 refs)
 - `cli:Console` imports `Symfony\*` (30 refs)
 - `document:Parser` imports `Symfony\*` (2 refs)
-- `document:Validator` imports `JsonSchema\*` (4 refs)
+- `document:Validator` imports `JsonSchema\*` (7 refs)
 - `engine:Execution` imports `cebe\*` (2 refs)
 - `engine:Runtime` imports `OpenTelemetry\*` (23 refs)
 - `protocol-http:Execution` imports `GuzzleHttp\*` (2 refs)
@@ -72,7 +71,6 @@ when a boundary consciously moves.
 - `runner:Async` imports `OpenTelemetry\*` (2 refs)
 - `sources:Normalizer` imports `cebe\*` (8 refs)
 - `sources:Resolver` imports `GuzzleHttp\*` (2 refs)
-- `sources:Validator` imports `JsonSchema\*` (3 refs)
 - `sources:_` imports `GuzzleHttp\*` (1 refs)
 
 ## Core aggregator emptiness
@@ -89,8 +87,8 @@ Cross-package references from library code must target `*Interface` facades, val
 
 | From package | To package | From | References concrete facade |
 |---|---|---|---|
+| `document` | `expression` | `Document` | `ExpressionEngine` |
 | `sources` | `document` | `SourceGraph` | `Document` |
-| `sources` | `expression` | `SourceGraph` | `ExpressionEngine` |
 
 ### Concrete references outside facades (review list)
 
@@ -100,7 +98,6 @@ Grouped cross-package uses of concrete internals (AST nodes, evaluators, resolve
 |---|---|---|---:|---|
 | `document` | `ExpressionReference` | `expression` | 2 | `ExpressionUnresolvedStepRefRule` |
 | `document` | `ImplicitDependencies` | `contracts` | 1 | `StepDependsOnNoCycleRule` |
-| `document` | `PreflightValidator` | `sources` | 1 | `ModelStack` |
 | `evaluation` | `EvaluationContext` | `expression` | 5 | `ConditionEvaluator` |
 | `evaluation` | `Parser` | `expression` | 1 | `AccessorParser` |
 | `protocol-http` | `EvaluationContext` | `expression` | 2 | `StepOutputExtractor` |
@@ -136,20 +133,13 @@ Grouped cross-package uses of concrete internals (AST nodes, evaluators, resolve
 | `runner` | `OpenApiOperationResolver` | `sources` | 3 | `OperationRuntime` |
 | `runner` | `OtelSetup` | `engine` | 1 | `StepExecutionWorker` |
 | `runner` | `RequestCompiler` | `engine` | 1 | `StepExecutor` |
+| `runner` | `ResolvedOperation` | `document` | 1 | `OperationResolvers` |
 | `runner` | `RetryPolicy` | `engine` | 1 | `WorkflowEngine` |
 | `runner` | `ReusableParameterResolver` | `engine` | 1 | `SubWorkflowStepExecutor` |
 | `runner` | `StepParameterMerger` | `engine` | 2 | `StepExecutionWorker` |
-| `runner` | `ValidationResult` | `document` | 1 | `WorkflowExecutor` |
+| `runner` | `ValidationResult` | `document` | 3 | `PreflightFailureException` |
 | `sources` | `DecodePolicy` | `document` | 1 | `DefaultSourceResolver` |
-| `sources` | `ErrorCollector` | `document` | 1 | `PreflightValidator` |
-| `sources` | `Loader` | `document` | 1 | `SourceGraph` |
-| `sources` | `ModelStack` | `document` | 1 | `SourceGraph` |
-| `sources` | `NativeJsonDecoder` | `document` | 1 | `DefaultSourceResolver` |
+| `sources` | `Decoders` | `document` | 1 | `DefaultSourceResolver` |
+| `sources` | `KnownOperations` | `document` | 1 | `SourceLoader` |
 | `sources` | `NormalizedOpenApiOperation` | `document` | 4 | `WsdlSourceNormalizer` |
-| `sources` | `Parser` | `document` | 1 | `SourceGraph` |
-| `sources` | `ResolvedOperation` | `document` | 6 | `WsdlSourceNormalizer` |
-| `sources` | `RuleSet` | `document` | 1 | `SourceGraph` |
-| `sources` | `SymfonyYamlDecoder` | `document` | 1 | `DefaultSourceResolver` |
-| `sources` | `ValidationResult` | `document` | 2 | `PreflightValidator` |
-| `sources` | `Validator` | `document` | 1 | `SourceGraph` |
-| `sources` | `Warning` | `document` | 1 | `PreflightValidator` |
+| `sources` | `ResolvedOperation` | `document` | 5 | `WsdlSourceNormalizer` |

@@ -62,13 +62,14 @@ flowchart LR
     protocol_soap_Validation["Alama\Arazzo\Protocol\Soap\Validation"]:::coreNode
     runner_Async["Alama\Arazzo\Runner\Async"]:::coreNode
     runner_Events["Alama\Arazzo\Events"]:::coreNode
+    runner_Exceptions["Alama\Arazzo\Runner\Exceptions"]:::coreNode
     runner_Execution["Alama\Arazzo\Runner\Execution\Data"]:::coreNode
     runner_Interfaces["Alama\Arazzo\Runner\Interfaces"]:::coreNode
+    runner_Preflight["Alama\Arazzo\Runner\Preflight"]:::coreNode
     runner_Sync["Alama\Arazzo\Runner\Sync"]:::coreNode
     runner__["(runner package root)"]:::coreNode
     sources_Normalizer["Alama\Arazzo\Sources\Normalizer"]:::coreNode
     sources_Resolver["Alama\Arazzo\Sources\Resolver\Exceptions"]:::coreNode
-    sources_Validator["Alama\Arazzo\Sources\Validator"]:::coreNode
     sources__["(sources package root)"]:::coreNode
     contracts_Dependency --> contracts_Spec
     contracts_Dependency --> contracts_State
@@ -155,18 +156,17 @@ flowchart LR
     document_Parser --> contracts_Spec
     document_Parser --> contracts_Support
     document_Validator --> contracts_Spec
+    document_Validator --> document__
     document_Validator --> expression_Interfaces
-    document_Validator --> contracts_Support
     document_Validator --> expression_Enum
     document_Validator --> expression_Exceptions
     document_Validator --> expression_Data
+    document_Validator --> contracts_Support
     document_Validator --> contracts_Dependency
     document__ --> contracts_Spec
     document__ --> document_Parser
     document__ --> document_Validator
-    document__ --> sources_Normalizer
-    document__ --> expression_Interfaces
-    document__ --> sources_Validator
+    document__ --> expression__
     sources_Normalizer --> contracts_Interfaces
     sources_Normalizer --> contracts_Spec
     sources_Normalizer --> document__
@@ -175,20 +175,11 @@ flowchart LR
     sources_Resolver --> contracts_Spec
     sources_Resolver --> document_Parser
     sources_Resolver --> contracts_Interfaces
-    sources_Validator --> contracts_Spec
-    sources_Validator --> document_Validator
-    sources_Validator --> sources_Normalizer
-    sources_Validator --> sources_Resolver
     sources__ --> contracts_Interfaces
     sources__ --> contracts_Spec
     sources__ --> document__
-    sources__ --> document_Validator
     sources__ --> sources_Normalizer
     sources__ --> sources_Resolver
-    sources__ --> sources_Validator
-    sources__ --> document_Parser
-    sources__ --> expression__
-    sources__ --> expression_Interfaces
     engine_Data --> contracts_Spec
     engine_Data --> engine_Enum
     engine_Data --> contracts_State
@@ -214,24 +205,29 @@ flowchart LR
     runner_Async --> contracts_Exceptions
     runner_Async --> contracts_Interfaces
     runner_Async --> contracts_Support
-    runner_Async --> document__
-    runner_Async --> document_Validator
     runner_Async --> engine_Execution
     runner_Async --> runner_Events
+    runner_Async --> runner_Exceptions
     runner_Async --> runner__
+    runner_Async --> runner_Preflight
     runner_Async --> contracts_Dependency
     runner_Events --> contracts_Support
+    runner_Exceptions --> document_Validator
     runner_Execution --> document__
     runner_Execution --> sources_Normalizer
     runner_Execution --> contracts_Spec
     runner_Execution --> engine_Runtime
     runner_Execution --> contracts_Support
     runner_Execution --> contracts_Interfaces
+    runner_Execution --> runner_Preflight
     runner_Execution --> runner_Sync
     runner_Execution --> contracts_State
     runner_Execution --> runner_Events
     runner_Interfaces --> contracts_Interfaces
     runner_Interfaces --> contracts_Spec
+    runner_Preflight --> contracts_Spec
+    runner_Preflight --> document__
+    runner_Preflight --> document_Validator
     runner_Sync --> contracts_Spec
     runner_Sync --> contracts_Dependency
     runner_Sync --> contracts_State
@@ -248,8 +244,10 @@ flowchart LR
     runner_Sync --> runner__
     runner_Sync --> sources_Normalizer
     runner_Sync --> document__
+    runner_Sync --> runner_Preflight
     runner_Sync --> document_Validator
     runner_Sync --> runner_Events
+    runner_Sync --> runner_Exceptions
     runner__ --> contracts_Interfaces
     runner__ --> runner_Async
     runner__ --> runner_Sync
@@ -261,6 +259,7 @@ flowchart LR
     runner__ --> engine_Exceptions
     runner__ --> evaluation__
     runner__ --> runner_Execution
+    runner__ --> runner_Preflight
     runner__ --> contracts_State
     runner__ --> engine__
     runner__ --> document__
@@ -275,13 +274,13 @@ flowchart LR
     cli_Console --> runner__
     cli_Console --> runner_Execution
     cli_Console --> engine_Runtime
+    cli_Console --> document__
     cli_Console --> document_Parser
-    cli_Console --> document_Validator
-    cli_Console --> expression__
     cli_Console --> sources__
     cli_Console --> contracts_Dependency
     cli_Console --> cli_Renderer
     cli_Console --> contracts_Exceptions
+    cli_Console --> expression__
     cli_Console --> protocol_http_Execution
     cli_Console --> sources_Resolver
     cli_Generator --> contracts_Interfaces

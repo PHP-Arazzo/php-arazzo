@@ -18,11 +18,15 @@ use Alama\Arazzo\Runner\Preflight\OperationResolvers;
 use Alama\Arazzo\Runner\Preflight\Preflight;
 
 it('validates steps using registered operation resolvers', function (): void {
-    $resolver = new class() implements OperationResolverInterface {
-        public function supportsStep(Step $step, ArazzoDocument $document): bool {
+    $resolver = new class() implements OperationResolverInterface
+    {
+        public function supportsStep(Step $step, ArazzoDocument $document): bool
+        {
             return $step->target->operationId === 'validOp';
         }
-        public function resolve(Step $step, ArazzoDocument $document): ResolvedOperation {
+
+        public function resolve(Step $step, ArazzoDocument $document): ResolvedOperation
+        {
             return \Mockery::mock(ResolvedOperation::class);
         }
     };

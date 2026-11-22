@@ -9,6 +9,8 @@ use Alama\Arazzo\Evaluation\EvaluationEngineInterface;
 use Alama\Arazzo\Runner\Async\AsyncExecutionGraphAssembler;
 use Alama\Arazzo\Runner\Async\StepExecutionWorker;
 use Alama\Arazzo\Runner\Execution\OperationRuntime;
+use Alama\Arazzo\Runner\Preflight\OperationResolvers;
+use Alama\Arazzo\Runner\Preflight\Preflight;
 
 /**
  * @internal stays out of the advertised contract; not part of the public API surface
@@ -41,6 +43,10 @@ final class RunnerGraphBuilder implements RunnerGraphBuilderInterface
             operations: $this->operations,
         );
 
-        return $assembler->buildWorker($seams, $this->operations?->document);
+        $preflight = $this->operations !== null
+            ? new Preflight(new OperationResolvers([$this->operations->resolver]))
+            : null;
+
+        return $assembler->buildWorker($seams, $preflight);
     }
 }

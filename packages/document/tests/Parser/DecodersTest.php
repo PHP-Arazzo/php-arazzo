@@ -7,6 +7,7 @@ namespace Alama\Arazzo\Tests\Parser;
 use Alama\Arazzo\Contracts\Spec\Enum\Format;
 use Alama\Arazzo\Document\Parser\DecodePolicy;
 use Alama\Arazzo\Document\Parser\Decoders;
+use Alama\Arazzo\Document\Parser\Exceptions\MaxBytesExceededException;
 use Alama\Arazzo\Document\Parser\Interfaces\DecoderInterface;
 
 it('creates a decoder for JSON format', function (): void {
@@ -30,5 +31,5 @@ it('passes custom decode policy to decoders', function (): void {
     $decoder = Decoders::for(Format::Json, $policy);
 
     expect(fn () => $decoder->decode('{"very_long_key": "very_long_value"}'))
-        ->toThrow(\Alama\Arazzo\Document\Parser\Exceptions\MaxBytesExceededException::class);
+        ->toThrow(MaxBytesExceededException::class);
 });

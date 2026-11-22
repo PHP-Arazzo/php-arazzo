@@ -32,9 +32,9 @@ quadrantChart
     contracts/Spec: [0.023, 0.02]
     contracts/State: [0.063, 0]
     contracts/Support: [0, 0.2]
-    document/Parser: [0.286, 0.087]
-    document/Validator: [0.538, 0.012]
-    document/_: [0.375, 0.286]
+    document/Parser: [0.333, 0.083]
+    document/Validator: [0.667, 0.012]
+    document/_: [0.25, 0.333]
     engine/Data: [0.75, 0]
     engine/Enum: [0, 0]
     engine/Exceptions: [0.143, 0]
@@ -53,7 +53,7 @@ quadrantChart
     expression/Data: [0.25, 0]
     expression/Enum: [0, 0]
     expression/Exceptions: [0.1, 0]
-    expression/Interfaces: [0.263, 1]
+    expression/Interfaces: [0.294, 1]
     expression/Internal: [0.857, 0]
     expression/JsonPath: [0.667, 0.143]
     expression/Plugins: [0.8, 0]
@@ -76,14 +76,15 @@ quadrantChart
     protocol-soap/Validation: [0.8, 0]
     runner/Async: [0.895, 0]
     runner/Events: [0.167, 0.091]
-    runner/Execution: [0.692, 0.063]
+    runner/Exceptions: [0.333, 0]
+    runner/Execution: [0.714, 0.063]
     runner/Interfaces: [1, 1]
-    runner/Sync: [0.857, 0]
-    runner/_: [0.842, 0.222]
-    sources/Normalizer: [0.313, 0.182]
-    sources/Resolver: [0.333, 0.231]
-    sources/Validator: [0.667, 0]
-    sources/_: [0.909, 0]
+    runner/Preflight: [0.429, 0]
+    runner/Sync: [0.87, 0]
+    runner/_: [0.85, 0.222]
+    sources/Normalizer: [0.357, 0.091]
+    sources/Resolver: [0.375, 0.231]
+    sources/_: [0.833, 0]
 ```
 
 ## God classes (SRP)
@@ -103,8 +104,6 @@ Concrete types over 300 LOC:
 | `WorkflowContext` | `contracts:State` | 442 |
 | `StepExecutionWorker` | `runner:Async` | 414 |
 | `WorkflowEngine` | `runner:Sync` | 360 |
-| `PreflightValidator` | `sources:Validator` | 325 |
-| `WorkflowExecutor` | `runner:Sync` | 310 |
 | `SchemaValidator` | `engine:Execution` | 302 |
 
 ## Fat interfaces (ISP)
@@ -114,7 +113,6 @@ Contracts declaring more than 7 methods:
 | Interface | Methods |
 |---|---:|
 | `ExpressionEngineInterface` <small>expression</small> | 12 |
-| `DocumentInterface` <small>document</small> | 9 |
 | `EvaluationEngineInterface` <small>evaluation</small> | 8 |
 
 ## Concrete hubs (DIP)

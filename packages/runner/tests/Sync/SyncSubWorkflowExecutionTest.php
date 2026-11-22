@@ -17,7 +17,6 @@ use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Document\DocumentInterface;
 use Alama\Arazzo\Document\NormalizedOpenApiOperation;
 use Alama\Arazzo\Document\ResolvedOperation;
-use Alama\Arazzo\Document\Validator\Data\ValidationResult;
 use Alama\Arazzo\Evaluation\EvaluationEngine;
 use Alama\Arazzo\Expression\ExpressionEngine;
 use Alama\Arazzo\Protocol\Http\Execution\StepOutputExtractor;

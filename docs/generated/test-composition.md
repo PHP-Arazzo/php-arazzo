@@ -59,14 +59,14 @@ pie showData
 
 ```mermaid
 pie showData
-    title Document — 96 test files
-    "Module-scoped": 92
+    title Document — 98 test files
+    "Module-scoped": 94
     "Root": 4
 ```
 
 | Suite | Files | Share |
 |---|---:|---:|
-| Module-scoped | 92 | 96% |
+| Module-scoped | 94 | 96% |
 | Root | 4 | 4% |
 
 ## Sources package
@@ -101,15 +101,15 @@ pie showData
 
 ```mermaid
 pie showData
-    title Runner — 55 test files
-    "Module-scoped": 47
+    title Runner — 57 test files
+    "Module-scoped": 49
     "Root": 8
 ```
 
 | Suite | Files | Share |
 |---|---:|---:|
-| Module-scoped | 47 | 85% |
-| Root | 8 | 15% |
+| Module-scoped | 49 | 86% |
+| Root | 8 | 14% |
 
 ## Cli package
 
@@ -171,8 +171,8 @@ pie showData
 
 ```mermaid
 pie showData
-    title Core — 41 test files
-    "Module-scoped": 23
+    title Core — 40 test files
+    "Module-scoped": 22
     "Feature": 6
     "Conformance": 4
     "Unit": 4
@@ -183,7 +183,7 @@ pie showData
 
 | Suite | Files | Share |
 |---|---:|---:|
-| Module-scoped | 23 | 56% |
+| Module-scoped | 22 | 55% |
 | Feature | 6 | 15% |
 | Conformance | 4 | 10% |
 | Unit | 4 | 10% |
@@ -195,8 +195,8 @@ pie showData
 
 ```mermaid
 pie showData
-    title Core (integration) — 41 test files
-    "Module-scoped": 23
+    title Core (integration) — 40 test files
+    "Module-scoped": 22
     "Feature": 6
     "Conformance": 4
     "Unit": 4
@@ -207,7 +207,7 @@ pie showData
 
 | Suite | Files | Share |
 |---|---:|---:|
-| Module-scoped | 23 | 56% |
+| Module-scoped | 22 | 55% |
 | Feature | 6 | 15% |
 | Conformance | 4 | 10% |
 | Unit | 4 | 10% |

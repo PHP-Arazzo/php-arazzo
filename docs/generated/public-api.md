@@ -405,19 +405,24 @@ this file on a commit is a public API change — review it deliberately.
 
 ### `SourceGraph` class
 - `public static function createRegistry(?ClientInterface $httpClient = null, ?RequestFactoryInterface $httpFactory = null, ): SourceRegistry`
-- `public static function document(?ExpressionEngineInterface $engine = null, ?OpenApiOperationResolver $operationResolver = null, ): DocumentInterface`
+- `public static function document(): DocumentInterface`
 - `public static function loader(?SourceRegistry $registry = null): SourceLoader`
 - `public static function operations(?SourceRegistry $registry = null): OpenApiOperationResolver`
-- `public static function runtime(?SourceRegistry $registry = null, ?OpenApiOperationResolver $operations = null, ?ExpressionEngineInterface $engine = null, ): SourceRuntime`
+- `public static function runtime(?SourceRegistry $registry = null, ?OpenApiOperationResolver $operations = null, ): SourceRuntime`
 - `public static function using(): DocumentInterface`
 
 ### `Alama\Arazzo\Sources`
 
 #### `SourceLoader` class
-- `public function __construct(private readonly SourceRegistry $sources, private readonly OpenApiVersionDetector $versionDetector, private readonly PreflightValidator $preflight, private readonly SourceNormalizerRegistryInterface $normalizers)`
+- `public function __construct(private readonly SourceRegistry $sources, private readonly OpenApiVersionDetector $versionDetector, private readonly SourceNormalizerRegistryInterface $normalizers)`
 - `public function detectOpenApiVersion(array $document): string`
+- `public function knownOperations(ArazzoDocument $document, string $basePath = ''): KnownOperations`
 - `public function normalizeSources(ArazzoDocument $document, string $basePath = ''): array`
-- `public function preflightSource(ArazzoDocument $document): ValidationResult`
+
+### `Alama\Arazzo\Sources\Normalizer`
+
+#### `OpenApiOperationHandle` class
+- `public function __construct(ResolvedOperation $operation, public readonly OpenApi $openApi, public readonly Operation $cebeOperation)`
 
 ## document
 
@@ -425,25 +430,19 @@ this file on a commit is a public API change — review it deliberately.
 - `public function load(string $path): ArazzoDocument;`
 - `public function loadFromJson(string $content, string $virtualPath = 'inline.json'): ArazzoDocument;`
 - `public function loadFromYaml(string $content, string $virtualPath = 'inline.yaml'): ArazzoDocument;`
-- `public function parse(RawDocument $raw): ArazzoDocument;`
-- `public function preflight(ArazzoDocument $document): ValidationResult;`
-- `public function preflightInputs(ArazzoDocument $document, string $workflowId, array $inputs): ValidationResult;`
-- `public function resolveOperation(Step $step, ArazzoDocument $document): ResolvedOperation;`
-- `public function validate(ArazzoDocument $document): ValidationResult;`
-- `public function withDecodePolicy(DecodePolicy $policy): self;`
+- `public function validate(ArazzoDocument $document, ?KnownOperations $operations = null): ValidationResult;`
+- `public function validateInputs(ArazzoDocument $document, string $workflowId, array $inputs): ValidationResult;`
 
 ### `Alama\Arazzo\Document`
 
 #### `Document` class
-- `public function __construct(private readonly ModelStack $model, private readonly ?OpenApiOperationResolverInterface $operationResolver = null)`
 - `public function load(string $path): ArazzoDocument`
 - `public function loadFromJson(string $content, string $virtualPath = 'inline.json'): ArazzoDocument`
 - `public function loadFromYaml(string $content, string $virtualPath = 'inline.yaml'): ArazzoDocument`
-- `public function parse(RawDocument $raw): ArazzoDocument`
-- `public function preflight(ArazzoDocument $document): ValidationResult`
-- `public function preflightInputs(ArazzoDocument $document, string $workflowId, array $inputs): ValidationResult`
-- `public function resolveOperation(Step $step, ArazzoDocument $document): ResolvedOperation`
-- `public function validate(ArazzoDocument $document): ValidationResult`
+- `public function validate(ArazzoDocument $document, ?KnownOperations $operations = null): ValidationResult`
+- `public function validateInputs(ArazzoDocument $document, string $workflowId, array $inputs): ValidationResult`
+- `public function withDecodePolicy(DecodePolicy $policy): self`
+- `public static function create(): self`
 
 #### `KnownOperations` class
 - `public function __construct(private array $operations = [])`
@@ -452,10 +451,6 @@ this file on a commit is a public API change — review it deliberately.
 - `public function toArray(): array`
 - `public function withOperation(string $source, string $operationId): self`
 - `public function withSource(string $source, array $operationIds): self`
-
-#### `ModelStack` class
-- `public function __construct(public Loader $loader, public Parser $parser, public Validator $validator, public ExpressionEngineInterface $engine, public ?PreflightValidator $preflight = null, public ?OpenApiOperationResolverInterface $operationResolver = null)`
-- `public function withLoader(Loader $loader): self`
 
 #### `OperationResolverInterface` interface
 - `public function resolve(Step $step, ArazzoDocument $document): ResolvedOperation;`
@@ -473,6 +468,9 @@ this file on a commit is a public API change — review it deliberately.
 - `public function withMaxDepth(int $maxDepth): self`
 - `public function withMaxNodes(int $maxNodes): self`
 - `public function withYamlPolicy(YamlPolicy $yaml): self`
+
+#### `Decoders` class
+- `public static function for(Format $format, ?DecodePolicy $policy = null): DecoderInterface`
 
 #### `YamlPolicy` class
 - `public function __construct(public int $maxAliases = self::DEFAULT_MAX_ALIASES, public bool $allowCustomTags = self::DEFAULT_ALLOW_CUSTOM_TAGS, public bool $allowObjectDeserialization = self::DEFAULT_ALLOW_OBJECT_DESERIALIZATION)`
@@ -504,7 +502,8 @@ this file on a commit is a public API change — review it deliberately.
 - `public function __construct(public string $code, public string $message, public string $path, public ?int $line = null, public Severity $severity = Severity::Error)`
 
 #### `SymbolTable` class
-- `public function __construct(public array $workflows, public array $sourceDescriptions, public array $components, public array $resolvedOperations = [])`
+- `public function __construct(public array $workflows, public array $sourceDescriptions, public array $components, KnownOperations|array $knownOperations = new KnownOperations(), array $resolvedOperations = [])`
+- `public static function build(ArazzoDocument $doc, KnownOperations|array|null $resolvedOperations = null): self`
 
 #### `ValidationResult` class
 - `public function __construct(public ArazzoDocument $document, public array $errors, public array $warnings, public array $inputs = [])`
@@ -512,11 +511,6 @@ this file on a commit is a public API change — review it deliberately.
 
 #### `Warning` class
 - `public function __construct(public string $code, public string $message, public string $path, public ?int $line = null, public Severity $severity = Severity::Warning)`
-
-### `Alama\Arazzo\Document\Validator\Exceptions`
-
-#### `PreflightFailureException` class
-- `public function __construct(string $message, public readonly ValidationResult $result)`
 
 ## engine
 
@@ -543,6 +537,20 @@ this file on a commit is a public API change — review it deliberately.
 - `public function __construct(DocumentInterface $documents, OpenApiOperationResolver $operationResolver, EvaluationEngineInterface $evaluationEngine,`
 - `public function execute(ArazzoDocument $document, string $workflowId, array $inputs = []): array`
 - `public function run(ArazzoDocument $document, string $workflowId, array $inputs = []): array`
+
+### `Alama\Arazzo\Runner\Exceptions`
+
+#### `PreflightFailureException` class
+- `public function __construct(string $message, public readonly ValidationResult $result, ?\Throwable $previous = null)`
+
+### `Alama\Arazzo\Runner\Preflight`
+
+#### `OperationResolvers` class
+- `public function __construct(private iterable $resolvers)`
+- `public function supports(Step $step, ArazzoDocument $document): bool`
+
+#### `Preflight` class
+- `public function __construct(private OperationResolvers $resolvers, private array $supportedXPath = ['xpath-10'])`
 
 ## cli
 

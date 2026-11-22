@@ -11,7 +11,7 @@ targets. Regenerated before every commit.
 
 | Module | Files | LOC | Fan-in | Fan-out | Instability | Flag |
 |---|---:|---:|---:|---:|---:|---|
-| `cli:Console` | 12 | 931 | 0 | 18 | 1.00 |  |
+| `cli:Console` | 11 | 895 | 0 | 18 | 1.00 |  |
 | `cli:Generator` | 2 | 139 | 0 | 1 | 1.00 |  |
 | `cli:Renderer` | 1 | 254 | 1 | 1 | 0.50 |  |
 | `contracts:Dependency` | 3 | 333 | 4 | 2 | 0.33 |  |
@@ -20,9 +20,9 @@ targets. Regenerated before every commit.
 | `contracts:Spec` | 49 | 1158 | 42 | 1 | 0.02 |  |
 | `contracts:State` | 3 | 974 | 15 | 1 | 0.06 |  |
 | `contracts:Support` | 5 | 180 | 11 | 0 | 0.00 |  |
-| `document:Parser` | 23 | 2196 | 5 | 2 | 0.29 |  |
-| `document:Validator` | 83 | 5490 | 6 | 7 | 0.54 |  |
-| `(document root)` | 7 | 409 | 10 | 6 | 0.38 |  |
+| `document:Parser` | 24 | 2217 | 4 | 2 | 0.33 |  |
+| `document:Validator` | 82 | 5600 | 4 | 8 | 0.67 |  |
+| `(document root)` | 6 | 299 | 12 | 4 | 0.25 |  |
 | `engine:Data` | 2 | 72 | 1 | 3 | 0.75 |  |
 | `engine:Enum` | 1 | 16 | 1 | 0 | 0.00 |  |
 | `engine:Exceptions` | 1 | 41 | 6 | 1 | 0.14 |  |
@@ -41,7 +41,7 @@ targets. Regenerated before every commit.
 | `expression:Data` | 6 | 195 | 12 | 4 | 0.25 |  |
 | `expression:Enum` | 2 | 45 | 5 | 0 | 0.00 |  |
 | `expression:Exceptions` | 2 | 62 | 9 | 1 | 0.10 |  |
-| `expression:Interfaces` | 5 | 206 | 14 | 5 | 0.26 |  |
+| `expression:Interfaces` | 5 | 206 | 12 | 5 | 0.29 |  |
 | `expression:Internal` | 3 | 430 | 1 | 6 | 0.86 |  |
 | `expression:JsonPath` | 7 | 1371 | 1 | 2 | 0.67 |  |
 | `expression:Plugins` | 3 | 125 | 1 | 4 | 0.80 |  |
@@ -62,25 +62,26 @@ targets. Regenerated before every commit.
 | `protocol-soap:Resolver` | 1 | 135 | 1 | 1 | 0.50 |  |
 | `protocol-soap:Transfer` | 2 | 201 | 2 | 1 | 0.33 |  |
 | `protocol-soap:Validation` | 1 | 138 | 1 | 4 | 0.80 |  |
-| `runner:Async` | 7 | 1340 | 2 | 17 | 0.89 |  |
+| `runner:Async` | 7 | 1344 | 2 | 17 | 0.89 |  |
 | `runner:Events` | 11 | 317 | 5 | 1 | 0.17 |  |
-| `runner:Execution` | 16 | 367 | 4 | 9 | 0.69 |  |
+| `runner:Exceptions` | 1 | 19 | 2 | 1 | 0.33 |  |
+| `runner:Execution` | 16 | 368 | 4 | 10 | 0.71 |  |
 | `runner:Interfaces` | 1 | 24 | 0 | 2 | 1.00 |  |
-| `runner:Sync` | 6 | 1090 | 3 | 18 | 0.86 | ⚠ unstable hub |
-| `(runner root)` | 9 | 522 | 3 | 16 | 0.84 | ⚠ unstable hub |
-| `sources:Normalizer` | 11 | 1271 | 11 | 5 | 0.31 |  |
-| `sources:Resolver` | 13 | 501 | 6 | 3 | 0.33 |  |
-| `sources:Validator` | 1 | 324 | 2 | 4 | 0.67 |  |
-| `(sources root)` | 3 | 335 | 1 | 10 | 0.91 |  |
+| `runner:Preflight` | 2 | 148 | 4 | 3 | 0.43 |  |
+| `runner:Sync` | 6 | 1074 | 3 | 20 | 0.87 | ⚠ unstable hub |
+| `(runner root)` | 9 | 528 | 3 | 17 | 0.85 | ⚠ unstable hub |
+| `sources:Normalizer` | 11 | 1375 | 9 | 5 | 0.36 |  |
+| `sources:Resolver` | 13 | 501 | 5 | 3 | 0.38 |  |
+| `(sources root)` | 3 | 303 | 1 | 5 | 0.83 |  |
 
-Total cross-module edges: **1195**
+Total cross-module edges: **1181**
 
 ## Most entangled module pairs
 
 | From → To | References |
 |---|---:|
 | `document:Validator` → `contracts:Spec` | 148 |
-| `document:Parser` → `contracts:Spec` | 38 |
+| `document:Parser` → `contracts:Spec` | 39 |
 | `(evaluation root)` → `contracts:Spec` | 28 |
 | `runner:Sync` → `contracts:Spec` | 25 |
 | `runner:Async` → `contracts:Spec` | 23 |
@@ -89,5 +90,5 @@ Total cross-module edges: **1195**
 | `document:Validator` → `expression:Interfaces` | 15 |
 | `(runner root)` → `contracts:Interfaces` | 14 |
 | `runner:Async` → `runner:Events` | 14 |
-| `(document root)` → `contracts:Spec` | 13 |
 | `engine:Execution` → `contracts:Spec` | 13 |
+| `sources:Normalizer` → `contracts:Spec` | 13 |

@@ -66,7 +66,6 @@ flowchart TB
     subgraph PKG_M_sources["sources"]
         M_sources_Normalizer["sources:Normalizer"]:::node
         M_sources_Resolver["sources:Resolver"]:::node
-        M_sources_Validator["sources:Validator"]:::node
         M_sources__["(sources package root)"]:::node
     end
     subgraph PKG_M_protocol_http["protocol-http"]
@@ -91,8 +90,10 @@ flowchart TB
     subgraph PKG_M_runner["runner"]
         M_runner_Async["runner:Async"]:::node
         M_runner_Events["runner:Events"]:::node
+        M_runner_Exceptions["runner:Exceptions"]:::node
         M_runner_Execution["runner:Execution"]:::node
         M_runner_Interfaces["runner:Interfaces"]:::node
+        M_runner_Preflight["runner:Preflight"]:::node
         M_runner_Sync["runner:Sync"]:::node
         M_runner__["(runner package root)"]:::node
     end
@@ -108,7 +109,7 @@ flowchart TB
     M_cli_Console --> M_contracts_Spec
     M_cli_Console --> M_contracts_State
     M_cli_Console --> M_document_Parser
-    M_cli_Console --> M_document_Validator
+    M_cli_Console --> M_document__
     M_cli_Console --> M_engine_Runtime
     M_cli_Console --> M_evaluation__
     M_cli_Console --> M_expression__
@@ -133,6 +134,7 @@ flowchart TB
     M_document_Validator --> M_contracts_Dependency
     M_document_Validator --> M_contracts_Spec
     M_document_Validator --> M_contracts_Support
+    M_document_Validator --> M_document__
     M_document_Validator --> M_expression_Data
     M_document_Validator --> M_expression_Enum
     M_document_Validator --> M_expression_Exceptions
@@ -140,9 +142,7 @@ flowchart TB
     M_document__ --> M_contracts_Spec
     M_document__ --> M_document_Parser
     M_document__ --> M_document_Validator
-    M_document__ --> M_expression_Interfaces
-    M_document__ -.->|violation| M_sources_Normalizer
-    M_document__ -.->|violation| M_sources_Validator
+    M_document__ --> M_expression__
     M_engine_Data --> M_contracts_Spec
     M_engine_Data --> M_contracts_State
     M_engine_Data --> M_engine_Enum
@@ -308,18 +308,19 @@ flowchart TB
     M_runner_Async --> M_contracts_Spec
     M_runner_Async --> M_contracts_State
     M_runner_Async --> M_contracts_Support
-    M_runner_Async --> M_document_Validator
-    M_runner_Async --> M_document__
     M_runner_Async --> M_engine_Exceptions
     M_runner_Async --> M_engine_Execution
     M_runner_Async --> M_engine_Runtime
     M_runner_Async --> M_evaluation__
     M_runner_Async --> M_expression_Data
     M_runner_Async --> M_runner_Events
+    M_runner_Async --> M_runner_Exceptions
     M_runner_Async --> M_runner_Execution
+    M_runner_Async --> M_runner_Preflight
     M_runner_Async --> M_runner_Sync
     M_runner_Async --> M_runner__
     M_runner_Events --> M_contracts_Support
+    M_runner_Exceptions --> M_document_Validator
     M_runner_Execution --> M_contracts_Interfaces
     M_runner_Execution --> M_contracts_Spec
     M_runner_Execution --> M_contracts_State
@@ -327,10 +328,14 @@ flowchart TB
     M_runner_Execution --> M_document__
     M_runner_Execution --> M_engine_Runtime
     M_runner_Execution --> M_runner_Events
+    M_runner_Execution --> M_runner_Preflight
     M_runner_Execution --> M_runner_Sync
     M_runner_Execution --> M_sources_Normalizer
     M_runner_Interfaces --> M_contracts_Interfaces
     M_runner_Interfaces --> M_contracts_Spec
+    M_runner_Preflight --> M_contracts_Spec
+    M_runner_Preflight --> M_document_Validator
+    M_runner_Preflight --> M_document__
     M_runner_Sync --> M_contracts_Dependency
     M_runner_Sync --> M_contracts_Exceptions
     M_runner_Sync --> M_contracts_Interfaces
@@ -346,7 +351,9 @@ flowchart TB
     M_runner_Sync --> M_expression_Data
     M_runner_Sync --> M_protocol_http_Execution
     M_runner_Sync --> M_runner_Events
+    M_runner_Sync --> M_runner_Exceptions
     M_runner_Sync --> M_runner_Execution
+    M_runner_Sync --> M_runner_Preflight
     M_runner_Sync --> M_runner__
     M_runner_Sync --> M_sources_Normalizer
     M_runner__ --> M_contracts_Exceptions
@@ -363,6 +370,7 @@ flowchart TB
     M_runner__ --> M_runner_Async
     M_runner__ --> M_runner_Events
     M_runner__ --> M_runner_Execution
+    M_runner__ --> M_runner_Preflight
     M_runner__ --> M_runner_Sync
     M_runner__ --> M_sources_Normalizer
     M_sources_Normalizer --> M_contracts_Interfaces
@@ -373,20 +381,11 @@ flowchart TB
     M_sources_Resolver --> M_contracts_Interfaces
     M_sources_Resolver --> M_contracts_Spec
     M_sources_Resolver --> M_document_Parser
-    M_sources_Validator --> M_contracts_Spec
-    M_sources_Validator --> M_document_Validator
-    M_sources_Validator --> M_sources_Normalizer
-    M_sources_Validator --> M_sources_Resolver
     M_sources__ --> M_contracts_Interfaces
     M_sources__ --> M_contracts_Spec
-    M_sources__ --> M_document_Parser
-    M_sources__ --> M_document_Validator
     M_sources__ --> M_document__
-    M_sources__ --> M_expression_Interfaces
-    M_sources__ --> M_expression__
     M_sources__ --> M_sources_Normalizer
     M_sources__ --> M_sources_Resolver
-    M_sources__ --> M_sources_Validator
     classDef node fill:#e8f0fe,stroke:#4285f4,color:#1a1a1a;
     classDef laravelNode fill:#fef7e0,stroke:#f9ab00,color:#1a1a1a;
     classDef rootNode fill:#f1f3f4,stroke:#9aa0a6,color:#1a1a1a;
@@ -394,11 +393,10 @@ flowchart TB
 
 ## Package boundaries
 
-**3 package boundary violation(s):**
+**2 package boundary violation(s):**
 
 | Package | ↑ depends on package | Refs | Modules involved |
 |---|---|---:|---|
-| `document` | `sources` | 3 | `(document package root) -> sources:Normalizer`, `(document package root) -> sources:Validator` |
 | `engine` | `document` | 1 | `engine:Execution -> document:Parser` |
 | `engine` | `evaluation` | 1 | `engine:Execution -> (evaluation package root)` |
 
@@ -406,17 +404,16 @@ flowchart TB
 
 | From package | To package | Refs |
 |---|---|---:|
-| `cli` | `contracts` | 27 |
+| `cli` | `contracts` | 26 |
 | `cli` | `document` | 10 |
 | `cli` | `engine` | 7 |
 | `cli` | `evaluation` | 2 |
-| `cli` | `expression` | 2 |
+| `cli` | `expression` | 1 |
 | `cli` | `protocol-http` | 3 |
 | `cli` | `runner` | 9 |
 | `cli` | `sources` | 3 |
-| `document` | `contracts` | 204 |
+| `document` | `contracts` | 200 |
 | `document` | `expression` | 31 |
-| `document` | `sources` | 3 |
 | `engine` | `contracts` | 47 |
 | `engine` | `document` | 1 |
 | `engine` | `evaluation` | 1 |
@@ -438,24 +435,21 @@ flowchart TB
 | `protocol-soap` | `engine` | 3 |
 | `protocol-soap` | `evaluation` | 1 |
 | `protocol-soap` | `sources` | 3 |
-| `runner` | `contracts` | 127 |
-| `runner` | `document` | 10 |
+| `runner` | `contracts` | 133 |
+| `runner` | `document` | 11 |
 | `runner` | `engine` | 34 |
 | `runner` | `evaluation` | 11 |
 | `runner` | `expression` | 6 |
 | `runner` | `protocol-http` | 4 |
 | `runner` | `sources` | 5 |
-| `sources` | `contracts` | 34 |
-| `sources` | `document` | 27 |
-| `sources` | `expression` | 2 |
+| `sources` | `contracts` | 30 |
+| `sources` | `document` | 17 |
 
 ## Module-level detail
 
-**4 module-level violation(s) found:**
+**2 module-level violation(s) found:**
 
 | From | ↑ depends on | Weight |
 |---|---|---:|
-| `(document package root)` | `sources:Normalizer` | 2 |
-| `(document package root)` | `sources:Validator` | 1 |
 | `engine:Execution` | `document:Parser` | 1 |
 | `engine:Execution` | `(evaluation package root)` | 1 |

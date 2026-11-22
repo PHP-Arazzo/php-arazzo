@@ -75,7 +75,6 @@ final class SourceGraph
         }
 
         $defaultRegistry = $registry ?? self::defaultRegistry();
-        $defaultOperations = self::operations($registry);
 
         // Build normalizer registry
         $normalizerRegistry = new SourceNormalizerRegistry();
