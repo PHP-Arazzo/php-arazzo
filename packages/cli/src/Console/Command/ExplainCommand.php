@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Cli\Console\Command;
 
-use Alama\Arazzo\Cli\Console\DocumentLoader;
 use Alama\Arazzo\Contracts\Dependency\DependencyGraph;
+use Alama\Arazzo\Document\Document;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -27,7 +27,7 @@ final class ExplainCommand extends Command
     {
         /** @var string $file */
         $file = $input->getArgument('file');
-        $document = DocumentLoader::load($file);
+        $document = Document::create()->load($file);
 
         /** @var string|null $workflowId */
         $workflowId = $input->getOption('workflow');

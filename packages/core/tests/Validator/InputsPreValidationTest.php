@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-use Alama\Arazzo\Cli\Console\DocumentLoader;
 use Alama\Arazzo\Contracts\Support\Events\Dispatcher\SimpleEventDispatcher;
+use Alama\Arazzo\Document\Document;
 use Alama\Arazzo\Document\DocumentInterface;
-use Alama\Arazzo\Document\Validator\Exceptions\PreflightFailureException;
 use Alama\Arazzo\Evaluation\EvaluationEngine;
 use Alama\Arazzo\Events\RunStartedEvent;
 use Alama\Arazzo\Expression\ExpressionEngine;
 use Alama\Arazzo\Protocol\Http\Execution\DefaultOpenApiExecutor;
 use Alama\Arazzo\Protocol\Http\Execution\ResponseSchemaValidator;
 use Alama\Arazzo\Protocol\Http\Execution\StepOutputExtractor;
+use Alama\Arazzo\Runner\Exceptions\PreflightFailureException;
 use Alama\Arazzo\Runner\Sync\StepExecutor;
 use Alama\Arazzo\Runner\Sync\WorkflowEngine;
 use Alama\Arazzo\Runner\Sync\WorkflowExecutor;
@@ -24,20 +24,20 @@ use GuzzleHttp\Psr7\HttpFactory;
 const INPUTS_SCHEMA_DOC = __DIR__.'/../fixtures/inputs-schema/workflow.arazzo.yaml';
 
 it('accepts inputs matching the declared schema', function (): void {
-    $document = DocumentLoader::load(INPUTS_SCHEMA_DOC);
+    $document = Document::create()->load(INPUTS_SCHEMA_DOC);
     $validator = preflightForInputsDoc();
 
-    $result = $validator->preflightInputs($document, 'bookRide', ['rideId' => 42, 'rider' => 'sam']);
+    $result = $validator->validateInputs($document, 'bookRide', ['rideId' => 42, 'rider' => 'sam']);
 
     expect($result->isValid())->toBeTrue(json_encode($result->errors));
 });
 
 it('rejects missing required and wrong-typed inputs before execution', function (): void {
-    $document = DocumentLoader::load(INPUTS_SCHEMA_DOC);
+    $document = Document::create()->load(INPUTS_SCHEMA_DOC);
     $validator = preflightForInputsDoc();
 
     // rideId as string violates the integer type; rider is not required.
-    $result = $validator->preflightInputs($document, 'bookRide', ['rideId' => 'not-an-int']);
+    $result = $validator->validateInputs($document, 'bookRide', ['rideId' => 'not-an-int']);
 
     expect($result->isValid())->toBeFalse()
         ->and($result->errors[0]->code)->toBe('preflight.inputs_schema')
@@ -45,10 +45,10 @@ it('rejects missing required and wrong-typed inputs before execution', function 
 });
 
 it('treats documents without an inputs schema as unconstrained', function (): void {
-    $document = DocumentLoader::load(__DIR__.'/../fixtures/loader/minimal.yaml');
+    $document = Document::create()->load(__DIR__.'/../fixtures/loader/minimal.yaml');
     $validator = preflightForInputsDoc();
 
-    $result = $validator->preflightInputs($document, 'wf', ['anything' => ['goes' => true]]);
+    $result = $validator->validateInputs($document, 'wf', ['anything' => ['goes' => true]]);
 
     expect($result->isValid())->toBeTrue();
 });
@@ -60,7 +60,7 @@ it('blocks executor runs on invalid inputs before any event fires', function ():
         $fired[] = $e::class;
     });
 
-    $document = DocumentLoader::load(INPUTS_SCHEMA_DOC);
+    $document = Document::create()->load(INPUTS_SCHEMA_DOC);
 
     $engine = new EvaluationEngine(expression: new ExpressionEngine());
     $runtime = SourceGraph::runtime(new SourceRegistry(new DefaultSourceResolver([])));
@@ -78,7 +78,8 @@ it('blocks executor runs on invalid inputs before any event fires', function ():
         ),
         workflowEngine: new WorkflowEngine($engine),
         events: $events,
-        preflight: $documents,
+        preflight: null,
+        document: $documents,
     );
 
     try {

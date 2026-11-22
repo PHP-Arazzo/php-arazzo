@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Cli\Console\Command;
 
-use Alama\Arazzo\Cli\Console\DocumentLoader;
 use Alama\Arazzo\Document\Document;
 use Alama\Arazzo\Document\KnownOperations;
 use Alama\Arazzo\Document\Parser\Exceptions\LoaderException;
@@ -30,7 +29,7 @@ final class ValidateCommand extends Command
         $file = $input->getArgument('file');
 
         try {
-            $document = DocumentLoader::load($file);
+            $document = Document::create()->load($file);
         } catch (LoaderException|ParserException $e) {
             $output->writeln('<error>PARSE ERROR</error> '.$e->getMessage());
 
