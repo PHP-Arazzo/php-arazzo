@@ -309,7 +309,8 @@ function makeHandoffWorker(ArazzoDocument $document, WorkerHandoffExpressionReso
     $store = new WorkerMockStateStore();
     $executionRegistry = new WorkerMockExecutionRegistry();
 
-    $executors = new OperationExecutorRegistry();
+    OperationExecutorRegistry::reset();
+    $executors = OperationExecutorRegistry::create();
     $executors->register(new WorkerHandoffSuspendingExecutor());
 
     $persistence = new RunPersistence($store, new WorkerMockEventLedger(), $executionRegistry);
@@ -352,4 +353,8 @@ it('emits an empty correlation id for a receive step whose correlation expressio
     expect($pendingEvents)->toHaveCount(1)
         ->and($pendingEvents[0]->correlationId)->toBe('')
         ->and($pendingEvents[0]->channelPath)->toBe('channels/approvals');
+});
+
+afterEach(function (): void {
+    OperationExecutorRegistry::reset();
 });

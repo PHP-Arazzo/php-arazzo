@@ -37,7 +37,7 @@ composer require guzzlehttp/guzzle
 
 require 'vendor/autoload.php';
 
-use Alama\Arazzo\Execution\StepOutputExtractor;use Alama\Arazzo\Execution\ResponseSchemaValidator;use Alama\Arazzo\Execution\DefaultOpenApiExecutor;use Alama\Arazzo\Execution\IdempotencyKeyInjector;use Alama\Arazzo\Execution\StepExecutor;use Alama\Arazzo\Execution\WorkflowExecutor;use Alama\Arazzo\Normalizer\OpenApiDocumentLoader;use Alama\Arazzo\Parser\Decoders\NativeJsonDecoder;use Alama\Arazzo\Parser\Decoders\SymfonyYamlDecoder;use Alama\Arazzo\Parser\Loader;use Alama\Arazzo\Parser\Parser;use Alama\Arazzo\Resolver\DefaultSourceResolver;use Alama\Arazzo\Resolver\Fetchers\HttpFetcher;use Alama\Arazzo\Resolver\Fetchers\LocalFetcher;use Alama\Arazzo\Resolver\SourceRegistry;use Alama\Arazzo\Runner\Evaluation\ArazzoCriteriaEvaluator;use Alama\Arazzo\Runner\Evaluation\ArazzoExpressionResolver;use Alama\Arazzo\Runner\Evaluation\ExpressionEvaluator;use Alama\Arazzo\Runner\Evaluation\Xpath\DomXpathEvaluator;use Alama\Arazzo\Runner\Normalizer\OpenApi30Normalizer;use Alama\Arazzo\Runner\Normalizer\OpenApi31Normalizer;use Alama\Arazzo\Runner\Normalizer\OpenApiVersionDetector;use Alama\Arazzo\Runner\Resolver\OpenApiOperationResolver;use Alama\Arazzo\Validator\PreflightValidator;use GuzzleHttp\Client;use GuzzleHttp\Psr7\HttpFactory;
+use Alama\Arazzo\Execution\StepOutputExtractor;use Alama\Arazzo\Execution\ResponseSchemaValidator;use Alama\Arazzo\Execution\DefaultOpenApiExecutor;use Alama\Arazzo\Execution\IdempotencyKeyInjector;use Alama\Arazzo\Execution\StepExecutor;use Alama\Arazzo\Execution\WorkflowExecutor;use Alama\Arazzo\Normalizer\OpenApiDocumentLoader;use Alama\Arazzo\Parser\Decoders\NativeJsonDecoder;use Alama\Arazzo\Parser\Decoders\SymfonyYamlDecoder;use Alama\Arazzo\Parser\Loader;use Alama\Arazzo\Parser\Parser;use Alama\Arazzo\Resolver\DefaultSourceResolver;use Alama\Arazzo\Resolver\Fetchers\HttpFetcher;use Alama\Arazzo\Resolver\Fetchers\LocalFetcher;use Alama\Arazzo\Runner\Evaluation\ArazzoCriteriaEvaluator;use Alama\Arazzo\Runner\Evaluation\ArazzoExpressionResolver;use Alama\Arazzo\Runner\Evaluation\ExpressionEvaluator;use Alama\Arazzo\Runner\Evaluation\Xpath\DomXpathEvaluator;use Alama\Arazzo\Runner\Normalizer\OpenApi30Normalizer;use Alama\Arazzo\Runner\Normalizer\OpenApi31Normalizer;use Alama\Arazzo\Runner\Normalizer\OpenApiVersionDetector;use Alama\Arazzo\Runner\Resolver\OpenApiOperationResolver;use Alama\Arazzo\Validator\PreflightValidator;use GuzzleHttp\Client;use GuzzleHttp\Psr7\HttpFactory;
 
 // 1. Parse the Arazzo document.
 $loader = new Loader(new SymfonyYamlDecoder(), new NativeJsonDecoder());
@@ -48,11 +48,11 @@ $document = $parser->parse($loader->load(__DIR__ . '/workflow.arazzo.yaml'));
 $httpClient = new Client();
 $httpFactory = new HttpFactory();
 
-$sourceResolver = new SourceRegistry(new DefaultSourceResolver([
+$sourceResolver = new DefaultSourceResolver([
     'http' => new HttpFetcher($httpClient, $httpFactory),
     'https' => new HttpFetcher($httpClient, $httpFactory),
     'file' => new LocalFetcher(),
-]));
+]);
 
 // 3. Wire up the execution pipeline.
 $evaluator = new ExpressionEvaluator();

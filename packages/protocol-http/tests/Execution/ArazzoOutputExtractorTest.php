@@ -23,7 +23,6 @@ use Alama\Arazzo\Expression\ExpressionEngine;
 use Alama\Arazzo\Protocol\Http\Execution\StepOutputExtractor;
 use Alama\Arazzo\Sources\Resolver\DefaultSourceResolver;
 use Alama\Arazzo\Sources\Resolver\Fetchers\LocalFetcher;
-use Alama\Arazzo\Sources\Resolver\SourceRegistry;
 use Alama\Arazzo\Sources\SourceGraph;
 
 beforeEach(function () {
@@ -59,9 +58,9 @@ beforeEach(function () {
     file_put_contents($this->openApiFile, $openApiJson);
 
     $this->makeExtractor = function (): StepOutputExtractor {
-        $runtime = SourceGraph::runtime(new SourceRegistry(
+        $runtime = SourceGraph::runtime(
             new DefaultSourceResolver(fetchers: ['file' => new LocalFetcher()]),
-        ));
+        );
 
         return new StepOutputExtractor($runtime->operations, new EvaluationEngine(expression: new ExpressionEngine()), new ExpressionEngine());
     };

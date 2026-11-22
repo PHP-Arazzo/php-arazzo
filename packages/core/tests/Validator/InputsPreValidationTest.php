@@ -18,7 +18,6 @@ use Alama\Arazzo\Runner\Sync\StepExecutor;
 use Alama\Arazzo\Runner\Sync\WorkflowEngine;
 use Alama\Arazzo\Runner\Sync\WorkflowExecutor;
 use Alama\Arazzo\Sources\Resolver\DefaultSourceResolver;
-use Alama\Arazzo\Sources\Resolver\SourceRegistry;
 use Alama\Arazzo\Sources\SourceGraph;
 use Alama\Arazzo\Tests\Support\FakePsr18Client;
 use GuzzleHttp\Psr7\HttpFactory;
@@ -65,7 +64,7 @@ it('blocks executor runs on invalid inputs before any event fires', function ():
     $document = Document::create()->load(INPUTS_SCHEMA_DOC);
 
     $engine = new EvaluationEngine(expression: new ExpressionEngine());
-    $runtime = SourceGraph::runtime(new SourceRegistry(new DefaultSourceResolver([])));
+    $runtime = SourceGraph::runtime(new DefaultSourceResolver([]));
     $documents = $runtime->document;
     $outputExtractor = new StepOutputExtractor($runtime->operations, $engine, new ExpressionEngine());
     $schemaValidator = new ResponseSchemaValidator($runtime->operations);

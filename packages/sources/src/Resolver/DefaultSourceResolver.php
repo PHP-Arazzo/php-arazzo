@@ -11,6 +11,7 @@ use Alama\Arazzo\Document\Parser\DecodePolicy;
 use Alama\Arazzo\Document\Parser\Decoders;
 use Alama\Arazzo\Sources\Resolver\Exceptions\SourceFetchException;
 use Alama\Arazzo\Sources\Resolver\Exceptions\SourceParseException;
+use Alama\Arazzo\Sources\Resolver\Exceptions\UnresolvableReferenceException;
 use Alama\Arazzo\Sources\Resolver\Fetchers\HttpFetcher;
 use Alama\Arazzo\Sources\Resolver\Fetchers\LocalFetcher;
 use Alama\Arazzo\Sources\Resolver\Interfaces\SourceFetcher;
@@ -22,7 +23,7 @@ use Throwable;
 /**
  * @internal stays out of the advertised contract; not part of the public API surface
  */
-final readonly class DefaultSourceResolver implements SourceResolver
+final class DefaultSourceResolver implements SourceResolver
 {
     /**
      * Remote sources are advisory during validation (R5), so an unreachable
@@ -32,9 +33,15 @@ final readonly class DefaultSourceResolver implements SourceResolver
 
     private const HTTP_REQUEST_TIMEOUT = 5.0;
 
+    /** @var array<string, SourceDocument> */
+    private array $documents = [];
+
+    /** @var array<string, true> */
+    private array $resolving = [];
+
     public function __construct(
         /** @var array<string, SourceFetcher> */
-        private array $fetchers,
+        private array $fetchers = [],
         private ?DecodePolicy $decodePolicy = null,
     ) {}
 
@@ -79,44 +86,75 @@ final readonly class DefaultSourceResolver implements SourceResolver
         return new self($fetchers, $decodePolicy);
     }
 
+    public function get(string $name): ?SourceDocument
+    {
+        return $this->documents[$name] ?? null;
+    }
+
+    public function register(SourceDocument $document): void
+    {
+        $this->documents[$document->name] = $document;
+    }
+
     public function resolve(SourceDescription $source, string $basePath): SourceDocument
     {
-        $scheme = parse_url($source->url, PHP_URL_SCHEME);
-        if (!is_string($scheme) || $scheme === '') {
-            $scheme = 'file';
+        if (isset($this->documents[$source->name])) {
+            return $this->documents[$source->name];
         }
 
-        $fetcher = $this->fetchers[$scheme] ?? null;
-        if ($fetcher === null) {
-            throw new SourceFetchException("No fetcher configured for scheme '{$scheme}'.");
+        if (isset($this->resolving[$source->name])) {
+            throw new UnresolvableReferenceException(
+                "Circular reference detected when resolving source '{$source->name}'",
+                $source->name,
+            );
         }
 
-        $content = $fetcher->fetch($source->url, $basePath);
+        $this->resolving[$source->name] = true;
 
-        $isYaml = !str_starts_with(trim($content), '{');
         try {
-            $decoded = $isYaml
-                ? Decoders::for(Format::Yaml, $this->decodePolicy)->decode($content)
-                : Decoders::for(Format::Json, $this->decodePolicy)->decode($content);
-        } catch (Throwable $e) {
-            throw new SourceParseException("Failed to parse source '{$source->name}': ".$e->getMessage(), 0, $e);
+            $scheme = parse_url($source->url, PHP_URL_SCHEME);
+            if (!is_string($scheme) || $scheme === '') {
+                $scheme = 'file';
+            }
+
+            $fetcher = $this->fetchers[$scheme] ?? null;
+            if ($fetcher === null) {
+                throw new SourceFetchException("No fetcher configured for scheme '{$scheme}'.");
+            }
+
+            $content = $fetcher->fetch($source->url, $basePath);
+
+            $isYaml = !str_starts_with(trim($content), '{');
+            try {
+                $decoded = $isYaml
+                    ? Decoders::for(Format::Yaml, $this->decodePolicy)->decode($content)
+                    : Decoders::for(Format::Json, $this->decodePolicy)->decode($content);
+            } catch (Throwable $e) {
+                throw new SourceParseException("Failed to parse source '{$source->name}': ".$e->getMessage(), 0, $e);
+            }
+
+            if (!is_array($decoded)) {
+                throw new SourceParseException("Parsed document for '{$source->name}' must be an array.");
+            }
+
+            // Canonical URI determination can be simple for now.
+            // If it's a file scheme, and relative, it should be resolved against basePath.
+            $canonicalUri = $this->resolveCanonicalUri($source->url, $basePath);
+
+            /** @var array<string, mixed> $decoded */
+            $document = new SourceDocument(
+                name: $source->name,
+                type: $source->type,
+                canonicalUri: $canonicalUri,
+                content: $decoded,
+            );
+
+            $this->register($document);
+
+            return $document;
+        } finally {
+            unset($this->resolving[$source->name]);
         }
-
-        if (!is_array($decoded)) {
-            throw new SourceParseException("Parsed document for '{$source->name}' must be an array.");
-        }
-
-        // Canonical URI determination can be simple for now.
-        // If it's a file scheme, and relative, it should be resolved against basePath.
-        $canonicalUri = $this->resolveCanonicalUri($source->url, $basePath);
-
-        /** @var array<string, mixed> $decoded */
-        return new SourceDocument(
-            name: $source->name,
-            type: $source->type,
-            canonicalUri: $canonicalUri,
-            content: $decoded,
-        );
     }
 
     private function resolveCanonicalUri(string $url, string $basePath): string

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Sources\Normalizer;
 
+use Alama\Arazzo\Contracts\Attributes\AsSourceNormalizer;
 use Alama\Arazzo\Contracts\Interfaces\SourceNormalizerInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
@@ -46,6 +47,7 @@ use InvalidArgumentException;
  *
  * @internal stays out of the advertised contract; not part of the public API surface
  */
+#[AsSourceNormalizer(SourceType::Wsdl, priority: 0)]
 final class WsdlSourceNormalizer implements SourceNormalizerInterface
 {
     private const WSDL_NS = 'http://schemas.xmlsoap.org/wsdl/';

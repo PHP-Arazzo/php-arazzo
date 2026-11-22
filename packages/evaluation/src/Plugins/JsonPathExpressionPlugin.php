@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Evaluation\Plugins;
 
+use Alama\Arazzo\Contracts\Attributes\AsExpressionPlugin;
 use Alama\Arazzo\Contracts\Interfaces\ExpressionEvaluatorPluginInterface;
 use Alama\Arazzo\Contracts\Spec\Expression;
 use Alama\Arazzo\Expression\Interfaces\ExpressionEngineInterface;
 
+#[AsExpressionPlugin(priority: 0)]
 final readonly class JsonPathExpressionPlugin implements ExpressionEvaluatorPluginInterface
 {
     public function __construct(

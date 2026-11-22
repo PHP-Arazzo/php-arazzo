@@ -173,9 +173,11 @@ flowchart TB
     M_evaluation_Interfaces --> M_contracts_Spec
     M_evaluation_Interfaces --> M_evaluation_Data
     M_evaluation_Interfaces --> M_evaluation_Events
+    M_evaluation_Plugins --> M_contracts_Attributes
     M_evaluation_Plugins --> M_contracts_Interfaces
     M_evaluation_Plugins --> M_contracts_Spec
     M_evaluation_Plugins --> M_expression_Interfaces
+    M_evaluation_Registries --> M_contracts_Attributes
     M_evaluation_Registries --> M_contracts_Interfaces
     M_evaluation_Registries --> M_contracts_Spec
     M_evaluation_Registries --> M_evaluation_Plugins
@@ -247,6 +249,7 @@ flowchart TB
     M_protocol_http_Execution --> M_expression_Enum
     M_protocol_http_Execution --> M_expression_Interfaces
     M_protocol_http_Execution --> M_sources_Normalizer
+    M_protocol_http_Protocol --> M_contracts_Attributes
     M_protocol_http_Protocol --> M_contracts_Interfaces
     M_protocol_http_Protocol --> M_contracts_Spec
     M_protocol_http_Protocol --> M_contracts_State
@@ -262,6 +265,8 @@ flowchart TB
     M_protocol_http_Registrar --> M_protocol_http_Execution
     M_protocol_http_Registrar --> M_protocol_http_Protocol
     M_protocol_http_Registrar --> M_sources_Normalizer
+    M_protocol_http_Registrar --> M_sources_Resolver
+    M_protocol_rpc_Execution --> M_contracts_Attributes
     M_protocol_rpc_Execution --> M_contracts_Interfaces
     M_protocol_rpc_Execution --> M_contracts_Spec
     M_protocol_rpc_Execution --> M_contracts_State
@@ -271,6 +276,7 @@ flowchart TB
     M_protocol_rpc_Execution --> M_evaluation__
     M_protocol_rpc_Execution --> M_protocol_rpc_Protocol
     M_protocol_rpc_Execution --> M_protocol_rpc_Transfer
+    M_protocol_rpc_Normalizer --> M_contracts_Attributes
     M_protocol_rpc_Normalizer --> M_contracts_Interfaces
     M_protocol_rpc_Normalizer --> M_contracts_Spec
     M_protocol_rpc_Normalizer --> M_document__
@@ -283,9 +289,11 @@ flowchart TB
     M_protocol_rpc_Registrar --> M_protocol_rpc_Normalizer
     M_protocol_rpc_Registrar --> M_protocol_rpc_Protocol
     M_protocol_rpc_Registrar --> M_protocol_rpc_Transfer
+    M_protocol_rpc_Registrar --> M_sources_Resolver
     M_protocol_rpc_Transfer --> M_contracts_Interfaces
     M_protocol_rpc_Transfer --> M_contracts_Spec
     M_protocol_rpc_Transfer --> M_protocol_rpc_Protocol
+    M_protocol_soap_Execution --> M_contracts_Attributes
     M_protocol_soap_Execution --> M_contracts_Interfaces
     M_protocol_soap_Execution --> M_contracts_Spec
     M_protocol_soap_Execution --> M_contracts_State
@@ -302,6 +310,7 @@ flowchart TB
     M_protocol_soap_Registrar --> M_protocol_soap_Transfer
     M_protocol_soap_Registrar --> M_protocol_soap_Validation
     M_protocol_soap_Registrar --> M_sources_Normalizer
+    M_protocol_soap_Registrar --> M_sources_Resolver
     M_protocol_soap_Resolver --> M_contracts_Interfaces
     M_protocol_soap_Transfer --> M_contracts_Interfaces
     M_protocol_soap_Validation --> M_contracts_Exceptions
@@ -342,6 +351,7 @@ flowchart TB
     M_runner_Preflight --> M_contracts_Spec
     M_runner_Preflight --> M_document_Validator
     M_runner_Preflight --> M_document__
+    M_runner_Sync --> M_contracts_Attributes
     M_runner_Sync --> M_contracts_Dependency
     M_runner_Sync --> M_contracts_Exceptions
     M_runner_Sync --> M_contracts_Interfaces
@@ -362,6 +372,7 @@ flowchart TB
     M_runner_Sync --> M_runner_Preflight
     M_runner_Sync --> M_runner__
     M_runner_Sync --> M_sources_Normalizer
+    M_runner__ --> M_contracts_Attributes
     M_runner__ --> M_contracts_Exceptions
     M_runner__ --> M_contracts_Interfaces
     M_runner__ --> M_contracts_Spec
@@ -379,15 +390,16 @@ flowchart TB
     M_runner__ --> M_runner_Preflight
     M_runner__ --> M_runner_Sync
     M_runner__ --> M_sources_Normalizer
+    M_sources_Normalizer --> M_contracts_Attributes
     M_sources_Normalizer --> M_contracts_Interfaces
     M_sources_Normalizer --> M_contracts_Spec
     M_sources_Normalizer --> M_contracts_Support
     M_sources_Normalizer --> M_document__
     M_sources_Normalizer --> M_sources_Resolver
+    M_sources_Resolver --> M_contracts_Attributes
     M_sources_Resolver --> M_contracts_Interfaces
     M_sources_Resolver --> M_contracts_Spec
     M_sources_Resolver --> M_document_Parser
-    M_sources__ --> M_contracts_Interfaces
     M_sources__ --> M_contracts_Spec
     M_sources__ --> M_document__
     M_sources__ --> M_sources_Normalizer
@@ -423,32 +435,32 @@ flowchart TB
 | `engine` | `contracts` | 47 |
 | `engine` | `document` | 1 |
 | `engine` | `evaluation` | 1 |
-| `evaluation` | `contracts` | 54 |
+| `evaluation` | `contracts` | 58 |
 | `evaluation` | `expression` | 20 |
 | `expression` | `contracts` | 31 |
-| `protocol-http` | `contracts` | 37 |
+| `protocol-http` | `contracts` | 38 |
 | `protocol-http` | `engine` | 9 |
 | `protocol-http` | `evaluation` | 4 |
 | `protocol-http` | `expression` | 4 |
-| `protocol-http` | `sources` | 12 |
-| `protocol-rpc` | `contracts` | 24 |
+| `protocol-http` | `sources` | 13 |
+| `protocol-rpc` | `contracts` | 25 |
 | `protocol-rpc` | `document` | 7 |
 | `protocol-rpc` | `engine` | 4 |
 | `protocol-rpc` | `evaluation` | 1 |
-| `protocol-rpc` | `sources` | 1 |
+| `protocol-rpc` | `sources` | 2 |
 | `protocol-soap` | `contracts` | 25 |
 | `protocol-soap` | `document` | 6 |
 | `protocol-soap` | `engine` | 3 |
 | `protocol-soap` | `evaluation` | 1 |
-| `protocol-soap` | `sources` | 3 |
-| `runner` | `contracts` | 133 |
+| `protocol-soap` | `sources` | 4 |
+| `runner` | `contracts` | 135 |
 | `runner` | `document` | 11 |
 | `runner` | `engine` | 34 |
 | `runner` | `evaluation` | 11 |
 | `runner` | `expression` | 6 |
 | `runner` | `protocol-http` | 4 |
 | `runner` | `sources` | 5 |
-| `sources` | `contracts` | 30 |
+| `sources` | `contracts` | 29 |
 | `sources` | `document` | 17 |
 
 ## Module-level detail

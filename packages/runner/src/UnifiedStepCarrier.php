@@ -30,6 +30,8 @@ use LogicException;
  */
 final class UnifiedStepCarrier
 {
+    private OperationExecutorRegistry $registry;
+
     public function __construct(
         private StateStoreInterface $stateStore,
         private WorkflowEngineInterface $workflowEngine,
@@ -37,9 +39,11 @@ final class UnifiedStepCarrier
         private ExecutionRegistryInterface $executionRegistry,
         private EventLedgerInterface $eventLedger,
         private PendingCorrelationRegistryInterface $pendingCorrelations,
-        private OperationExecutorRegistry $registry,
+        ?OperationExecutorRegistry $registry = null,
         private int $stateTtlSeconds = 86400,
-    ) {}
+    ) {
+        $this->registry = $registry ?? OperationExecutorRegistry::create();
+    }
 
     public function execute(
         string $executionId,

@@ -63,10 +63,6 @@ this file on a commit is a public API change — review it deliberately.
 - `public function normalize(SourceDescription $source, string $rawContent, ?ArazzoDocument $document = null): array;`
 - `public function supports(SourceType $type): bool;`
 
-#### `SourceNormalizerRegistryInterface` interface
-- `public function get(SourceType $type): ?SourceNormalizerInterface;`
-- `public function register(SourceNormalizerInterface $normalizer): void;`
-
 #### `StepProtocolExecutorInterface` interface
 - `public function execute(Step $step, WorkflowContext $context, ArazzoDocument $document, string $executionId): StepExecutionOutcome;`
 - `public function supports(Step $step, ArazzoDocument $document): bool;`
@@ -405,34 +401,41 @@ this file on a commit is a public API change — review it deliberately.
 ### `Alama\Arazzo\Evaluation\Registries`
 
 #### `CriterionEvaluatorRegistry` class
-- `public function __construct(ExpressionEngineInterface $expression)`
 - `public function all(): array`
-- `public function register(CriterionEvaluatorPluginInterface $plugin, int $priority = 0): void`
+- `public function register(CriterionEvaluatorPluginInterface $plugin, ?int $priority = null): void`
 - `public function resolve(CriterionType|SuccessCriterion $criterion): ?CriterionEvaluatorPluginInterface`
+- `public static function create(?ExpressionEngineInterface $expression = null): self`
+- `public static function reset(): void`
 
 #### `ExpressionEvaluatorRegistry` class
-- `public function __construct(ExpressionEngineInterface $expression)`
 - `public function all(): array`
-- `public function register(ExpressionEvaluatorPluginInterface $plugin, int $priority = 0): void`
+- `public function register(ExpressionEvaluatorPluginInterface $plugin, ?int $priority = null): void`
 - `public function resolve(Expression $expression): ?ExpressionEvaluatorPluginInterface`
+- `public static function create(?ExpressionEngineInterface $expression = null): self`
+- `public static function reset(): void`
 
 ## sources
 
 ### `SourceGraph` class
-- `public static function createRegistry(?ClientInterface $httpClient = null, ?RequestFactoryInterface $httpFactory = null, ): SourceRegistry`
+- `public static function createRegistry(?ClientInterface $httpClient = null, ?RequestFactoryInterface $httpFactory = null, ): DefaultSourceResolver`
+- `public static function createResolver(?ClientInterface $httpClient = null, ?RequestFactoryInterface $httpFactory = null, ): DefaultSourceResolver`
+- `public static function defaultRegistry(): DefaultSourceResolver`
+- `public static function defaultResolver(): DefaultSourceResolver`
 - `public static function document(): DocumentInterface`
-- `public static function loader(?SourceRegistry $registry = null): SourceLoader`
-- `public static function operations(?SourceRegistry $registry = null): OpenApiOperationResolver`
-- `public static function runtime(?SourceRegistry $registry = null, ?OpenApiOperationResolver $operations = null, ): SourceRuntime`
+- `public static function loader(?SourceResolver $registry = null): SourceLoader`
+- `public static function operations(?SourceResolver $registry = null): OpenApiOperationResolver`
+- `public static function reset(): void`
+- `public static function runtime(?SourceResolver $registry = null, ?OpenApiOperationResolver $operations = null, ): SourceRuntime`
 - `public static function using(): DocumentInterface`
 
 ### `Alama\Arazzo\Sources`
 
 #### `SourceLoader` class
-- `public function __construct(private readonly SourceRegistry $sources, private readonly OpenApiVersionDetector $versionDetector, private readonly SourceNormalizerRegistryInterface $normalizers)`
+- `public function __construct(private readonly SourceResolver $sources, private readonly OpenApiVersionDetector $versionDetector, ?SourceNormalizerRegistry $normalizers = null)`
 - `public function detectOpenApiVersion(array $document): string`
 - `public function knownOperations(ArazzoDocument $document, string $basePath = ''): KnownOperations`
 - `public function normalizeSources(ArazzoDocument $document, string $basePath = ''): array`
+- `public function resolveSource(SourceDescription $source, string $basePath): SourceDocument`
 
 ### `Alama\Arazzo\Sources\Normalizer`
 
@@ -577,5 +580,5 @@ this file on a commit is a public API change — review it deliberately.
 ### `Alama\Arazzo\Cli\Console\Command`
 
 #### `RunCommand` class
-- `public function __construct(private readonly ?ClientInterface $httpClient = null, private readonly ?RequestFactoryInterface $httpFactory = null, private readonly ?SourceRegistry $registry = null)`
+- `public function __construct(private readonly ?ClientInterface $httpClient = null, private readonly ?RequestFactoryInterface $httpFactory = null, private readonly ?SourceResolver $registry = null)`
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Protocol\Rpc\Normalizer;
 
+use Alama\Arazzo\Contracts\Attributes\AsSourceNormalizer;
 use Alama\Arazzo\Contracts\Interfaces\SourceNormalizerInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
@@ -29,6 +30,7 @@ use Alama\Arazzo\Document\ResolvedOperation;
  *
  * @internal stays out of the advertised contract; not part of the public API surface
  */
+#[AsSourceNormalizer(SourceType::Protobuf, priority: 0)]
 final class ProtoSourceNormalizer implements SourceNormalizerInterface
 {
     public function name(): string

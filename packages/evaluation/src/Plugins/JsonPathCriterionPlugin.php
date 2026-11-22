@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Evaluation\Plugins;
 
+use Alama\Arazzo\Contracts\Attributes\AsCriterionPlugin;
 use Alama\Arazzo\Contracts\Interfaces\CriterionEvaluatorPluginInterface;
 use Alama\Arazzo\Contracts\Spec\Enum\CriterionType;
 use Alama\Arazzo\Contracts\Spec\Interfaces\WorkflowContextInterface;
@@ -11,6 +12,7 @@ use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Contracts\Spec\SuccessCriterion;
 use Alama\Arazzo\Expression\Interfaces\ExpressionEngineInterface;
 
+#[AsCriterionPlugin('jsonpath', priority: 0)]
 final readonly class JsonPathCriterionPlugin implements CriterionEvaluatorPluginInterface
 {
     public function __construct(

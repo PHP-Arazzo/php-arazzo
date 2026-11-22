@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Alama\Arazzo\Sources\Resolver\SourceNormalizerRegistry;
+use Alama\Arazzo\Sources\SourceGraph;
 use Alama\Arazzo\Tests\TestCase;
 
 require_once __DIR__.'/../../../vendor/autoload.php';
@@ -26,3 +28,8 @@ foreach (array_merge(
 restore_error_handler();
 
 pest()->extend(TestCase::class)->in(__DIR__);
+
+uses()->afterEach(function (): void {
+    SourceNormalizerRegistry::reset();
+    SourceGraph::reset();
+})->in(__DIR__);

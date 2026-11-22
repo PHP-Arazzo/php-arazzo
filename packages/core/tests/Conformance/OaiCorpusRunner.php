@@ -15,7 +15,6 @@ use Alama\Arazzo\Document\Validator\RuleSet;
 use Alama\Arazzo\Document\Validator\Validator;
 use Alama\Arazzo\Expression\ExpressionEngine;
 use Alama\Arazzo\Sources\Resolver\DefaultSourceResolver;
-use Alama\Arazzo\Sources\Resolver\SourceRegistry;
 
 /**
  * Runs the vendored OFFICIAL OAI example corpus (see corpus/oai/README.md)
@@ -119,9 +118,9 @@ final class OaiCorpusRunner
     }
 
     /** Builds a registry pre-seeded with this document's local companions. */
-    public static function registryFor(string $documentPath): SourceRegistry
+    public static function registryFor(string $documentPath): DefaultSourceResolver
     {
-        $registry = new SourceRegistry(new DefaultSourceResolver([]));
+        $registry = new DefaultSourceResolver([]);
 
         foreach (self::localSources($documentPath) as $source) {
             $registry->register($source);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Sources\Normalizer;
 
+use Alama\Arazzo\Contracts\Attributes\AsSourceNormalizer;
 use Alama\Arazzo\Contracts\Interfaces\SourceNormalizerInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
@@ -29,6 +30,7 @@ use InvalidArgumentException;
  *
  * @internal stays out of the advertised contract; not part of the public API surface
  */
+#[AsSourceNormalizer(SourceType::Openapi, priority: 0)]
 final class OpenApiSourceNormalizer implements SourceNormalizerInterface
 {
     private const METHODS = ['get', 'put', 'post', 'delete', 'options', 'head', 'patch', 'trace'];

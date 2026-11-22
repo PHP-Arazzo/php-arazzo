@@ -33,7 +33,6 @@ use Alama\Arazzo\Expression\ExpressionEngine;
 use Alama\Arazzo\Protocol\Http\Execution\Interfaces\OpenApiExecutorInterface;
 use Alama\Arazzo\Protocol\Http\Execution\StepOutputExtractor;
 use Alama\Arazzo\Runner\Execution\OperationRuntime;
-use Alama\Arazzo\Runner\OperationExecutorRegistry;
 use Alama\Arazzo\Runner\Sync\ExecutionGraphFactory;
 use Alama\Arazzo\Runner\Sync\WorkflowExecutor;
 use Alama\Arazzo\Sources\Normalizer\OpenApiOperationHandle;
@@ -89,7 +88,7 @@ function confExecutor(array $workflows, array $responses = []): array
         $fake,
         new StepOutputExtractor($resolver, $engine, new ExpressionEngine()),
         new FakeResponseValidator(),
-    ))->createWorkflowExecutor(new OperationExecutorRegistry());
+    ))->createWorkflowExecutor();
 
     return [$executor, $fake, $document];
 }

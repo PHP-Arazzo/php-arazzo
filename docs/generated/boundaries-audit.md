@@ -98,9 +98,12 @@ Grouped cross-package uses of concrete internals (AST nodes, evaluators, resolve
 |---|---|---|---:|---|
 | `document` | `ExpressionReference` | `expression` | 2 | `ExpressionUnresolvedStepRefRule` |
 | `document` | `ImplicitDependencies` | `contracts` | 1 | `StepDependsOnNoCycleRule` |
+| `evaluation` | `AsCriterionPlugin` | `contracts` | 2 | `JsonPathCriterionPlugin` |
+| `evaluation` | `AsExpressionPlugin` | `contracts` | 2 | `JsonPathExpressionPlugin` |
 | `evaluation` | `EvaluationContext` | `expression` | 5 | `ConditionEvaluator` |
 | `evaluation` | `Parser` | `expression` | 1 | `AccessorParser` |
 | `expression` | `AsSelectorPlugin` | `contracts` | 4 | `XpathSelectorPlugin` |
+| `protocol-http` | `AsOperationExecutor` | `contracts` | 2 | `HttpStepExecutor` |
 | `protocol-http` | `EvaluationContext` | `expression` | 2 | `StepOutputExtractor` |
 | `protocol-http` | `IdempotencyKeyInjector` | `engine` | 2 | `HttpStepExecutor` |
 | `protocol-http` | `OpenApi30Normalizer` | `sources` | 1 | `ProtocolHttpRegistrar` |
@@ -114,17 +117,24 @@ Grouped cross-package uses of concrete internals (AST nodes, evaluators, resolve
 | `protocol-http` | `RequestCompiler` | `engine` | 1 | `HttpStepExecutor` |
 | `protocol-http` | `ReusableParameterResolver` | `engine` | 1 | `AsyncApiStepExecutor` |
 | `protocol-http` | `SchemaValidator` | `engine` | 1 | `ResponseSchemaValidator` |
+| `protocol-http` | `SourceNormalizerRegistry` | `sources` | 1 | `ProtocolHttpRegistrar` |
 | `protocol-http` | `TypeCaster` | `engine` | 2 | `StepOutputExtractor` |
+| `protocol-rpc` | `AsOperationExecutor` | `contracts` | 1 | `RpcOperationExecutor` |
+| `protocol-rpc` | `AsSourceNormalizer` | `contracts` | 1 | `ProtoSourceNormalizer` |
 | `protocol-rpc` | `NormalizedOpenApiOperation` | `document` | 1 | `ProtoSourceNormalizer` |
 | `protocol-rpc` | `RequestCompiler` | `engine` | 1 | `RpcRequestBuilder` |
 | `protocol-rpc` | `ResolvedOperation` | `document` | 4 | `RpcRequestBuilder` |
 | `protocol-rpc` | `ReusableParameterResolver` | `engine` | 1 | `RpcRequestBuilder` |
 | `protocol-rpc` | `SourceFetcher` | `sources` | 1 | `ProtobufOperationResolver` |
+| `protocol-rpc` | `SourceNormalizerRegistry` | `sources` | 1 | `RpcRegistrar` |
+| `protocol-soap` | `AsOperationExecutor` | `contracts` | 1 | `SoapOperationExecutor` |
 | `protocol-soap` | `NormalizedOpenApiOperation` | `document` | 1 | `SoapRequestBuilder` |
 | `protocol-soap` | `RequestCompiler` | `engine` | 1 | `SoapRequestBuilder` |
 | `protocol-soap` | `ResolvedOperation` | `document` | 3 | `WsdlOperationResolver` |
 | `protocol-soap` | `SourceFetcher` | `sources` | 1 | `WsdlOperationResolver` |
+| `protocol-soap` | `SourceNormalizerRegistry` | `sources` | 1 | `SoapRegistrar` |
 | `protocol-soap` | `WsdlSourceNormalizer` | `sources` | 2 | `WsdlOperationResolver` |
+| `runner` | `AsOperationExecutor` | `contracts` | 2 | `SubWorkflowStepExecutor` |
 | `runner` | `DependencyAnalyzer` | `contracts` | 1 | `StepOutcomeHandler` |
 | `runner` | `DependencyGraph` | `contracts` | 2 | `StepOutcomeHandler` |
 | `runner` | `EvaluationContext` | `expression` | 5 | `SubWorkflowInvoker` |
@@ -139,6 +149,7 @@ Grouped cross-package uses of concrete internals (AST nodes, evaluators, resolve
 | `runner` | `ReusableParameterResolver` | `engine` | 1 | `SubWorkflowStepExecutor` |
 | `runner` | `StepParameterMerger` | `engine` | 2 | `StepExecutionWorker` |
 | `runner` | `ValidationResult` | `document` | 3 | `PreflightFailureException` |
+| `sources` | `AsSourceNormalizer` | `contracts` | 3 | `WsdlSourceNormalizer` |
 | `sources` | `DecodePolicy` | `document` | 1 | `DefaultSourceResolver` |
 | `sources` | `Decoders` | `document` | 1 | `DefaultSourceResolver` |
 | `sources` | `KnownOperations` | `document` | 1 | `SourceLoader` |

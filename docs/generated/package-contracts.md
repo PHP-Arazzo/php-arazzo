@@ -191,7 +191,7 @@ public contract between packages.
 
 - `SourceResolver` — `@internal`: yes
 - `SourceFetcher` — `@internal`: yes
-- `SourceRegistry` — `@internal`: yes
+- `SourceRegistry` — _not found in scan_
 - `DefaultSourceResolver` — `@internal`: yes
 - `HttpFetcher` — `@internal`: yes
 - `LocalFetcher` — `@internal`: yes
@@ -326,7 +326,7 @@ _None — the entry surface exchanges plain arrays._
 - `Application` (`class`)
   - `public function __construct()`
 - `RunCommand` (`class`)
-  - `public function __construct(private readonly ?ClientInterface $httpClient = null, private readonly ?RequestFactoryInterface $httpFactory = null, private readonly ?SourceRegistry $registry = null)`
+  - `public function __construct(private readonly ?ClientInterface $httpClient = null, private readonly ?RequestFactoryInterface $httpFactory = null, private readonly ?SourceResolver $registry = null)`
 - `ValidateCommand` (`class`)
 - `ListWorkflowsCommand` (`class`)
 - `ExplainCommand` (`class`)

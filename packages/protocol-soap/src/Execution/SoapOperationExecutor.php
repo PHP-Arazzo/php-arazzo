@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Protocol\Soap\Execution;
 
+use Alama\Arazzo\Contracts\Attributes\AsOperationExecutor;
 use Alama\Arazzo\Contracts\Interfaces\HttpClientInterface;
 use Alama\Arazzo\Contracts\Interfaces\OperationExecutorPluginInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
@@ -33,6 +34,7 @@ use RuntimeException;
  *
  * @internal stays out of the advertised contract; not part of the public API surface
  */
+#[AsOperationExecutor(priority: 50)]
 final class SoapOperationExecutor implements OperationExecutorPluginInterface
 {
     /**

@@ -46,7 +46,6 @@ flowchart LR
     I_SelectorPluginInterface["SelectorPluginInterface<br/><small>expression:Interfaces</small>"]:::contract
     I_SourceFetcher["SourceFetcher<br/><small>sources:Resolver</small>"]:::contract
     I_SourceNormalizerInterface["SourceNormalizerInterface<br/><small>contracts:Interfaces</small>"]:::contract
-    I_SourceNormalizerRegistryInterface["SourceNormalizerRegistryInterface<br/><small>contracts:Interfaces</small>"]:::contract
     I_SourceResolver["SourceResolver<br/><small>sources:Resolver</small>"]:::contract
     I_StateStoreInterface["StateStoreInterface<br/><small>engine:Runtime</small>"]:::contract
     I_StepProtocolExecutorInterface["StepProtocolExecutorInterface<br/><small>contracts:Interfaces</small>"]:::contract
@@ -125,16 +124,12 @@ flowchart LR
     C_protocol_rpc_protocol_rpc_Normalizer_ProtoSourceNormalizer -.->|implements| I_SourceNormalizerInterface
     C_sources_sources_Resolver_DefaultSourceResolver["DefaultSourceResolver<br/><small>sources:Resolver</small>"]:::implCore
     C_sources_sources_Resolver_DefaultSourceResolver -.->|implements| I_SourceResolver
-    C_sources_sources_Resolver_SourceRegistry["SourceRegistry<br/><small>sources:Resolver</small>"]:::implCore
-    C_sources_sources_Resolver_SourceRegistry -.->|implements| I_SourceResolver
     C_sources_sources_Resolver_CachedFetcher["CachedFetcher<br/><small>sources:Resolver</small>"]:::implCore
     C_sources_sources_Resolver_CachedFetcher -.->|implements| I_SourceFetcher
     C_sources_sources_Resolver_HttpFetcher["HttpFetcher<br/><small>sources:Resolver</small>"]:::implCore
     C_sources_sources_Resolver_HttpFetcher -.->|implements| I_SourceFetcher
     C_sources_sources_Resolver_LocalFetcher["LocalFetcher<br/><small>sources:Resolver</small>"]:::implCore
     C_sources_sources_Resolver_LocalFetcher -.->|implements| I_SourceFetcher
-    C_sources_sources_Resolver_SourceNormalizerRegistry["SourceNormalizerRegistry<br/><small>sources:Resolver</small>"]:::implCore
-    C_sources_sources_Resolver_SourceNormalizerRegistry -.->|implements| I_SourceNormalizerRegistryInterface
     C_document_document___Document["Document<br/><small>(document root)</small>"]:::implCore
     C_document_document___Document -.->|implements| I_DocumentInterface
     C_document_document_Parser_NativeJsonDecoder["NativeJsonDecoder<br/><small>document:Parser</small>"]:::implCore

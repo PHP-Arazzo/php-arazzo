@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Sources;
 
-use Alama\Arazzo\Contracts\Interfaces\SourceNormalizerRegistryInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Spec\SourceDocument;
 use Alama\Arazzo\Document\KnownOperations;
 use Alama\Arazzo\Document\ResolvedOperation;
 use Alama\Arazzo\Sources\Normalizer\OpenApiVersionDetector;
-use Alama\Arazzo\Sources\Resolver\SourceRegistry;
+use Alama\Arazzo\Sources\Resolver\Interfaces\SourceResolver;
+use Alama\Arazzo\Sources\Resolver\SourceNormalizerRegistry;
 
 /**
  * Entry point for the Sources package – pure source resolution and normalization.
@@ -24,11 +24,15 @@ use Alama\Arazzo\Sources\Resolver\SourceRegistry;
  */
 final class SourceLoader
 {
+    private readonly SourceNormalizerRegistry $normalizers;
+
     public function __construct(
-        private readonly SourceRegistry $sources,
+        private readonly SourceResolver $sources,
         private readonly OpenApiVersionDetector $versionDetector,
-        private readonly SourceNormalizerRegistryInterface $normalizers,
-    ) {}
+        ?SourceNormalizerRegistry $normalizers = null,
+    ) {
+        $this->normalizers = $normalizers ?? SourceNormalizerRegistry::create();
+    }
 
     /* --------------------------------------------------------------- *
      *  Source‑specific operations – the *only* public API of this class *

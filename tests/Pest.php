@@ -19,10 +19,14 @@
 
 declare(strict_types=1);
 
-$bootstraps = [
+$cwd = getcwd() ?: dirname(__DIR__);
+
+$bootstraps = array_unique([
     ...glob(__DIR__.'/../packages/*/tests/Pest.php') ?: [],
     ...glob(__DIR__.'/../tools/*/tests/Pest.php') ?: [],
-];
+    ...glob($cwd.'/packages/*/tests/Pest.php') ?: [],
+    ...glob($cwd.'/tools/*/tests/Pest.php') ?: [],
+]);
 
 sort($bootstraps);
 
@@ -30,4 +34,8 @@ foreach ($bootstraps as $bootstrap) {
     require_once $bootstrap;
 }
 
+use Alama\Arazzo\Tests\TestCase;
+
 pest()->tia()->locally();
+
+uses(TestCase::class)->in(dirname(__DIR__), $cwd);

@@ -27,7 +27,6 @@ use Alama\Arazzo\Runner\Sync\StepExecutor;
 use Alama\Arazzo\Runner\Sync\WorkflowEngine;
 use Alama\Arazzo\Runner\Sync\WorkflowExecutor;
 use Alama\Arazzo\Sources\Resolver\Interfaces\SourceResolver;
-use Alama\Arazzo\Sources\Resolver\SourceRegistry;
 use Alama\Arazzo\Sources\SourceGraph;
 use Alama\Arazzo\Tests\Expression\Support\TestEvaluationEngine;
 use Psr\Http\Client\ClientInterface;
@@ -498,7 +497,7 @@ it('executes a workflow end-to-end', function () {
         }
     };
     $engine = new EvaluationEngine(expression: new ExpressionEngine());
-    $runtime = SourceGraph::runtime(new SourceRegistry($sourceResolver));
+    $runtime = SourceGraph::runtime($sourceResolver);
     $outputExtractor = new StepOutputExtractor($runtime->operations, $engine, new ExpressionEngine());
     $schemaValidator = new ResponseSchemaValidator($runtime->operations);
 

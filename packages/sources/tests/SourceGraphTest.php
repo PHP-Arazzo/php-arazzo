@@ -10,7 +10,6 @@ use Alama\Arazzo\Contracts\Spec\SourceDocument;
 use Alama\Arazzo\Document\DocumentInterface;
 use Alama\Arazzo\Sources\Resolver\DefaultSourceResolver;
 use Alama\Arazzo\Sources\Resolver\Interfaces\SourceResolver;
-use Alama\Arazzo\Sources\Resolver\SourceRegistry;
 use Alama\Arazzo\Sources\SourceGraph;
 use Alama\Arazzo\Sources\SourceLoader;
 
@@ -20,10 +19,10 @@ it('builds a document that satisfies the port without inline http construction',
     expect($document)->toBeInstanceOf(DocumentInterface::class);
 });
 
-it('honours an injected source registry', function (): void {
+it('honours an injected source resolver', function (): void {
     $canned = new SourceDocument('injected', SourceType::Openapi, 'memory://injected', ['openapi' => '3.0.0']);
 
-    $registry = new SourceRegistry(new class($canned) implements SourceResolver
+    $resolver = new class($canned) implements SourceResolver
     {
         public function __construct(private readonly SourceDocument $canned) {}
 
@@ -31,9 +30,9 @@ it('honours an injected source registry', function (): void {
         {
             return $this->canned;
         }
-    });
+    };
 
-    $loader = SourceGraph::loader(registry: $registry);
+    $loader = SourceGraph::loader(registry: $resolver);
 
     $resolved = $loader->resolveSource(
         new SourceDescription('api', 'https://example.test/openapi.json', SourceType::Openapi),
@@ -61,7 +60,7 @@ it('does not construct a guzzle client inside the source loader implementation',
 });
 
 it('builds a loader from the default source resolver without arguments', function (): void {
-    $loader = SourceGraph::loader(registry: new SourceRegistry(new DefaultSourceResolver([])));
+    $loader = SourceGraph::loader(registry: new DefaultSourceResolver([]));
 
     expect($loader)->toBeInstanceOf(SourceLoader::class);
 });

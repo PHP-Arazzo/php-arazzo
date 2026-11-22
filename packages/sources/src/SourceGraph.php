@@ -15,8 +15,8 @@ use Alama\Arazzo\Sources\Normalizer\OpenApiVersionDetector;
 use Alama\Arazzo\Sources\Resolver\DefaultSourceResolver;
 use Alama\Arazzo\Sources\Resolver\Fetchers\HttpFetcher;
 use Alama\Arazzo\Sources\Resolver\Fetchers\LocalFetcher;
+use Alama\Arazzo\Sources\Resolver\Interfaces\SourceResolver;
 use Alama\Arazzo\Sources\Resolver\SourceNormalizerRegistry;
-use Alama\Arazzo\Sources\Resolver\SourceRegistry;
 use GuzzleHttp\Psr7\HttpFactory;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
@@ -29,36 +29,57 @@ final class SourceGraph
 {
     private static ?SourceLoader $cachedLoader = null;
 
-    /**
-     * The default source registry for this slice.
-     *
-     * Deliberately NOT memoised. A resolver memoises nothing itself, but the
-     * loader behind it caches parsed documents keyed by source name, so a
-     * process-wide shared resolver would serve the first caller's document to
-     * every later caller that reuses a source name. Callers that want one
-     * instance across several entry points inject it (see `runtime()`).
-     */
-    private static function defaultRegistry(): SourceRegistry
+    public static function reset(): void
     {
-        return new SourceRegistry(DefaultSourceResolver::withDefaults());
+        self::$cachedLoader = null;
+        SourceNormalizerRegistry::reset();
     }
 
     /**
-     * Create a source registry using the given HTTP client and request factory.
+     * The default source resolver for this slice.
+     *
+     * Deliberately NOT memoised across calls. Callers that want one instance
+     * across several entry points inject it (see `runtime()`).
+     */
+    public static function defaultResolver(): DefaultSourceResolver
+    {
+        return DefaultSourceResolver::withDefaults();
+    }
+
+    /**
+     * @deprecated Use defaultResolver() instead.
+     */
+    public static function defaultRegistry(): DefaultSourceResolver
+    {
+        return self::defaultResolver();
+    }
+
+    /**
+     * Create a source resolver using the given HTTP client and request factory.
      * This hides the fetcher implementation details from consumers.
+     */
+    public static function createResolver(
+        ?ClientInterface $httpClient = null,
+        ?RequestFactoryInterface $httpFactory = null,
+    ): DefaultSourceResolver {
+        $client = $httpClient ?? DefaultSourceResolver::defaultHttpClient();
+        $factory = $httpFactory ?? new HttpFactory();
+
+        return DefaultSourceResolver::withFetchers([
+            'http' => new HttpFetcher($client, $factory),
+            'https' => new HttpFetcher($client, $factory),
+            'file' => new LocalFetcher(),
+        ]);
+    }
+
+    /**
+     * @deprecated Use createResolver() instead.
      */
     public static function createRegistry(
         ?ClientInterface $httpClient = null,
         ?RequestFactoryInterface $httpFactory = null,
-    ): SourceRegistry {
-        $client = $httpClient ?? DefaultSourceResolver::defaultHttpClient();
-        $factory = $httpFactory ?? new HttpFactory();
-
-        return new SourceRegistry(DefaultSourceResolver::withFetchers([
-            'http' => new HttpFetcher($client, $factory),
-            'https' => new HttpFetcher($client, $factory),
-            'file' => new LocalFetcher(),
-        ]));
+    ): DefaultSourceResolver {
+        return self::createResolver($httpClient, $httpFactory);
     }
 
     public static function document(): DocumentInterface
@@ -67,17 +88,17 @@ final class SourceGraph
     }
 
     /** Source‑only loader (no generic pipeline) - cached singleton */
-    public static function loader(?SourceRegistry $registry = null): SourceLoader
+    public static function loader(?SourceResolver $registry = null): SourceLoader
     {
         // Only use cache when no custom registry is provided
         if ($registry === null && self::$cachedLoader !== null) {
             return self::$cachedLoader;
         }
 
-        $defaultRegistry = $registry ?? self::defaultRegistry();
+        $defaultRegistry = $registry ?? self::defaultResolver();
 
         // Build normalizer registry
-        $normalizerRegistry = new SourceNormalizerRegistry();
+        $normalizerRegistry = SourceNormalizerRegistry::create();
         $normalizerRegistry->register(new OpenApiSourceNormalizer(
             new OpenApiDocumentLoader($defaultRegistry),
             new OpenApiVersionDetector(),
@@ -109,14 +130,14 @@ final class SourceGraph
      * @return SourceRuntime<OpenApiOperationResolver>
      */
     public static function runtime(
-        ?SourceRegistry $registry = null,
+        ?SourceResolver $registry = null,
         ?OpenApiOperationResolver $operations = null,
     ): SourceRuntime {
-        $sources = $registry ?? self::defaultRegistry();
+        $sources = $registry ?? self::defaultResolver();
 
         $operations ??= self::buildOperations($sources);
 
-        $normalizerRegistry = new SourceNormalizerRegistry();
+        $normalizerRegistry = SourceNormalizerRegistry::create();
         $normalizerRegistry->register(new OpenApiSourceNormalizer(
             new OpenApiDocumentLoader($sources),
             new OpenApiVersionDetector(),
@@ -157,12 +178,12 @@ final class SourceGraph
      * instance to `runtime()`, instead of letting the graph build a second one
      * behind its back.
      */
-    public static function operations(?SourceRegistry $registry = null): OpenApiOperationResolver
+    public static function operations(?SourceResolver $registry = null): OpenApiOperationResolver
     {
-        return self::buildOperations($registry ?? self::defaultRegistry());
+        return self::buildOperations($registry ?? self::defaultResolver());
     }
 
-    private static function buildOperations(SourceRegistry $sources): OpenApiOperationResolver
+    private static function buildOperations(SourceResolver $sources): OpenApiOperationResolver
     {
         $detector = new OpenApiVersionDetector();
 

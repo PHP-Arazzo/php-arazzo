@@ -26,10 +26,10 @@ quadrantChart
     cli/Console: [1, 0]
     cli/Generator: [1, 0]
     cli/Renderer: [0.5, 0]
-    contracts/Attributes: [0.333, 0]
+    contracts/Attributes: [0.077, 0]
     contracts/Dependency: [0.333, 0]
     contracts/Exceptions: [0, 0]
-    contracts/Interfaces: [0.1, 1]
+    contracts/Interfaces: [0.103, 1]
     contracts/Spec: [0.023, 0.02]
     contracts/State: [0.063, 0]
     contracts/Support: [0, 0.2]
@@ -47,8 +47,8 @@ quadrantChart
     evaluation/Enum: [0, 0]
     evaluation/Events: [0.333, 0]
     evaluation/Interfaces: [0.6, 1]
-    evaluation/Plugins: [0.75, 0]
-    evaluation/Registries: [0.8, 0]
+    evaluation/Plugins: [0.8, 0]
+    evaluation/Registries: [0.833, 0]
     evaluation/_: [0.565, 0.167]
     expression/Ast: [0.333, 0]
     expression/Data: [0.25, 0]
@@ -63,14 +63,14 @@ quadrantChart
     expression/Xpath: [0.4, 0.333]
     expression/_: [0.647, 0]
     protocol-http/Execution: [0.643, 0.25]
-    protocol-http/Protocol: [0.9, 0]
+    protocol-http/Protocol: [0.909, 0]
     protocol-http/Registrar: [1, 0]
-    protocol-rpc/Execution: [0.9, 0]
-    protocol-rpc/Normalizer: [0.6, 0]
+    protocol-rpc/Execution: [0.909, 0]
+    protocol-rpc/Normalizer: [0.667, 0]
     protocol-rpc/Protocol: [0.571, 0]
     protocol-rpc/Registrar: [1, 0]
     protocol-rpc/Transfer: [0.6, 0]
-    protocol-soap/Execution: [0.833, 0]
+    protocol-soap/Execution: [0.846, 0]
     protocol-soap/Registrar: [1, 0]
     protocol-soap/Resolver: [0.5, 0]
     protocol-soap/Transfer: [0.333, 0]
@@ -81,11 +81,11 @@ quadrantChart
     runner/Execution: [0.714, 0.063]
     runner/Interfaces: [1, 1]
     runner/Preflight: [0.429, 0]
-    runner/Sync: [0.87, 0]
-    runner/_: [0.85, 0.222]
-    sources/Normalizer: [0.357, 0.091]
-    sources/Resolver: [0.375, 0.231]
-    sources/_: [0.833, 0]
+    runner/Sync: [0.875, 0]
+    runner/_: [0.857, 0.222]
+    sources/Normalizer: [0.4, 0.091]
+    sources/Resolver: [0.333, 0.25]
+    sources/_: [0.8, 0]
 ```
 
 ## God classes (SRP)
@@ -97,7 +97,7 @@ Concrete types over 300 LOC:
 | `Parser` | `document:Parser` | 931 |
 | `ExecutionContext` | `engine:Runtime` | 553 |
 | `Parser` | `expression:_` | 511 |
-| `WsdlSourceNormalizer` | `sources:Normalizer` | 474 |
+| `WsdlSourceNormalizer` | `sources:Normalizer` | 476 |
 | `Parser` | `expression:JsonPath` | 470 |
 | `ExecutionState` | `contracts:State` | 465 |
 | `StepOutcomeHandler` | `runner:Async` | 455 |

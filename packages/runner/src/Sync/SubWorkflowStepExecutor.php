@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Runner\Sync;
 
+use Alama\Arazzo\Contracts\Attributes\AsOperationExecutor;
 use Alama\Arazzo\Contracts\Interfaces\OperationExecutorPluginInterface;
 use Alama\Arazzo\Contracts\Interfaces\StepProtocolExecutorInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
@@ -23,6 +24,7 @@ use Alama\Arazzo\Expression\Data\EvaluationContext;
  *
  * @internal stays out of the advertised contract; not part of the public API surface
  */
+#[AsOperationExecutor(priority: 0)]
 final class SubWorkflowStepExecutor implements OperationExecutorPluginInterface, StepProtocolExecutorInterface
 {
     /**

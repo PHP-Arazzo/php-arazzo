@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Protocol\Soap\Registrar;
 
 use Alama\Arazzo\Contracts\Interfaces\HttpClientInterface;
-use Alama\Arazzo\Contracts\Interfaces\SourceNormalizerRegistryInterface;
 use Alama\Arazzo\Protocol\Soap\Execution\SoapFaultMapper;
 use Alama\Arazzo\Protocol\Soap\Execution\SoapOperationExecutor;
 use Alama\Arazzo\Protocol\Soap\Execution\SoapRequestBuilder;
@@ -14,6 +13,7 @@ use Alama\Arazzo\Protocol\Soap\Resolver\XPathReplacementTargetResolver;
 use Alama\Arazzo\Protocol\Soap\Transfer\SoapResponseTransferMapper;
 use Alama\Arazzo\Protocol\Soap\Validation\XsdResponseValidator;
 use Alama\Arazzo\Sources\Normalizer\WsdlSourceNormalizer;
+use Alama\Arazzo\Sources\Resolver\SourceNormalizerRegistry;
 
 /**
  * Framework-agnostic registration of the SOAP vertical slice into the core
@@ -89,8 +89,8 @@ final class SoapRegistrar
         return [new XsdResponseValidator($this->operationResolver)];
     }
 
-    public function registerInto(?SourceNormalizerRegistryInterface $sourceRegistry = null): void
+    public function registerInto(?SourceNormalizerRegistry $sourceRegistry = null): void
     {
-        $sourceRegistry?->register($this->normalizer);
+        ($sourceRegistry ?? SourceNormalizerRegistry::create())->register($this->normalizer);
     }
 }

@@ -139,9 +139,11 @@ flowchart LR
     evaluation_Interfaces --> contracts_Spec
     evaluation_Interfaces --> evaluation_Data
     evaluation_Interfaces --> evaluation_Events
+    evaluation_Plugins --> contracts_Attributes
     evaluation_Plugins --> contracts_Interfaces
     evaluation_Plugins --> contracts_Spec
     evaluation_Plugins --> expression_Interfaces
+    evaluation_Registries --> contracts_Attributes
     evaluation_Registries --> contracts_Interfaces
     evaluation_Registries --> contracts_Spec
     evaluation_Registries --> evaluation_Plugins
@@ -173,6 +175,7 @@ flowchart LR
     document__ --> document_Parser
     document__ --> document_Validator
     document__ --> expression__
+    sources_Normalizer --> contracts_Attributes
     sources_Normalizer --> contracts_Interfaces
     sources_Normalizer --> contracts_Spec
     sources_Normalizer --> document__
@@ -180,8 +183,8 @@ flowchart LR
     sources_Normalizer --> contracts_Support
     sources_Resolver --> contracts_Spec
     sources_Resolver --> document_Parser
+    sources_Resolver --> contracts_Attributes
     sources_Resolver --> contracts_Interfaces
-    sources__ --> contracts_Interfaces
     sources__ --> contracts_Spec
     sources__ --> document__
     sources__ --> sources_Normalizer
@@ -251,12 +254,14 @@ flowchart LR
     runner_Sync --> sources_Normalizer
     runner_Sync --> document__
     runner_Sync --> runner_Preflight
+    runner_Sync --> contracts_Attributes
     runner_Sync --> document_Validator
     runner_Sync --> runner_Events
     runner_Sync --> runner_Exceptions
     runner__ --> contracts_Interfaces
     runner__ --> runner_Async
     runner__ --> runner_Sync
+    runner__ --> contracts_Attributes
     runner__ --> contracts_Spec
     runner__ --> runner_Events
     runner__ --> protocol_http_Execution
@@ -300,6 +305,7 @@ flowchart LR
     protocol_http_Execution --> expression_Data
     protocol_http_Execution --> expression_Enum
     protocol_http_Execution --> expression_Interfaces
+    protocol_http_Protocol --> contracts_Attributes
     protocol_http_Protocol --> contracts_Interfaces
     protocol_http_Protocol --> contracts_Spec
     protocol_http_Protocol --> contracts_State
@@ -315,6 +321,7 @@ flowchart LR
     protocol_http_Registrar --> protocol_http_Execution
     protocol_http_Registrar --> protocol_http_Protocol
     protocol_http_Registrar --> sources_Normalizer
+    protocol_http_Registrar --> sources_Resolver
     protocol_rpc_Execution --> contracts_Spec
     protocol_rpc_Execution --> contracts_State
     protocol_rpc_Execution --> document__
@@ -322,8 +329,10 @@ flowchart LR
     protocol_rpc_Execution --> engine_Execution
     protocol_rpc_Execution --> evaluation__
     protocol_rpc_Execution --> protocol_rpc_Protocol
+    protocol_rpc_Execution --> contracts_Attributes
     protocol_rpc_Execution --> contracts_Interfaces
     protocol_rpc_Execution --> protocol_rpc_Transfer
+    protocol_rpc_Normalizer --> contracts_Attributes
     protocol_rpc_Normalizer --> contracts_Interfaces
     protocol_rpc_Normalizer --> contracts_Spec
     protocol_rpc_Normalizer --> document__
@@ -336,6 +345,7 @@ flowchart LR
     protocol_rpc_Registrar --> protocol_rpc_Normalizer
     protocol_rpc_Registrar --> protocol_rpc_Protocol
     protocol_rpc_Registrar --> protocol_rpc_Transfer
+    protocol_rpc_Registrar --> sources_Resolver
     protocol_rpc_Transfer --> contracts_Interfaces
     protocol_rpc_Transfer --> contracts_Spec
     protocol_rpc_Transfer --> protocol_rpc_Protocol
@@ -349,12 +359,14 @@ flowchart LR
     protocol_soap_Execution --> engine_Exceptions
     protocol_soap_Execution --> engine_Execution
     protocol_soap_Execution --> evaluation__
+    protocol_soap_Execution --> contracts_Attributes
     protocol_soap_Registrar --> contracts_Interfaces
     protocol_soap_Registrar --> protocol_soap_Execution
     protocol_soap_Registrar --> protocol_soap_Resolver
     protocol_soap_Registrar --> protocol_soap_Transfer
     protocol_soap_Registrar --> protocol_soap_Validation
     protocol_soap_Registrar --> sources_Normalizer
+    protocol_soap_Registrar --> sources_Resolver
     protocol_soap_Resolver --> contracts_Interfaces
     protocol_soap_Transfer --> contracts_Interfaces
     protocol_soap_Validation --> contracts_Exceptions

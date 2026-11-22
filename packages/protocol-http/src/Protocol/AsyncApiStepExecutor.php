@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Protocol\Http\Protocol;
 
+use Alama\Arazzo\Contracts\Attributes\AsOperationExecutor;
 use Alama\Arazzo\Contracts\Interfaces\HttpClientInterface;
 use Alama\Arazzo\Contracts\Interfaces\OperationExecutorPluginInterface;
 use Alama\Arazzo\Contracts\Interfaces\PendingCorrelationRegistryInterface;
@@ -30,6 +31,7 @@ use Psr\Http\Message\UriInterface;
 /**
  * @internal stays out of the advertised contract; not part of the public API surface
  */
+#[AsOperationExecutor(priority: 200)]
 final class AsyncApiStepExecutor implements OperationExecutorPluginInterface, StepProtocolExecutorInterface
 {
     /**

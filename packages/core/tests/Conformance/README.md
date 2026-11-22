@@ -3,7 +3,7 @@
 ## Golden fixtures (`fixtures/*.json`)
 
 Each fixture is a self-contained scenario executed against the real
-pipeline (Parser → SourceRegistry → OpenApiOperationResolver →
+pipeline (Parser → DefaultSourceResolver → OpenApiOperationResolver →
 StepExecutor/HttpStepExecutor → WorkflowEngine) with a scripted fake
 HTTP transport.
 
@@ -13,7 +13,7 @@ Fixture keys:
 | --- | --- |
 | `name` | Fixture label (used in test names) |
 | `arazzo` | Raw Arazzo document (array, `arazzo: 1.0.1`) |
-| `sources` | Map of source name → inline OpenAPI document; seeded into `SourceRegistry` so no network/file access happens |
+| `sources` | Map of source name → inline OpenAPI document; seeded into `DefaultSourceResolver` so no network/file access happens |
 | `responses` | Scripted HTTP responses replayed FIFO: `{status, headers?, body}` |
 | `inputs` | Workflow inputs for the first workflow |
 | `expect` | Normalized observations: `status`, `steps` (`{stepId, status, attempts}`), `requests`, `outputs`, optional `errors`, `retries`, `requestHeaders`, `eventsContain` |

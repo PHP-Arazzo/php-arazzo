@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Protocol\Http\Protocol;
 
+use Alama\Arazzo\Contracts\Attributes\AsOperationExecutor;
 use Alama\Arazzo\Contracts\Interfaces\OperationExecutorPluginInterface;
 use Alama\Arazzo\Contracts\Interfaces\OutputExtractorInterface;
 use Alama\Arazzo\Contracts\Interfaces\ResponseValidatorInterface;
@@ -22,6 +23,7 @@ use Psr\Http\Message\RequestInterface as Psr7Request;
 /**
  * @internal stays out of the advertised contract; not part of the public API surface
  */
+#[AsOperationExecutor(priority: 100)]
 final class HttpStepExecutor implements OperationExecutorPluginInterface, StepProtocolExecutorInterface
 {
     /**

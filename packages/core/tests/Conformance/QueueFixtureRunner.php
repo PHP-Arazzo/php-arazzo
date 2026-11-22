@@ -50,7 +50,8 @@ final class QueueFixtureRunner extends ConformanceHarness
 
         $engine = $this->engine();
 
-        $executors = new OperationExecutorRegistry();
+        OperationExecutorRegistry::reset();
+        $executors = OperationExecutorRegistry::create();
         $executors->register(new HttpStepExecutor(
             new DefaultOpenApiExecutor($this->http, new HttpFactory()),
             $runtime->operations,

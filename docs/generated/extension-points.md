@@ -88,8 +88,6 @@ mindmap
       OpenApiSourceNormalizer
       WsdlSourceNormalizer
       ProtoSourceNormalizer
-    SourceNormalizerRegistryInterface
-      SourceNormalizerRegistry
     StateStoreInterface
       FileStateStore
       InMemoryStateStore
@@ -136,7 +134,6 @@ mindmap
 | `RunnerGraphBuilderInterface` | no | `RunnerGraphBuilder` <small>core</small> |
 | `SelectorPluginInterface` | no | `JsonPathSelectorPlugin` <small>core</small>, `JsonPointerSelectorPlugin` <small>core</small> |
 | `SourceNormalizerInterface` | no | `OpenApiSourceNormalizer` <small>core</small>, `WsdlSourceNormalizer` <small>core</small>, `ProtoSourceNormalizer` <small>core</small> |
-| `SourceNormalizerRegistryInterface` | no | `SourceNormalizerRegistry` <small>core</small> |
 | `StateStoreInterface` | no | `FileStateStore` <small>core</small>, `InMemoryStateStore` <small>core</small> |
 | `StepProtocolExecutorInterface` | no | `AsyncApiStepExecutor` <small>core</small>, `HttpStepExecutor` <small>core</small>, `SubWorkflowStepExecutor` <small>core</small> |
 | `WorkflowContextInterface` | no | `WorkflowContext` <small>core</small> |

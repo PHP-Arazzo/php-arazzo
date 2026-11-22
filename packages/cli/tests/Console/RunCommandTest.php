@@ -12,7 +12,8 @@ use Alama\Arazzo\Protocol\Http\Execution\DefaultOpenApiExecutor;
 use Alama\Arazzo\Protocol\Http\Execution\ResponseSchemaValidator;
 use Alama\Arazzo\Protocol\Http\Execution\StepOutputExtractor;
 use Alama\Arazzo\Runner\RunnerFacade;
-use Alama\Arazzo\Sources\Resolver\SourceRegistry;
+use Alama\Arazzo\Sources\Resolver\DefaultSourceResolver;
+use Alama\Arazzo\Sources\Resolver\Interfaces\SourceResolver;
 use Alama\Arazzo\Sources\SourceGraph;
 use GuzzleHttp\Psr7\HttpFactory;
 use GuzzleHttp\Psr7\Response;
@@ -57,7 +58,7 @@ function arazzoDoc(string $tmp): void
         YAML);
 }
 
-function createTestRegistry(ClientInterface $client, RequestFactoryInterface $factory): SourceRegistry
+function createTestRegistry(ClientInterface $client, RequestFactoryInterface $factory): DefaultSourceResolver
 {
     return SourceGraph::createRegistry($client, $factory);
 }
@@ -196,7 +197,7 @@ YAML);
     return $tmp;
 }
 
-function cliCommand(ClientInterface $client, RequestFactoryInterface $factory, SourceRegistry $registry): RunCommand
+function cliCommand(ClientInterface $client, RequestFactoryInterface $factory, SourceResolver $registry): RunCommand
 {
     return new RunCommand($client, $factory, $registry);
 }
@@ -440,7 +441,7 @@ function realHttpDoc(string $workflow): string
     return $doc;
 }
 
-function realHttpRegistry(ClientInterface $client, RequestFactoryInterface $factory): SourceRegistry
+function realHttpRegistry(ClientInterface $client, RequestFactoryInterface $factory): DefaultSourceResolver
 {
     $registry = createTestRegistry($client, $factory);
     $registry->register(new SourceDocument('api', SourceType::Openapi, 'https://mini.test/openapi.json', REAL_HTTP_OPENAPI));

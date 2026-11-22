@@ -200,13 +200,18 @@ function stubProtocolPlugin(string $pluginName, int $pluginPriority = 100): Oper
 
 function hostRegistry(OperationExecutorPluginInterface ...$plugins): OperationExecutorRegistry
 {
-    $registry = new OperationExecutorRegistry();
+    OperationExecutorRegistry::reset();
+    $registry = OperationExecutorRegistry::create();
     foreach ($plugins as $plugin) {
         $registry->register($plugin);
     }
 
     return $registry;
 }
+
+afterEach(function (): void {
+    OperationExecutorRegistry::reset();
+});
 
 it('assembles graph with all core nodes', function () {
     $seams = seams(executorRegistry: hostRegistry(

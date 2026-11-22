@@ -9,7 +9,6 @@ use Alama\Arazzo\Contracts\Interfaces\OperationExecutorPluginInterface;
 use Alama\Arazzo\Contracts\Interfaces\OutputExtractorInterface;
 use Alama\Arazzo\Contracts\Interfaces\PendingCorrelationRegistryInterface;
 use Alama\Arazzo\Contracts\Interfaces\ResponseValidatorInterface;
-use Alama\Arazzo\Contracts\Interfaces\SourceNormalizerRegistryInterface;
 use Alama\Arazzo\Engine\Execution\IdempotencyKeyInjector;
 use Alama\Arazzo\Evaluation\EvaluationEngineInterface;
 use Alama\Arazzo\Protocol\Http\Execution\Interfaces\OpenApiExecutorInterface;
@@ -22,6 +21,7 @@ use Alama\Arazzo\Sources\Normalizer\OpenApiDocumentLoader;
 use Alama\Arazzo\Sources\Normalizer\OpenApiOperationResolver;
 use Alama\Arazzo\Sources\Normalizer\OpenApiSourceNormalizer;
 use Alama\Arazzo\Sources\Normalizer\OpenApiVersionDetector;
+use Alama\Arazzo\Sources\Resolver\SourceNormalizerRegistry;
 use Psr\Http\Message\RequestFactoryInterface;
 
 /**
@@ -103,9 +103,9 @@ final class ProtocolHttpRegistrar
         return [new ResponseSchemaValidator($this->operationResolver)];
     }
 
-    public function registerInto(?SourceNormalizerRegistryInterface $sourceRegistry = null): void
+    public function registerInto(?SourceNormalizerRegistry $sourceRegistry = null): void
     {
-        $sourceRegistry?->register($this->normalizer());
+        ($sourceRegistry ?? SourceNormalizerRegistry::create())->register($this->normalizer());
     }
 
     private function httpExecutor(): HttpStepExecutor

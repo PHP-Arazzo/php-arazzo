@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Evaluation\Registries;
 
+use Alama\Arazzo\Contracts\Attributes\AsCriterionPlugin;
 use Alama\Arazzo\Contracts\Interfaces\CriterionEvaluatorPluginInterface;
 use Alama\Arazzo\Contracts\Spec\Enum\CriterionType;
 use Alama\Arazzo\Contracts\Spec\SuccessCriterion;
 use Alama\Arazzo\Evaluation\Plugins\JsonPathCriterionPlugin;
 use Alama\Arazzo\Expression\Interfaces\ExpressionEngineInterface;
+use InvalidArgumentException;
+use ReflectionClass;
 
 /**
  * Registry for criterion evaluator plugins.
@@ -19,17 +22,47 @@ use Alama\Arazzo\Expression\Interfaces\ExpressionEngineInterface;
  */
 final class CriterionEvaluatorRegistry
 {
+    private static ?self $instance = null;
+
     /** @var array<int, list<CriterionEvaluatorPluginInterface>> */
     private array $plugins = [];
 
-    public function __construct(ExpressionEngineInterface $expression)
+    private function __construct(ExpressionEngineInterface $expression)
     {
-        // Built‑in default plugin (lowest priority)
         $this->register(new JsonPathCriterionPlugin($expression), 0);
     }
 
-    public function register(CriterionEvaluatorPluginInterface $plugin, int $priority = 0): void
+    public static function create(?ExpressionEngineInterface $expression = null): self
     {
+        if (self::$instance === null) {
+            if ($expression === null) {
+                throw new InvalidArgumentException('ExpressionEngineInterface is required to initialize CriterionEvaluatorRegistry.');
+            }
+            self::$instance = new self($expression);
+        }
+
+        return self::$instance;
+    }
+
+    public static function reset(): void
+    {
+        self::$instance = null;
+    }
+
+    public function register(CriterionEvaluatorPluginInterface $plugin, ?int $priority = null): void
+    {
+        if ($priority === null) {
+            $ref = new ReflectionClass($plugin);
+            $attrs = $ref->getAttributes(AsCriterionPlugin::class);
+            if (!empty($attrs)) {
+                /** @var AsCriterionPlugin $attr */
+                $attr = $attrs[0]->newInstance();
+                $priority = $attr->priority;
+            }
+        }
+
+        $priority ??= $plugin->priority();
+
         $this->plugins[$priority][] = $plugin;
         krsort($this->plugins);
     }

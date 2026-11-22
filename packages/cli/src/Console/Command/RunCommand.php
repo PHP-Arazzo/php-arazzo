@@ -16,7 +16,7 @@ use Alama\Arazzo\Protocol\Http\Execution\DefaultOpenApiExecutor;
 use Alama\Arazzo\Protocol\Http\Execution\ResponseSchemaValidator;
 use Alama\Arazzo\Protocol\Http\Execution\StepOutputExtractor;
 use Alama\Arazzo\Runner\RunnerFacade;
-use Alama\Arazzo\Sources\Resolver\SourceRegistry;
+use Alama\Arazzo\Sources\Resolver\Interfaces\SourceResolver;
 use Alama\Arazzo\Sources\SourceGraph;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\HttpFactory;
@@ -35,7 +35,7 @@ final class RunCommand extends Command
     public function __construct(
         private readonly ?ClientInterface $httpClient = null,
         private readonly ?RequestFactoryInterface $httpFactory = null,
-        private readonly ?SourceRegistry $registry = null,
+        private readonly ?SourceResolver $registry = null,
     ) {
         parent::__construct();
     }

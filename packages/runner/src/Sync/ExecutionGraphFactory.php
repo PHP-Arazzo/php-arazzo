@@ -48,7 +48,7 @@ final class ExecutionGraphFactory
         // Runner-native plugins go through the same first-supports()-wins
         // registry the async assembler uses; the host's protocol executors stay
         // on the constructor seam for this facade.
-        $executors ??= new OperationExecutorRegistry();
+        $executors ??= OperationExecutorRegistry::create();
 
         $stepExecutor = new StepExecutor(
             $openApiExecutor,

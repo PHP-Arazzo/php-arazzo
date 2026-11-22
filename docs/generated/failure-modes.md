@@ -23,7 +23,7 @@ Regenerated before every commit.
 | **ExecutionException** | `RpcOperationExecutor` <small>protocol-rpc:Execution</small>, `RpcRequestBuilder` <small>protocol-rpc:Execution</small>, `SoapOperationExecutor` <small>protocol-soap:Execution</small>, `SoapRequestBuilder` <small>protocol-soap:Execution</small>, `AsyncExecutionGraphAssembler` <small>runner:Async</small>, `StepExecutionWorker` <small>runner:Async</small>, `RunnerGraphBuilder` <small>(runner root)</small>, `ExecutionGraphFactory` <small>runner:Sync</small>, `StepExecutor` <small>runner:Sync</small> |
 | **ExpressionSyntaxException** | `EmbeddedExpressionSplitter` <small>expression:Internal</small>, `Interpolator` <small>(expression root)</small>, `Lexer` <small>(expression root)</small>, `Parser` <small>(expression root)</small> |
 | **GotoTargetNotFoundException** | `WorkflowEngine` <small>runner:Sync</small> |
-| **InvalidArgumentException** | `SpecVersion` <small>contracts:Spec</small>, `StepTarget` <small>contracts:Spec</small>, `TypeCaster` <small>engine:Execution</small>, `SelectorPluginRegistry` <small>expression:Registries</small>, `ProtoParser` <small>protocol-rpc:Normalizer</small>, `OpenApi30Normalizer` <small>sources:Normalizer</small>, `OpenApiSourceNormalizer` <small>sources:Normalizer</small>, `OpenApiVersionDetector` <small>sources:Normalizer</small>, `WsdlSourceNormalizer` <small>sources:Normalizer</small> |
+| **InvalidArgumentException** | `SpecVersion` <small>contracts:Spec</small>, `StepTarget` <small>contracts:Spec</small>, `TypeCaster` <small>engine:Execution</small>, `CriterionEvaluatorRegistry` <small>evaluation:Registries</small>, `ExpressionEvaluatorRegistry` <small>evaluation:Registries</small>, `SelectorPluginRegistry` <small>expression:Registries</small>, `ProtoParser` <small>protocol-rpc:Normalizer</small>, `OpenApi30Normalizer` <small>sources:Normalizer</small>, `OpenApiSourceNormalizer` <small>sources:Normalizer</small>, `OpenApiVersionDetector` <small>sources:Normalizer</small>, `WsdlSourceNormalizer` <small>sources:Normalizer</small> |
 | **LogicException** | `AsyncApiStepExecutor` <small>protocol-http:Protocol</small>, `StepExecutionWorker` <small>runner:Async</small>, `WorkflowExecutor` <small>runner:Sync</small>, `UnifiedStepCarrier` <small>(runner root)</small> |
 | **MaxAliasesExceededException** | `YamlSecurityScanner` <small>document:Parser</small> |
 | **MaxBytesExceededException** | `NativeJsonDecoder` <small>document:Parser</small>, `SymfonyYamlDecoder` <small>document:Parser</small> |
@@ -38,7 +38,7 @@ Regenerated before every commit.
 | **SourceFetchException** | `DefaultSourceResolver` <small>sources:Resolver</small>, `HttpFetcher` <small>sources:Resolver</small>, `LocalFetcher` <small>sources:Resolver</small> |
 | **SourceParseException** | `DefaultSourceResolver` <small>sources:Resolver</small> |
 | **StepBudgetExceededException** | `WorkflowEngine` <small>runner:Sync</small> |
-| **UnresolvableReferenceException** | `SourceRegistry` <small>sources:Resolver</small> |
+| **UnresolvableReferenceException** | `DefaultSourceResolver` <small>sources:Resolver</small> |
 | **UnsupportedSerializationStyleException** | `ParameterSerializer` <small>engine:Execution</small> |
 | **WorkflowCycleException** | `WorkflowEngine` <small>runner:Sync</small> |
 | **WorkflowDepthExceededException** | `WorkflowEngine` <small>runner:Sync</small> |

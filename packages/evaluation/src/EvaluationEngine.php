@@ -40,8 +40,8 @@ final class EvaluationEngine implements EvaluationEngineInterface
         ?CriterionEvaluatorRegistry $criterionRegistry = null,
         ?EventDispatcherInterface $eventDispatcher = null,
     ) {
-        $this->expressionRegistry = $expressionRegistry ?? new ExpressionEvaluatorRegistry($this->expression);
-        $this->criterionRegistry = $criterionRegistry ?? new CriterionEvaluatorRegistry($this->expression);
+        $this->expressionRegistry = $expressionRegistry ?? ExpressionEvaluatorRegistry::create($this->expression);
+        $this->criterionRegistry = $criterionRegistry ?? CriterionEvaluatorRegistry::create($this->expression);
         $this->eventDispatcher = $eventDispatcher ?? new NullEventDispatcher();
     }
 

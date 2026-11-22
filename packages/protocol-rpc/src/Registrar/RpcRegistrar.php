@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Protocol\Rpc\Registrar;
 
 use Alama\Arazzo\Contracts\Interfaces\HttpClientInterface;
-use Alama\Arazzo\Contracts\Interfaces\SourceNormalizerRegistryInterface;
 use Alama\Arazzo\Protocol\Rpc\Execution\RpcFailureMapper;
 use Alama\Arazzo\Protocol\Rpc\Execution\RpcOperationExecutor;
 use Alama\Arazzo\Protocol\Rpc\Execution\RpcRequestBuilder;
@@ -13,6 +12,7 @@ use Alama\Arazzo\Protocol\Rpc\Normalizer\ProtoSourceNormalizer;
 use Alama\Arazzo\Protocol\Rpc\Protocol\ProtobufOperationResolver;
 use Alama\Arazzo\Protocol\Rpc\Protocol\RpcMessageCodec;
 use Alama\Arazzo\Protocol\Rpc\Transfer\RpcResponseTransferMapper;
+use Alama\Arazzo\Sources\Resolver\SourceNormalizerRegistry;
 
 /**
  * Framework-agnostic registration of the RPC vertical slice into the core SPI
@@ -85,8 +85,8 @@ final class RpcRegistrar
         )];
     }
 
-    public function registerInto(?SourceNormalizerRegistryInterface $sourceRegistry = null): void
+    public function registerInto(?SourceNormalizerRegistry $sourceRegistry = null): void
     {
-        $sourceRegistry?->register($this->normalizer);
+        ($sourceRegistry ?? SourceNormalizerRegistry::create())->register($this->normalizer);
     }
 }

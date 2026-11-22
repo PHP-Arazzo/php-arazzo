@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Alama\Arazzo\Runner\OperationExecutorRegistry;
 use Alama\Arazzo\Tests\TestCase;
 
 require_once __DIR__.'/Support/helpers.php';
@@ -27,4 +28,8 @@ foreach (array_merge(
 
 restore_error_handler();
 
-pest()->extend(TestCase::class)->in(__DIR__);
+uses(TestCase::class)->in(__DIR__);
+
+uses()->afterEach(function (): void {
+    OperationExecutorRegistry::reset();
+})->in(__DIR__);

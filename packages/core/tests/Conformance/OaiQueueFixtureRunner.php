@@ -79,7 +79,8 @@ final class OaiQueueFixtureRunner extends ConformanceHarness
         $definitionId = $definitionRegistry->register($document);
         $queue = new SyncQueueDriver();
 
-        $executors = new OperationExecutorRegistry();
+        OperationExecutorRegistry::reset();
+        $executors = OperationExecutorRegistry::create();
         $executors->register(new SubWorkflowStepExecutor(
             new WorkflowExecutor(
                 new StepExecutor(
