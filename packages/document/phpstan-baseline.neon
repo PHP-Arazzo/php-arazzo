@@ -1,20 +1,8 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Method __construct has too many parameters \(9\)\. Maximum allowed is 5\.$#'
-			identifier: arazzo.custom.maxParameterCount
-			count: 1
-			path: src/NormalizedOpenApiOperation.php
-
-		-
 			message: '#^Class Parser has too many methods \(36\)\. Maximum allowed is 20\.$#'
 			identifier: arazzo.custom.maxMethodCount
 			count: 1
 			path: src/Parser/Parser.php
-
-		-
-			message: '#^Method __construct has too many parameters \(7\)\. Maximum allowed is 5\.$#'
-			identifier: arazzo.custom.maxParameterCount
-			count: 1
-			path: src/ResolvedOperation.php
 

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Document\Validator\Data;
 
+use Alama\Arazzo\Contracts\Data\KnownOperations;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Parameter;
 use Alama\Arazzo\Contracts\Spec\Workflow;
-use Alama\Arazzo\Document\KnownOperations;
 
 final readonly class SymbolTable
 {

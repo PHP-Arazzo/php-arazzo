@@ -7,9 +7,9 @@ namespace Alama\Arazzo\Protocol\Rpc\Normalizer;
 use Alama\Arazzo\Contracts\Interfaces\SourceNormalizerInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
+use Alama\Arazzo\Contracts\Spec\NormalizedOpenApiOperation;
+use Alama\Arazzo\Contracts\Spec\ResolvedOperation;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
-use Alama\Arazzo\Document\NormalizedOpenApiOperation;
-use Alama\Arazzo\Document\ResolvedOperation;
 
 /**
  * Port (D2): the RPC sibling of OpenApiSourceNormalizer and

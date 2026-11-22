@@ -2,14 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Alama\Arazzo\Tests\Normalizer;
+namespace Alama\Arazzo\Tests\Protocol\Soap\Normalizer;
 
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
+use Alama\Arazzo\Contracts\Spec\ResolvedOperation;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
-use Alama\Arazzo\Document\ResolvedOperation;
-use Alama\Arazzo\Sources\Normalizer\WsdlSourceNormalizer;
-use Alama\Arazzo\Sources\Resolver\Exceptions\UnsupportedSourceVersionException;
+use Alama\Arazzo\Protocol\Soap\Exceptions\UnsupportedSourceVersionException;
+use Alama\Arazzo\Protocol\Soap\Normalizer\WsdlSourceNormalizer;
 use InvalidArgumentException;
+use RuntimeException;
 
 function makeWsdlSourceNormalizer(): WsdlSourceNormalizer
 {

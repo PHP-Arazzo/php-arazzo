@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Protocol\Soap\Execution;
 
+use Alama\Arazzo\Contracts\Interfaces\SourceFetcherInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
+use Alama\Arazzo\Contracts\Spec\ResolvedOperation;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Document\OperationResolverInterface;
-use Alama\Arazzo\Document\ResolvedOperation;
-use Alama\Arazzo\Sources\Normalizer\WsdlSourceNormalizer;
-use Alama\Arazzo\Sources\Resolver\Interfaces\SourceFetcher;
+use Alama\Arazzo\Protocol\Soap\Normalizer\WsdlSourceNormalizer;
 use RuntimeException;
 
 /**
@@ -42,7 +42,7 @@ final class WsdlOperationResolver implements OperationResolverInterface
     private const DOTTED_REFERENCE = '/^\$sourceDescriptions\.([^.]+)\.(.+)$/';
 
     public function __construct(
-        private SourceFetcher $fetcher,
+        private SourceFetcherInterface $fetcher,
         private WsdlSourceNormalizer $normalizer,
     ) {}
 

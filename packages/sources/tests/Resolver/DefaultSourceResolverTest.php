@@ -8,9 +8,9 @@ use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Document\Parser\DecodePolicy;
 use Alama\Arazzo\Document\Parser\YamlPolicy;
+use Alama\Arazzo\Sources\Exceptions\SourceFetchException;
+use Alama\Arazzo\Sources\Exceptions\SourceParseException;
 use Alama\Arazzo\Sources\Resolver\DefaultSourceResolver;
-use Alama\Arazzo\Sources\Resolver\Exceptions\SourceFetchException;
-use Alama\Arazzo\Sources\Resolver\Exceptions\SourceParseException;
 use Alama\Arazzo\Sources\Resolver\Interfaces\SourceFetcher;
 
 it('resolves http url using http fetcher and decodes json', function (): void {

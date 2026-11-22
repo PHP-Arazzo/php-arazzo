@@ -26,15 +26,16 @@ quadrantChart
     cli/Console: [1, 0]
     cli/Generator: [1, 0]
     cli/Renderer: [0.5, 0]
+    contracts/Data: [0.2, 0]
     contracts/Dependency: [0.333, 0]
     contracts/Exceptions: [0, 0]
-    contracts/Interfaces: [0.1, 1]
-    contracts/Spec: [0.023, 0.02]
+    contracts/Interfaces: [0.091, 1]
+    contracts/Spec: [0.022, 0.02]
     contracts/State: [0.063, 0]
     contracts/Support: [0, 0.2]
     document/Parser: [0.333, 0.083]
     document/Validator: [0.667, 0.012]
-    document/_: [0.25, 0.333]
+    document/_: [0.4, 0.333]
     engine/Data: [0.75, 0]
     engine/Enum: [0, 0]
     engine/Exceptions: [0.143, 0]
@@ -53,7 +54,7 @@ quadrantChart
     expression/Data: [0.25, 0]
     expression/Enum: [0, 0]
     expression/Exceptions: [0.1, 0]
-    expression/Interfaces: [0.294, 1]
+    expression/Interfaces: [0.278, 1]
     expression/Internal: [0.857, 0]
     expression/JsonPath: [0.667, 0.143]
     expression/Plugins: [0.8, 0]
@@ -64,12 +65,15 @@ quadrantChart
     protocol-http/Execution: [0.643, 0.25]
     protocol-http/Protocol: [0.9, 0]
     protocol-http/Registrar: [1, 0]
+    protocol-http/Resolver: [0.462, 0]
     protocol-rpc/Execution: [0.9, 0]
-    protocol-rpc/Normalizer: [0.6, 0]
+    protocol-rpc/Normalizer: [0.5, 0]
     protocol-rpc/Protocol: [0.571, 0]
     protocol-rpc/Registrar: [1, 0]
     protocol-rpc/Transfer: [0.6, 0]
-    protocol-soap/Execution: [0.833, 0]
+    protocol-soap/Exceptions: [0, 0]
+    protocol-soap/Execution: [0.818, 0]
+    protocol-soap/Normalizer: [0.6, 0]
     protocol-soap/Registrar: [1, 0]
     protocol-soap/Resolver: [0.5, 0]
     protocol-soap/Transfer: [0.333, 0]
@@ -82,9 +86,10 @@ quadrantChart
     runner/Preflight: [0.429, 0]
     runner/Sync: [0.87, 0]
     runner/_: [0.85, 0.222]
-    sources/Normalizer: [0.357, 0.091]
-    sources/Resolver: [0.375, 0.231]
-    sources/_: [0.833, 0]
+    sources/Exceptions: [0, 0.2]
+    sources/Normalizer: [0.5, 0.167]
+    sources/Resolver: [0.571, 0.231]
+    sources/_: [0.75, 0.5]
 ```
 
 ## God classes (SRP)
@@ -96,11 +101,11 @@ Concrete types over 300 LOC:
 | `Parser` | `document:Parser` | 931 |
 | `ExecutionContext` | `engine:Runtime` | 553 |
 | `Parser` | `expression:_` | 511 |
-| `WsdlSourceNormalizer` | `sources:Normalizer` | 474 |
 | `Parser` | `expression:JsonPath` | 470 |
 | `ExecutionState` | `contracts:State` | 465 |
 | `StepOutcomeHandler` | `runner:Async` | 455 |
 | `ProtoParser` | `protocol-rpc:Normalizer` | 446 |
+| `WsdlSourceNormalizer` | `protocol-soap:Normalizer` | 444 |
 | `WorkflowContext` | `contracts:State` | 442 |
 | `StepExecutionWorker` | `runner:Async` | 414 |
 | `WorkflowEngine` | `runner:Sync` | 360 |

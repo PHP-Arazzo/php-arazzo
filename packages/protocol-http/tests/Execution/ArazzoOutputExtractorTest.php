@@ -21,10 +21,13 @@ use Alama\Arazzo\Contracts\State\WorkflowContext;
 use Alama\Arazzo\Evaluation\EvaluationEngine;
 use Alama\Arazzo\Expression\ExpressionEngine;
 use Alama\Arazzo\Protocol\Http\Execution\StepOutputExtractor;
+use Alama\Arazzo\Protocol\Http\Resolver\OpenApiDocumentLoader;
+use Alama\Arazzo\Protocol\Http\Resolver\OpenApiOperationResolver;
+use Alama\Arazzo\Sources\Normalizer\OpenApi30Normalizer;
+use Alama\Arazzo\Sources\Normalizer\OpenApi31Normalizer;
+use Alama\Arazzo\Sources\Normalizer\OpenApiVersionDetector;
 use Alama\Arazzo\Sources\Resolver\DefaultSourceResolver;
 use Alama\Arazzo\Sources\Resolver\Fetchers\LocalFetcher;
-use Alama\Arazzo\Sources\Resolver\SourceRegistry;
-use Alama\Arazzo\Sources\SourceGraph;
 
 beforeEach(function () {
     $openApiJson = json_encode([
@@ -59,11 +62,15 @@ beforeEach(function () {
     file_put_contents($this->openApiFile, $openApiJson);
 
     $this->makeExtractor = function (): StepOutputExtractor {
-        $runtime = SourceGraph::runtime(new SourceRegistry(
-            new DefaultSourceResolver(fetchers: ['file' => new LocalFetcher()]),
-        ));
+        $sourceResolver = new DefaultSourceResolver(fetchers: ['file' => new LocalFetcher()]);
+        $resolver = new OpenApiOperationResolver(
+            new OpenApiDocumentLoader($sourceResolver),
+            new OpenApiVersionDetector(),
+            new OpenApi30Normalizer(),
+            new OpenApi31Normalizer(),
+        );
 
-        return new StepOutputExtractor($runtime->operations, new EvaluationEngine(expression: new ExpressionEngine()), new ExpressionEngine());
+        return new StepOutputExtractor($resolver, new EvaluationEngine(expression: new ExpressionEngine()), new ExpressionEngine());
     };
 
     $this->makeDocument = function (): ArazzoDocument {

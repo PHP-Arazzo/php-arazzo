@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Cli\Console\Command;
 
+use Alama\Arazzo\Contracts\Data\KnownOperations;
 use Alama\Arazzo\Document\Document;
-use Alama\Arazzo\Document\KnownOperations;
 use Alama\Arazzo\Document\Parser\Exceptions\LoaderException;
 use Alama\Arazzo\Document\Parser\Exceptions\ParserException;
-use Alama\Arazzo\Sources\SourceGraph;
+use Alama\Arazzo\Sources\Sources;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -39,8 +39,8 @@ final class ValidateCommand extends Command
         // Resolve source operations for reference validation (R4/R5).
         $knownOperations = KnownOperations::none();
         try {
-            $loader = SourceGraph::loader();
-            $knownOperations = $loader->knownOperations($document, (string) dirname($file));
+            $sources = Sources::create();
+            $knownOperations = $sources->knownOperations($document, (string) dirname($file));
         } catch (\Throwable $e) {
             // Degrade gracefully: never fail validation due to source loading.
         }

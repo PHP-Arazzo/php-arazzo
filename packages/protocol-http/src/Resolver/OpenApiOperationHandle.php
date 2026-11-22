@@ -2,18 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Alama\Arazzo\Sources\Normalizer;
+namespace Alama\Arazzo\Protocol\Http\Resolver;
 
-use Alama\Arazzo\Document\ResolvedOperation;
+use Alama\Arazzo\Contracts\Spec\ResolvedOperation;
 use cebe\openapi\spec\OpenApi;
 use cebe\openapi\spec\Operation;
 
 /**
  * The cebe-facing view of a resolved operation. The three OpenAPI-specific
- * consumers in the runner receive this instead of the model type, which is
- * what lets alama/arazzo-document stay cebe-free.
+ * consumers in protocol-http receive this instead of the model type.
  */
-final class OpenApiOperationHandle extends ResolvedOperation
+final readonly class OpenApiOperationHandle extends ResolvedOperation
 {
     public readonly ResolvedOperation $operation;
 

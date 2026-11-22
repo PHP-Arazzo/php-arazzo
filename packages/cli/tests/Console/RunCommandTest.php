@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Alama\Arazzo\Cli\Console\Command\RunCommand;
+use Alama\Arazzo\Cli\Console\RunnerFactory;
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
 use Alama\Arazzo\Contracts\Spec\SourceDocument;
 use Alama\Arazzo\Document\Document;
@@ -11,9 +12,14 @@ use Alama\Arazzo\Expression\ExpressionEngine;
 use Alama\Arazzo\Protocol\Http\Execution\DefaultOpenApiExecutor;
 use Alama\Arazzo\Protocol\Http\Execution\ResponseSchemaValidator;
 use Alama\Arazzo\Protocol\Http\Execution\StepOutputExtractor;
+use Alama\Arazzo\Protocol\Http\Resolver\OpenApiOperationResolver;
 use Alama\Arazzo\Runner\RunnerFacade;
+use Alama\Arazzo\Sources\Resolver\DefaultSourceResolver;
+use Alama\Arazzo\Sources\Resolver\Fetchers\HttpFetcher;
+use Alama\Arazzo\Sources\Resolver\Fetchers\LocalFetcher;
 use Alama\Arazzo\Sources\Resolver\SourceRegistry;
-use Alama\Arazzo\Sources\SourceGraph;
+use Alama\Arazzo\Sources\Sources;
+use Alama\Arazzo\Sources\SourcesInterface;
 use GuzzleHttp\Psr7\HttpFactory;
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Client\ClientInterface;
@@ -59,7 +65,11 @@ function arazzoDoc(string $tmp): void
 
 function createTestRegistry(ClientInterface $client, RequestFactoryInterface $factory): SourceRegistry
 {
-    return SourceGraph::createRegistry($client, $factory);
+    return new SourceRegistry(DefaultSourceResolver::withFetchers([
+        'http' => new HttpFetcher($client, $factory),
+        'https' => new HttpFetcher($client, $factory),
+        'file' => new LocalFetcher(),
+    ]));
 }
 
 it('runs a workflow end-to-end through the CLI', function (): void {
@@ -76,7 +86,7 @@ it('runs a workflow end-to-end through the CLI', function (): void {
     $registry = createTestRegistry($client, $factory);
     $registry->register(new SourceDocument('api', SourceType::Openapi, 'https://mini.test/openapi.json', PETSTORE_MINI));
 
-    $command = new RunCommand($client, $factory, $registry);
+    $command = new RunCommand(RunnerFactory::create(httpClient: $client, httpFactory: $factory, sources: new Sources($registry)));
     $tester = new CommandTester($command);
 
     $doc = sys_get_temp_dir().'/arazzo-cli-run-'.uniqid().'.yaml';
@@ -104,7 +114,7 @@ it('fails with a clear message for an unknown workflow id', function (): void {
     $registry = createTestRegistry($client, $factory);
     $registry->register(new SourceDocument('api', SourceType::Openapi, 'https://mini.test/openapi.json', PETSTORE_MINI));
 
-    $command = new RunCommand($client, $factory, $registry);
+    $command = new RunCommand(RunnerFactory::create(httpClient: $client, httpFactory: $factory, sources: new Sources($registry)));
     $tester = new CommandTester($command);
 
     $doc = sys_get_temp_dir().'/arazzo-cli-unknown-'.uniqid().'.yaml';
@@ -135,15 +145,15 @@ it('exposes the facade result shape the CLI output rendering depends on', functi
     arazzoDoc($doc);
 
     $document = Document::create()->load($doc);
-    $runtime = SourceGraph::runtime(registry: $registry);
+    $operationResolver = OpenApiOperationResolver::create(new Sources($registry));
     $engine = new EvaluationEngine(expression: new ExpressionEngine());
     $runner = new RunnerFacade(
-        $runtime->document,
-        $runtime->operations,
+        Document::create(),
+        $operationResolver,
         $engine,
         openApiExecutor: new DefaultOpenApiExecutor($client, $factory),
-        outputExtractor: new StepOutputExtractor($runtime->operations, $engine, new ExpressionEngine()),
-        schemaValidator: new ResponseSchemaValidator($runtime->operations),
+        outputExtractor: new StepOutputExtractor($operationResolver, $engine, new ExpressionEngine()),
+        schemaValidator: new ResponseSchemaValidator($operationResolver),
     );
 
     unlink($doc);
@@ -198,7 +208,9 @@ YAML);
 
 function cliCommand(ClientInterface $client, RequestFactoryInterface $factory, SourceRegistry $registry): RunCommand
 {
-    return new RunCommand($client, $factory, $registry);
+    $runner = RunnerFactory::create(httpClient: $client, httpFactory: $factory, sources: new Sources($registry));
+
+    return new RunCommand($runner);
 }
 
 function okClient(): ClientInterface
@@ -440,12 +452,12 @@ function realHttpDoc(string $workflow): string
     return $doc;
 }
 
-function realHttpRegistry(ClientInterface $client, RequestFactoryInterface $factory): SourceRegistry
+function realHttpRegistry(ClientInterface $client, RequestFactoryInterface $factory): SourcesInterface
 {
     $registry = createTestRegistry($client, $factory);
     $registry->register(new SourceDocument('api', SourceType::Openapi, 'https://mini.test/openapi.json', REAL_HTTP_OPENAPI));
 
-    return $registry;
+    return new Sources($registry);
 }
 
 it('sends the real request through the injected HTTP client (method, URL, path, query, header, body)', function (): void {
@@ -487,7 +499,7 @@ it('sends the real request through the injected HTTP client (method, URL, path, 
                   - condition: $statusCode == 200
         YAML);
 
-    $tester = new CommandTester(new RunCommand($client, $factory, realHttpRegistry($client, $factory)));
+    $tester = new CommandTester(new RunCommand(RunnerFactory::create(httpClient: $client, httpFactory: $factory, sources: realHttpRegistry($client, $factory))));
     $tester->execute(['file' => $doc]);
 
     unlink($doc);
@@ -542,7 +554,7 @@ it('exposes step outputs to downstream steps and workflow outputs', function ():
                   - condition: $statusCode == 200
         YAML);
 
-    $tester = new CommandTester(new RunCommand($client, $factory, realHttpRegistry($client, $factory)));
+    $tester = new CommandTester(new RunCommand(RunnerFactory::create(httpClient: $client, httpFactory: $factory, sources: realHttpRegistry($client, $factory))));
     $tester->execute(['file' => $doc]);
 
     unlink($doc);
@@ -584,7 +596,7 @@ it('fails the run and renders the violation when a response breaks its schema', 
                   - condition: $statusCode == 200
         YAML);
 
-    $tester = new CommandTester(new RunCommand($client, $factory, realHttpRegistry($client, $factory)));
+    $tester = new CommandTester(new RunCommand(RunnerFactory::create(httpClient: $client, httpFactory: $factory, sources: realHttpRegistry($client, $factory))));
     $tester->execute(['file' => $doc]);
 
     unlink($doc);
@@ -623,7 +635,7 @@ it('fails the run when success criteria are not met', function (): void {
                   - condition: $statusCode == 200
         YAML);
 
-    $tester = new CommandTester(new RunCommand($client, $factory, realHttpRegistry($client, $factory)));
+    $tester = new CommandTester(new RunCommand(RunnerFactory::create(httpClient: $client, httpFactory: $factory, sources: realHttpRegistry($client, $factory))));
     $tester->execute(['file' => $doc]);
 
     unlink($doc);

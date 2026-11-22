@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Runner\Preflight;
 
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
+use Alama\Arazzo\Contracts\Spec\ResolvedOperation;
 use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Document\OperationResolverInterface;
-use Alama\Arazzo\Document\ResolvedOperation;
 use RuntimeException;
 
 final readonly class OperationResolvers

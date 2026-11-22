@@ -16,10 +16,10 @@ use Alama\Arazzo\Protocol\Http\Execution\Interfaces\OpenApiExecutorInterface;
 use Alama\Arazzo\Protocol\Http\Execution\ResponseSchemaValidator;
 use Alama\Arazzo\Protocol\Http\Protocol\AsyncApiStepExecutor;
 use Alama\Arazzo\Protocol\Http\Protocol\HttpStepExecutor;
+use Alama\Arazzo\Protocol\Http\Resolver\OpenApiDocumentLoader;
+use Alama\Arazzo\Protocol\Http\Resolver\OpenApiOperationResolver;
 use Alama\Arazzo\Sources\Normalizer\OpenApi30Normalizer;
 use Alama\Arazzo\Sources\Normalizer\OpenApi31Normalizer;
-use Alama\Arazzo\Sources\Normalizer\OpenApiDocumentLoader;
-use Alama\Arazzo\Sources\Normalizer\OpenApiOperationResolver;
 use Alama\Arazzo\Sources\Normalizer\OpenApiSourceNormalizer;
 use Alama\Arazzo\Sources\Normalizer\OpenApiVersionDetector;
 use Psr\Http\Message\RequestFactoryInterface;
@@ -76,10 +76,14 @@ final class ProtocolHttpRegistrar
         ];
     }
 
+    public function loader(): OpenApiDocumentLoader
+    {
+        return $this->loader;
+    }
+
     public function normalizer(): OpenApiSourceNormalizer
     {
         return new OpenApiSourceNormalizer(
-            $this->loader,
             new OpenApiVersionDetector(),
             new OpenApi30Normalizer(),
             new OpenApi31Normalizer(),

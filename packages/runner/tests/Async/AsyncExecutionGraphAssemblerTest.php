@@ -15,10 +15,12 @@ use Alama\Arazzo\Contracts\Spec\PendingCorrelation;
 use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Contracts\Spec\StepExecutionOutcome;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
+use Alama\Arazzo\Document\Document;
 use Alama\Arazzo\Evaluation\EvaluationEngine;
 use Alama\Arazzo\Events\Interfaces\EventLedgerInterface;
 use Alama\Arazzo\Expression\ExpressionEngine;
 use Alama\Arazzo\Protocol\Http\Execution\Interfaces\OpenApiExecutorInterface;
+use Alama\Arazzo\Protocol\Http\Resolver\OpenApiOperationResolver;
 use Alama\Arazzo\Runner\Async\AsyncExecutionGraphAssembler;
 use Alama\Arazzo\Runner\AsyncGraphSeams;
 use Alama\Arazzo\Runner\Execution\OperationRuntime;
@@ -27,7 +29,6 @@ use Alama\Arazzo\Runner\Sync\SubWorkflowStepExecutor;
 use Alama\Arazzo\Runtime\State\Interfaces\DefinitionRegistryInterface;
 use Alama\Arazzo\Runtime\State\Interfaces\ExecutionRegistryInterface;
 use Alama\Arazzo\Runtime\State\Interfaces\StateStoreInterface;
-use Alama\Arazzo\Sources\SourceGraph;
 use Alama\Arazzo\Tests\Support\FakeOpenApiExecutor;
 use Alama\Arazzo\Tests\Support\FakeOutputExtractor;
 use Alama\Arazzo\Tests\Support\FakeResponseValidator;
@@ -213,12 +214,11 @@ it('assembles graph with all core nodes', function () {
         stubProtocolPlugin('http', 100),
         stubProtocolPlugin('asyncapi', 200),
     ));
-    $runtime = SourceGraph::runtime();
     $assembler = new AsyncExecutionGraphAssembler(
         evaluationEngine: new EvaluationEngine(expression: new ExpressionEngine()),
         operations: new OperationRuntime(
-            $runtime->document,
-            $runtime->operations,
+            Document::create(),
+            OpenApiOperationResolver::create(),
         ),
     );
     $graph = $assembler->assemble($seams);
@@ -235,12 +235,11 @@ it('flows host-registered protocol executors into the graph alongside the compos
     $httpPlugin = stubProtocolPlugin('http', 100);
     $asyncPlugin = stubProtocolPlugin('asyncapi', 200);
     $seams = seams(executorRegistry: hostRegistry($httpPlugin, $asyncPlugin));
-    $runtime = SourceGraph::runtime();
     $assembler = new AsyncExecutionGraphAssembler(
         evaluationEngine: new EvaluationEngine(expression: new ExpressionEngine()),
         operations: new OperationRuntime(
-            $runtime->document,
-            $runtime->operations,
+            Document::create(),
+            OpenApiOperationResolver::create(),
         ),
     );
     $graph = $assembler->assemble($seams);

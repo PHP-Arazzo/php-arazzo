@@ -9,22 +9,21 @@ use Alama\Arazzo\Contracts\Spec\StepFactory;
 use Alama\Arazzo\Contracts\Spec\StepFlow;
 use Alama\Arazzo\Contracts\Spec\StepIo;
 use Alama\Arazzo\Contracts\Spec\Workflow;
+use Alama\Arazzo\Document\Document;
 use Alama\Arazzo\Evaluation\EvaluationEngine;
 use Alama\Arazzo\Expression\ExpressionEngine;
+use Alama\Arazzo\Protocol\Http\Resolver\OpenApiOperationResolver;
 use Alama\Arazzo\Runner\RunnerFacade;
 use Alama\Arazzo\Runner\RunnerFacadeInterface;
-use Alama\Arazzo\Sources\SourceGraph;
 use Alama\Arazzo\Tests\Support\FakeOpenApiExecutor;
 use Alama\Arazzo\Tests\Support\FakeOutputExtractor;
 use Alama\Arazzo\Tests\Support\FakeResponseValidator;
 
 function runnerFacadeWithTestFakes(): RunnerFacade
 {
-    $runtime = SourceGraph::runtime();
-
     return new RunnerFacade(
-        $runtime->document,
-        $runtime->operations,
+        Document::create(),
+        OpenApiOperationResolver::create(),
         new EvaluationEngine(expression: new ExpressionEngine()),
         new ExpressionEngine(), // inspector
         new FakeOpenApiExecutor(),

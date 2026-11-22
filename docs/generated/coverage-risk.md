@@ -20,13 +20,14 @@ quadrantChart
     quadrant-2 Solid & stable
     quadrant-3 Stable but untested
     quadrant-4 Untested churn
-    cli/Console: [1, 0.818]
+    cli/Console: [1, 0.75]
     cli/Generator: [1, 1]
     cli/Renderer: [0.5, 1]
+    contracts/Data: [0.2, 1]
     contracts/Dependency: [0.333, 1]
     contracts/Exceptions: [0, 1]
-    contracts/Interfaces: [0.1, 1]
-    contracts/Spec: [0.023, 1]
+    contracts/Interfaces: [0.091, 1]
+    contracts/Spec: [0.022, 1]
     contracts/State: [0.063, 1]
     contracts/Support: [0, 1]
     document/Parser: [0.333, 1]
@@ -47,7 +48,7 @@ quadrantChart
     expression/Data: [0.25, 1]
     expression/Enum: [0, 1]
     expression/Exceptions: [0.1, 1]
-    expression/Interfaces: [0.294, 1]
+    expression/Interfaces: [0.278, 1]
     expression/Internal: [0.857, 0.333]
     expression/JsonPath: [0.667, 1]
     expression/Plugins: [0.8, 0.333]
@@ -57,12 +58,15 @@ quadrantChart
     protocol-http/Execution: [0.643, 1]
     protocol-http/Protocol: [0.9, 1]
     protocol-http/Registrar: [1, 1]
+    protocol-http/Resolver: [0.462, 1]
     protocol-rpc/Execution: [0.9, 1]
-    protocol-rpc/Normalizer: [0.6, 0.5]
+    protocol-rpc/Normalizer: [0.5, 0.5]
     protocol-rpc/Protocol: [0.571, 1]
     protocol-rpc/Registrar: [1, 0]
     protocol-rpc/Transfer: [0.6, 1]
-    protocol-soap/Execution: [0.833, 1]
+    protocol-soap/Exceptions: [0, 1]
+    protocol-soap/Execution: [0.818, 1]
+    protocol-soap/Normalizer: [0.6, 1]
     protocol-soap/Registrar: [1, 0]
     protocol-soap/Resolver: [0.5, 1]
     protocol-soap/Transfer: [0.333, 1]
@@ -74,29 +78,31 @@ quadrantChart
     runner/Interfaces: [1, 0]
     runner/Preflight: [0.429, 1]
     runner/Sync: [0.87, 1]
-    sources/Normalizer: [0.357, 1]
-    sources/Resolver: [0.375, 1]
+    sources/Exceptions: [0, 1]
+    sources/Normalizer: [0.5, 1]
+    sources/Resolver: [0.571, 1]
 ```
 
 | Module | Instability | Test files | Src files | Density |
 |---|---:|---:|---:|---:|
-| `cli/Console` | 1.00 | 9 | 11 | 82% |
+| `cli/Console` | 1.00 | 9 | 12 | 75% |
 | `cli/Generator` | 1.00 | 2 | 2 | 100% |
 | `cli/Renderer` | 0.50 | 7 | 1 | 100% |
+| `contracts/Data` | 0.20 | 5 | 2 | 100% |
 | `contracts/Dependency` | 0.33 | 6 | 3 | 100% |
 | `contracts/Exceptions` | 0.00 | 5 | 1 | 100% |
-| `contracts/Interfaces` | 0.10 | 43 | 19 | 100% |
-| `contracts/Spec` | 0.02 | 283 | 49 | 100% |
+| `contracts/Interfaces` | 0.09 | 45 | 21 | 100% |
+| `contracts/Spec` | 0.02 | 282 | 51 | 100% |
 | `contracts/State` | 0.06 | 83 | 3 | 100% |
-| `contracts/Support` | 0.00 | 12 | 5 | 100% |
-| `document/Parser` | 0.33 | 61 | 24 | 100% |
+| `contracts/Support` | 0.00 | 11 | 5 | 100% |
+| `document/Parser` | 0.33 | 60 | 24 | 100% |
 | `document/Validator` | 0.67 | 98 | 82 | 100% |
 | `engine/Data` | 0.75 | 2 | 2 | 100% |
 | `engine/Enum` | 0.00 | 1 | 1 | 100% |
 | `engine/Exceptions` | 0.14 | 5 | 1 | 100% |
 | `engine/Execution` | 0.36 | 12 | 8 | 100% |
 | `engine/Runtime` | 0.38 | 31 | 19 | 100% |
-| `evaluation/Condition` | 0.89 | 74 | 17 | 100% |
+| `evaluation/Condition` | 0.89 | 73 | 17 | 100% |
 | `evaluation/Data` | 0.40 | 16 | 2 | 100% |
 | `evaluation/Enum` | 0.00 | 6 | 5 | 100% |
 | `evaluation/Events` | 0.33 | 1 | 1 | 100% |
@@ -107,9 +113,9 @@ quadrantChart
 | `expression/Data` | 0.25 | 28 | 6 | 100% |
 | `expression/Enum` | 0.00 | 8 | 2 | 100% |
 | `expression/Exceptions` | 0.10 | 17 | 2 | 100% |
-| `expression/Interfaces` | 0.29 | 24 | 5 | 100% |
+| `expression/Interfaces` | 0.28 | 24 | 5 | 100% |
 | `expression/Internal` | 0.86 | 1 | 3 | 33% |
-| `expression/JsonPath` | 0.67 | 62 | 7 | 100% |
+| `expression/JsonPath` | 0.67 | 61 | 7 | 100% |
 | `expression/Plugins` | 0.80 | 1 | 3 | 33% |
 | `expression/Registries` | 0.50 | 1 | 1 | 100% |
 | `expression/Support` | 0.50 | 4 | 1 | 100% |
@@ -117,12 +123,15 @@ quadrantChart
 | `protocol-http/Execution` | 0.64 | 28 | 4 | 100% |
 | `protocol-http/Protocol` | 0.90 | 10 | 2 | 100% |
 | `protocol-http/Registrar` | 1.00 | 1 | 1 | 100% |
+| `protocol-http/Resolver` | 0.46 | 23 | 3 | 100% |
 | `protocol-rpc/Execution` | 0.90 | 3 | 3 | 100% |
-| `protocol-rpc/Normalizer` | 0.60 | 3 | 6 | 50% |
+| `protocol-rpc/Normalizer` | 0.50 | 3 | 6 | 50% |
 | `protocol-rpc/Protocol` | 0.57 | 6 | 4 | 100% |
 | `protocol-rpc/Registrar` | 1.00 | 0 | 1 | 0% |
 | `protocol-rpc/Transfer` | 0.60 | 3 | 2 | 100% |
-| `protocol-soap/Execution` | 0.83 | 5 | 5 | 100% |
+| `protocol-soap/Exceptions` | 0.00 | 3 | 1 | 100% |
+| `protocol-soap/Execution` | 0.82 | 5 | 5 | 100% |
+| `protocol-soap/Normalizer` | 0.60 | 4 | 1 | 100% |
 | `protocol-soap/Registrar` | 1.00 | 0 | 1 | 0% |
 | `protocol-soap/Resolver` | 0.50 | 1 | 1 | 100% |
 | `protocol-soap/Transfer` | 0.33 | 5 | 2 | 100% |
@@ -134,7 +143,8 @@ quadrantChart
 | `runner/Interfaces` | 1.00 | 0 | 1 | 0% |
 | `runner/Preflight` | 0.43 | 4 | 2 | 100% |
 | `runner/Sync` | 0.87 | 36 | 6 | 100% |
-| `sources/Normalizer` | 0.36 | 20 | 11 | 100% |
-| `sources/Resolver` | 0.38 | 29 | 13 | 100% |
+| `sources/Exceptions` | 0.00 | 9 | 5 | 100% |
+| `sources/Normalizer` | 0.50 | 7 | 6 | 100% |
+| `sources/Resolver` | 0.57 | 29 | 13 | 100% |
 
 **Refactor-now list** (untested churn): `protocol-rpc/Registrar`, `protocol-soap/Registrar`, `runner/Interfaces`

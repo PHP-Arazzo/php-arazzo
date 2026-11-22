@@ -12,8 +12,8 @@ use Alama\Arazzo\Protocol\Http\Execution\ResponseSchemaValidator;
 use Alama\Arazzo\Protocol\Http\Protocol\AsyncApiStepExecutor;
 use Alama\Arazzo\Protocol\Http\Protocol\HttpStepExecutor;
 use Alama\Arazzo\Protocol\Http\Registrar\ProtocolHttpRegistrar;
-use Alama\Arazzo\Sources\Normalizer\OpenApiDocumentLoader;
-use Alama\Arazzo\Sources\Normalizer\OpenApiOperationResolver;
+use Alama\Arazzo\Protocol\Http\Resolver\OpenApiDocumentLoader;
+use Alama\Arazzo\Protocol\Http\Resolver\OpenApiOperationResolver;
 use Alama\Arazzo\Sources\Normalizer\OpenApiSourceNormalizer;
 use Alama\Arazzo\Sources\Resolver\Interfaces\SourceResolver;
 

@@ -12,6 +12,7 @@ flowchart LR
     cli_Console["Alama\Arazzo\Cli\Console\Cli"]:::coreNode
     cli_Generator["Alama\Arazzo\Cli\Generator"]:::coreNode
     cli_Renderer["Alama\Arazzo\Cli\Renderer"]:::coreNode
+    contracts_Data["Alama\Arazzo\Contracts\Data"]:::coreNode
     contracts_Dependency["Alama\Arazzo\Contracts\Dependency"]:::coreNode
     contracts_Exceptions["Alama\Arazzo\Contracts\Exceptions"]:::coreNode
     contracts_Interfaces["Alama\Arazzo\Contracts\Interfaces"]:::coreNode
@@ -50,12 +51,15 @@ flowchart LR
     protocol_http_Execution["Alama\Arazzo\Protocol\Http\Execution"]:::coreNode
     protocol_http_Protocol["Alama\Arazzo\Protocol\Http\Protocol"]:::coreNode
     protocol_http_Registrar["Alama\Arazzo\Protocol\Http\Registrar"]:::coreNode
+    protocol_http_Resolver["Alama\Arazzo\Protocol\Http\Resolver"]:::coreNode
     protocol_rpc_Execution["Alama\Arazzo\Protocol\Rpc\Execution"]:::coreNode
     protocol_rpc_Normalizer["Alama\Arazzo\Protocol\Rpc\Normalizer"]:::coreNode
     protocol_rpc_Protocol["Alama\Arazzo\Protocol\Rpc\Protocol"]:::coreNode
     protocol_rpc_Registrar["Alama\Arazzo\Protocol\Rpc\Registrar"]:::coreNode
     protocol_rpc_Transfer["Alama\Arazzo\Protocol\Rpc\Transfer"]:::coreNode
+    protocol_soap_Exceptions["Alama\Arazzo\Protocol\Soap\Exceptions"]:::coreNode
     protocol_soap_Execution["Alama\Arazzo\Protocol\Soap\Execution"]:::coreNode
+    protocol_soap_Normalizer["Alama\Arazzo\Protocol\Soap\Normalizer"]:::coreNode
     protocol_soap_Registrar["Alama\Arazzo\Protocol\Soap\Registrar"]:::coreNode
     protocol_soap_Resolver["Alama\Arazzo\Protocol\Soap\Resolver"]:::coreNode
     protocol_soap_Transfer["Alama\Arazzo\Protocol\Soap\Transfer"]:::coreNode
@@ -68,9 +72,11 @@ flowchart LR
     runner_Preflight["Alama\Arazzo\Runner\Preflight"]:::coreNode
     runner_Sync["Alama\Arazzo\Runner\Sync"]:::coreNode
     runner__["(runner package root)"]:::coreNode
+    sources_Exceptions["Alama\Arazzo\Sources\Exceptions"]:::coreNode
     sources_Normalizer["Alama\Arazzo\Sources\Normalizer"]:::coreNode
     sources_Resolver["Alama\Arazzo\Sources\Resolver\Exceptions"]:::coreNode
     sources__["(sources package root)"]:::coreNode
+    contracts_Data --> contracts_Spec
     contracts_Dependency --> contracts_Spec
     contracts_Dependency --> contracts_State
     contracts_Interfaces --> contracts_Spec
@@ -155,31 +161,33 @@ flowchart LR
     evaluation__ --> expression_Exceptions
     document_Parser --> contracts_Spec
     document_Parser --> contracts_Support
+    document_Validator --> contracts_Data
     document_Validator --> contracts_Spec
-    document_Validator --> document__
     document_Validator --> expression_Interfaces
     document_Validator --> expression_Enum
     document_Validator --> expression_Exceptions
     document_Validator --> expression_Data
     document_Validator --> contracts_Support
     document_Validator --> contracts_Dependency
+    document__ --> contracts_Data
     document__ --> contracts_Spec
     document__ --> document_Parser
     document__ --> document_Validator
     document__ --> expression__
-    sources_Normalizer --> contracts_Interfaces
+    document__ --> expression_Interfaces
     sources_Normalizer --> contracts_Spec
-    sources_Normalizer --> document__
+    sources_Normalizer --> contracts_Interfaces
     sources_Normalizer --> sources_Resolver
-    sources_Normalizer --> contracts_Support
+    sources_Resolver --> contracts_Interfaces
     sources_Resolver --> contracts_Spec
     sources_Resolver --> document_Parser
-    sources_Resolver --> contracts_Interfaces
+    sources_Resolver --> sources_Exceptions
+    sources__ --> contracts_Data
     sources__ --> contracts_Interfaces
     sources__ --> contracts_Spec
-    sources__ --> document__
     sources__ --> sources_Normalizer
     sources__ --> sources_Resolver
+    sources__ --> sources_Exceptions
     engine_Data --> contracts_Spec
     engine_Data --> engine_Enum
     engine_Data --> contracts_State
@@ -214,7 +222,7 @@ flowchart LR
     runner_Events --> contracts_Support
     runner_Exceptions --> document_Validator
     runner_Execution --> document__
-    runner_Execution --> sources_Normalizer
+    runner_Execution --> protocol_http_Resolver
     runner_Execution --> contracts_Spec
     runner_Execution --> engine_Runtime
     runner_Execution --> contracts_Support
@@ -241,8 +249,8 @@ flowchart LR
     runner_Sync --> engine_Exceptions
     runner_Sync --> engine_Execution
     runner_Sync --> protocol_http_Execution
+    runner_Sync --> protocol_http_Resolver
     runner_Sync --> runner__
-    runner_Sync --> sources_Normalizer
     runner_Sync --> document__
     runner_Sync --> runner_Preflight
     runner_Sync --> document_Validator
@@ -264,7 +272,7 @@ flowchart LR
     runner__ --> engine__
     runner__ --> document__
     runner__ --> expression_Interfaces
-    runner__ --> sources_Normalizer
+    runner__ --> protocol_http_Resolver
     cli_Console --> contracts_Interfaces
     cli_Console --> contracts_Spec
     cli_Console --> contracts_State
@@ -274,6 +282,7 @@ flowchart LR
     cli_Console --> runner__
     cli_Console --> runner_Execution
     cli_Console --> engine_Runtime
+    cli_Console --> contracts_Data
     cli_Console --> document__
     cli_Console --> document_Parser
     cli_Console --> sources__
@@ -282,14 +291,14 @@ flowchart LR
     cli_Console --> contracts_Exceptions
     cli_Console --> expression__
     cli_Console --> protocol_http_Execution
-    cli_Console --> sources_Resolver
+    cli_Console --> protocol_http_Resolver
     cli_Generator --> contracts_Interfaces
     cli_Renderer --> contracts_Spec
     protocol_http_Execution --> contracts_Exceptions
     protocol_http_Execution --> contracts_Interfaces
     protocol_http_Execution --> contracts_Spec
     protocol_http_Execution --> engine_Execution
-    protocol_http_Execution --> sources_Normalizer
+    protocol_http_Execution --> protocol_http_Resolver
     protocol_http_Execution --> evaluation__
     protocol_http_Execution --> expression_Data
     protocol_http_Execution --> expression_Enum
@@ -300,7 +309,7 @@ flowchart LR
     protocol_http_Protocol --> engine_Execution
     protocol_http_Protocol --> evaluation__
     protocol_http_Protocol --> protocol_http_Execution
-    protocol_http_Protocol --> sources_Normalizer
+    protocol_http_Protocol --> protocol_http_Resolver
     protocol_http_Protocol --> engine_Exceptions
     protocol_http_Protocol --> expression_Data
     protocol_http_Registrar --> contracts_Interfaces
@@ -308,23 +317,29 @@ flowchart LR
     protocol_http_Registrar --> evaluation__
     protocol_http_Registrar --> protocol_http_Execution
     protocol_http_Registrar --> protocol_http_Protocol
+    protocol_http_Registrar --> protocol_http_Resolver
     protocol_http_Registrar --> sources_Normalizer
+    protocol_http_Resolver --> contracts_Spec
+    protocol_http_Resolver --> contracts_Interfaces
+    protocol_http_Resolver --> document__
+    protocol_http_Resolver --> sources_Normalizer
+    protocol_http_Resolver --> sources_Resolver
+    protocol_http_Resolver --> sources__
     protocol_rpc_Execution --> contracts_Spec
     protocol_rpc_Execution --> contracts_State
-    protocol_rpc_Execution --> document__
     protocol_rpc_Execution --> engine_Exceptions
     protocol_rpc_Execution --> engine_Execution
     protocol_rpc_Execution --> evaluation__
     protocol_rpc_Execution --> protocol_rpc_Protocol
     protocol_rpc_Execution --> contracts_Interfaces
+    protocol_rpc_Execution --> document__
     protocol_rpc_Execution --> protocol_rpc_Transfer
     protocol_rpc_Normalizer --> contracts_Interfaces
     protocol_rpc_Normalizer --> contracts_Spec
-    protocol_rpc_Normalizer --> document__
+    protocol_rpc_Protocol --> contracts_Interfaces
     protocol_rpc_Protocol --> contracts_Spec
     protocol_rpc_Protocol --> document__
     protocol_rpc_Protocol --> protocol_rpc_Normalizer
-    protocol_rpc_Protocol --> sources_Resolver
     protocol_rpc_Registrar --> contracts_Interfaces
     protocol_rpc_Registrar --> protocol_rpc_Execution
     protocol_rpc_Registrar --> protocol_rpc_Normalizer
@@ -335,20 +350,22 @@ flowchart LR
     protocol_rpc_Transfer --> protocol_rpc_Protocol
     protocol_soap_Execution --> contracts_Spec
     protocol_soap_Execution --> protocol_soap_Transfer
-    protocol_soap_Execution --> document__
-    protocol_soap_Execution --> sources_Normalizer
-    protocol_soap_Execution --> sources_Resolver
     protocol_soap_Execution --> contracts_Interfaces
+    protocol_soap_Execution --> document__
+    protocol_soap_Execution --> protocol_soap_Normalizer
     protocol_soap_Execution --> contracts_State
     protocol_soap_Execution --> engine_Exceptions
     protocol_soap_Execution --> engine_Execution
     protocol_soap_Execution --> evaluation__
+    protocol_soap_Normalizer --> contracts_Interfaces
+    protocol_soap_Normalizer --> contracts_Spec
+    protocol_soap_Normalizer --> protocol_soap_Exceptions
     protocol_soap_Registrar --> contracts_Interfaces
     protocol_soap_Registrar --> protocol_soap_Execution
+    protocol_soap_Registrar --> protocol_soap_Normalizer
     protocol_soap_Registrar --> protocol_soap_Resolver
     protocol_soap_Registrar --> protocol_soap_Transfer
     protocol_soap_Registrar --> protocol_soap_Validation
-    protocol_soap_Registrar --> sources_Normalizer
     protocol_soap_Resolver --> contracts_Interfaces
     protocol_soap_Transfer --> contracts_Interfaces
     protocol_soap_Validation --> contracts_Exceptions

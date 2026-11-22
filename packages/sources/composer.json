@@ -11,7 +11,6 @@
         "php-arazzo/arazzo-contracts": "@dev",
         "php-arazzo/arazzo-document": "@dev",
         "php-arazzo/arazzo-expression": "@dev",
-        "cebe/php-openapi": "^1.7",
         "guzzlehttp/guzzle": "^7.9",
         "justinrainbow/json-schema": "^6.0",
         "psr/http-client": "^1.0",

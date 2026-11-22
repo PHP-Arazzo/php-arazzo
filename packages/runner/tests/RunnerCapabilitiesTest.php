@@ -11,11 +11,12 @@ use Alama\Arazzo\Contracts\Spec\StepFactory;
 use Alama\Arazzo\Contracts\Spec\StepFlow;
 use Alama\Arazzo\Contracts\Spec\StepIo;
 use Alama\Arazzo\Contracts\Spec\Workflow;
+use Alama\Arazzo\Document\Document;
 use Alama\Arazzo\Evaluation\EvaluationEngine;
 use Alama\Arazzo\Expression\ExpressionEngine;
+use Alama\Arazzo\Protocol\Http\Resolver\OpenApiOperationResolver;
 use Alama\Arazzo\Runner\RunnerFacade;
 use Alama\Arazzo\Runner\RunnerFacadeInterface;
-use Alama\Arazzo\Sources\SourceGraph;
 use Alama\Arazzo\Tests\Support\FakeOpenApiExecutor;
 use Alama\Arazzo\Tests\Support\FakeOutputExtractor;
 use Alama\Arazzo\Tests\Support\FakeResponseValidator;
@@ -23,7 +24,6 @@ use GuzzleHttp\Psr7\Response;
 
 function runnerFacadeWithFakes(): RunnerFacade
 {
-    $runtime = SourceGraph::runtime();
     $seams = [
         'openApiExecutor' => new FakeOpenApiExecutor(
             new Response(200, ['Content-Type' => 'application/json'], '{"pets":[{"id":1,"name":"Rex"}]}'),
@@ -33,8 +33,8 @@ function runnerFacadeWithFakes(): RunnerFacade
     ];
 
     return new RunnerFacade(
-        $runtime->document,
-        $runtime->operations,
+        Document::create(),
+        OpenApiOperationResolver::create(),
         new EvaluationEngine(expression: new ExpressionEngine()),
         new ExpressionEngine(), // inspector
         $seams['openApiExecutor'],
