@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Sources\Normalizer;
 
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
-use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
-use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Spec\Step;
+use Alama\Arazzo\Document\OperationResolverInterface;
 use Alama\Arazzo\Document\ResolvedOperation;
 use Alama\Arazzo\Sources\Resolver\Exceptions\UnsupportedSourceVersionException;
 use cebe\openapi\spec\Operation;
@@ -16,7 +15,7 @@ use RuntimeException;
 /**
  * @internal stays out of the advertised contract; not part of the public API surface
  */
-class OpenApiOperationResolver implements OpenApiOperationResolverInterface
+class OpenApiOperationResolver implements OperationResolverInterface
 {
     public function __construct(
         private OpenApiDocumentLoader $loader,
@@ -34,55 +33,22 @@ class OpenApiOperationResolver implements OpenApiOperationResolverInterface
         return $this->versionDetector;
     }
 
+    public function supportsStep(Step $step, ArazzoDocument $document): bool
+    {
+        return SourceReferenceParser::isOpenApiStep($step, $document);
+    }
+
     public function resolveModel(Step $step, ArazzoDocument $document): ResolvedOperation
     {
-        return $this->resolve($step, $document)->operation;
+        return $this->resolve($step, $document);
     }
 
     public function resolve(Step $step, ArazzoDocument $document): OpenApiOperationHandle
     {
-        $opId = $step->target->operationId;
-        $opPath = $step->target->operationPath;
-
-        if (!$opId && !$opPath) {
-            throw new RuntimeException("Step '{$step->stepId}' must have either operationId or operationPath.");
-        }
-
-        $sourceName = null;
-        $operationReference = null;
-        $isPath = false;
-
-        if ($opPath) {
-            $isPath = true;
-            $parts = explode('#', $opPath, 2);
-            if (count($parts) !== 2 || !str_starts_with($parts[0], '{$sourceDescriptions.') || !str_ends_with($parts[0], '.url}')) {
-                throw new RuntimeException("Invalid operationPath format in step '{$step->stepId}'. Expected {\$sourceDescriptions.NAME.url}#...");
-            }
-            $sourceName = substr($parts[0], 21, -5);
-            $operationReference = $parts[1];
-        } else {
-            if (str_contains($opId, '#')) {
-                $parts = explode('#', $opId, 2);
-                if (!str_starts_with($parts[0], '{$sourceDescriptions.') || !str_ends_with($parts[0], '.url}')) {
-                    throw new RuntimeException("Invalid operationId format in step '{$step->stepId}'. Expected {\$sourceDescriptions.NAME.url}#...");
-                }
-                $sourceName = substr($parts[0], 21, -5);
-                $operationReference = $parts[1];
-            } elseif (preg_match('/^\$sourceDescriptions\.([^.]+)\.(.+)$/', $opId, $m) === 1) {
-                // Spec grammar: `$sourceDescriptions.NAME.OPERATION_ID` (dotted,
-                // no braces) - used by the official OAI examples.
-                $sourceName = $m[1];
-                $operationReference = $m[2];
-            } else {
-                $nonArazzoSources = array_filter($document->sourceDescriptions, fn (SourceDescription $s) => $s->type !== SourceType::Arazzo);
-                if (count($nonArazzoSources) !== 1) {
-                    throw new RuntimeException("Plain operationId '{$opId}' used in step '{$step->stepId}' but there are multiple non-Arazzo sources. Please use source-qualified operationId.");
-                }
-                $source = reset($nonArazzoSources);
-                $sourceName = $source->name;
-                $operationReference = $opId;
-            }
-        }
+        $target = SourceReferenceParser::parseTarget($step, $document);
+        $sourceName = $target['sourceName'];
+        $operationReference = $target['operationReference'];
+        $isPath = $target['isPath'];
 
         $targetSource = null;
         foreach ($document->sourceDescriptions as $source) {
@@ -98,7 +64,7 @@ class OpenApiOperationResolver implements OpenApiOperationResolverInterface
 
         $openApi = $this->loader->load($targetSource, getcwd() ?: '');
         if (!$openApi) {
-            throw new RuntimeException("Failed to load source '{$sourceName}'.");
+            throw new RuntimeException("Could not load or parse OpenAPI document for source '{$sourceName}'.");
         }
 
         $encoded = json_encode($openApi->getSerializableData());
@@ -116,6 +82,8 @@ class OpenApiOperationResolver implements OpenApiOperationResolverInterface
         if (!in_array($detected, ['3.0', '3.1'], true)) {
             throw UnsupportedSourceVersionException::forVersion($detected, (string) $sourceName);
         }
+
+        $normalizer = $detected === '3.0' ? $this->normalizer30 : $this->normalizer31;
 
         /** @var string|null $foundPath */
         $foundPath = null;
@@ -173,8 +141,6 @@ class OpenApiOperationResolver implements OpenApiOperationResolverInterface
         if (!$foundPath || !$foundMethod || !$cebeOperation) {
             throw new RuntimeException("Operation '{$operationReference}' not found in source '{$sourceName}'.");
         }
-
-        $normalizer = $detected === '3.0' ? $this->normalizer30 : $this->normalizer31;
 
         $normalized = $normalizer->normalize($rawDocument, (string) $foundPath, (string) $foundMethod);
 

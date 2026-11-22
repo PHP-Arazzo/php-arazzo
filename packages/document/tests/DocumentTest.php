@@ -5,20 +5,14 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Tests;
 
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
-use Alama\Arazzo\Contracts\Spec\Step;
-use Alama\Arazzo\Contracts\Spec\StepFlow;
-use Alama\Arazzo\Contracts\Spec\StepIo;
-use Alama\Arazzo\Contracts\Spec\StepTarget;
 use Alama\Arazzo\Document\Document;
-use Alama\Arazzo\Document\DocumentInterface;
-use Alama\Arazzo\Document\ModelStack;
+use Alama\Arazzo\Document\KnownOperations;
 use Alama\Arazzo\Document\Parser\DecodePolicy;
 use Alama\Arazzo\Document\Parser\Exceptions\LoaderException;
-use Alama\Arazzo\Expression\ExpressionEngine;
 
-function createDocument(): DocumentInterface
+function createDocument(): Document
 {
-    return new Document(ModelStack::default(new ExpressionEngine()));
+    return Document::create();
 }
 
 it('loads and parses from YAML string via loadFromYaml', function (): void {
@@ -43,11 +37,11 @@ it('loads and parses from JSON string via loadFromJson', function (): void {
         ->and($result->info->version)->toBe('1.0');
 });
 
-it('configures decode policy immutably via withDecodePolicy', function (): void {
+it('configures decode policy immutably via withDecodePolicy on concrete Document', function (): void {
     $doc = createDocument();
     $strictDoc = $doc->withDecodePolicy(DecodePolicy::default()->withMaxBytes(40));
 
-    expect($strictDoc)->toBeInstanceOf(DocumentInterface::class)
+    expect($strictDoc)->toBeInstanceOf(Document::class)
         ->and($strictDoc)->not->toBe($doc);
 
     $yaml = "arazzo: '1.0.0'\ninfo:\n  title: Inline YAML that is definitely longer than forty bytes\n  version: '1.0'\nworkflows: []\n";
@@ -59,29 +53,45 @@ it('configures decode policy immutably via withDecodePolicy', function (): void 
     expect($doc->loadFromYaml($yaml))->toBeInstanceOf(ArazzoDocument::class);
 });
 
-it('throws RuntimeException on resolveOperation when operationResolver is null', function (): void {
+it('validates document with known operations', function (): void {
     $doc = createDocument();
-    $arazzoDoc = $doc->loadFromYaml("arazzo: '1.0.0'\ninfo:\n  title: Test\n  version: '1.0'\nworkflows: []\n");
+    $arazzoDoc = $doc->loadFromYaml("arazzo: '1.0.0'\ninfo:\n  title: Test\n  version: '1.0'\nsourceDescriptions:\n  - name: myApi\n    url: https://example.com/api.json\n    type: openapi\nworkflows:\n  - workflowId: wf1\n    steps:\n      - stepId: step1\n        operationId: myApi.getPet\n");
 
-    $stepWithTarget = new Step(
-        stepId: 'step1',
-        description: null,
-        target: new StepTarget(operationId: 'getUser'),
-        flow: new StepFlow(),
-        io: new StepIo(),
-    );
+    // Without knowing operations, remote source is skipped per ADR-005
+    $resultNoOps = $doc->validate($arazzoDoc);
+    expect($resultNoOps->isValid())->toBeTrue();
 
-    expect(fn () => $doc->resolveOperation($stepWithTarget, $arazzoDoc))
-        ->toThrow(\RuntimeException::class, 'No operation resolver available');
+    // With known operations that do not contain getPet, it fails validation
+    $knownOps = KnownOperations::none()->withSource('myApi', ['otherOp']);
+    $resultFailed = $doc->validate($arazzoDoc, $knownOps);
+    expect($resultFailed->isValid())->toBeFalse()
+        ->and($resultFailed->errors[0]->code)->toBe('step.operationid_resolves');
+});
 
-    $stepWithoutTarget = new Step(
-        stepId: 'step2',
-        description: null,
-        target: new StepTarget(),
-        flow: new StepFlow(),
-        io: new StepIo(),
-    );
+it('validates workflow runtime inputs', function (): void {
+    $doc = createDocument();
+    $yaml = <<<'YAML'
+arazzo: '1.0.0'
+info:
+  title: Test
+  version: '1.0'
+workflows:
+  - workflowId: wf-1
+    inputs:
+      type: object
+      required:
+        - userId
+      properties:
+        userId:
+          type: integer
+    steps: []
+YAML;
 
-    expect(fn () => $doc->resolveOperation($stepWithoutTarget, $arazzoDoc))
-        ->toThrow(\RuntimeException::class, "Step 'step2' must have either operationId or operationPath.");
+    $arazzoDoc = $doc->loadFromYaml($yaml);
+
+    $valid = $doc->validateInputs($arazzoDoc, 'wf-1', ['userId' => 123]);
+    expect($valid->isValid())->toBeTrue();
+
+    $invalid = $doc->validateInputs($arazzoDoc, 'wf-1', ['userId' => 'abc']);
+    expect($invalid->isValid())->toBeFalse();
 });

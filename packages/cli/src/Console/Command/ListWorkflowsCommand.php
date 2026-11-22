@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Cli\Console\Command;
 
-use Alama\Arazzo\Cli\Console\DocumentLoader;
+use Alama\Arazzo\Document\Document;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -23,7 +23,7 @@ final class ListWorkflowsCommand extends Command
     {
         /** @var string $file */
         $file = $input->getArgument('file');
-        $document = DocumentLoader::load($file);
+        $document = Document::create()->load($file);
 
         if ($document->workflows === []) {
             $output->writeln('<comment>no workflows</comment>');

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Runner\Async;
 
-use Alama\Arazzo\Document\DocumentInterface;
 use Alama\Arazzo\Engine\Exceptions\ExecutionException;
 use Alama\Arazzo\Engine\Execution\IdempotencyKeyInjector;
 use Alama\Arazzo\Evaluation\EvaluationEngineInterface;
@@ -14,6 +13,8 @@ use Alama\Arazzo\Runner\Execution\Data\RunControlFlow;
 use Alama\Arazzo\Runner\Execution\Data\RunPersistence;
 use Alama\Arazzo\Runner\Execution\OperationRuntime;
 use Alama\Arazzo\Runner\OperationExecutorRegistry;
+use Alama\Arazzo\Runner\Preflight\OperationResolvers;
+use Alama\Arazzo\Runner\Preflight\Preflight;
 use Alama\Arazzo\Runner\Sync\StepExecutor;
 use Alama\Arazzo\Runner\Sync\SubWorkflowStepExecutor;
 use Alama\Arazzo\Runner\Sync\WorkflowEngine;
@@ -66,10 +67,13 @@ final class AsyncExecutionGraphAssembler
             injector: $injector,
         );
 
+        $preflight = new Preflight(new OperationResolvers([$this->operations->resolver]));
+
         $workflowExecutor = new WorkflowExecutor(
             $stepExecutor,
             workflowEngine: $workflowEngine,
-            preflight: $this->operations->document,
+            preflight: $preflight,
+            document: $this->operations->document,
         );
 
         // Protocol executors are no longer constructed here: the host
@@ -102,7 +106,7 @@ final class AsyncExecutionGraphAssembler
         $controlFlow = new RunControlFlow(
             workflowEngine: $workflowEngine,
             queueDriver: $seams->queueDriver,
-            preflight: $this->operations->document,
+            preflight: $preflight,
         );
 
         $outcomeHandler = new StepOutcomeHandler(
@@ -125,7 +129,7 @@ final class AsyncExecutionGraphAssembler
             $seams->lockManager,
         );
 
-        $worker = $this->buildWorker($seams, $this->operations->document);
+        $worker = $this->buildWorker($seams, $preflight);
 
         return new AsyncExecutionGraph(
             stepExecutor: $stepExecutor,
@@ -144,7 +148,7 @@ final class AsyncExecutionGraphAssembler
      * hosts leave it null (skip preflight validation), matching the manual
      * worker construction CliRunner historically performed.
      */
-    public function buildWorker(AsyncGraphSeams $seams, ?DocumentInterface $preflight = null): StepExecutionWorker
+    public function buildWorker(AsyncGraphSeams $seams, ?Preflight $preflight = null): StepExecutionWorker
     {
         $workflowEngine = new WorkflowEngine(
             $this->evaluationEngine,

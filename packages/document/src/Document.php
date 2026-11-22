@@ -5,84 +5,69 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Document;
 
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
-use Alama\Arazzo\Contracts\Spec\RawDocument;
-use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Document\Parser\DecodePolicy;
 use Alama\Arazzo\Document\Parser\Loader;
+use Alama\Arazzo\Document\Parser\Parser;
 use Alama\Arazzo\Document\Validator\Data\ValidationResult;
-use Alama\Arazzo\Sources\Normalizer\OpenApiOperationResolverInterface;
-use RuntimeException;
+use Alama\Arazzo\Document\Validator\RuleSet;
+use Alama\Arazzo\Document\Validator\Validator;
+use Alama\Arazzo\Expression\ExpressionEngine;
 
 /**
  * Public façade of the *document* package.
  *
  * Pure model work – no I/O, no cebe, no Guzzle.
  */
-final class Document implements DocumentInterface
+final readonly class Document implements DocumentInterface
 {
-    public function __construct(
-        private readonly ModelStack $model,
-        private readonly ?OpenApiOperationResolverInterface $operationResolver = null,
+    private function __construct(
+        private Loader $loader,
+        private Parser $parser,
+        private Validator $validator,
     ) {}
+
+    public static function create(): self
+    {
+        $engine = new ExpressionEngine();
+
+        return new self(
+            loader: Loader::new(),
+            parser: new Parser(),
+            validator: new Validator(RuleSet::default($engine)),
+        );
+    }
 
     public function withDecodePolicy(DecodePolicy $policy): self
     {
-        $newLoader = Loader::defineDecodePolicy($policy);
-        $newModel = $this->model->withLoader($newLoader);
-
-        return new self($newModel, $this->operationResolver);
+        return new self(
+            loader: Loader::defineDecodePolicy($policy),
+            parser: $this->parser,
+            validator: $this->validator,
+        );
     }
 
     public function load(string $path): ArazzoDocument
     {
-        return $this->model->parser->parse($this->model->loader->load($path));
+        return $this->parser->parse($this->loader->load($path));
     }
 
     public function loadFromYaml(string $content, string $virtualPath = 'inline.yaml'): ArazzoDocument
     {
-        return $this->model->parser->parse($this->model->loader->loadFromYaml($content, $virtualPath));
+        return $this->parser->parse($this->loader->loadFromYaml($content, $virtualPath));
     }
 
     public function loadFromJson(string $content, string $virtualPath = 'inline.json'): ArazzoDocument
     {
-        return $this->model->parser->parse($this->model->loader->loadFromJson($content, $virtualPath));
+        return $this->parser->parse($this->loader->loadFromJson($content, $virtualPath));
     }
 
-    public function parse(RawDocument $raw): ArazzoDocument
+    public function validate(ArazzoDocument $document, ?KnownOperations $operations = null): ValidationResult
     {
-        return $this->model->parser->parse($raw);
+        return $this->validator->validate($document, $operations);
     }
 
-    public function validate(ArazzoDocument $document): ValidationResult
+    public function validateInputs(ArazzoDocument $document, string $workflowId, array $inputs): ValidationResult
     {
-        return $this->model->validator->validate($document);
-    }
-
-    public function preflight(ArazzoDocument $document): ValidationResult
-    {
-        assert($this->model->preflight !== null);
-
-        return $this->model->preflight->validate($document);
-    }
-
-    public function preflightInputs(ArazzoDocument $document, string $workflowId, array $inputs): ValidationResult
-    {
-        assert($this->model->preflight !== null);
-
-        return $this->model->preflight->validateInputs($document, $workflowId, $inputs);
-    }
-
-    public function resolveOperation(Step $step, ArazzoDocument $document): ResolvedOperation
-    {
-        $resolver = $this->operationResolver ?? $this->model->operationResolver;
-        if ($resolver === null) {
-            // Mimic the error message from OpenApiOperationResolver::resolve()
-            if (!$step->target->operationId && !$step->target->operationPath) {
-                throw new RuntimeException("Step '{$step->stepId}' must have either operationId or operationPath.");
-            }
-            throw new RuntimeException('No operation resolver available to resolve step operation.');
-        }
-
-        return $resolver->resolveModel($step, $document);
+        return $this->validator->validateInputs($document, $workflowId, $inputs);
     }
 }

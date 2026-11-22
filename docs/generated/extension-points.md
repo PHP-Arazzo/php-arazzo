@@ -48,8 +48,6 @@ mindmap
     OpenApiNormalizerInterface
       OpenApi30Normalizer
       Swagger2Normalizer
-    OpenApiOperationResolverInterface
-      OpenApiOperationResolver
     OperationExecutorPluginInterface
       AsyncApiStepExecutor
       HttpStepExecutor
@@ -57,6 +55,7 @@ mindmap
       SoapOperationExecutor
       SubWorkflowStepExecutor
     OperationResolverInterface
+      OpenApiOperationResolver
       ProtobufOperationResolver
       WsdlOperationResolver
     OutputExtractorInterface
@@ -126,9 +125,8 @@ mindmap
 | `LockStrategyInterface` | no | `FileLockStrategy` <small>core</small>, `NullLockStrategy` <small>core</small>, `PessimisticLockStrategy` <small>core</small> |
 | `OpenApiExecutorInterface` | no | `DefaultOpenApiExecutor` <small>core</small> |
 | `OpenApiNormalizerInterface` | no | `OpenApi30Normalizer` <small>core</small>, `Swagger2Normalizer` <small>core</small> |
-| `OpenApiOperationResolverInterface` | no | `OpenApiOperationResolver` <small>core</small> |
 | `OperationExecutorPluginInterface` | no | `AsyncApiStepExecutor` <small>core</small>, `HttpStepExecutor` <small>core</small>, `RpcOperationExecutor` <small>core</small>, `SoapOperationExecutor` <small>core</small>, `SubWorkflowStepExecutor` <small>core</small> |
-| `OperationResolverInterface` | no | `ProtobufOperationResolver` <small>core</small>, `WsdlOperationResolver` <small>core</small> |
+| `OperationResolverInterface` | no | `OpenApiOperationResolver` <small>core</small>, `ProtobufOperationResolver` <small>core</small>, `WsdlOperationResolver` <small>core</small> |
 | `OutputExtractorInterface` | no | `StepOutputExtractor` <small>core</small> |
 | `ParserInterface` | no | `Parser` <small>core</small>, `CachedParser` <small>core</small>, `Parser` <small>core</small> |
 | `PendingCorrelationRegistryInterface` | no | `InProcessPendingCorrelationRegistry` <small>core</small> |

@@ -23,20 +23,20 @@ Evans' first question: does the code speak one language?
 
 ### parse vs load vs decode
 
-- **Decoder**: `DecoderInterface`, `DecoderRegistry`, `NativeJsonDecoder`, `SymfonyYamlDecoder` (4 types)
-- **Loader**: `DocumentLoader`, `Loader`, `LoaderException`, `OpenApiDocumentLoader` + 1 more (5 types)
-- **Parser**: `AccessorParser`, `CachedParser`, `FieldParser`, `Parser` + 3 more (7 types)
+- **Decoder**: `DecoderInterface`, `DecoderRegistry`, `Decoders`, `NativeJsonDecoder` + 1 more (5 types)
+- **Loader**: `Loader`, `LoaderException`, `OpenApiDocumentLoader`, `SourceLoader` (4 types)
+- **Parser**: `AccessorParser`, `CachedParser`, `FieldParser`, `Parser` + 4 more (8 types)
 
 ### document vs definition vs spec
 
 - **Definition**: `DefinitionHydrationException`, `DefinitionRegistryInterface`, `InMemoryDefinitionRegistry`, `WritableDefinitionRegistryInterface` (4 types)
-- **Document**: `ArazzoDocument`, `Document`, `DocumentArazzoVersionRule`, `DocumentInfoRequiredRule` + 7 more (11 types)
+- **Document**: `ArazzoDocument`, `Document`, `DocumentArazzoVersionRule`, `DocumentInfoRequiredRule` + 6 more (10 types)
 - **Spec**: `SpecVersion` (1 types)
 
 ### fetch vs resolve vs retrieve
 
 - **Fetcher**: `CachedFetcher`, `HttpFetcher`, `LocalFetcher`, `SourceFetcher` (4 types)
-- **Resolver**: `DefaultSourceResolver`, `InputSchemaResolver`, `OpenApiOperationResolver`, `OpenApiOperationResolverInterface` + 9 more (13 types)
+- **Resolver**: `DefaultSourceResolver`, `InputSchemaResolver`, `OpenApiOperationResolver`, `OperationResolverInterface` + 9 more (13 types)
 
 ### state vs status
 

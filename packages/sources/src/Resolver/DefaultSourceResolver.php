@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Sources\Resolver;
 
+use Alama\Arazzo\Contracts\Spec\Enum\Format;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Spec\SourceDocument;
 use Alama\Arazzo\Document\Parser\DecodePolicy;
-use Alama\Arazzo\Document\Parser\Decoders\NativeJsonDecoder;
-use Alama\Arazzo\Document\Parser\Decoders\SymfonyYamlDecoder;
+use Alama\Arazzo\Document\Parser\Decoders;
 use Alama\Arazzo\Sources\Resolver\Exceptions\SourceFetchException;
 use Alama\Arazzo\Sources\Resolver\Exceptions\SourceParseException;
 use Alama\Arazzo\Sources\Resolver\Fetchers\HttpFetcher;
@@ -96,8 +96,8 @@ final readonly class DefaultSourceResolver implements SourceResolver
         $isYaml = !str_starts_with(trim($content), '{');
         try {
             $decoded = $isYaml
-                ? (new SymfonyYamlDecoder($this->decodePolicy))->decode($content)
-                : (new NativeJsonDecoder($this->decodePolicy))->decode($content);
+                ? Decoders::for(Format::Yaml, $this->decodePolicy)->decode($content)
+                : Decoders::for(Format::Json, $this->decodePolicy)->decode($content);
         } catch (Throwable $e) {
             throw new SourceParseException("Failed to parse source '{$source->name}': ".$e->getMessage(), 0, $e);
         }

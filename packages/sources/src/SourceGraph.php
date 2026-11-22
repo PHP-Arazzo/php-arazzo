@@ -6,13 +6,6 @@ namespace Alama\Arazzo\Sources;
 
 use Alama\Arazzo\Document\Document as DocumentFacade;
 use Alama\Arazzo\Document\DocumentInterface;
-use Alama\Arazzo\Document\ModelStack;
-use Alama\Arazzo\Document\Parser\Loader;
-use Alama\Arazzo\Document\Parser\Parser;
-use Alama\Arazzo\Document\Validator\RuleSet;
-use Alama\Arazzo\Document\Validator\Validator;
-use Alama\Arazzo\Expression\ExpressionEngine;
-use Alama\Arazzo\Expression\Interfaces\ExpressionEngineInterface;
 use Alama\Arazzo\Sources\Normalizer\OpenApi30Normalizer;
 use Alama\Arazzo\Sources\Normalizer\OpenApi31Normalizer;
 use Alama\Arazzo\Sources\Normalizer\OpenApiDocumentLoader;
@@ -24,7 +17,6 @@ use Alama\Arazzo\Sources\Resolver\Fetchers\HttpFetcher;
 use Alama\Arazzo\Sources\Resolver\Fetchers\LocalFetcher;
 use Alama\Arazzo\Sources\Resolver\SourceNormalizerRegistry;
 use Alama\Arazzo\Sources\Resolver\SourceRegistry;
-use Alama\Arazzo\Sources\Validator\PreflightValidator;
 use GuzzleHttp\Psr7\HttpFactory;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
@@ -69,27 +61,9 @@ final class SourceGraph
         ]));
     }
 
-    public static function document(
-        ?ExpressionEngineInterface $engine = null,
-        ?OpenApiOperationResolver $operationResolver = null,
-    ): DocumentInterface {
-        $operations = $operationResolver ?? self::operations();
-        $engine ??= new ExpressionEngine();
-
-        return new DocumentFacade(
-            new ModelStack(
-                loader: Loader::new(),
-                parser: new Parser(),
-                validator: new Validator(RuleSet::default($engine)),
-                engine: $engine,
-                preflight: new PreflightValidator(
-                    self::defaultRegistry(),
-                    $operations,
-                ),
-                operationResolver: $operationResolver,
-            ),
-            $operationResolver,
-        );
+    public static function document(): DocumentInterface
+    {
+        return DocumentFacade::create();
     }
 
     /** Source‑only loader (no generic pipeline) - cached singleton */
@@ -101,7 +75,6 @@ final class SourceGraph
         }
 
         $defaultRegistry = $registry ?? self::defaultRegistry();
-        $defaultOperations = self::operations($registry);
 
         // Build normalizer registry
         $normalizerRegistry = new SourceNormalizerRegistry();
@@ -115,10 +88,6 @@ final class SourceGraph
         $loader = new SourceLoader(
             sources: $defaultRegistry,
             versionDetector: new OpenApiVersionDetector(),
-            preflight: new PreflightValidator(
-                $defaultRegistry,
-                $defaultOperations,
-            ),
             normalizers: $normalizerRegistry,
         );
 
@@ -142,7 +111,6 @@ final class SourceGraph
     public static function runtime(
         ?SourceRegistry $registry = null,
         ?OpenApiOperationResolver $operations = null,
-        ?ExpressionEngineInterface $engine = null,
     ): SourceRuntime {
         $sources = $registry ?? self::defaultRegistry();
 
@@ -159,10 +127,9 @@ final class SourceGraph
         $loader = new SourceLoader(
             sources: $sources,
             versionDetector: new OpenApiVersionDetector(),
-            preflight: new PreflightValidator($sources, $operations),
             normalizers: $normalizerRegistry,
         );
-        $document = self::document($engine, $operations);
+        $document = DocumentFacade::create();
 
         return new SourceRuntime(
             document: $document,

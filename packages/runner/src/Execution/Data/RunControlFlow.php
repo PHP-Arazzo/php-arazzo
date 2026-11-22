@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Runner\Execution\Data;
 
 use Alama\Arazzo\Contracts\Interfaces\QueueDriverInterface;
-use Alama\Arazzo\Document\DocumentInterface;
+use Alama\Arazzo\Runner\Preflight\Preflight;
 use Alama\Arazzo\Runner\Sync\WorkflowEngine;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
@@ -21,6 +21,7 @@ final readonly class RunControlFlow
         public WorkflowEngine $workflowEngine,
         public QueueDriverInterface $queueDriver,
         public ?EventDispatcherInterface $events = null,
-        public ?DocumentInterface $preflight = null,
+        public ?Preflight $preflight = null,
+        public bool $runPreflight = true,
     ) {}
 }

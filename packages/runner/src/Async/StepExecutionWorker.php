@@ -16,8 +16,6 @@ use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Contracts\State\ExecutionState;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
 use Alama\Arazzo\Contracts\Support\Events\Dispatcher\NullEventDispatcher;
-use Alama\Arazzo\Document\DocumentInterface;
-use Alama\Arazzo\Document\Validator\Exceptions\PreflightFailureException;
 use Alama\Arazzo\Engine\Exceptions\ExecutionException;
 use Alama\Arazzo\Engine\Execution\StepParameterMerger;
 use Alama\Arazzo\Evaluation\EvaluationEngineInterface;
@@ -29,10 +27,12 @@ use Alama\Arazzo\Events\StepExecutedEvent;
 use Alama\Arazzo\Events\StepFailedEvent;
 use Alama\Arazzo\Events\StepStartedEvent;
 use Alama\Arazzo\Expression\Data\EvaluationContext;
+use Alama\Arazzo\Runner\Exceptions\PreflightFailureException;
 use Alama\Arazzo\Runner\Execution\Data\RunControlFlow;
 use Alama\Arazzo\Runner\Execution\Data\RunPersistence;
 use Alama\Arazzo\Runner\Execution\Enum\TransitionType;
 use Alama\Arazzo\Runner\OperationExecutorRegistry;
+use Alama\Arazzo\Runner\Preflight\Preflight;
 use Alama\Arazzo\Runner\Sync\WorkflowEngine;
 use Alama\Arazzo\Runtime\State\Interfaces\DefinitionRegistryInterface;
 use Alama\Arazzo\Runtime\State\Interfaces\ExecutionRegistryInterface;
@@ -53,7 +53,7 @@ class StepExecutionWorker
 {
     private EventDispatcherInterface $events;
 
-    private ?DocumentInterface $preflight;
+    private ?Preflight $preflight;
 
     private StateStoreInterface $stateStore;
 
@@ -400,7 +400,7 @@ class StepExecutionWorker
         if ($this->preflight !== null && $context->getSteps() === []) {
             $documentForPreflight = $this->definitionRegistry->get($context->getDefinitionId());
             if ($documentForPreflight !== null) {
-                $preflightResult = $this->preflight->preflight($documentForPreflight);
+                $preflightResult = $this->preflight->validate($documentForPreflight);
                 if (!$preflightResult->isValid()) {
                     throw new PreflightFailureException(
                         'Preflight validation failed with '.count($preflightResult->errors).' error(s).',

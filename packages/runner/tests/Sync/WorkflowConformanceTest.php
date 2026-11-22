@@ -28,7 +28,6 @@ use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Document\DocumentInterface;
 use Alama\Arazzo\Document\NormalizedOpenApiOperation;
 use Alama\Arazzo\Document\ResolvedOperation;
-use Alama\Arazzo\Document\Validator\Data\ValidationResult;
 use Alama\Arazzo\Evaluation\EvaluationEngine;
 use Alama\Arazzo\Expression\ExpressionEngine;
 use Alama\Arazzo\Protocol\Http\Execution\Interfaces\OpenApiExecutorInterface;
@@ -64,9 +63,9 @@ function confExecutor(array $workflows, array $responses = []): array
     );
 
     $documents = Mockery::mock(DocumentInterface::class);
-    $documents->shouldReceive('preflight')->andReturn(new ValidationResult($document, [], []));
 
     $resolver = Mockery::mock(OpenApiOperationResolver::class);
+    $resolver->shouldReceive('supportsStep')->andReturn(true);
     $resolver->shouldReceive('resolve')->andReturn(new OpenApiOperationHandle(
         new ResolvedOperation(
             source: new SourceDescription('api', 'https://api.test/openapi.json', SourceType::Openapi),

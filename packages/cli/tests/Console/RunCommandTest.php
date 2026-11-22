@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 use Alama\Arazzo\Cli\Console\Command\RunCommand;
-use Alama\Arazzo\Cli\Console\DocumentLoader;
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
 use Alama\Arazzo\Contracts\Spec\SourceDocument;
+use Alama\Arazzo\Document\Document;
 use Alama\Arazzo\Evaluation\EvaluationEngine;
 use Alama\Arazzo\Expression\ExpressionEngine;
 use Alama\Arazzo\Protocol\Http\Execution\DefaultOpenApiExecutor;
@@ -134,7 +134,7 @@ it('exposes the facade result shape the CLI output rendering depends on', functi
     $doc = sys_get_temp_dir().'/arazzo-cli-shape-'.uniqid().'.yaml';
     arazzoDoc($doc);
 
-    $document = DocumentLoader::load($doc);
+    $document = Document::create()->load($doc);
     $runtime = SourceGraph::runtime(registry: $registry);
     $engine = new EvaluationEngine(expression: new ExpressionEngine());
     $runner = new RunnerFacade(

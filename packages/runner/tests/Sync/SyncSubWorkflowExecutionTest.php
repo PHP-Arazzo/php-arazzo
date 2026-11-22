@@ -17,7 +17,6 @@ use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Document\DocumentInterface;
 use Alama\Arazzo\Document\NormalizedOpenApiOperation;
 use Alama\Arazzo\Document\ResolvedOperation;
-use Alama\Arazzo\Document\Validator\Data\ValidationResult;
 use Alama\Arazzo\Evaluation\EvaluationEngine;
 use Alama\Arazzo\Expression\ExpressionEngine;
 use Alama\Arazzo\Protocol\Http\Execution\StepOutputExtractor;
@@ -100,9 +99,9 @@ function subWorkflowGraph(OperationExecutorRegistry $registry): WorkflowExecutor
     $document = subWorkflowDocument();
 
     $documents = Mockery::mock(DocumentInterface::class);
-    $documents->shouldReceive('preflight')->andReturn(new ValidationResult($document, [], []));
 
     $resolver = Mockery::mock(OpenApiOperationResolver::class);
+    $resolver->shouldReceive('supportsStep')->andReturn(true);
     $resolver->shouldReceive('resolve')->andReturn(new OpenApiOperationHandle(
         new ResolvedOperation(
             source: new SourceDescription('orders', 'https://api.test/openapi.json', SourceType::Openapi),

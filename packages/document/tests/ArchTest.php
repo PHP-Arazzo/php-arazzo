@@ -1,6 +1,9 @@
 <?php
 
 declare(strict_types=1);
+use Alama\Arazzo\Document\Document;
+use Alama\Arazzo\Document\KnownOperations;
+use Alama\Arazzo\Document\Parser\Decoders;
 
 arch('document does not depend on illuminate framework')
     ->expect('Alama\Arazzo\Document\Parser')
@@ -33,6 +36,10 @@ arch('document facade seams are entry-point only')
     ->not->toUse('Alama\Arazzo\Runner\RunnerFacade')
     ->not->toUse('Alama\Arazzo\Expression\Expression');
 
+arch('document package never depends on sources')
+    ->expect('Alama\Arazzo\Document')
+    ->not->toUse('Alama\Arazzo\Sources');
+
 arch('document model is vendor-free')
     ->expect('Alama\Arazzo\Document')
     ->not->toUse('cebe')
@@ -40,3 +47,20 @@ arch('document model is vendor-free')
     ->not->toUse('Psr\Http')
     ->not->toUse('Psr\SimpleCache')
     ->not->toUse('Softcreatr');
+
+arch('Document is final and readonly')
+    ->expect(Document::class)
+    ->toBeFinal()
+    ->toBeReadonly();
+
+arch('KnownOperations is final and readonly')
+    ->expect(KnownOperations::class)
+    ->toBeFinal()
+    ->toBeReadonly();
+
+test('Decoders class is final and readonly', function (): void {
+    $ref = new ReflectionClass(Decoders::class);
+
+    expect($ref->isFinal())->toBeTrue()
+        ->and($ref->isReadOnly())->toBeTrue();
+});

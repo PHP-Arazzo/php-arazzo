@@ -201,7 +201,7 @@ public contract between packages.
 - `OpenApiVersionDetector` — `@internal`: yes
 - `OpenApiDocumentLoader` — `@internal`: yes
 - `OpenApiOperationResolver` — `@internal`: yes
-- `PreflightValidator` — `@internal`: yes
+- `PreflightValidator` — _not found in scan_
 - `SourceGraph` — `@internal`: no (target for the sweep)
 - `Normalizer\*` — whole namespace (declared target)
 - `Resolver\*` — whole namespace (declared target)
@@ -220,15 +220,11 @@ public contract between packages.
 ### Public entry surface
 
 - `DocumentInterface` (`interface`)
-  - `public function withDecodePolicy(DecodePolicy $policy): self;`
   - `public function load(string $path): ArazzoDocument;`
   - `public function loadFromYaml(string $content, string $virtualPath = 'inline.yaml'): ArazzoDocument;`
   - `public function loadFromJson(string $content, string $virtualPath = 'inline.json'): ArazzoDocument;`
-  - `public function parse(RawDocument $raw): ArazzoDocument;`
-  - `public function validate(ArazzoDocument $document): ValidationResult;`
-  - `public function preflight(ArazzoDocument $document): ValidationResult;`
-  - `public function preflightInputs(ArazzoDocument $document, string $workflowId, array $inputs): ValidationResult;`
-  - `public function resolveOperation(Step $step, ArazzoDocument $document): ResolvedOperation;`
+  - `public function validate(ArazzoDocument $document, ?KnownOperations $operations = null): ValidationResult;`
+  - `public function validateInputs(ArazzoDocument $document, string $workflowId, array $inputs): ValidationResult;`
 
 ### Cross-boundary value types
 
@@ -237,10 +233,10 @@ public contract between packages.
 - `Warning` — present
 - `ResolvedOperation` — present
 - `NormalizedOpenApiOperation` — present
-- `ModelStack` — present
+- `ModelStack` — not found
 - `LoaderException` — present
 - `ParserException` — present
-- `PreflightFailureException` — present
+- `PreflightFailureException` — not found
 
 ### Deliberately internal
 
@@ -343,7 +339,7 @@ _None — the entry surface exchanges plain arrays._
 - `ArazzoGenerator` — `@internal`: yes
 - `OpenAiClient` — `@internal`: yes
 - `Renderer` — `@internal`: yes
-- `DocumentLoader` — `@internal`: yes
+- `DocumentLoader` — _not found in scan_
 - `CliRunner` — `@internal`: yes
 - `CliRunResult` — `@internal`: yes
 - `NullEventLedger` — `@internal`: yes

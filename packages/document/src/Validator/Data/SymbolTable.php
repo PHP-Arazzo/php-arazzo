@@ -7,26 +7,43 @@ namespace Alama\Arazzo\Document\Validator\Data;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Parameter;
 use Alama\Arazzo\Contracts\Spec\Workflow;
+use Alama\Arazzo\Document\KnownOperations;
 
 final readonly class SymbolTable
 {
+    public KnownOperations $knownOperations;
+
+    /**
+     * @var array<string,array<string,true>>
+     */
+    public array $resolvedOperations;
+
     /**
      * @param  array<string,WorkflowSymbols>  $workflows
      * @param  array<string,true>  $sourceDescriptions
      * @param  array<string,array<string,true>>  $components
+     * @param  KnownOperations|array<string,array<string,true>>  $knownOperations
      * @param  array<string,array<string,true>>  $resolvedOperations
      */
     public function __construct(
         public array $workflows,
         public array $sourceDescriptions,
         public array $components,
-        public array $resolvedOperations = [],
-    ) {}
+        KnownOperations|array $knownOperations = new KnownOperations(),
+        array $resolvedOperations = [],
+    ) {
+        $this->knownOperations = $knownOperations instanceof KnownOperations
+            ? $knownOperations
+            : new KnownOperations($knownOperations);
+        $this->resolvedOperations = $resolvedOperations !== []
+            ? $resolvedOperations
+            : $this->knownOperations->toArray();
+    }
 
     /**
-     * @param  array<string,array<string,true>>  $resolvedOperations
+     * @param  KnownOperations|array<string,array<string,true>>|null  $resolvedOperations
      */
-    public static function build(ArazzoDocument $doc, array $resolvedOperations = []): self
+    public static function build(ArazzoDocument $doc, KnownOperations|array|null $resolvedOperations = null): self
     {
         $sources = [];
         foreach ($doc->sourceDescriptions as $s) {
@@ -45,7 +62,13 @@ final readonly class SymbolTable
             $workflows[$wf->workflowId] = self::buildWorkflow($wf);
         }
 
-        return new self($workflows, $sources, $components, $resolvedOperations);
+        $ops = match (true) {
+            $resolvedOperations instanceof KnownOperations => $resolvedOperations,
+            is_array($resolvedOperations) => new KnownOperations($resolvedOperations),
+            default => KnownOperations::none(),
+        };
+
+        return new self($workflows, $sources, $components, $ops);
     }
 
     /**

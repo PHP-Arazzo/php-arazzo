@@ -18,13 +18,13 @@ cli-Console,cli-Renderer,1
 cli-Console,contracts-Dependency,1
 cli-Console,contracts-Exceptions,1
 cli-Console,contracts-Interfaces,5
-cli-Console,contracts-Spec,9
+cli-Console,contracts-Spec,8
 cli-Console,contracts-State,1
-cli-Console,document-Parser,8
-cli-Console,document-Validator,2
+cli-Console,document-Parser,4
+cli-Console,document-root,6
 cli-Console,engine-Runtime,7
 cli-Console,evaluation-root,2
-cli-Console,expression-root,2
+cli-Console,expression-root,1
 cli-Console,protocol-http-Execution,3
 cli-Console,runner-Async,1
 cli-Console,runner-Events,2
@@ -40,19 +40,19 @@ contracts-Interfaces,contracts-Exceptions,1
 contracts-Interfaces,contracts-Spec,22
 contracts-Interfaces,contracts-State,2
 contracts-State,contracts-Spec,3
-document-Parser,contracts-Spec,38
+document-Parser,contracts-Spec,39
 document-Parser,contracts-Support,2
 document-Validator,contracts-Dependency,1
 document-Validator,contracts-Spec,148
-document-Validator,contracts-Support,2
+document-Validator,contracts-Support,1
 document-Validator,expression-Data,2
 document-Validator,expression-Enum,11
 document-Validator,expression-Exceptions,2
 document-Validator,expression-Interfaces,15
-document-root,contracts-Spec,13
-document-root,document-Parser,8
+document-root,contracts-Spec,9
+document-root,document-Parser,5
 document-root,document-Validator,4
-document-root,expression-Interfaces,1
+document-root,expression-root,1
 engine-Data,contracts-Spec,3
 engine-Data,contracts-State,1
 engine-Data,engine-Enum,1
@@ -214,34 +214,39 @@ runner-Async,contracts-Interfaces,8
 runner-Async,contracts-Spec,23
 runner-Async,contracts-State,7
 runner-Async,contracts-Support,3
-runner-Async,document-Validator,1
-runner-Async,document-root,2
 runner-Async,engine-Exceptions,3
 runner-Async,engine-Execution,2
 runner-Async,engine-Runtime,9
 runner-Async,evaluation-root,5
 runner-Async,expression-Data,3
 runner-Async,runner-Events,14
+runner-Async,runner-Exceptions,1
 runner-Async,runner-Execution,11
+runner-Async,runner-Preflight,3
 runner-Async,runner-Sync,7
 runner-Events,contracts-Support,1
+runner-Exceptions,document-Validator,1
 runner-Execution,contracts-Interfaces,2
 runner-Execution,contracts-Spec,2
 runner-Execution,contracts-State,1
 runner-Execution,contracts-Support,4
-runner-Execution,document-root,2
+runner-Execution,document-root,1
 runner-Execution,engine-Runtime,4
 runner-Execution,runner-Events,1
+runner-Execution,runner-Preflight,1
 runner-Execution,sources-Normalizer,2
 runner-Interfaces,contracts-Interfaces,1
 runner-Interfaces,contracts-Spec,2
+runner-Preflight,contracts-Spec,6
+runner-Preflight,document-Validator,3
+runner-Preflight,document-root,2
 runner-Sync,contracts-Dependency,1
 runner-Sync,contracts-Exceptions,2
 runner-Sync,contracts-Interfaces,7
 runner-Sync,contracts-Spec,25
 runner-Sync,contracts-State,5
 runner-Sync,contracts-Support,2
-runner-Sync,document-Validator,2
+runner-Sync,document-Validator,1
 runner-Sync,document-root,2
 runner-Sync,engine-Exceptions,3
 runner-Sync,engine-Execution,4
@@ -250,7 +255,9 @@ runner-Sync,evaluation-root,4
 runner-Sync,expression-Data,2
 runner-Sync,protocol-http-Execution,2
 runner-Sync,runner-Events,7
+runner-Sync,runner-Exceptions,1
 runner-Sync,runner-Execution,10
+runner-Sync,runner-Preflight,3
 runner-Sync,sources-Normalizer,2
 runner-root,contracts-Exceptions,1
 runner-root,contracts-Interfaces,14
@@ -266,6 +273,7 @@ runner-root,protocol-http-Execution,2
 runner-root,runner-Async,6
 runner-root,runner-Events,2
 runner-root,runner-Execution,3
+runner-root,runner-Preflight,2
 runner-root,runner-Sync,4
 runner-root,sources-Normalizer,1
 sources-Normalizer,contracts-Interfaces,2
@@ -274,22 +282,13 @@ sources-Normalizer,contracts-Support,1
 sources-Normalizer,document-root,9
 sources-Normalizer,sources-Resolver,4
 sources-Resolver,contracts-Interfaces,2
-sources-Resolver,contracts-Spec,7
-sources-Resolver,document-Parser,3
-sources-Validator,contracts-Spec,5
-sources-Validator,document-Validator,5
-sources-Validator,sources-Normalizer,2
-sources-Validator,sources-Resolver,1
+sources-Resolver,contracts-Spec,8
+sources-Resolver,document-Parser,2
 sources-root,contracts-Interfaces,1
 sources-root,contracts-Spec,3
-sources-root,document-Parser,2
-sources-root,document-Validator,3
-sources-root,document-root,5
-sources-root,expression-Interfaces,1
-sources-root,expression-root,1
-sources-root,sources-Normalizer,8
+sources-root,document-root,6
+sources-root,sources-Normalizer,7
 sources-root,sources-Resolver,6
-sources-root,sources-Validator,2
 ```
 
 ## Folded flows
@@ -299,8 +298,7 @@ These references exist in the code but are not drawn: drawing them would close a
 | From | To | References |
 |---|---|---:|
 | `contracts-Spec` | `contracts-Interfaces` | 1 |
-| `document-root` | `sources-Normalizer` | 2 |
-| `document-root` | `sources-Validator` | 1 |
+| `document-Validator` | `document-root` | 2 |
 | `expression-Data` | `expression-Interfaces` | 1 |
 | `expression-Interfaces` | `expression-Registries` | 1 |
 | `expression-Internal` | `expression-root` | 2 |

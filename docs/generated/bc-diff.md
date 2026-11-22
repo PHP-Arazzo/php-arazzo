@@ -13,24 +13,43 @@ tag (or the second-latest when HEAD sits exactly on a tag).
 
 Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 
-**1 breaking change(s):**
+**10 breaking change(s):**
 
 | Kind | Class | Member | Detail |
 |---|---|---|---|
 | changed method | `DocumentInterface` | `load` | `public function load(string $path): ArazzoDocument;` → `public function load(string $path): ArazzoDocument` |
+| changed method | `DocumentInterface` | `validate` | `public function validate(ArazzoDocument $document): ValidationResult` → `public function validate(ArazzoDocument $document, ?KnownOperations $operations = null): ValidationResult` |
+| changed method | `SourceGraph` | `__construct` | `public function __construct(private readonly SourceRegistry $sources, private readonly OpenApiVersionDetector $versionDetector, private readonly PreflightValidator $preflight, private readonly SourceNormalizerRegistryInterface $normalizers)` → `public function __construct(ResolvedOperation $operation, public readonly OpenApi $openApi, public readonly Operation $cebeOperation)` |
+| changed method | `SourceGraph` | `document` | `public static function document(?ExpressionEngineInterface $engine = null, ?OpenApiOperationResolver $operationResolver = null, ): DocumentInterface` → `public static function document(): DocumentInterface` |
+| changed method | `SourceGraph` | `runtime` | `public static function runtime(?SourceRegistry $registry = null, ?OpenApiOperationResolver $operations = null, ?ExpressionEngineInterface $engine = null, ): SourceRuntime` → `public static function runtime(?SourceRegistry $registry = null, ?OpenApiOperationResolver $operations = null, ): SourceRuntime` |
+| removed method | `DocumentInterface` | `parse` | `public function parse(RawDocument $raw): ArazzoDocument` |
+| removed method | `DocumentInterface` | `preflight` | `public function preflight(ArazzoDocument $document): ValidationResult` |
+| removed method | `DocumentInterface` | `preflightInputs` | `public function preflightInputs(ArazzoDocument $document, string $workflowId, array $inputs): ValidationResult` |
+| removed method | `DocumentInterface` | `resolveOperation` | `public function resolveOperation(Step $step, ArazzoDocument $document): ResolvedOperation` |
+| removed method | `SourceGraph` | `preflightSource` | `public function preflightSource(ArazzoDocument $document): ValidationResult` |
 
-**Additions (non-breaking):** 11
+**Additions (non-breaking):** 21
 
 | Kind | Class | Member |
 |---|---|---|
+| added method | `DocumentInterface` | `build` |
+| added method | `DocumentInterface` | `covers` |
+| added method | `DocumentInterface` | `create` |
+| added method | `DocumentInterface` | `for` |
+| added method | `DocumentInterface` | `has` |
 | added method | `DocumentInterface` | `loadFromJson` |
 | added method | `DocumentInterface` | `loadFromYaml` |
+| added method | `DocumentInterface` | `toArray` |
+| added method | `DocumentInterface` | `validateInputs` |
 | added method | `DocumentInterface` | `withAllowCustomTags` |
 | added method | `DocumentInterface` | `withAllowObjectDeserialization` |
 | added method | `DocumentInterface` | `withDecodePolicy` |
-| added method | `DocumentInterface` | `withLoader` |
 | added method | `DocumentInterface` | `withMaxAliases` |
 | added method | `DocumentInterface` | `withMaxBytes` |
 | added method | `DocumentInterface` | `withMaxDepth` |
 | added method | `DocumentInterface` | `withMaxNodes` |
+| added method | `DocumentInterface` | `withOperation` |
+| added method | `DocumentInterface` | `withSource` |
 | added method | `DocumentInterface` | `withYamlPolicy` |
+| added method | `RunnerFacade` | `supports` |
+| added method | `SourceGraph` | `knownOperations` |

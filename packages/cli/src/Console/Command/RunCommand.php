@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Cli\Console\Command;
 
-use Alama\Arazzo\Cli\Console\DocumentLoader;
 use Alama\Arazzo\Contracts\Exceptions\SchemaValidationException;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Workflow;
+use Alama\Arazzo\Document\Document;
 use Alama\Arazzo\Document\Parser\Exceptions\LoaderException;
 use Alama\Arazzo\Document\Parser\Exceptions\ParserException;
 use Alama\Arazzo\Evaluation\EvaluationEngine;
@@ -54,7 +54,7 @@ final class RunCommand extends Command
         $file = $input->getArgument('file');
 
         try {
-            $document = DocumentLoader::load($file);
+            $document = Document::create()->load($file);
         } catch (LoaderException|ParserException $e) {
             $output->writeln('<error>PARSE ERROR</error> '.$e->getMessage());
 
@@ -87,10 +87,10 @@ final class RunCommand extends Command
 
         $expressionEngine = new ExpressionEngine();
         $engine = new EvaluationEngine(expression: $expressionEngine);
-        $runtime = SourceGraph::runtime(registry: $registry, engine: $expressionEngine);
+        $runtime = SourceGraph::runtime(registry: $registry);
 
         // Preflight input-schema validation before any side effect.
-        $preflightResult = $runtime->document->preflightInputs($document, (string) $workflow->workflowId, $inputs);
+        $preflightResult = $runtime->document->validateInputs($document, (string) $workflow->workflowId, $inputs);
         if (!$preflightResult->isValid()) {
             foreach ($preflightResult->errors as $error) {
                 $output->writeln('<error>'.$error->message.'</error>');

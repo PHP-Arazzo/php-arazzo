@@ -113,9 +113,4 @@
   <violation rule="PHPMD\Rule\Design\ExcessiveMethodLength" file="packages/sources/src/Normalizer/OpenApiOperationResolver.php" method="resolve"/>
   <violation rule="PHPMD\Rule\Design\ExcessiveClassComplexity" file="packages/sources/src/Normalizer/WsdlSourceNormalizer.php"/>
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/sources/src/SourceGraph.php"/>
-  <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/sources/src/Validator/PreflightValidator.php"/>
-  <violation rule="PHPMD\Rule\Naming\LongVariable" file="packages/sources/src/Validator/PreflightValidator.php"/>
-  <violation rule="PHPMD\Rule\CyclomaticComplexity" file="packages/sources/src/Validator/PreflightValidator.php" method="checkStep"/>
-  <violation rule="PHPMD\Rule\Design\NPathComplexity" file="packages/sources/src/Validator/PreflightValidator.php" method="checkStep"/>
-  <violation rule="PHPMD\Rule\Design\ExcessiveMethodLength" file="packages/sources/src/Validator/PreflightValidator.php" method="checkStep"/>
 </phpmd-baseline>

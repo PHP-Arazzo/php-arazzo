@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-use Alama\Arazzo\Cli\Console\DocumentLoader;
 use Alama\Arazzo\Cli\Renderer\Renderer;
+use Alama\Arazzo\Document\Document;
 
 const RENDER_ACTIONS = __DIR__.'/../fixtures/renderer/actions.yaml';
 
 it('renders a mermaid flowchart with retry and goto edges', function (): void {
-    $document = DocumentLoader::load(RENDER_ACTIONS);
+    $document = Document::create()->load(RENDER_ACTIONS);
     $mermaid = (new Renderer())->toMermaid($document);
 
     expect($mermaid)->toStartWith('flowchart TD')
@@ -22,7 +22,7 @@ it('renders a mermaid flowchart with retry and goto edges', function (): void {
 });
 
 it('can scope the mermaid chart to one workflow', function (): void {
-    $document = DocumentLoader::load(RENDER_ACTIONS);
+    $document = Document::create()->load(RENDER_ACTIONS);
     $mermaid = (new Renderer())->toMermaid($document, 'flow');
 
     expect($mermaid)->toContain('id_flow')
@@ -30,7 +30,7 @@ it('can scope the mermaid chart to one workflow', function (): void {
 });
 
 it('renders markdown docs with sources, steps, criteria, and outputs', function (): void {
-    $document = DocumentLoader::load(RENDER_ACTIONS);
+    $document = Document::create()->load(RENDER_ACTIONS);
     $markdown = (new Renderer())->toMarkdown($document);
 
     expect($markdown)->toStartWith('# Render demo')
