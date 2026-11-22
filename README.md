@@ -63,56 +63,51 @@ Depending on your framework, you can install the core or protocol packages.
 
 ### For Plain PHP Projects
 ```bash
-composer require php-arazzo/arazzo-core php-arazzo/arazzo-runner php-arazzo/arazzo-protocol-http
+composer require php-arazzo/arazzo-document php-arazzo/arazzo-sources php-arazzo/arazzo-runner php-arazzo/arazzo-protocol-http
 ```
 
-The `php-arazzo/arazzo-runner` package exposes `RunnerFacade` as the entry point:
+The `php-arazzo/arazzo-runner` package exposes `RunnerFacade` as the execution entry point:
 ```php
-use Alama\Arazzo\Parser\Decoders\NativeJsonDecoder;
-use Alama\Arazzo\Parser\Decoders\SymfonyYamlDecoder;
-use Alama\Arazzo\Parser\Loader;
-use Alama\Arazzo\Parser\Parser;
+use Alama\Arazzo\Document\Document;
+use Alama\Arazzo\Evaluation\EvaluationEngine;
+use Alama\Arazzo\Expression\ExpressionEngine;
+use Alama\Arazzo\Protocol\Http\Execution\DefaultOpenApiExecutor;
+use Alama\Arazzo\Protocol\Http\Execution\ResponseSchemaValidator;
+use Alama\Arazzo\Protocol\Http\Execution\StepOutputExtractor;
+use Alama\Arazzo\Protocol\Http\Resolver\OpenApiOperationResolver;
 use Alama\Arazzo\Runner\RunnerFacade;
-use Alama\Arazzo\Sources\SourceGraph;
+use Alama\Arazzo\Sources\Sources;
+use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\HttpFactory;
 
-// 1. Parse the Arazzo document
-$loader = new Loader(new SymfonyYamlDecoder(), new NativeJsonDecoder());
-$document = (new Parser())->parse($loader->load('workflow.arazzo.yaml'));
+$httpClient = new Client();
+$httpFactory = new HttpFactory();
 
-// 2. Wire up source resolution
-$sourceGraph = SourceGraph::createRegistry(
-    new \GuzzleHttp\Client(),
-    new \GuzzleHttp\Psr7\HttpFactory()
+// 1. Load the Arazzo document
+$documentFacade = Document::create();
+$document = $documentFacade->load('workflow.arazzo.yaml');
+
+// 2. Wire up source resolution and operation resolver
+$sources = Sources::create()->withHttpClient($httpClient, $httpFactory);
+$operationResolver = OpenApiOperationResolver::create($sources);
+$expressionEngine = new ExpressionEngine();
+$evaluationEngine = new EvaluationEngine(expression: $expressionEngine);
+
+// 3. Assemble runner and execute
+$runner = new RunnerFacade(
+    document: $documentFacade,
+    operationResolver: $operationResolver,
+    evaluationEngine: $evaluationEngine,
+    inspector: null,
+    openApiExecutor: new DefaultOpenApiExecutor($httpClient, $httpFactory),
+    outputExtractor: new StepOutputExtractor($operationResolver, $evaluationEngine, $expressionEngine),
+    schemaValidator: new ResponseSchemaValidator($operationResolver),
 );
 
-// 3. Execute
-$executor = new RunnerFacade(
-    documentLoader: $sourceGraph->document(),
-    operationResolver: $sourceGraph->operations(),
-    evaluationEngine: new \Alama\Arazzo\Expression\ExpressionEngine(),
-    openApiExecutor: new \Alama\Arazzo\Protocol\Http\Execution\DefaultOpenApiExecutor(
-        new \GuzzleHttp\Client(),
-        new \GuzzleHttp\Psr7\HttpFactory()
-    ),
-    outputExtractor: new \Alama\Arazzo\Runner\Execution\ArazzoOutputExtractor(
-        $sourceGraph->operations(),
-        new \Alama\Arazzo\Expression\ExpressionEngine(),
-        new \Alama\Arazzo\Evaluation\ArazzoCriteriaEvaluator(
-            new \Alama\Arazzo\Expression\ExpressionEngine()
-        ),
-        new \Alama\Arazzo\Runner\Execution\ArazzoSchemaValidator(
-            $sourceGraph->operations()
-        )
-    ),
-    schemaValidator: new \Alama\Arazzo\Runner\Execution\ArazzoSchemaValidator(
-        $sourceGraph->operations()
-    ),
-);
-
-$result = $executor->execute(
-    $document->workflows[0],
+$result = $runner->execute(
     $document,
-    ['inputs' => []]
+    'loginFlow',
+    ['username' => 'testuser', 'password' => 'secret']
 );
 ```
 
@@ -126,80 +121,47 @@ $result = $executor->execute(
 
 `alama/laravel-arazzo` is now maintained in its own repository at [`php-arazzo/laravel-arazzo`](https://github.com/PHP-Arazzo/laravel-arazzo).
 
-### Core Engine Example (Framework-Agnostic)
+### Document & Source Validation Example
 
-Using the core engine directly with no framework:
+Validating Arazzo workflows against declared OpenAPI sources without running side-effects:
 
 ```php
-use Alama\Arazzo\Parser\Decoders\NativeJsonDecoder;
-use Alama\Arazzo\Parser\Decoders\SymfonyYamlDecoder;
-use Alama\Arazzo\Parser\Loader;
-use Alama\Arazzo\Parser\Parser;
-use Alama\Arazzo\Runner\RunnerFacade;
-use Alama\Arazzo\Sources\SourceGraph;
+use Alama\Arazzo\Document\Document;
+use Alama\Arazzo\Sources\Sources;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\HttpFactory;
 
-// 1. Parse the Arazzo document
-$loader = new Loader(new SymfonyYamlDecoder(), new NativeJsonDecoder());
-$document = (new Parser())->parse($loader->load('LoginAndRetrievePets.arazzo.yaml'));
+$documentFacade = Document::create();
+$sourcesFacade = Sources::create()->withHttpClient(new Client(), new HttpFactory());
 
-$workflow = null;
-foreach ($document->workflows as $w) {
-    if ($w->workflowId === 'loginUserRetrievePet') {
-        $workflow = $w;
-        break;
+// 1. Load the Arazzo document
+$document = $documentFacade->load('LoginAndRetrievePets.arazzo.yaml');
+
+// 2. Fetch & index known operations from OpenAPI source descriptions
+$knownOperations = $sourcesFacade->knownOperations($document);
+
+// 3. Perform semantic & referential validation
+$result = $documentFacade->validate($document, $knownOperations);
+
+if (!$result->isValid()) {
+    foreach ($result->errors as $error) {
+        echo "Error: {$error->message} at {$error->path}\n";
     }
+    exit(1);
 }
 
-// 2. Wire up PSR HTTP + source resolution
-$sourceGraph = SourceGraph::createRegistry(
-    new Client(),
-    new HttpFactory()
-);
+// 4. Validate runtime inputs against workflow schema before running
+$inputResult = $documentFacade->validateInputs($document, 'loginUserRetrievePet', [
+    'username' => 'testuser',
+    'password' => 'password123',
+]);
 
-// 3. Execute via RunnerFacade
-$executor = new RunnerFacade(
-    documentLoader: $sourceGraph->document(),
-    operationResolver: $sourceGraph->operations(),
-    evaluationEngine: new \Alama\Arazzo\Expression\ExpressionEngine(),
-    openApiExecutor: new \Alama\Arazzo\Protocol\Http\Execution\DefaultOpenApiExecutor(
-        new Client(),
-        new HttpFactory()
-    ),
-    outputExtractor: new \Alama\Arazzo\Runner\Execution\ArazzoOutputExtractor(
-        $sourceGraph->operations(),
-        new \Alama\Arazzo\Expression\ExpressionEngine(),
-        new \Alama\Arazzo\Evaluation\ArazzoCriteriaEvaluator(
-            new \Alama\Arazzo\Expression\ExpressionEngine()
-        ),
-        new \Alama\Arazzo\Runner\Execution\ArazzoSchemaValidator(
-            $sourceGraph->operations()
-        )
-    ),
-    schemaValidator: new \Alama\Arazzo\Runner\Execution\ArazzoSchemaValidator(
-        $sourceGraph->operations()
-    ),
-);
-
-$result = $executor->execute(
-    $workflow,
-    $document,
-    [
-        'username' => 'testuser',
-        'password' => 'password123',
-    ]
-);
-
-echo "Workflow execution finished with status: {$result->status}\n";
-
-foreach ($result->stepResults as $stepId => $stepResult) {
-    $status = $stepResult->success ? 'Success' : 'Failed';
-    echo " - Step {$stepId}: {$status}\n";
-    if (!empty($stepResult->outputs)) {
-        print_r($stepResult->outputs);
-    }
+if (!$inputResult->isValid()) {
+    echo "Input validation failed.\n";
+    exit(1);
 }
+
+$validatedInputs = $inputResult->inputs;
 ```
 
 For the full picture of what happens under the hood, see [`docs/architecture/`](docs/architecture) and [`packages/core/README.md`](packages/core).
