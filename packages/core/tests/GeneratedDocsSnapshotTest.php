@@ -123,7 +123,7 @@ it('keeps generated dir markdown-only', function (): void {
 
 it('derives layer order from composer require', function (): void {
     expect(\ArazzoDocs\packageLayerOrder(dirname(__DIR__, 3)))->toBe(
-        ['contracts', 'expression', 'engine', 'evaluation', 'document', 'sources', 'protocol-http', 'protocol-rpc', 'protocol-soap', 'runner', 'core', 'cli'],
+        ['contracts', 'expression', 'document', 'engine', 'evaluation', 'sources', 'protocol-http', 'protocol-rpc', 'protocol-soap', 'runner', 'core', 'cli'],
     );
 });
 
@@ -215,4 +215,10 @@ it('pins the fixed-doc contracts', function (): void {
     expect($get('expression-ast.md'))->toContain('StepRef');
     // Task 9: hard seam rule clean
     expect($get('boundaries-audit.md'))->toContain('no library package references another');
+    // Multi-package validator rule discovery via #[AsValidationRulePlugin]
+    expect($get('validator-rules.md'))
+        ->toContain('OfficialSchemaRule')
+        ->toContain('ExpressionUnresolvedSourceRefRule')
+        ->toContain('WsdlStepRule')
+        ->toContain('RpcStepRule');
 });

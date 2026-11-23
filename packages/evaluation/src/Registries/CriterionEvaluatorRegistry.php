@@ -4,57 +4,91 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Evaluation\Registries;
 
+use Alama\Arazzo\Contracts\Attributes\AsCriterionPlugin;
+use Alama\Arazzo\Contracts\Discovery\PluginDiscovery;
 use Alama\Arazzo\Contracts\Interfaces\CriterionEvaluatorPluginInterface;
 use Alama\Arazzo\Contracts\Spec\Enum\CriterionType;
 use Alama\Arazzo\Contracts\Spec\SuccessCriterion;
-use Alama\Arazzo\Evaluation\Plugins\JsonPathCriterionPlugin;
 use Alama\Arazzo\Expression\Interfaces\ExpressionEngineInterface;
+use InvalidArgumentException;
+use ReflectionClass;
 
 /**
  * Registry for criterion evaluator plugins.
  *
- * Plugins are stored with an integer priority (higher = earlier). The registry
- * returns the first plugin whose {@see CriterionEvaluatorPluginInterface::supports()}
- * returns true.
+ * Keyed by {@see CriterionType} (via `#[AsCriterionPlugin]`) or plugin name;
+ * last-registered wins when overriding a type. Auto-discovers
+ * `#[AsCriterionPlugin]` classes declared in installed packages'
+ * `composer.json` `extra.arazzo.plugins` directories.
  */
 final class CriterionEvaluatorRegistry
 {
-    /** @var array<int, list<CriterionEvaluatorPluginInterface>> */
+    private static ?self $instance = null;
+
+    /** @var array<string, CriterionEvaluatorPluginInterface> */
     private array $plugins = [];
 
-    public function __construct(ExpressionEngineInterface $expression)
+    private function __construct(ExpressionEngineInterface $expression)
     {
-        // Built‑in default plugin (lowest priority)
-        $this->register(new JsonPathCriterionPlugin($expression), 0);
+        foreach (PluginDiscovery::instantiate(AsCriterionPlugin::class, [$expression]) as $plugin) {
+            if ($plugin instanceof CriterionEvaluatorPluginInterface) {
+                $this->register($plugin);
+            }
+        }
     }
 
-    public function register(CriterionEvaluatorPluginInterface $plugin, int $priority = 0): void
+    public static function create(?ExpressionEngineInterface $expression = null): self
     {
-        $this->plugins[$priority][] = $plugin;
-        krsort($this->plugins);
+        if (self::$instance === null) {
+            if ($expression === null) {
+                throw new InvalidArgumentException('ExpressionEngineInterface is required to initialize CriterionEvaluatorRegistry.');
+            }
+            self::$instance = new self($expression);
+        }
+
+        return self::$instance;
+    }
+
+    public static function reset(): void
+    {
+        self::$instance = null;
+    }
+
+    public function register(CriterionEvaluatorPluginInterface $plugin): void
+    {
+        $key = self::resolveKey($plugin);
+        // Move to end so last-registered wins on resolution.
+        unset($this->plugins[$key]);
+        $this->plugins[$key] = $plugin;
     }
 
     public function resolve(CriterionType|SuccessCriterion $criterion): ?CriterionEvaluatorPluginInterface
     {
-        foreach ($this->plugins as $priorityPlugins) {
-            foreach ($priorityPlugins as $plugin) {
-                if ($plugin->supports($criterion)) {
-                    return $plugin;
-                }
+        foreach (array_reverse($this->plugins) as $plugin) {
+            if ($plugin->supports($criterion)) {
+                return $plugin;
             }
         }
 
         return null;
     }
 
-    /** @return CriterionEvaluatorPluginInterface[] */
+    /** @return list<CriterionEvaluatorPluginInterface> */
     public function all(): array
     {
-        $flat = [];
-        foreach ($this->plugins as $priorityPlugins) {
-            $flat = array_merge($flat, $priorityPlugins);
+        return array_values(array_reverse($this->plugins));
+    }
+
+    private static function resolveKey(CriterionEvaluatorPluginInterface $plugin): string
+    {
+        $attrs = (new ReflectionClass($plugin))->getAttributes(AsCriterionPlugin::class);
+        if ($attrs !== []) {
+            /** @var AsCriterionPlugin $attr */
+            $attr = $attrs[0]->newInstance();
+
+            return 'type:'.$attr->type->value;
         }
 
-        return $flat;
+        return 'name:'.$plugin->name();
     }
 }

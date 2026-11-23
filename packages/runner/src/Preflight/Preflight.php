@@ -8,9 +8,9 @@ use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Selector;
 use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Contracts\Spec\Workflow;
-use Alama\Arazzo\Document\Validator\Data\Error;
-use Alama\Arazzo\Document\Validator\Data\ValidationResult;
-use Alama\Arazzo\Document\Validator\Enum\Severity;
+use Alama\Arazzo\Contracts\Validation\Error;
+use Alama\Arazzo\Contracts\Validation\Severity;
+use Alama\Arazzo\Contracts\Validation\ValidationResult;
 
 final readonly class Preflight
 {

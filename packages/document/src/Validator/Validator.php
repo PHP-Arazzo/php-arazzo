@@ -6,10 +6,11 @@ namespace Alama\Arazzo\Document\Validator;
 
 use Alama\Arazzo\Contracts\Data\KnownOperations;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
-use Alama\Arazzo\Document\Validator\Data\Error;
-use Alama\Arazzo\Document\Validator\Data\SymbolTable;
-use Alama\Arazzo\Document\Validator\Data\ValidationResult;
-use Alama\Arazzo\Document\Validator\Enum\Severity;
+use Alama\Arazzo\Contracts\Validation\Error;
+use Alama\Arazzo\Contracts\Validation\ErrorCollector;
+use Alama\Arazzo\Contracts\Validation\Severity;
+use Alama\Arazzo\Contracts\Validation\SymbolTable;
+use Alama\Arazzo\Contracts\Validation\ValidationResult;
 use JsonSchema\Constraints\Constraint;
 use JsonSchema\SchemaStorage;
 use JsonSchema\Validator as JsonSchemaValidator;

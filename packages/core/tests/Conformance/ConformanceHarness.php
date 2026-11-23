@@ -25,7 +25,6 @@ use Alama\Arazzo\Protocol\Http\Execution\ResponseSchemaValidator;
 use Alama\Arazzo\Protocol\Http\Execution\StepOutputExtractor;
 use Alama\Arazzo\Protocol\Http\Resolver\OpenApiOperationResolver;
 use Alama\Arazzo\Sources\Resolver\DefaultSourceResolver;
-use Alama\Arazzo\Sources\Resolver\SourceRegistry;
 use Alama\Arazzo\Sources\Sources;
 use Alama\Arazzo\Tests\Support\FakePsr18Client;
 use Alama\Arazzo\Tests\Support\RecordingEventDispatcher;
@@ -44,7 +43,7 @@ abstract class ConformanceHarness
 
     protected FakePsr18Client $http;
 
-    protected SourceRegistry $sourceRegistry;
+    protected DefaultSourceResolver $sourceRegistry;
 
     /**
      * @param  array<string, mixed>  $fixture
@@ -59,7 +58,7 @@ abstract class ConformanceHarness
     {
         $this->events = new RecordingEventDispatcher();
         $this->http = new FakePsr18Client();
-        $this->sourceRegistry = new SourceRegistry(new DefaultSourceResolver([]));
+        $this->sourceRegistry = new DefaultSourceResolver([]);
 
         // Transport failures replay before any scripted response. Each entry
         // is either a message string or {message, times} for repeated faults
@@ -104,7 +103,7 @@ abstract class ConformanceHarness
         return new EvaluationEngine(expression: new ExpressionEngine());
     }
 
-    protected function runtime(SourceRegistry $registry): object
+    protected function runtime(DefaultSourceResolver $registry): object
     {
         return (object) [
             'document' => Document::create(),
@@ -112,7 +111,7 @@ abstract class ConformanceHarness
         ];
     }
 
-    protected function documents(SourceRegistry $registry): DocumentInterface
+    protected function documents(DefaultSourceResolver $registry): DocumentInterface
     {
         return Document::create();
     }

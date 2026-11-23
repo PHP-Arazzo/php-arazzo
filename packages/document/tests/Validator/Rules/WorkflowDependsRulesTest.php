@@ -12,11 +12,11 @@ use Alama\Arazzo\Contracts\Spec\StepFactory;
 use Alama\Arazzo\Contracts\Spec\StepFlow;
 use Alama\Arazzo\Contracts\Spec\StepIo;
 use Alama\Arazzo\Contracts\Spec\Workflow;
-use Alama\Arazzo\Document\Validator\Data\SymbolTable;
-use Alama\Arazzo\Document\Validator\ErrorCollector;
-use Alama\Arazzo\Document\Validator\Rules\WorkflowDependsOnExistsRule;
-use Alama\Arazzo\Document\Validator\Rules\WorkflowDependsOnNoCycleRule;
-use Alama\Arazzo\Document\Validator\Rules\WorkflowInputsValidSchemaRule;
+use Alama\Arazzo\Contracts\Validation\ErrorCollector;
+use Alama\Arazzo\Contracts\Validation\SymbolTable;
+use Alama\Arazzo\Document\Plugins\ValidationRule\WorkflowDependsOnExistsRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\WorkflowDependsOnNoCycleRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\WorkflowInputsValidSchemaRule;
 
 function step(string $id): Step
 {

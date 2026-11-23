@@ -6,7 +6,7 @@ namespace Alama\Arazzo\Tests\Conformance;
 
 use Alama\Arazzo\Contracts\State\WorkflowContext;
 use Alama\Arazzo\Protocol\Http\Execution\DefaultOpenApiExecutor;
-use Alama\Arazzo\Protocol\Http\Protocol\HttpStepExecutor;
+use Alama\Arazzo\Protocol\Http\Plugins\OperationExecutor\HttpStepExecutor;
 use Alama\Arazzo\Runner\Async\ExecuteStepJob;
 use Alama\Arazzo\Runner\Async\StepExecutionWorker;
 use Alama\Arazzo\Runner\Execution\Data\RunControlFlow;
@@ -50,7 +50,8 @@ final class QueueFixtureRunner extends ConformanceHarness
 
         $engine = $this->engine();
 
-        $executors = new OperationExecutorRegistry();
+        OperationExecutorRegistry::reset();
+        $executors = OperationExecutorRegistry::create();
         $executors->register(new HttpStepExecutor(
             new DefaultOpenApiExecutor($this->http, new HttpFactory()),
             $runtime->operations,
@@ -89,6 +90,8 @@ final class QueueFixtureRunner extends ConformanceHarness
             }
         } catch (\Throwable) {
             // Terminal failures are observed through the event stream.
+        } finally {
+            OperationExecutorRegistry::reset();
         }
 
         return $this->observe();

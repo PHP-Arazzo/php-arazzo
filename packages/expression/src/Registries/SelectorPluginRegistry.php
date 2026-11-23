@@ -4,46 +4,75 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Expression\Registries;
 
+use Alama\Arazzo\Contracts\Attributes\AsSelectorPlugin;
+use Alama\Arazzo\Contracts\Discovery\PluginDiscovery;
 use Alama\Arazzo\Contracts\Spec\Enum\ExpressionType;
 use Alama\Arazzo\Expression\Interfaces\SelectorPluginInterface;
-use Alama\Arazzo\Expression\Interfaces\SelectorPluginRegistryInterface;
+use InvalidArgumentException;
+use ReflectionClass;
 
 /**
- * Registry for selector plugins.
+ * Internal strategy registry for selector plugins inside `arazzo-expression`.
  *
- * Plugins are keyed by {@see ExpressionType} and stored with an integer
- * priority (higher = earlier). The registry returns the highest-priority
- * plugin registered for a given type.
+ * Plugins are keyed by {@see ExpressionType}; last-registered wins when a
+ * custom implementation replaces a built-in type. Auto-discovers
+ * `#[AsSelectorPlugin]` classes declared in installed packages'
+ * `composer.json` `extra.arazzo.plugins` directories.
  *
- * @internal stays out of the advertised contract; consumed by SelectorEvaluator.
+ * @internal stays out of the advertised contract; not part of the public API surface.
  */
-final class SelectorPluginRegistry implements SelectorPluginRegistryInterface
+final class SelectorPluginRegistry
 {
-    /** @var array<string, array<int, list<SelectorPluginInterface>>> */
+    private static ?self $instance = null;
+
+    /** @var array<string, SelectorPluginInterface> */
     private array $plugins = [];
 
-    public function register(ExpressionType $type, SelectorPluginInterface $plugin, int $priority = 0): void
+    private function __construct()
     {
-        $this->plugins[$type->value][$priority][] = $plugin;
-        krsort($this->plugins[$type->value]);
+        foreach (PluginDiscovery::instantiate(AsSelectorPlugin::class) as $plugin) {
+            if ($plugin instanceof SelectorPluginInterface) {
+                $this->register($plugin);
+            }
+        }
+    }
+
+    public static function create(): self
+    {
+        return self::$instance ??= new self();
+    }
+
+    public static function reset(): void
+    {
+        self::$instance = null;
+    }
+
+    public function register(
+        ExpressionType|SelectorPluginInterface $typeOrPlugin,
+        ?SelectorPluginInterface $plugin = null,
+    ): void {
+        if ($typeOrPlugin instanceof SelectorPluginInterface) {
+            $plugin = $typeOrPlugin;
+            $type = self::resolveType($plugin);
+        } else {
+            $type = $typeOrPlugin;
+            if ($plugin === null) {
+                throw new InvalidArgumentException('Plugin must be provided when registering by ExpressionType.');
+            }
+        }
+
+        // Last-registered wins for the given ExpressionType.
+        $this->plugins[$type->value] = $plugin;
     }
 
     public function get(ExpressionType $type): ?SelectorPluginInterface
     {
-        $plugins = $this->plugins[$type->value] ?? [];
-
-        foreach ($plugins as $priorityPlugins) {
-            foreach ($priorityPlugins as $plugin) {
-                return $plugin;
-            }
-        }
-
-        return null;
+        return $this->plugins[$type->value] ?? null;
     }
 
     public function has(ExpressionType $type): bool
     {
-        return $this->get($type) !== null;
+        return isset($this->plugins[$type->value]);
     }
 
     /**
@@ -56,17 +85,28 @@ final class SelectorPluginRegistry implements SelectorPluginRegistryInterface
         return $plugin !== null ? $plugin->supportedVersions() : [];
     }
 
-    /** @return SelectorPluginInterface[] */
+    /** @return list<SelectorPluginInterface> */
     public function all(): array
     {
-        $flat = [];
+        return array_values($this->plugins);
+    }
 
-        foreach ($this->plugins as $typePlugins) {
-            foreach ($typePlugins as $priorityPlugins) {
-                $flat = array_merge($flat, $priorityPlugins);
+    private static function resolveType(SelectorPluginInterface $plugin): ExpressionType
+    {
+        $attrs = (new ReflectionClass($plugin))->getAttributes(AsSelectorPlugin::class);
+        if ($attrs !== []) {
+            /** @var AsSelectorPlugin $attr */
+            $attr = $attrs[0]->newInstance();
+
+            return $attr->type;
+        }
+
+        foreach (ExpressionType::cases() as $case) {
+            if ($plugin->supports($case)) {
+                return $case;
             }
         }
 
-        return $flat;
+        throw new InvalidArgumentException('Cannot determine ExpressionType for selector plugin: missing #[AsSelectorPlugin] attribute or supports() matching.');
     }
 }

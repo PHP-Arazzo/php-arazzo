@@ -14,7 +14,7 @@ use Alama\Arazzo\Contracts\Spec\SuccessCriterion;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
 use Alama\Arazzo\Evaluation\Enum\CriterionOutcome;
 use Alama\Arazzo\Evaluation\EvaluationEngine;
-use Alama\Arazzo\Evaluation\Plugins\JsonPathExpressionPlugin;
+use Alama\Arazzo\Evaluation\Plugins\Expression\JsonPathExpressionPlugin;
 use Alama\Arazzo\Expression\ExpressionEngine;
 
 /**

@@ -32,6 +32,10 @@ function detailedStep(array $criteria): Step
     return StepFactory::http('x', null, new StepFlow(), new StepIo(successCriteria: $criteria), operationId: 'op');
 }
 
+afterEach(function (): void {
+    CriterionEvaluatorRegistry::reset();
+});
+
 /**
  * @param  array<array-key, mixed>  $body
  */
@@ -50,7 +54,7 @@ function detailedContext(array $body = []): WorkflowContext
 
 function detailedEvaluator(?EventDispatcherInterface $dispatcher = null): CriteriaEvaluator
 {
-    return new CriteriaEvaluator(new ExpressionEngine(), null, null, null, $dispatcher);
+    return new CriteriaEvaluator(new ExpressionEngine(), null, null, $dispatcher);
 }
 
 it('reports a passing simple criterion as passed/evaluated', function (): void {
@@ -210,7 +214,8 @@ it('reports a plugin pass and fail as evaluated', function (): void {
     $context = detailedContext();
 
     $expression = new ExpressionEngine();
-    $registry = new CriterionEvaluatorRegistry($expression);
+    CriterionEvaluatorRegistry::reset();
+    $registry = CriterionEvaluatorRegistry::create($expression);
     $registry->register($plugin, 100);
     $evaluator = new CriteriaEvaluator($expression, null, $registry);
 
@@ -251,7 +256,8 @@ it('reports a plugin throw as error/plugin_error instead of propagating', functi
     $context = detailedContext();
 
     $expression = new ExpressionEngine();
-    $registry = new CriterionEvaluatorRegistry($expression);
+    CriterionEvaluatorRegistry::reset();
+    $registry = CriterionEvaluatorRegistry::create($expression);
     $registry->register($plugin, 100);
     $evaluator = new CriteriaEvaluator($expression, null, $registry);
 
@@ -292,7 +298,8 @@ it('reports an unresolved plugin context as context_unresolved', function (): vo
     $context = detailedContext();
 
     $expression = new ExpressionEngine();
-    $registry = new CriterionEvaluatorRegistry($expression);
+    CriterionEvaluatorRegistry::reset();
+    $registry = CriterionEvaluatorRegistry::create($expression);
     $registry->register($plugin, 100);
 
     $results = (new CriteriaEvaluator($expression, null, $registry))->evaluateCriteria([$criterion], $step, $context);

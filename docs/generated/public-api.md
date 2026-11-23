@@ -34,6 +34,15 @@ this file on a commit is a public API change — review it deliberately.
 - `public function toKnownOperations(): KnownOperations`
 - `public static function fromArray(array $operations): self`
 
+### `Alama\Arazzo\Contracts\Discovery`
+
+#### `PluginDiscovery` class
+- `public static function allClasses(): array`
+- `public static function classesWith(string $attributeClass): array`
+- `public static function instantiate(string $attributeClass, array $services = []): array`
+- `public static function overrideClasses(?array $classes): void`
+- `public static function reset(): void`
+
 ### `Alama\Arazzo\Contracts\Interfaces`
 
 #### `AiClientInterface` interface
@@ -88,16 +97,16 @@ this file on a commit is a public API change — review it deliberately.
 - `public function normalize(SourceDescription $source, string $rawContent, ?ArazzoDocument $document = null): array;`
 - `public function supports(SourceType $type): bool;`
 
-#### `SourceNormalizerRegistryInterface` interface
-- `public function get(SourceType $type): ?SourceNormalizerInterface;`
-- `public function register(SourceNormalizerInterface $normalizer): void;`
-
 #### `SourceResolverInterface` interface
 - `public function resolve(SourceDescription $source, string $basePath): SourceDocument;`
 
 #### `StepProtocolExecutorInterface` interface
 - `public function execute(Step $step, WorkflowContext $context, ArazzoDocument $document, string $executionId): StepExecutionOutcome;`
 - `public function supports(Step $step, ArazzoDocument $document): bool;`
+
+#### `ValidationRuleInterface` interface
+- `public function check(ArazzoDocument $doc, SymbolTable $symbols, ErrorCollector $errors, ): void;`
+- `public function code(): string;`
 
 #### `WorkflowStateRepositoryInterface` interface
 - `public function delete(string $executionId): void;`
@@ -199,6 +208,9 @@ this file on a commit is a public API change — review it deliberately.
 #### `InteractionMode` enum
 - Cases: `Acknowledge`, `Form`, `Redirect`
 
+#### `OperationProtocol` enum
+- Cases: `AsyncApi`, `Http`, `Rpc`, `Soap`, `SubWorkflow`
+
 #### `ParameterIn` enum
 - Cases: `Body`, `Cookie`, `Header`, `Metadata`, `Path`, `Query`, `Querystring`, `Variable`
 
@@ -292,13 +304,43 @@ this file on a commit is a public API change — review it deliberately.
 - `public static function fromPersisted(array $persisted, string $executionId): self`
 - `public static function reconciled(self $incoming, array $persisted, string $executionId): self`
 
+### `Alama\Arazzo\Contracts\Validation`
+
+#### `Error` class
+- `public function __construct(public string $code, public string $message, public string $path, public ?int $line = null, public Severity $severity = Severity::Error)`
+
+#### `ErrorCollector` class
+- `public function add(Error|Warning $diagnostic): void`
+- `public function error(string $code, string $message, string $path, ?int $line = null): void`
+- `public function errors(): array`
+- `public function warning(string $code, string $message, string $path, ?int $line = null): void`
+- `public function warnings(): array`
+
+#### `Severity` enum
+- Cases: `Error`, `Warning`
+
+#### `SymbolTable` class
+- `public function __construct(public array $workflows, public array $sourceDescriptions, public array $components, KnownOperations|array $knownOperations = new KnownOperations(), array $resolvedOperations = [])`
+- `public static function build(ArazzoDocument $doc, KnownOperations|array|null $resolvedOperations = null): self`
+
+#### `ValidationPhase` enum
+- Cases: `Schema`, `Semantic`
+
+#### `ValidationResult` class
+- `public function __construct(public ArazzoDocument $document, public array $errors, public array $warnings, public array $inputs = [])`
+- `public function isValid(): bool`
+
+#### `Warning` class
+- `public function __construct(public string $code, public string $message, public string $path, public ?int $line = null, public Severity $severity = Severity::Warning)`
+
 ## expression
 
 ### `Alama\Arazzo\Expression`
 
 #### `ExpressionEngine` class
-- `public function __construct(private readonly ?SelectorPluginRegistryInterface $selectorPlugins = null)`
+- `public function __construct()`
 - `public function evaluate(Expression $expression, EvaluationInputInterface $context): mixed`
+- `public function evaluateRawSelector(ExpressionType $type, string $expression, mixed $data, ?string $version = null, ?array $namespaces = null, ): mixed`
 - `public function evaluateSelector(Selector $selector, WorkflowContextInterface $context, string $stepId): mixed`
 - `public function expressionReferences(string $raw): ?ExpressionReference`
 - `public function extract(string $template): array`
@@ -308,8 +350,10 @@ this file on a commit is a public API change — review it deliberately.
 - `public function jsonPointer(array $data, ?string $pointer): mixed`
 - `public function parseEmbedded(string $raw, SpecVersion $version = SpecVersion::V1_0): array`
 - `public function parseExpression(string $raw): ?ExpressionSyntaxException`
-- `public function selectorPlugins(): SelectorPluginRegistryInterface`
+- `public function supportedSelectorVersions(ExpressionType $type): array`
 - `public function test(string $raw): bool`
+- `public function xpath(string $expression, mixed $data, ?string $version = null, ?array $namespaces = null, ): mixed`
+- `public static function create(): self`
 
 #### `JsonPathEvaluator` class
 - `public function __construct(private Rfc9535Engine $engine = new Rfc9535Engine())`
@@ -327,6 +371,10 @@ this file on a commit is a public API change — review it deliberately.
 - `public function __construct(public WorkflowContextInterface $workflowContext, public ?string $currentStepId = null, public ?ArazzoDocument $document = null)`
 - `public function getCurrentStepId(): ?string`
 - `public function getDocument(): ?ArazzoDocument`
+
+#### `InterpolationOptions` class
+- `public function __construct(?callable $stringify = null)`
+- `public function getStringify(): ?callable`
 
 ### `Alama\Arazzo\Expression\Enum`
 
@@ -352,6 +400,7 @@ this file on a commit is a public API change — review it deliberately.
 
 #### `ExpressionEngineInterface` interface
 - `public function evaluate(Expression $expression, EvaluationInputInterface $context): mixed;`
+- `public function evaluateRawSelector(ExpressionType $type, string $expression, mixed $data, ?string $version = null, ?array $namespaces = null, ): mixed;`
 - `public function evaluateSelector(Selector $selector, WorkflowContextInterface $context, string $stepId): mixed;`
 - `public function expressionReferences(string $raw): ?ExpressionReference;`
 - `public function extract(string $template): array;`
@@ -361,13 +410,9 @@ this file on a commit is a public API change — review it deliberately.
 - `public function jsonPointer(array $data, ?string $pointer): mixed;`
 - `public function parseEmbedded(string $raw, SpecVersion $version = SpecVersion::V1_0): array;`
 - `public function parseExpression(string $raw): ?ExpressionSyntaxException;`
-- `public function selectorPlugins(): SelectorPluginRegistryInterface;`
+- `public function supportedSelectorVersions(ExpressionType $type): array;`
 - `public function test(string $raw): bool;`
-
-#### `SelectorPluginRegistryInterface` interface
-- `public function get(ExpressionType $type): ?SelectorPluginInterface;`
-- `public function has(ExpressionType $type): bool;`
-- `public function supportedVersions(ExpressionType $type): array;`
+- `public function xpath(string $expression, mixed $data, ?string $version = null, ?array $namespaces = null, ): mixed;`
 
 ### `Alama\Arazzo\Expression\JsonPath`
 
@@ -385,7 +430,7 @@ this file on a commit is a public API change — review it deliberately.
 ### `Alama\Arazzo\Evaluation`
 
 #### `EvaluationEngine` class
-- `public function __construct(private readonly ExpressionEngineInterface $expression, ?ExpressionEvaluatorRegistry $expressionRegistry = null, ?CriterionEvaluatorRegistry $criterionRegistry = null, ?SelectorPluginRegistryInterface $selectorRegistry = null, ?EventDispatcherInterface $eventDispatcher = null)`
+- `public function __construct(private readonly ExpressionEngineInterface $expression, ?ExpressionEvaluatorRegistry $expressionRegistry = null, ?CriterionEvaluatorRegistry $criterionRegistry = null, ?EventDispatcherInterface $eventDispatcher = null)`
 - `public function evaluate(Expression $expression, EvaluationInputInterface $context): mixed`
 - `public function evaluateCriteria(array $criteria, Step $step, WorkflowContextInterface $context, ?ArazzoDocument $document = null): CriterionResultCollection`
 - `public function evaluateSelector(Selector $selector, WorkflowContextInterface $context, string $stepId): mixed`
@@ -405,13 +450,15 @@ this file on a commit is a public API change — review it deliberately.
 - `public function replacePayload(Step $step, array $body, ?callable $resolveValue = null, ?WorkflowContext $context = null): array;`
 - `public function resolveValue(mixed $value, WorkflowContextInterface $context, ?string $stepId = null): mixed;`
 
-### `Alama\Arazzo\Evaluation\Plugins`
+### `Alama\Arazzo\Evaluation\Plugins\Criterion`
 
 #### `JsonPathCriterionPlugin` class
 - `public function __construct(private ExpressionEngineInterface $expression)`
 - `public function evaluate(SuccessCriterion $criterion, mixed $context, Step $step, WorkflowContextInterface $workflowContext): bool`
 - `public function priority(): int`
 - `public function supports(CriterionType|SuccessCriterion $criterion): bool`
+
+### `Alama\Arazzo\Evaluation\Plugins\Expression`
 
 #### `JsonPathExpressionPlugin` class
 - `public function __construct(private ExpressionEngineInterface $expression)`
@@ -422,26 +469,29 @@ this file on a commit is a public API change — review it deliberately.
 ### `Alama\Arazzo\Evaluation\Registries`
 
 #### `CriterionEvaluatorRegistry` class
-- `public function __construct(ExpressionEngineInterface $expression)`
 - `public function all(): array`
-- `public function register(CriterionEvaluatorPluginInterface $plugin, int $priority = 0): void`
+- `public function register(CriterionEvaluatorPluginInterface $plugin): void`
 - `public function resolve(CriterionType|SuccessCriterion $criterion): ?CriterionEvaluatorPluginInterface`
+- `public static function create(?ExpressionEngineInterface $expression = null): self`
+- `public static function reset(): void`
 
 #### `ExpressionEvaluatorRegistry` class
-- `public function __construct(ExpressionEngineInterface $expression)`
 - `public function all(): array`
-- `public function register(ExpressionEvaluatorPluginInterface $plugin, int $priority = 0): void`
+- `public function register(ExpressionEvaluatorPluginInterface $plugin): void`
 - `public function resolve(Expression $expression): ?ExpressionEvaluatorPluginInterface`
+- `public static function create(?ExpressionEngineInterface $expression = null): self`
+- `public static function reset(): void`
 
 ## sources
 
 ### `Alama\Arazzo\Sources`
 
 #### `Sources` class
-- `public function __construct(?SourceResolverInterface $resolver = null, array $normalizers = [])`
+- `public function __construct(?SourceResolverInterface $resolver = null, array $normalizers = [], array $documents = [])`
 - `public function knownOperations(ArazzoDocument $document, string $basePath = ''): KnownOperations`
 - `public function normalizeSources(ArazzoDocument $document, string $basePath = ''): ResolvedOperationCollection`
 - `public function resolve(SourceDescription $source, string $basePath = ''): SourceDocument`
+- `public function withDocument(SourceDocument $document): static`
 - `public function withFetcher(string $scheme, SourceFetcherInterface $fetcher): static`
 - `public function withHttpClient(ClientInterface $client, ?RequestFactoryInterface $requestFactory = null): static`
 - `public function withNormalizer(SourceNormalizerInterface $normalizer): static`
@@ -451,6 +501,7 @@ this file on a commit is a public API change — review it deliberately.
 - `public function knownOperations(ArazzoDocument $document, string $basePath = ''): KnownOperations;`
 - `public function normalizeSources(ArazzoDocument $document, string $basePath = ''): ResolvedOperationCollection;`
 - `public function resolve(SourceDescription $source, string $basePath = ''): SourceDocument;`
+- `public function withDocument(SourceDocument $document): static;`
 - `public function withFetcher(string $scheme, SourceFetcherInterface $fetcher): static;`
 - `public function withHttpClient(ClientInterface $client, ?RequestFactoryInterface $requestFactory = null): static;`
 - `public function withNormalizer(SourceNormalizerInterface $normalizer): static;`
@@ -463,6 +514,14 @@ this file on a commit is a public API change — review it deliberately.
 #### `UnsupportedSourceVersionException` class
 - `public static function forVersion(string $version, string $sourceName): self`
 
+### `Alama\Arazzo\Sources\Registries`
+
+#### `SourceNormalizerRegistry` class
+- `public function get(SourceType $type): ?SourceNormalizerInterface`
+- `public function register(SourceNormalizerInterface $normalizer): void`
+- `public static function create(): self`
+- `public static function reset(): void`
+
 ## document
 
 ### `DocumentInterface` interface
@@ -471,18 +530,19 @@ this file on a commit is a public API change — review it deliberately.
 - `public function loadFromYaml(string $content, string $virtualPath = 'inline.yaml'): ArazzoDocument;`
 - `public function validate(ArazzoDocument $document, ?KnownOperations $operations = null): ValidationResult;`
 - `public function validateInputs(ArazzoDocument $document, string $workflowId, array $inputs): ValidationResult;`
+- `public function withRule(ValidationRuleInterface $rule): static;`
 
 ### `Alama\Arazzo\Document`
 
 #### `Document` class
-- `public function __construct(?ExpressionEngineInterface $expressionEngine = null, ?DecodePolicy $decodePolicy = null, ?Loader $loader = null, ?Parser $parser = null, ?Validator $validator = null)`
+- `public function __construct(?DecodePolicy $decodePolicy = null, ?Loader $loader = null, ?Parser $parser = null, ?Validator $validator = null, array $extraRules = [])`
 - `public function load(string $path): ArazzoDocument`
 - `public function loadFromJson(string $content, string $virtualPath = 'inline.json'): ArazzoDocument`
 - `public function loadFromYaml(string $content, string $virtualPath = 'inline.yaml'): ArazzoDocument`
 - `public function validate(ArazzoDocument $document, ?KnownOperations $operations = null): ValidationResult`
 - `public function validateInputs(ArazzoDocument $document, string $workflowId, array $inputs): ValidationResult`
 - `public function withDecodePolicy(DecodePolicy $policy): self`
-- `public function withExpressionEngine(ExpressionEngineInterface $engine): self`
+- `public function withRule(ValidationRuleInterface $rule): static`
 - `public static function create(): self`
 
 #### `OperationResolverInterface` interface
@@ -525,21 +585,15 @@ this file on a commit is a public API change — review it deliberately.
 - `public static function unsupportedVersion(ParseContext $ctx, string $actual): self`
 - `public static function wrongType(ParseContext $ctx, string $expected, mixed $actual): self`
 
-### `Alama\Arazzo\Document\Validator\Data`
+### `Alama\Arazzo\Document\Registries`
 
-#### `Error` class
-- `public function __construct(public string $code, public string $message, public string $path, public ?int $line = null, public Severity $severity = Severity::Error)`
-
-#### `SymbolTable` class
-- `public function __construct(public array $workflows, public array $sourceDescriptions, public array $components, KnownOperations|array $knownOperations = new KnownOperations(), array $resolvedOperations = [])`
-- `public static function build(ArazzoDocument $doc, KnownOperations|array|null $resolvedOperations = null): self`
-
-#### `ValidationResult` class
-- `public function __construct(public ArazzoDocument $document, public array $errors, public array $warnings, public array $inputs = [])`
-- `public function isValid(): bool`
-
-#### `Warning` class
-- `public function __construct(public string $code, public string $message, public string $path, public ?int $line = null, public Severity $severity = Severity::Warning)`
+#### `ValidationRuleRegistry` class
+- `public function all(): array`
+- `public function get(string $code): ?ValidationRuleInterface`
+- `public function has(string $code): bool`
+- `public function register(ValidationRuleInterface $rule, ?ValidationPhase $phase = null): void`
+- `public static function create(): self`
+- `public static function reset(): void`
 
 ## engine
 

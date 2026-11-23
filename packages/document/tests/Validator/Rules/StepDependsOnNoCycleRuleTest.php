@@ -13,9 +13,9 @@ use Alama\Arazzo\Contracts\Spec\StepFlow;
 use Alama\Arazzo\Contracts\Spec\StepIo;
 use Alama\Arazzo\Contracts\Spec\StepTarget;
 use Alama\Arazzo\Contracts\Spec\Workflow;
-use Alama\Arazzo\Document\Validator\Data\SymbolTable;
-use Alama\Arazzo\Document\Validator\ErrorCollector;
-use Alama\Arazzo\Document\Validator\Rules\StepDependsOnNoCycleRule;
+use Alama\Arazzo\Contracts\Validation\ErrorCollector;
+use Alama\Arazzo\Contracts\Validation\SymbolTable;
+use Alama\Arazzo\Document\Plugins\ValidationRule\StepDependsOnNoCycleRule;
 
 it('accepts a cross-document dependsOn without resolving it offline', function (): void {
     $workflow = new Workflow('w1', null, null, null, [], [

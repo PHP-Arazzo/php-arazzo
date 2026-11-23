@@ -7,7 +7,6 @@
     "require": {
         "php": "^8.4",
         "php-arazzo/arazzo-contracts": "@dev",
-        "php-arazzo/arazzo-expression": "@dev",
         "justinrainbow/json-schema": "^6.0",
         "symfony/yaml": "^7.0"
     },
@@ -39,5 +38,12 @@
         }
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "extra": {
+        "arazzo": {
+            "plugins": [
+                "src/Plugins/ValidationRule"
+            ]
+        }
+    }
 }

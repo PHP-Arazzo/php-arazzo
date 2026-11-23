@@ -14,10 +14,7 @@ use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
 use Alama\Arazzo\Contracts\Spec\ResolvedOperation;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Spec\SourceDocument;
-use Alama\Arazzo\Sources\Normalizer\OpenApi30Normalizer;
-use Alama\Arazzo\Sources\Normalizer\OpenApi31Normalizer;
-use Alama\Arazzo\Sources\Normalizer\OpenApiSourceNormalizer;
-use Alama\Arazzo\Sources\Normalizer\OpenApiVersionDetector;
+use Alama\Arazzo\Sources\Registries\SourceNormalizerRegistry;
 use Alama\Arazzo\Sources\Resolver\DefaultSourceResolver;
 use Alama\Arazzo\Sources\Resolver\Fetchers\HttpFetcher;
 use GuzzleHttp\Psr7\HttpFactory;
@@ -32,23 +29,21 @@ final readonly class Sources implements SourcesInterface
     /** @var array<string, SourceNormalizerInterface> */
     private array $normalizers;
 
+    /** @var array<string, SourceDocument> */
+    private array $documents;
+
     /**
      * @param  array<string, SourceNormalizerInterface>  $normalizers
+     * @param  array<string, SourceDocument>  $documents
      */
     public function __construct(
         ?SourceResolverInterface $resolver = null,
         array $normalizers = [],
+        array $documents = [],
     ) {
         $this->resolver = $resolver ?? DefaultSourceResolver::withDefaults();
-        if ($normalizers === []) {
-            $defaultNormalizer = new OpenApiSourceNormalizer(
-                new OpenApiVersionDetector(),
-                new OpenApi30Normalizer(),
-                new OpenApi31Normalizer(),
-            );
-            $normalizers = [$defaultNormalizer->name() => $defaultNormalizer];
-        }
         $this->normalizers = $normalizers;
+        $this->documents = $documents;
     }
 
     public static function create(): self
@@ -58,6 +53,10 @@ final readonly class Sources implements SourcesInterface
 
     public function resolve(SourceDescription $source, string $basePath = ''): SourceDocument
     {
+        if (isset($this->documents[$source->name])) {
+            return $this->documents[$source->name];
+        }
+
         return $this->resolver->resolve($source, $basePath);
     }
 
@@ -107,25 +106,38 @@ final readonly class Sources implements SourcesInterface
             ? $this->resolver->withFetcher($scheme, $fetcher)
             : $this->resolver;
 
-        return new self($resolver, $this->normalizers);
+        return new self($resolver, $this->normalizers, $this->documents);
     }
 
     public function withNormalizer(SourceNormalizerInterface $normalizer): static
     {
         $normalizers = $this->normalizers;
+        unset($normalizers[$normalizer->name()]);
         $normalizers[$normalizer->name()] = $normalizer;
 
-        return new self($this->resolver, $normalizers);
+        return new self($this->resolver, $normalizers, $this->documents);
+    }
+
+    public function withDocument(SourceDocument $document): static
+    {
+        $documents = $this->documents;
+        $documents[$document->name] = $document;
+
+        $resolver = $this->resolver instanceof DefaultSourceResolver
+            ? $this->resolver->withDocument($document)
+            : $this->resolver;
+
+        return new self($resolver, $this->normalizers, $documents);
     }
 
     private function findNormalizer(SourceType $type): ?SourceNormalizerInterface
     {
-        foreach ($this->normalizers as $normalizer) {
+        foreach (array_reverse($this->normalizers) as $normalizer) {
             if ($normalizer->supports($type)) {
                 return $normalizer;
             }
         }
 
-        return null;
+        return SourceNormalizerRegistry::create()->get($type);
     }
 }

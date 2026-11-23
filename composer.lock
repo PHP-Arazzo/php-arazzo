@@ -1382,13 +1382,12 @@
             "dist": {
                 "type": "path",
                 "url": "packages/document",
-                "reference": "857515a300f140e6ac843f429b58eceb15d79c93"
+                "reference": "d1941fc5e148be62982c1948f1fd07d5e0a49684"
             },
             "require": {
                 "justinrainbow/json-schema": "^6.0",
                 "php": "^8.4",
                 "php-arazzo/arazzo-contracts": "@dev",
-                "php-arazzo/arazzo-expression": "@dev",
                 "symfony/yaml": "^7.0"
             },
             "require-dev": {
@@ -1402,6 +1401,13 @@
                 "phpstan/phpstan-phpunit": "^2.0"
             },
             "type": "library",
+            "extra": {
+                "arazzo": {
+                    "plugins": [
+                        "src/Plugins/ValidationRule"
+                    ]
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "Alama\\Arazzo\\Document\\": "src/"
@@ -1465,7 +1471,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/evaluation",
-                "reference": "ece4e9945a16b28c80d88795736591b73f18c1cb"
+                "reference": "e64a52ee0f03643a12a312096c5226aa26d604a5"
             },
             "require": {
                 "php": "^8.4",
@@ -1485,6 +1491,14 @@
                 "phpstan/phpstan-phpunit": "^2.0"
             },
             "type": "library",
+            "extra": {
+                "arazzo": {
+                    "plugins": [
+                        "src/Plugins/Expression",
+                        "src/Plugins/Criterion"
+                    ]
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "Alama\\Arazzo\\Evaluation\\": "src/"
@@ -1509,7 +1523,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/expression",
-                "reference": "63db8dcb21601357f376ce8263607c648c4afae0"
+                "reference": "bf987df0800ed099ea28246f9cfc70238c116f43"
             },
             "require": {
                 "php": "^8.4",
@@ -1529,6 +1543,14 @@
                 "phpstan/phpstan-phpunit": "^2.0"
             },
             "type": "library",
+            "extra": {
+                "arazzo": {
+                    "plugins": [
+                        "src/Plugins/Selector",
+                        "src/Plugins/ValidationRule"
+                    ]
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "Alama\\Arazzo\\Expression\\": "src/"
@@ -1553,7 +1575,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/protocol-http",
-                "reference": "d57ac48b0d9ca79c58cc6af4968f7fe659433e86"
+                "reference": "f794a361051779dea2906b3e05774950ccdbd536"
             },
             "require": {
                 "cebe/php-openapi": "^1.7",
@@ -1575,6 +1597,13 @@
                 "pestphp/pest-plugin-arch": "^5.0"
             },
             "type": "library",
+            "extra": {
+                "arazzo": {
+                    "plugins": [
+                        "src/Plugins/OperationExecutor"
+                    ]
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "Alama\\Arazzo\\Protocol\\Http\\": "src/"
@@ -1607,7 +1636,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/protocol-rpc",
-                "reference": "1b3be3d847a3e1f953a7c67bfb35a2a190baa91f"
+                "reference": "3aa6be0797d3fef0d2f6f222158f95bf4b9c9fb3"
             },
             "require": {
                 "php": "^8.4",
@@ -1626,6 +1655,15 @@
                 "pestphp/pest-plugin-arch": "^5.0"
             },
             "type": "library",
+            "extra": {
+                "arazzo": {
+                    "plugins": [
+                        "src/Plugins/SourceNormalizer",
+                        "src/Plugins/ValidationRule",
+                        "src/Plugins/OperationExecutor"
+                    ]
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "Alama\\Arazzo\\Protocol\\Rpc\\": "src/"
@@ -1661,7 +1699,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/protocol-soap",
-                "reference": "f45f25aaf045feb1c0410240f16d68e32839a563"
+                "reference": "083849f33ad0a93b1b52462f1092b53121d9d7b5"
             },
             "require": {
                 "ext-dom": "*",
@@ -1682,6 +1720,15 @@
                 "pestphp/pest-plugin-arch": "^5.0"
             },
             "type": "library",
+            "extra": {
+                "arazzo": {
+                    "plugins": [
+                        "src/Plugins/SourceNormalizer",
+                        "src/Plugins/ValidationRule",
+                        "src/Plugins/OperationExecutor"
+                    ]
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "Alama\\Arazzo\\Protocol\\Soap\\": "src/"
@@ -1714,7 +1761,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/runner",
-                "reference": "eab8dba473d1295a8a0d32885c9b81947470cc5f"
+                "reference": "90e581315278aaed01c0ce966c2285bdcf1d38ba"
             },
             "require": {
                 "guzzlehttp/guzzle": "^7.9",
@@ -1741,6 +1788,13 @@
                 "pestphp/pest-plugin-arch": "^5.0"
             },
             "type": "library",
+            "extra": {
+                "arazzo": {
+                    "plugins": [
+                        "src/Plugins/OperationExecutor"
+                    ]
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "Alama\\Arazzo\\Runner\\": "src/",
@@ -1767,7 +1821,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/sources",
-                "reference": "a389fa2601ba1b2e782bad7d0cbe763b8027da03"
+                "reference": "0204194c4c4be2bf40495920e3cc3a3255225ce2"
             },
             "require": {
                 "ext-dom": "*",
@@ -1793,6 +1847,13 @@
                 "phpstan/phpstan-phpunit": "^2.0"
             },
             "type": "library",
+            "extra": {
+                "arazzo": {
+                    "plugins": [
+                        "src/Plugins/SourceNormalizer"
+                    ]
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "Alama\\Arazzo\\Sources\\": "src/"

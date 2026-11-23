@@ -4,34 +4,65 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Runner;
 
+use Alama\Arazzo\Contracts\Attributes\AsOperationExecutorPlugin;
 use Alama\Arazzo\Contracts\Interfaces\OperationExecutorPluginInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
+use Alama\Arazzo\Contracts\Spec\Enum\OperationProtocol;
 use Alama\Arazzo\Contracts\Spec\Step;
+use ReflectionClass;
 
 /**
- * First-supports()-wins registry for operation executor plugins.
+ * Concrete singleton registry of operation executor plugins.
  *
- * Registration order does not matter: plugins are sorted by priority at
- * resolution time. Lower priority values are tried first.
+ * Plugins decorated with `#[AsOperationExecutorPlugin(OperationProtocol::...)]` are
+ * keyed by their {@see OperationProtocol} enum (last-registered wins) and
+ * dispatched in canonical protocol order (`SubWorkflow`, `Soap`, `Rpc`,
+ * `AsyncApi`, `Http`). Unattributed custom executors are checked first in
+ * reverse registration order so explicit overrides win without numeric priority.
  *
  * @internal stays out of the advertised contract; not part of the public API surface
  */
 final class OperationExecutorRegistry
 {
-    /** @var list<OperationExecutorPluginInterface> */
-    private array $plugins = [];
+    private static ?self $instance = null;
+
+    /** @var array<string, OperationExecutorPluginInterface> */
+    private array $byProtocol = [];
+
+    /** @var array<string, OperationExecutorPluginInterface> */
+    private array $custom = [];
+
+    private function __construct() {}
+
+    public static function create(): self
+    {
+        return self::$instance ??= new self();
+    }
+
+    public static function reset(): void
+    {
+        self::$instance = null;
+    }
 
     public function register(OperationExecutorPluginInterface $plugin): void
     {
-        $this->plugins[] = $plugin;
+        $attrs = (new ReflectionClass($plugin))->getAttributes(AsOperationExecutorPlugin::class);
+        if ($attrs !== []) {
+            /** @var AsOperationExecutorPlugin $attr */
+            $attr = $attrs[0]->newInstance();
+            $this->byProtocol[$attr->protocol->value] = $plugin;
+
+            return;
+        }
+
+        // Unattributed custom executors: move to end so last-registered wins.
+        unset($this->custom[$plugin->name()]);
+        $this->custom[$plugin->name()] = $plugin;
     }
 
     public function resolve(Step $step, ArazzoDocument $document): ?OperationExecutorPluginInterface
     {
-        $sorted = $this->plugins;
-        usort($sorted, static fn (OperationExecutorPluginInterface $a, OperationExecutorPluginInterface $b): int => $a->priority() <=> $b->priority());
-
-        foreach ($sorted as $plugin) {
+        foreach ($this->ordered() as $plugin) {
             if ($plugin->supports($step, $document)) {
                 return $plugin;
             }
@@ -43,6 +74,20 @@ final class OperationExecutorRegistry
     /** @return list<OperationExecutorPluginInterface> */
     public function all(): array
     {
-        return $this->plugins;
+        return $this->ordered();
+    }
+
+    /** @return list<OperationExecutorPluginInterface> */
+    private function ordered(): array
+    {
+        $ordered = array_values(array_reverse($this->custom));
+
+        foreach (OperationProtocol::cases() as $protocol) {
+            if (isset($this->byProtocol[$protocol->value])) {
+                $ordered[] = $this->byProtocol[$protocol->value];
+            }
+        }
+
+        return $ordered;
     }
 }

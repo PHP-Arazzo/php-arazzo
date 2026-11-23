@@ -25,7 +25,7 @@ use Alama\Arazzo\Runner\Async\AsyncExecutionGraphAssembler;
 use Alama\Arazzo\Runner\AsyncGraphSeams;
 use Alama\Arazzo\Runner\Execution\OperationRuntime;
 use Alama\Arazzo\Runner\OperationExecutorRegistry;
-use Alama\Arazzo\Runner\Sync\SubWorkflowStepExecutor;
+use Alama\Arazzo\Runner\Plugins\OperationExecutor\SubWorkflowStepExecutor;
 use Alama\Arazzo\Runtime\State\Interfaces\DefinitionRegistryInterface;
 use Alama\Arazzo\Runtime\State\Interfaces\ExecutionRegistryInterface;
 use Alama\Arazzo\Runtime\State\Interfaces\StateStoreInterface;
@@ -201,13 +201,18 @@ function stubProtocolPlugin(string $pluginName, int $pluginPriority = 100): Oper
 
 function hostRegistry(OperationExecutorPluginInterface ...$plugins): OperationExecutorRegistry
 {
-    $registry = new OperationExecutorRegistry();
+    OperationExecutorRegistry::reset();
+    $registry = OperationExecutorRegistry::create();
     foreach ($plugins as $plugin) {
         $registry->register($plugin);
     }
 
     return $registry;
 }
+
+afterEach(function (): void {
+    OperationExecutorRegistry::reset();
+});
 
 it('assembles graph with all core nodes', function () {
     $seams = seams(executorRegistry: hostRegistry(

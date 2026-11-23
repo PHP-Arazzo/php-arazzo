@@ -43,7 +43,7 @@ final readonly class RunnerFactory
         $expressionEngine = new ExpressionEngine();
         $engine = new EvaluationEngine(expression: $expressionEngine);
 
-        $sourcesResolver = ($sources ?? Sources::create())->withHttpClient($client, $factory);
+        $sourcesResolver = $sources ?? Sources::create()->withHttpClient($client, $factory);
         $resolver = OpenApiOperationResolver::create($sourcesResolver);
 
         return new RunnerFacade(

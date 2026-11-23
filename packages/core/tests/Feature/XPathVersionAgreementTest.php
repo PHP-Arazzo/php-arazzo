@@ -16,8 +16,8 @@ use Alama\Arazzo\Contracts\Spec\StepIo;
 use Alama\Arazzo\Contracts\Spec\SuccessCriterion;
 use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
-use Alama\Arazzo\Document\Validator\Data\Error;
-use Alama\Arazzo\Document\Validator\Data\ValidationResult;
+use Alama\Arazzo\Contracts\Validation\Error;
+use Alama\Arazzo\Contracts\Validation\ValidationResult;
 use Alama\Arazzo\Document\Validator\RuleSet;
 use Alama\Arazzo\Document\Validator\Validator;
 use Alama\Arazzo\Evaluation\EvaluationEngine;
@@ -25,9 +25,8 @@ use Alama\Arazzo\Expression\ExpressionEngine;
 
 const XPATH_VERSION_RULE = 'step.success_criteria_version_supported';
 
-$engine = new ExpressionEngine();
-$registry = $engine->selectorPlugins();
-$supportedVersions = $registry->supportedVersions(ExpressionType::XPath);
+$engine = ExpressionEngine::create();
+$supportedVersions = $engine->supportedSelectorVersions(ExpressionType::XPath);
 
 /**
  * @return array{0: ArazzoDocument, 1: Step}
@@ -53,7 +52,7 @@ function xpathVersionDocument(?string $version): array
 
 function xpathVersionResult(ArazzoDocument $document): ValidationResult
 {
-    return (new Validator(RuleSet::default(new ExpressionEngine())))->validate($document);
+    return (new Validator(RuleSet::default()))->validate($document);
 }
 
 /** @param list<Error> $errors */

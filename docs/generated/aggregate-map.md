@@ -16,13 +16,13 @@ Where mutable state lives, and which of it crosses process boundaries:
 
 | Package | Readonly | Mutable | Readonly share |
 |---|---:|---:|---:|
-| contracts | 41 | 10 | 80% |
-| expression | 23 | 25 | 48% |
+| contracts | 53 | 14 | 79% |
+| expression | 24 | 40 | 38% |
 | evaluation | 14 | 13 | 52% |
-| sources | 2 | 20 | 9% |
-| document | 16 | 90 | 15% |
+| sources | 1 | 20 | 5% |
+| document | 9 | 74 | 11% |
 | engine | 7 | 20 | 26% |
-| protocol-http | 1 | 8 | 11% |
+| protocol-http | 1 | 7 | 12% |
 | protocol-rpc | 5 | 10 | 33% |
 | protocol-soap | 1 | 11 | 8% |
 | runner | 17 | 30 | 36% |

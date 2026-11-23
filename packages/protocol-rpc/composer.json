@@ -74,5 +74,14 @@
         }
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "extra": {
+        "arazzo": {
+            "plugins": [
+                "src/Plugins/SourceNormalizer",
+                "src/Plugins/ValidationRule",
+                "src/Plugins/OperationExecutor"
+            ]
+        }
+    }
 }

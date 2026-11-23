@@ -1,0 +1,76 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Alama\Arazzo\Document\Plugins\ValidationRule;
+
+use Alama\Arazzo\Contracts\Attributes\AsValidationRulePlugin;
+use Alama\Arazzo\Contracts\Interfaces\ValidationRuleInterface;
+use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
+use Alama\Arazzo\Contracts\Validation\ErrorCollector;
+use Alama\Arazzo\Contracts\Validation\SymbolTable;
+
+/**
+ * @internal stays out of the advertised contract; not part of the public API surface
+ */
+#[AsValidationRulePlugin]
+final class StepNestedWorkflowNoCycleRule implements ValidationRuleInterface
+{
+    public function check(ArazzoDocument $doc, SymbolTable $symbols, ErrorCollector $errors): void
+    {
+        $graph = [];
+        foreach ($doc->workflows as $w) {
+            $graph[$w->workflowId] = [];
+            foreach ($w->steps as $s) {
+                if ($s->target->workflowId !== null && !str_contains($s->target->workflowId, '.')) {
+                    $graph[$w->workflowId][] = $s->target->workflowId;
+                }
+            }
+        }
+
+        foreach (array_keys($graph) as $node) {
+            $visited = [];
+            $stack = [];
+            if ($this->hasCycle($node, $graph, $visited, $stack)) {
+                $errors->error(
+                    $this->code(),
+                    "Circular nested workflow invocation detected involving '{$node}'.",
+                    '/workflows', // Hard to pinpoint exact path, just reporting on workflows
+                );
+            }
+        }
+    }
+
+    /**
+     * @param  array<string,list<string>>  $graph
+     * @param  array<string,true>  $visited
+     * @param  array<string,true>  $stack
+     */
+    private function hasCycle(string $node, array $graph, array &$visited, array &$stack): bool
+    {
+        if (isset($stack[$node])) {
+            return true;
+        }
+        if (isset($visited[$node])) {
+            return false;
+        }
+
+        $visited[$node] = true;
+        $stack[$node] = true;
+
+        foreach ($graph[$node] ?? [] as $neighbor) {
+            if ($this->hasCycle($neighbor, $graph, $visited, $stack)) {
+                return true;
+            }
+        }
+
+        unset($stack[$node]);
+
+        return false;
+    }
+
+    public function code(): string
+    {
+        return 'step.nested_workflow_no_cycle';
+    }
+}

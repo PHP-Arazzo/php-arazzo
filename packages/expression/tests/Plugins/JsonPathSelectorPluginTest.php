@@ -6,7 +6,7 @@ namespace Alama\Arazzo\Tests\Plugins;
 
 use Alama\Arazzo\Contracts\Spec\Enum\ExpressionType;
 use Alama\Arazzo\Expression\JsonPathEvaluator;
-use Alama\Arazzo\Expression\Plugins\JsonPathSelectorPlugin;
+use Alama\Arazzo\Expression\Plugins\Selector\JsonPathSelectorPlugin;
 
 it('supports only the jsonpath expression type', function () {
     $plugin = new JsonPathSelectorPlugin();

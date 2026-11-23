@@ -12,7 +12,6 @@ use Alama\Arazzo\Document\Parser\Exceptions\ParserException;
 use Alama\Arazzo\Document\Parser\Loader;
 use Alama\Arazzo\Document\Parser\Parser;
 use Alama\Arazzo\Sources\Resolver\DefaultSourceResolver;
-use Alama\Arazzo\Sources\Resolver\SourceRegistry;
 use Alama\Arazzo\Tests\Conformance\ConformanceHarness;
 use Alama\Arazzo\Tests\Support\FakePsr18Client;
 use Alama\Arazzo\Tests\Support\RecordingEventDispatcher;
@@ -59,7 +58,7 @@ it('never dispatches HTTP when invalid documents are run through the execution h
             // Mirror prepare()'s side-effect-free setup: client first, then parse.
             $this->events = new RecordingEventDispatcher();
             $this->http = new FakePsr18Client();
-            $this->sourceRegistry = new SourceRegistry(new DefaultSourceResolver([]));
+            $this->sourceRegistry = new DefaultSourceResolver([]);
 
             $raw = (new Loader(
                 new SymfonyYamlDecoder(),

@@ -22,10 +22,8 @@ _No catalog found (LedgerAppendingListener not found)._
 
 | Class | Level(s) | Calls |
 |---|---|---:|
-| `OfficialSchemaRule` <small>core</small> | `error` | 4 |
 | `ActionDuplicateRule` <small>core</small> | `error` | 1 |
 | `ActionGotoTargetResolvesRule` <small>core</small> | `error` | 2 |
-| `ActionOutputTargetExclusivityRule` <small>core</small> | `error` | 2 |
 | `ActionParameterInForbiddenRule` <small>core</small> | `error` | 2 |
 | `ActionRetryLimitsRule` <small>core</small> | `error` | 2 |
 | `ActionReusableRefResolvesRule` <small>core</small> | `error` | 2 |
@@ -36,23 +34,13 @@ _No catalog found (LedgerAppendingListener not found)._
 | `DocumentArazzoVersionRule` <small>core</small> | `error` | 1 |
 | `DocumentInfoRequiredRule` <small>core</small> | `error` | 2 |
 | `DocumentSourceDescriptionsPresentRule` <small>core</small> | `error` | 1 |
-| `ExpressionContextMisuseRule` <small>core</small> | `error` | 1 |
-| `ExpressionJsonPointerSyntaxRule` <small>core</small> | `error` | 1 |
-| `ExpressionSyntaxRule` <small>core</small> | `error` | 1 |
-| `ExpressionUnresolvedComponentRefRule` <small>core</small> | `error` | 1 |
-| `ExpressionUnresolvedInputRefRule` <small>core</small> | `error` | 1 |
-| `ExpressionUnresolvedSourceRefRule` <small>core</small> | `error` | 1 |
-| `ExpressionUnresolvedStepRefRule` <small>core</small> | `warning` · `error` | 5 |
-| `ExpressionUnresolvedWorkflowRefRule` <small>core</small> | `error` | 3 |
 | `ExtensionsXPrefixRule` <small>core</small> | `warning` | 1 |
 | `GraphQlStepRule` <small>core</small> | `error` | 3 |
 | `InteractionStepRule` <small>core</small> | `error` | 4 |
-| `MessageRefRequiresReceiveRule` <small>core</small> | `error` | 1 |
+| `OfficialSchemaRule` <small>core</small> | `error` | 3 |
 | `ParameterQuerystringOperationShapeRule` <small>core</small> | `warning` | 1 |
 | `ParameterReusableRefResolvesRule` <small>core</small> | `error` | 2 |
 | `ReceiveStepSuccessCriteriaRule` <small>core</small> | `error` · `warning` | 2 |
-| `RpcStepRule` <small>core</small> | `error` | 4 |
-| `SelectorTypeSupportedRule` <small>core</small> | `error` | 2 |
 | `SelfUriSyntaxRule` <small>core</small> | `error` | 3 |
 | `SourceUniqueNameRule` <small>core</small> | `error` | 1 |
 | `SourceUrlSyntaxRule` <small>core</small> | `error` | 2 |
@@ -64,7 +52,6 @@ _No catalog found (LedgerAppendingListener not found)._
 | `StepNestedWorkflowNoCycleRule` <small>core</small> | `error` | 1 |
 | `StepOperationIdResolvesRule` <small>core</small> | `error` | 2 |
 | `StepOperationIdSourceScopedRule` <small>core</small> | `error` | 1 |
-| `StepOperationPathSyntaxRule` <small>core</small> | `error` | 4 |
 | `StepOperationTargetPresentRule` <small>core</small> | `error` | 1 |
 | `StepOutputsUniqueRule` <small>core</small> | `error` | 2 |
 | `StepParameterDuplicateRule` <small>core</small> | `error` | 1 |
@@ -73,21 +60,35 @@ _No catalog found (LedgerAppendingListener not found)._
 | `StepParametersHaveNameRule` <small>core</small> | `error` | 1 |
 | `StepRequestBodyReplacementsTargetRule` <small>core</small> | `error` | 1 |
 | `StepRequestBodyWorkflowRule` <small>core</small> | `error` | 1 |
-| `StepSuccessActionParameterInRule` <small>core</small> | `error` | 1 |
 | `StepSuccessCriteriaConditionRule` <small>core</small> | `error` | 3 |
 | `StepTimeoutRequires11Rule` <small>core</small> | `error` | 2 |
 | `StepUniqueIdRule` <small>core</small> | `error` | 1 |
 | `SubWorkflowInvokeTargetResolvesRule` <small>core</small> | `error` | 1 |
-| `SuccessCriteriaVersionSupportedRule` <small>core</small> | `error` | 2 |
 | `WorkflowAtLeastOneRule` <small>core</small> | `error` | 1 |
 | `WorkflowDependsOnExistsRule` <small>core</small> | `error` | 1 |
 | `WorkflowIdPatternRule` <small>core</small> | `error` | 1 |
 | `WorkflowInputsValidSchemaRule` <small>core</small> | `error` | 3 |
 | `WorkflowUniqueIdRule` <small>core</small> | `error` | 1 |
-| `WsdlStepRule` <small>core</small> | `error` | 3 |
+| `StepSuccessActionParameterInRule` <small>core</small> | `error` | 1 |
 | `WorkflowDependencyCycleWalker` <small>core</small> | `error` | 1 |
+| `ActionOutputTargetExclusivityRule` <small>core</small> | `error` | 2 |
+| `ExpressionContextMisuseRule` <small>core</small> | `error` | 1 |
+| `ExpressionJsonPointerSyntaxRule` <small>core</small> | `error` | 1 |
+| `ExpressionSyntaxRule` <small>core</small> | `error` | 1 |
+| `ExpressionUnresolvedComponentRefRule` <small>core</small> | `error` | 1 |
+| `ExpressionUnresolvedInputRefRule` <small>core</small> | `error` | 1 |
+| `ExpressionUnresolvedSourceRefRule` <small>core</small> | `error` | 1 |
+| `ExpressionUnresolvedStepRefRule` <small>core</small> | `warning` · `error` | 5 |
+| `ExpressionUnresolvedWorkflowRefRule` <small>core</small> | `error` | 3 |
+| `JsonPathCriterionConditionRule` <small>core</small> | `error` | 1 |
+| `MessageRefRequiresReceiveRule` <small>core</small> | `error` | 1 |
+| `SelectorTypeSupportedRule` <small>core</small> | `error` | 2 |
+| `StepOperationPathSyntaxRule` <small>core</small> | `error` | 4 |
+| `SuccessCriteriaVersionSupportedRule` <small>core</small> | `error` | 2 |
 | `DefaultOpenApiExecutor` <small>core</small> | `warning` | 1 |
 | `StepOutputExtractor` <small>core</small> | `warning` | 1 |
+| `RpcStepRule` <small>core</small> | `error` | 4 |
+| `WsdlStepRule` <small>core</small> | `error` | 3 |
 
 110 logging calls total. PSR-14 events are dispatched independently (see events.md).
 

@@ -9,10 +9,9 @@ use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
 use Alama\Arazzo\Contracts\Spec\Expression;
 use Alama\Arazzo\Contracts\Spec\Parameter;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
-use Alama\Arazzo\Document\Validator\Data\SymbolTable;
-use Alama\Arazzo\Document\Validator\ErrorCollector;
-use Alama\Arazzo\Document\Validator\Rules\ExpressionUnresolvedSourceRefRule;
-use Alama\Arazzo\Expression\ExpressionEngine;
+use Alama\Arazzo\Contracts\Validation\ErrorCollector;
+use Alama\Arazzo\Contracts\Validation\SymbolTable;
+use Alama\Arazzo\Expression\Plugins\ValidationRule\ExpressionUnresolvedSourceRefRule;
 use Alama\Arazzo\Tests\Support\Fx;
 
 it('flags unknown source, accepts declared', function (): void {
@@ -25,6 +24,6 @@ it('flags unknown source, accepts declared', function (): void {
         sources: [new SourceDescription('src', '/u', SourceType::Openapi)],
     );
     $ec = new ErrorCollector();
-    (new ExpressionUnresolvedSourceRefRule(new ExpressionEngine()))->check($doc, SymbolTable::build($doc), $ec);
+    (new ExpressionUnresolvedSourceRefRule())->check($doc, SymbolTable::build($doc), $ec);
     expect($ec->errors())->toHaveCount(1);
 });

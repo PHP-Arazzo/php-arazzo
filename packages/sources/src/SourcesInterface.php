@@ -54,4 +54,9 @@ interface SourcesInterface extends SourceResolverInterface
      * Immutably register a custom source normalizer for non-standard formats.
      */
     public function withNormalizer(SourceNormalizerInterface $normalizer): static;
+
+    /**
+     * Immutably seed an in-memory SourceDocument so resolve() returns it directly.
+     */
+    public function withDocument(SourceDocument $document): static;
 }

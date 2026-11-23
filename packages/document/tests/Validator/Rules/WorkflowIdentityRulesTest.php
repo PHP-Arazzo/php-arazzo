@@ -11,11 +11,11 @@ use Alama\Arazzo\Contracts\Spec\StepFactory;
 use Alama\Arazzo\Contracts\Spec\StepFlow;
 use Alama\Arazzo\Contracts\Spec\StepIo;
 use Alama\Arazzo\Contracts\Spec\Workflow;
-use Alama\Arazzo\Document\Validator\Data\SymbolTable;
-use Alama\Arazzo\Document\Validator\ErrorCollector;
-use Alama\Arazzo\Document\Validator\Rules\WorkflowAtLeastOneRule;
-use Alama\Arazzo\Document\Validator\Rules\WorkflowIdPatternRule;
-use Alama\Arazzo\Document\Validator\Rules\WorkflowUniqueIdRule;
+use Alama\Arazzo\Contracts\Validation\ErrorCollector;
+use Alama\Arazzo\Contracts\Validation\SymbolTable;
+use Alama\Arazzo\Document\Plugins\ValidationRule\WorkflowAtLeastOneRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\WorkflowIdPatternRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\WorkflowUniqueIdRule;
 
 function docWithWorkflows(array $workflows): ArazzoDocument
 {

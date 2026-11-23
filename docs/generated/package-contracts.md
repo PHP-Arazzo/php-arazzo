@@ -96,7 +96,9 @@ public contract between packages.
   - `public function evaluateSelector(Selector $selector, WorkflowContextInterface $context, string $stepId): mixed;`
   - `public function jsonPath(string $expression, array|object $data): mixed;`
   - `public function jsonPointer(array $data, ?string $pointer): mixed;`
-  - `public function selectorPlugins(): SelectorPluginRegistryInterface;`
+  - `public function evaluateRawSelector(ExpressionType $type, string $expression, mixed $data, ?string $version = null, ?array $namespaces = null, ): mixed;`
+  - `public function xpath(string $expression, mixed $data, ?string $version = null, ?array $namespaces = null, ): mixed;`
+  - `public function supportedSelectorVersions(ExpressionType $type): array;`
 
 ### Cross-boundary value types
 
@@ -189,7 +191,7 @@ public contract between packages.
 
 - `SourceResolver` — `@internal`: yes
 - `SourceFetcher` — `@internal`: yes
-- `SourceRegistry` — `@internal`: yes
+- `SourceRegistry` — _not found in scan_
 - `DefaultSourceResolver` — `@internal`: yes
 - `HttpFetcher` — `@internal`: yes
 - `LocalFetcher` — `@internal`: yes
@@ -223,14 +225,15 @@ public contract between packages.
   - `public function load(string $path): ArazzoDocument;`
   - `public function loadFromYaml(string $content, string $virtualPath = 'inline.yaml'): ArazzoDocument;`
   - `public function loadFromJson(string $content, string $virtualPath = 'inline.json'): ArazzoDocument;`
+  - `public function withRule(ValidationRuleInterface $rule): static;`
   - `public function validate(ArazzoDocument $document, ?KnownOperations $operations = null): ValidationResult;`
   - `public function validateInputs(ArazzoDocument $document, string $workflowId, array $inputs): ValidationResult;`
 
 ### Cross-boundary value types
 
-- `ValidationResult` — present
-- `Error` — present
-- `Warning` — present
+- `ValidationResult` — not found
+- `Error` — not found
+- `Warning` — not found
 - `ResolvedOperation` — present
 - `NormalizedOpenApiOperation` — present
 - `ModelStack` — not found
@@ -249,7 +252,7 @@ public contract between packages.
 - `ParseContext` — `@internal`: yes
 - `RuleSet` — `@internal`: yes
 - `Validator` — `@internal`: yes
-- `ErrorCollector` — `@internal`: yes
+- `ErrorCollector` — _not found in scan_
 - `OfficialSchemaRule` — `@internal`: yes
 - `Rules\*` — whole namespace (declared target)
 - `Validator\Support\*` — whole namespace (declared target)

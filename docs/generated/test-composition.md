@@ -13,75 +13,75 @@ compliance — not an inverted pyramid of end-to-end tests.
 
 ```mermaid
 pie showData
-    title Contracts — 36 test files
-    "Module-scoped": 35
+    title Contracts — 39 test files
+    "Module-scoped": 38
     "Root": 1
 ```
 
 | Suite | Files | Share |
 |---|---:|---:|
-| Module-scoped | 35 | 97% |
+| Module-scoped | 38 | 97% |
 | Root | 1 | 3% |
 
 ## Expression package
 
 ```mermaid
 pie showData
-    title Expression — 25 test files
-    "Module-scoped": 19
+    title Expression — 26 test files
+    "Module-scoped": 20
     "Conformance": 4
     "Root": 2
 ```
 
 | Suite | Files | Share |
 |---|---:|---:|
-| Module-scoped | 19 | 76% |
-| Conformance | 4 | 16% |
+| Module-scoped | 20 | 77% |
+| Conformance | 4 | 15% |
 | Root | 2 | 8% |
 
 ## Evaluation package
 
 ```mermaid
 pie showData
-    title Evaluation — 19 test files
+    title Evaluation — 20 test files
     "Root": 16
-    "Module-scoped": 2
+    "Module-scoped": 3
     "Conformance": 1
 ```
 
 | Suite | Files | Share |
 |---|---:|---:|
-| Root | 16 | 84% |
-| Module-scoped | 2 | 11% |
+| Root | 16 | 80% |
+| Module-scoped | 3 | 15% |
 | Conformance | 1 | 5% |
 
 ## Document package
 
 ```mermaid
 pie showData
-    title Document — 98 test files
-    "Module-scoped": 94
+    title Document — 99 test files
+    "Module-scoped": 95
     "Root": 4
 ```
 
 | Suite | Files | Share |
 |---|---:|---:|
-| Module-scoped | 94 | 96% |
+| Module-scoped | 95 | 96% |
 | Root | 4 | 4% |
 
 ## Sources package
 
 ```mermaid
 pie showData
-    title Sources — 12 test files
-    "Module-scoped": 10
+    title Sources — 11 test files
+    "Module-scoped": 9
     "Root": 2
 ```
 
 | Suite | Files | Share |
 |---|---:|---:|
-| Module-scoped | 10 | 83% |
-| Root | 2 | 17% |
+| Module-scoped | 9 | 82% |
+| Root | 2 | 18% |
 
 ## Engine package
 
@@ -129,15 +129,15 @@ pie showData
 
 ```mermaid
 pie showData
-    title Protocol-http — 8 test files
-    "Module-scoped": 7
+    title Protocol-http — 7 test files
+    "Module-scoped": 6
     "Architecture": 1
 ```
 
 | Suite | Files | Share |
 |---|---:|---:|
-| Module-scoped | 7 | 88% |
-| Architecture | 1 | 12% |
+| Module-scoped | 6 | 86% |
+| Architecture | 1 | 14% |
 
 ## Protocol-rpc package
 

@@ -18,7 +18,6 @@ use Alama\Arazzo\Evaluation\Registries\ExpressionEvaluatorRegistry;
 use Alama\Arazzo\Expression\Data\EvaluationContext;
 use Alama\Arazzo\Expression\Interfaces\EvaluationInputInterface;
 use Alama\Arazzo\Expression\Interfaces\ExpressionEngineInterface;
-use Alama\Arazzo\Expression\Interfaces\SelectorPluginRegistryInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -33,20 +32,16 @@ final class EvaluationEngine implements EvaluationEngineInterface
 
     private readonly CriterionEvaluatorRegistry $criterionRegistry;
 
-    private readonly SelectorPluginRegistryInterface $selectorRegistry;
-
     private readonly EventDispatcherInterface $eventDispatcher;
 
     public function __construct(
         private readonly ExpressionEngineInterface $expression,
         ?ExpressionEvaluatorRegistry $expressionRegistry = null,
         ?CriterionEvaluatorRegistry $criterionRegistry = null,
-        ?SelectorPluginRegistryInterface $selectorRegistry = null,
         ?EventDispatcherInterface $eventDispatcher = null,
     ) {
-        $this->expressionRegistry = $expressionRegistry ?? new ExpressionEvaluatorRegistry($this->expression);
-        $this->criterionRegistry = $criterionRegistry ?? new CriterionEvaluatorRegistry($this->expression);
-        $this->selectorRegistry = $selectorRegistry ?? $this->expression->selectorPlugins();
+        $this->expressionRegistry = $expressionRegistry ?? ExpressionEvaluatorRegistry::create($this->expression);
+        $this->criterionRegistry = $criterionRegistry ?? CriterionEvaluatorRegistry::create($this->expression);
         $this->eventDispatcher = $eventDispatcher ?? new NullEventDispatcher();
     }
 
@@ -128,7 +123,7 @@ final class EvaluationEngine implements EvaluationEngineInterface
 
     public function replacePayload(Step $step, array $body, ?callable $resolveValue = null, ?WorkflowContext $context = null): array
     {
-        return PayloadReplacer::apply($this->expression, $this->selectorRegistry, $step, $body, $resolveValue, $context);
+        return PayloadReplacer::apply($this->expression, $step, $body, $resolveValue, $context);
     }
 
     public function jsonPath(string $expression, array|object $data): mixed
@@ -142,7 +137,6 @@ final class EvaluationEngine implements EvaluationEngineInterface
             $this->expression,
             null,
             $this->criterionRegistry,
-            $this->selectorRegistry,
             $this->eventDispatcher,
         );
     }

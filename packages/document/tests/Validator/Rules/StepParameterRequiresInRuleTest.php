@@ -12,9 +12,9 @@ use Alama\Arazzo\Contracts\Spec\Info;
 use Alama\Arazzo\Contracts\Spec\Parameter;
 use Alama\Arazzo\Contracts\Spec\Reusable;
 use Alama\Arazzo\Contracts\Spec\Workflow;
-use Alama\Arazzo\Document\Validator\Data\SymbolTable;
-use Alama\Arazzo\Document\Validator\ErrorCollector;
-use Alama\Arazzo\Document\Validator\Rules\StepParameterRequiresInRule;
+use Alama\Arazzo\Contracts\Validation\ErrorCollector;
+use Alama\Arazzo\Contracts\Validation\SymbolTable;
+use Alama\Arazzo\Document\Plugins\ValidationRule\StepParameterRequiresInRule;
 use Alama\Arazzo\Tests\Support\Fx;
 
 it('rejects operation parameter without in', function (): void {

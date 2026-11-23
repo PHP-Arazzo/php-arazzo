@@ -15,8 +15,8 @@ use Alama\Arazzo\Contracts\Spec\StepFlow;
 use Alama\Arazzo\Contracts\Spec\StepIo;
 use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
-use Alama\Arazzo\Document\Validator\Data\Error;
-use Alama\Arazzo\Document\Validator\Data\ValidationResult;
+use Alama\Arazzo\Contracts\Validation\Error;
+use Alama\Arazzo\Contracts\Validation\ValidationResult;
 use Alama\Arazzo\Document\Validator\RuleSet;
 use Alama\Arazzo\Document\Validator\Validator;
 use Alama\Arazzo\Evaluation\EvaluationEngine;
@@ -24,9 +24,8 @@ use Alama\Arazzo\Expression\ExpressionEngine;
 
 const JSONPATH_VERSION_RULE = 'selector.type_supported';
 
-$engine = new ExpressionEngine();
-$registry = $engine->selectorPlugins();
-$supportedVersions = $registry->supportedVersions(ExpressionType::JsonPath);
+$engine = ExpressionEngine::create();
+$supportedVersions = $engine->supportedSelectorVersions(ExpressionType::JsonPath);
 
 /**
  * @return array{0: ArazzoDocument}
@@ -57,7 +56,7 @@ function jsonPathVersionDocument(?string $version): array
 
 function jsonPathVersionResult(ArazzoDocument $document): ValidationResult
 {
-    return (new Validator(RuleSet::default(new ExpressionEngine())))->validate($document);
+    return (new Validator(RuleSet::default()))->validate($document);
 }
 
 /** @param list<Error> $errors */

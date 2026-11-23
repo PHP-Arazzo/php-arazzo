@@ -39,5 +39,13 @@
         }
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "extra": {
+        "arazzo": {
+            "plugins": [
+                "src/Plugins/Selector",
+                "src/Plugins/ValidationRule"
+            ]
+        }
+    }
 }

@@ -7,6 +7,7 @@ namespace Alama\Arazzo\Expression\Internal;
 use Alama\Arazzo\Contracts\Spec\Enum\SpecVersion;
 use Alama\Arazzo\Expression\Data\EmbeddedSegment;
 use Alama\Arazzo\Expression\Exceptions\ExpressionSyntaxException;
+use Alama\Arazzo\Expression\Interfaces\ParserInterface;
 use Alama\Arazzo\Expression\Parser;
 
 /**
@@ -35,7 +36,7 @@ use Alama\Arazzo\Expression\Parser;
 final class EmbeddedExpressionSplitter
 {
     public function __construct(
-        private readonly Parser $parser = new Parser(),
+        private readonly ParserInterface $parser = new Parser(),
     ) {}
 
     /** @return list<EmbeddedSegment> */

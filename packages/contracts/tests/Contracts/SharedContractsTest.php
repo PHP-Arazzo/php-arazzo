@@ -12,7 +12,6 @@ use Alama\Arazzo\Contracts\Interfaces\QueueDriverInterface;
 use Alama\Arazzo\Contracts\Interfaces\ReplacementTargetResolverInterface;
 use Alama\Arazzo\Contracts\Interfaces\ResponseTransferInterface;
 use Alama\Arazzo\Contracts\Interfaces\SourceNormalizerInterface;
-use Alama\Arazzo\Contracts\Interfaces\SourceNormalizerRegistryInterface;
 use Alama\Arazzo\Contracts\Interfaces\StepProtocolExecutorInterface;
 
 it('declares the shared contracts consumers rely on')
@@ -49,8 +48,6 @@ it('declares the evaluator and replacer plugin faces')
 
 it('declares the source normalizer faces')
     ->expect(interface_exists(SourceNormalizerInterface::class))
-    ->toBeTrue()
-    ->and(interface_exists(SourceNormalizerRegistryInterface::class))
     ->toBeTrue()
     ->and(is_subclass_of(SourceNormalizerInterface::class, PluginInterface::class))
     ->toBeTrue();

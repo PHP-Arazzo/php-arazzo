@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Tests\Validation\Rules;
 
 use Alama\Arazzo\Contracts\Spec\Workflow;
-use Alama\Arazzo\Document\Validator\Data\SymbolTable;
-use Alama\Arazzo\Document\Validator\ErrorCollector;
-use Alama\Arazzo\Document\Validator\Rules\WorkflowDependsOnExistsRule;
+use Alama\Arazzo\Contracts\Validation\ErrorCollector;
+use Alama\Arazzo\Contracts\Validation\SymbolTable;
+use Alama\Arazzo\Document\Plugins\ValidationRule\WorkflowDependsOnExistsRule;
 use Alama\Arazzo\Tests\Support\Fx;
 
 it('flags a reference to an undeclared workflow', function (): void {

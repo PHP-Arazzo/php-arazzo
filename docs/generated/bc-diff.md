@@ -13,7 +13,7 @@ tag (or the second-latest when HEAD sits exactly on a tag).
 
 Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 
-**10 breaking change(s):**
+**11 breaking change(s):**
 
 | Kind | Class | Member | Detail |
 |---|---|---|---|
@@ -23,29 +23,34 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 | changed method | `RunnerFacade` | `__construct` | `public function __construct(private readonly ?ClientInterface $httpClient = null, private readonly ?RequestFactoryInterface $httpFactory = null, private readonly ?SourceRegistry $registry = null)` → `public function __construct(private readonly ?RunnerFacadeInterface $runner = null, private readonly ?DocumentInterface $document = null)` |
 | removed class | `SourceGraph` | — | was class |
 | removed method | `DocumentInterface` | `binding` | `public function binding(): string` |
+| removed method | `DocumentInterface` | `isValid` | `public function isValid(): bool` |
 | removed method | `DocumentInterface` | `parse` | `public function parse(RawDocument $raw): ArazzoDocument` |
 | removed method | `DocumentInterface` | `preflight` | `public function preflight(ArazzoDocument $document): ValidationResult` |
 | removed method | `DocumentInterface` | `preflightInputs` | `public function preflightInputs(ArazzoDocument $document, string $workflowId, array $inputs): ValidationResult` |
 | removed method | `DocumentInterface` | `resolveOperation` | `public function resolveOperation(Step $step, ArazzoDocument $document): ResolvedOperation` |
 
-**Additions (non-breaking):** 17
+**Additions (non-breaking):** 21
 
 | Kind | Class | Member |
 |---|---|---|
-| added method | `DocumentInterface` | `build` |
+| added method | `DocumentInterface` | `all` |
 | added method | `DocumentInterface` | `create` |
 | added method | `DocumentInterface` | `for` |
 | added method | `DocumentInterface` | `forVersion` |
+| added method | `DocumentInterface` | `get` |
+| added method | `DocumentInterface` | `has` |
 | added method | `DocumentInterface` | `loadFromJson` |
 | added method | `DocumentInterface` | `loadFromYaml` |
+| added method | `DocumentInterface` | `register` |
+| added method | `DocumentInterface` | `reset` |
 | added method | `DocumentInterface` | `validateInputs` |
 | added method | `DocumentInterface` | `withAllowCustomTags` |
 | added method | `DocumentInterface` | `withAllowObjectDeserialization` |
 | added method | `DocumentInterface` | `withDecodePolicy` |
-| added method | `DocumentInterface` | `withExpressionEngine` |
 | added method | `DocumentInterface` | `withMaxAliases` |
 | added method | `DocumentInterface` | `withMaxBytes` |
 | added method | `DocumentInterface` | `withMaxDepth` |
 | added method | `DocumentInterface` | `withMaxNodes` |
+| added method | `DocumentInterface` | `withRule` |
 | added method | `DocumentInterface` | `withYamlPolicy` |
 | added method | `RunnerFacade` | `supports` |

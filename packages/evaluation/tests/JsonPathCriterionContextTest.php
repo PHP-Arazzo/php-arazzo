@@ -64,7 +64,8 @@ it('honours the context on the registry-less built-in path too', function (): vo
 
     // Registry-less: the built-in evaluateJsonPath() branch. With a registry:
     // the JsonPathCriterionPlugin. Both must resolve the same root.
+    CriterionEvaluatorRegistry::reset();
     expect((new CriteriaEvaluator($expression))->evaluateSuccessCriteria($step, $context))->toBeTrue()
-        ->and((new CriteriaEvaluator($expression, null, new CriterionEvaluatorRegistry($expression)))
+        ->and((new CriteriaEvaluator($expression, null, CriterionEvaluatorRegistry::create($expression)))
             ->evaluateSuccessCriteria($step, $context))->toBeTrue();
 });

@@ -7,7 +7,7 @@ namespace Alama\Arazzo\Tests\Conformance;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
 use Alama\Arazzo\Document\Parser\Decoders\SymfonyYamlDecoder;
 use Alama\Arazzo\Protocol\Http\Execution\DefaultOpenApiExecutor;
-use Alama\Arazzo\Protocol\Http\Protocol\HttpStepExecutor;
+use Alama\Arazzo\Protocol\Http\Plugins\OperationExecutor\HttpStepExecutor;
 use Alama\Arazzo\Runner\Async\ExecuteStepJob;
 use Alama\Arazzo\Runner\Async\StepExecutionWorker;
 use Alama\Arazzo\Runner\Execution\Data\RunControlFlow;
@@ -15,8 +15,8 @@ use Alama\Arazzo\Runner\Execution\Data\RunPersistence;
 use Alama\Arazzo\Runner\Execution\InMemoryDefinitionRegistry;
 use Alama\Arazzo\Runner\Execution\SyncQueueDriver;
 use Alama\Arazzo\Runner\OperationExecutorRegistry;
+use Alama\Arazzo\Runner\Plugins\OperationExecutor\SubWorkflowStepExecutor;
 use Alama\Arazzo\Runner\Sync\StepExecutor;
-use Alama\Arazzo\Runner\Sync\SubWorkflowStepExecutor;
 use Alama\Arazzo\Runner\Sync\WorkflowEngine;
 use Alama\Arazzo\Runner\Sync\WorkflowExecutor;
 use Alama\Arazzo\Tests\Support\FakeLockManager;
@@ -79,7 +79,8 @@ final class OaiQueueFixtureRunner extends ConformanceHarness
         $definitionId = $definitionRegistry->register($document);
         $queue = new SyncQueueDriver();
 
-        $executors = new OperationExecutorRegistry();
+        OperationExecutorRegistry::reset();
+        $executors = OperationExecutorRegistry::create();
         $executors->register(new SubWorkflowStepExecutor(
             new WorkflowExecutor(
                 new StepExecutor(
@@ -137,6 +138,8 @@ final class OaiQueueFixtureRunner extends ConformanceHarness
             }
         } catch (\Throwable) {
             // Observed through the event stream.
+        } finally {
+            OperationExecutorRegistry::reset();
         }
 
         return $this->observe();

@@ -4,16 +4,11 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Expression;
 
-use Alama\Arazzo\Contracts\Spec\Enum\ExpressionType;
 use Alama\Arazzo\Expression\Interfaces\ExpressionEngineInterface;
-use Alama\Arazzo\Expression\Interfaces\SelectorPluginRegistryInterface;
 use Alama\Arazzo\Expression\Internal\EmbeddedExpressionSplitter;
-use Alama\Arazzo\Expression\Plugins\JsonPathSelectorPlugin;
-use Alama\Arazzo\Expression\Plugins\JsonPointerSelectorPlugin;
-use Alama\Arazzo\Expression\Plugins\XpathSelectorPlugin;
 use Alama\Arazzo\Expression\Registries\SelectorPluginRegistry;
+use Alama\Arazzo\Expression\Support\ExpressionWalker;
 use Alama\Arazzo\Expression\Xpath\DomXpathEvaluator;
-use Alama\Arazzo\Expression\Xpath\Xpath31Evaluator;
 use Alama\Arazzo\Expression\Xpath\XpathEvaluator;
 
 /**
@@ -22,11 +17,7 @@ use Alama\Arazzo\Expression\Xpath\XpathEvaluator;
  */
 final class ExpressionDependencyProvider
 {
-    private ?SelectorPluginRegistryInterface $selectorPlugins = null;
-
     private ?XpathEvaluator $xpathEvaluator = null;
-
-    private ?SelectorPluginRegistryInterface $selectorPluginRegistry = null;
 
     private ?EmbeddedExpressionSplitter $embeddedExpressionSplitter = null;
 
@@ -34,14 +25,11 @@ final class ExpressionDependencyProvider
 
     private ?SelectorEvaluator $selectorEvaluator = null;
 
-    public function __construct(?SelectorPluginRegistryInterface $selectorPlugins = null)
-    {
-        $this->selectorPlugins = $selectorPlugins;
-    }
+    public function __construct() {}
 
     public function getExpressionEngine(): ExpressionEngineInterface
     {
-        return new ExpressionEngine($this->selectorPlugins);
+        return new ExpressionEngine();
     }
 
     public function getExpressionEvaluator(): ExpressionEvaluator
@@ -66,22 +54,9 @@ final class ExpressionDependencyProvider
         return $this->xpathEvaluator ??= new DomXpathEvaluator();
     }
 
-    public function getSelectorPluginRegistry(): SelectorPluginRegistryInterface
+    public function getSelectorPluginRegistry(): SelectorPluginRegistry
     {
-        if ($this->selectorPlugins !== null) {
-            return $this->selectorPlugins;
-        }
-
-        if ($this->selectorPluginRegistry === null) {
-            $registry = new SelectorPluginRegistry();
-            $registry->register(ExpressionType::JsonPath, new JsonPathSelectorPlugin($this->getJsonPathEvaluator()));
-            $registry->register(ExpressionType::JsonPointer, new JsonPointerSelectorPlugin());
-            $registry->register(ExpressionType::XPath, new XpathSelectorPlugin(new Xpath31Evaluator()));
-
-            $this->selectorPluginRegistry = $registry;
-        }
-
-        return $this->selectorPluginRegistry;
+        return SelectorPluginRegistry::create();
     }
 
     public function getParser(): Parser
@@ -102,5 +77,10 @@ final class ExpressionDependencyProvider
     public function getEmbeddedExpressionSplitter(): EmbeddedExpressionSplitter
     {
         return $this->embeddedExpressionSplitter ??= new EmbeddedExpressionSplitter($this->getParser());
+    }
+
+    public function getExpressionWalker(): ExpressionWalker
+    {
+        return new ExpressionWalker();
     }
 }

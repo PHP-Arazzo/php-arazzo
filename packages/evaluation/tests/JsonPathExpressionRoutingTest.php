@@ -7,7 +7,7 @@ namespace Alama\Arazzo\Tests\Evaluation;
 use Alama\Arazzo\Contracts\Spec\Expression;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
 use Alama\Arazzo\Evaluation\EvaluationEngine;
-use Alama\Arazzo\Evaluation\Plugins\JsonPathExpressionPlugin;
+use Alama\Arazzo\Evaluation\Plugins\Expression\JsonPathExpressionPlugin;
 use Alama\Arazzo\Expression\Data\EvaluationContext;
 use Alama\Arazzo\Expression\ExpressionEngine;
 

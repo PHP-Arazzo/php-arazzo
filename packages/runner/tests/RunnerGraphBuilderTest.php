@@ -150,11 +150,16 @@ function builderDocument(): ArazzoDocument
     );
 }
 
+afterEach(function (): void {
+    OperationExecutorRegistry::reset();
+});
+
 it('builds a queue worker from worker-only seams without protocol value seams', function (): void {
     $definitions = new InMemoryDefinitionRegistry();
     $definitionId = $definitions->register(builderDocument());
 
-    $executors = new OperationExecutorRegistry();
+    OperationExecutorRegistry::reset();
+    $executors = OperationExecutorRegistry::create();
     $plugin = new BuilderRecordingPlugin();
     $executors->register($plugin);
 
@@ -177,6 +182,6 @@ it('refuses buildAsync without an OperationRuntime (worker-only hosts must use b
 
     $builder = new RunnerGraphBuilder(evaluationEngine: new EvaluationEngine(expression: new ExpressionEngine()));
 
-    expect(fn () => $builder->buildAsync(builderSeams($definitions, new OperationExecutorRegistry())))
+    expect(fn () => $builder->buildAsync(builderSeams($definitions, OperationExecutorRegistry::create())))
         ->toThrow(ExecutionException::class);
 });

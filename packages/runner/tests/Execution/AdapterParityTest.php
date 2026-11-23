@@ -26,12 +26,12 @@ use Alama\Arazzo\Protocol\Http\Execution\ResponseSchemaValidator;
 use Alama\Arazzo\Protocol\Http\Execution\StepOutputExtractor;
 use Alama\Arazzo\Protocol\Http\Resolver\OpenApiOperationResolver;
 use Alama\Arazzo\Runner\Execution\InMemoryDefinitionRegistry;
+use Alama\Arazzo\Runner\OperationExecutorRegistry;
 use Alama\Arazzo\Runner\Sync\StepExecutor;
 use Alama\Arazzo\Runner\Sync\WorkflowEngine;
 use Alama\Arazzo\Runner\Sync\WorkflowExecutor;
 use Alama\Arazzo\Runtime\State\FileStateStore;
 use Alama\Arazzo\Sources\Resolver\Interfaces\SourceResolver;
-use Alama\Arazzo\Sources\Resolver\SourceRegistry;
 use Alama\Arazzo\Sources\Sources;
 use Alama\Arazzo\Tests\Expression\Support\TestEvaluationEngine;
 use Alama\Arazzo\Tests\Support\FakePsr18Client;
@@ -68,7 +68,7 @@ function parityFixtures(): array
     $httpClient->enqueue(new Response(201, [], json_encode(['rideId' => 99])));
     $httpClient->enqueue(new Response(201, [], json_encode(['rideId' => 100])));
     $engine = new EvaluationEngine(expression: new ExpressionEngine());
-    $sources = new Sources(new SourceRegistry(new class() implements SourceResolver
+    $sources = new Sources(new class() implements SourceResolver
     {
         public function resolve(SourceDescription $description, string $basePath): SourceDocument
         {
@@ -79,7 +79,7 @@ function parityFixtures(): array
                 json_decode((string) file_get_contents($description->url), true),
             );
         }
-    }));
+    });
     $operations = OpenApiOperationResolver::create($sources);
     $outputExtractor = new StepOutputExtractor($operations, $engine, new ExpressionEngine());
     $schemaValidator = new ResponseSchemaValidator($operations);
@@ -106,7 +106,7 @@ function parityFixtures(): array
 
         public function priority(): int
         {
-            return 100;
+            return 0;
         }
 
         public function supports(Step $step, ArazzoDocument $document): bool
@@ -152,4 +152,12 @@ it('sync and queue-driven adapters agree on terminal status and step spend', fun
     expect($syncResult->status)->toBe('succeeded')
         ->and($cliResult->status)->toBe($syncResult->status)
         ->and($syncResult->stepsSpent)->toBeGreaterThanOrEqual(2);
+});
+
+beforeEach(function (): void {
+    OperationExecutorRegistry::reset();
+});
+
+afterEach(function (): void {
+    OperationExecutorRegistry::reset();
 });

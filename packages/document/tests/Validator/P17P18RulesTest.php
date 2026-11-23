@@ -9,12 +9,11 @@ use Alama\Arazzo\Contracts\Spec\Components;
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
 use Alama\Arazzo\Contracts\Spec\Info;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
-use Alama\Arazzo\Document\Validator\Data\SymbolTable;
-use Alama\Arazzo\Document\Validator\ErrorCollector;
-use Alama\Arazzo\Document\Validator\OfficialSchemaRule;
-use Alama\Arazzo\Document\Validator\Rules\DocumentSourceDescriptionsPresentRule;
-use Alama\Arazzo\Document\Validator\Rules\DocUnknownFieldRule;
-use Alama\Arazzo\Expression\ExpressionEngine;
+use Alama\Arazzo\Contracts\Validation\ErrorCollector;
+use Alama\Arazzo\Contracts\Validation\SymbolTable;
+use Alama\Arazzo\Document\Plugins\ValidationRule\DocumentSourceDescriptionsPresentRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\DocUnknownFieldRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\OfficialSchemaRule;
 use Alama\Arazzo\Tests\Support\Fx;
 
 function docWithRaw(array $raw, string $version = '1.1.0'): ArazzoDocument
@@ -73,7 +72,7 @@ it('structurally validates raw documents against the official 1.1 schema', funct
     ]);
     $ec = new ErrorCollector();
 
-    (new OfficialSchemaRule(new ExpressionEngine()))->check($doc, SymbolTable::build($doc), $ec);
+    (new OfficialSchemaRule())->check($doc, SymbolTable::build($doc), $ec);
 
     $messages = array_map(fn ($e) => $e->message, $ec->errors());
     expect($ec->errors())->not->toBeEmpty()
@@ -96,7 +95,7 @@ it('passes structurally valid raw documents through the schema layer', function 
     ]);
     $ec = new ErrorCollector();
 
-    (new OfficialSchemaRule(new ExpressionEngine()))->check($doc, SymbolTable::build($doc), $ec);
+    (new OfficialSchemaRule())->check($doc, SymbolTable::build($doc), $ec);
 
     expect($ec->errors())->toBeEmpty();
 });

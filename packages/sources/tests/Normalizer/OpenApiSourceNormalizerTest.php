@@ -10,8 +10,8 @@ use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Sources\Exceptions\UnsupportedSourceVersionException;
 use Alama\Arazzo\Sources\Normalizer\OpenApi30Normalizer;
 use Alama\Arazzo\Sources\Normalizer\OpenApi31Normalizer;
-use Alama\Arazzo\Sources\Normalizer\OpenApiSourceNormalizer;
 use Alama\Arazzo\Sources\Normalizer\OpenApiVersionDetector;
+use Alama\Arazzo\Sources\Plugins\SourceNormalizer\OpenApiSourceNormalizer;
 
 function makeOpenApiSourceNormalizer(): OpenApiSourceNormalizer
 {

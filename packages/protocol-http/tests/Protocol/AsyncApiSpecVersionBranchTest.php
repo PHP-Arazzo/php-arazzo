@@ -17,7 +17,7 @@ use Alama\Arazzo\Contracts\Spec\StepIo;
 use Alama\Arazzo\Contracts\Spec\StepTarget;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
 use Alama\Arazzo\Evaluation\EvaluationEngineInterface;
-use Alama\Arazzo\Protocol\Http\Protocol\AsyncApiStepExecutor;
+use Alama\Arazzo\Protocol\Http\Plugins\OperationExecutor\AsyncApiStepExecutor;
 use LogicException;
 use Mockery;
 

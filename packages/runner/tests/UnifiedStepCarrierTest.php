@@ -125,7 +125,8 @@ it('executes a step through the plugin and persists the outcome', function (): v
     $lockManager = new NullLockStrategy();
     $workflowEngine = unifiedTestWorkflowEngine();
 
-    $registry = new OperationExecutorRegistry();
+    OperationExecutorRegistry::reset();
+    $registry = OperationExecutorRegistry::create();
     $registry->register(new SuccessfulPlugin());
 
     $carrier = new UnifiedStepCarrier(
@@ -156,7 +157,8 @@ it('throws when no plugin supports the step', function (): void {
     $lockManager = new NullLockStrategy();
     $workflowEngine = unifiedTestWorkflowEngine();
 
-    $registry = new OperationExecutorRegistry();
+    OperationExecutorRegistry::reset();
+    $registry = OperationExecutorRegistry::create();
 
     $carrier = new UnifiedStepCarrier(
         stateStore: $store,
@@ -175,3 +177,7 @@ it('throws when no plugin supports the step', function (): void {
 
     $carrier->execute('exec-1', $step, $workflow, $document, $state);
 })->throws(LogicException::class, 'No OperationExecutorPluginInterface supports');
+
+afterEach(function (): void {
+    OperationExecutorRegistry::reset();
+});

@@ -82,21 +82,19 @@ final readonly class Sources implements SourcesInterface
      */
     public function __construct(
         ?SourceResolverInterface $resolver = null,
-        ?SourceNormalizerRegistryInterface $normalizers = null,
-        ?DecodePolicy $decodePolicy = null,
+        array $normalizers = [],
+        array $documents = [],
     ) {}
 
     public static function create(): self;
 
-    public function withHttpClient(ClientInterface $client, ?RequestFactoryInterface $factory = null): self;
+    public function withHttpClient(ClientInterface $client, ?RequestFactoryInterface $factory = null): static;
 
-    public function withCache(CacheInterface $cache, int $ttl = 3600): self;
+    public function withFetcher(string $scheme, SourceFetcherInterface $fetcher): static;
 
-    public function withFetcher(string $scheme, SourceFetcherInterface $fetcher): self;
+    public function withNormalizer(SourceNormalizerInterface $normalizer): static;
 
-    public function withNormalizer(SourceNormalizerInterface $normalizer): self;
-
-    public function withDecodePolicy(DecodePolicy $policy): self;
+    public function withDocument(SourceDocument $document): static;
 
     public function resolve(SourceDescription $source, string $basePath = ''): SourceDocument;
 
@@ -106,7 +104,11 @@ final readonly class Sources implements SourcesInterface
 }
 ```
 
-### 3.2 Exceptions
+### 3.2 Public Extension Point (`SourceNormalizerRegistry`)
+
+- `Alama\Arazzo\Sources\Registries\SourceNormalizerRegistry` — concrete singleton (`create()` / `reset()`) auto-seeding the zero-vendor `OpenApiSourceNormalizer` and supporting `#[AsSourceNormalizer]`. `Sources` resolves per-instance `withNormalizer()` overrides first and falls back to `SourceNormalizerRegistry::create()->get($type)`. `SourceNormalizerRegistryInterface` is deleted per ADR-007.
+
+### 3.3 Exceptions
 
 - `Alama\Arazzo\Sources\Exceptions\SourceResolutionException` (base exception)
 - `Alama\Arazzo\Sources\Exceptions\SourceFetchException`
@@ -114,7 +116,7 @@ final readonly class Sources implements SourcesInterface
 - `Alama\Arazzo\Sources\Exceptions\UnresolvableReferenceException`
 - `Alama\Arazzo\Sources\Exceptions\UnsupportedSourceVersionException`
 
-All other classes (`DefaultSourceResolver`, `SourceRegistry`, `SourceNormalizerRegistry`, `OpenApiSourceNormalizer`, `OpenApi30Normalizer`, `OpenApi31Normalizer`, `OpenApiVersionDetector`, `LocalFetcher`, `HttpFetcher`, `CachedFetcher`) are marked `@internal`.
+All other classes (`DefaultSourceResolver` — which absorbs memoization, seeded documents, and circular-reference detection, replacing the deleted `SourceRegistry` — `OpenApiSourceNormalizer`, `OpenApi30Normalizer`, `OpenApi31Normalizer`, `OpenApiVersionDetector`, `LocalFetcher`, `HttpFetcher`, `CachedFetcher`) are marked `@internal`.
 
 ---
 
@@ -248,7 +250,7 @@ flowchart TD
         SourceFetcherSPI["Interfaces/SourceFetcherInterface"]
         SourceResolverSPI["Interfaces/SourceResolverInterface"]
         SourceNormalizerSPI["Interfaces/SourceNormalizerInterface"]
-        SourceNormalizerRegSPI["Interfaces/SourceNormalizerRegistryInterface"]
+        AsSourceNormalizerAttr["Attributes/AsSourceNormalizer"]
         ResolvedOpCol["Data/ResolvedOperationCollection"]
         ResolvedOp["Spec/ResolvedOperation"]
         NormalizedOp["Spec/NormalizedOpenApiOperation"]
@@ -351,4 +353,4 @@ A Pest architecture test will be added to `packages/sources/tests/ArchTest.php` 
 2. `Alama\Arazzo\Sources` has zero dependencies on `Alama\Arazzo\Runner`, `Alama\Arazzo\Cli`, or any `Alama\Arazzo\Protocol\*` namespace.
 3. No external package imports `@internal` symbols from `Alama\Arazzo\Sources\*`.
 4. `Sources` is `final` and `readonly`.
-5. Only `SourcesInterface`, `Sources`, and exception classes constitute the public API of `alama/arazzo-sources`.
+5. Only `SourcesInterface`, `Sources`, `Registries\SourceNormalizerRegistry`, and exception classes constitute the public API of `alama/arazzo-sources`.

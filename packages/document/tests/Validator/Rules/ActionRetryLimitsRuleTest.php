@@ -6,9 +6,9 @@ namespace Alama\Arazzo\Tests\Validation\Rules;
 
 use Alama\Arazzo\Contracts\Spec\Action\RetryAction;
 use Alama\Arazzo\Contracts\Spec\Action\SuccessEndAction;
-use Alama\Arazzo\Document\Validator\Data\SymbolTable;
-use Alama\Arazzo\Document\Validator\ErrorCollector;
-use Alama\Arazzo\Document\Validator\Rules\ActionRetryLimitsRule;
+use Alama\Arazzo\Contracts\Validation\ErrorCollector;
+use Alama\Arazzo\Contracts\Validation\SymbolTable;
+use Alama\Arazzo\Document\Plugins\ValidationRule\ActionRetryLimitsRule;
 use Alama\Arazzo\Tests\Support\Fx;
 
 it('skips non-retry actions, accepts positive, flags negative retryAfter/retryLimit', function (): void {

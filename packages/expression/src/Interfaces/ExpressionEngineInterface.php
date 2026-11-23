@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Expression\Interfaces;
 
+use Alama\Arazzo\Contracts\Spec\Enum\ExpressionType;
 use Alama\Arazzo\Contracts\Spec\Enum\SpecVersion;
 use Alama\Arazzo\Contracts\Spec\Expression;
 use Alama\Arazzo\Contracts\Spec\Interfaces\WorkflowContextInterface;
@@ -12,6 +13,7 @@ use Alama\Arazzo\Expression\Data\EmbeddedSegment;
 use Alama\Arazzo\Expression\Data\ExpressionReference;
 use Alama\Arazzo\Expression\Data\InterpolationOptions;
 use Alama\Arazzo\Expression\Exceptions\ExpressionSyntaxException;
+use Alama\Arazzo\Expression\Exceptions\SelectorEvaluationException;
 
 /**
  * Entry-point seam for Arazzo expression parsing, analysis, and evaluation.
@@ -95,8 +97,36 @@ interface ExpressionEngineInterface
     public function jsonPointer(array $data, ?string $pointer): mixed;
 
     /**
-     * The selector-plugin registry this engine uses (and shares with its
-     * SelectorEvaluator). Returns the same instance on every call.
+     * Evaluate a raw selector against data.
+     *
+     * @param  array<string, string>|null  $namespaces
+     *
+     * @throws SelectorEvaluationException on evaluation error or unsupported selector type
      */
-    public function selectorPlugins(): SelectorPluginRegistryInterface;
+    public function evaluateRawSelector(
+        ExpressionType $type,
+        string $expression,
+        mixed $data,
+        ?string $version = null,
+        ?array $namespaces = null,
+    ): mixed;
+
+    /**
+     * Evaluate an XPath expression against data.
+     *
+     * @param  array<string, string>|null  $namespaces
+     *
+     * @throws SelectorEvaluationException on evaluation error
+     */
+    public function xpath(
+        string $expression,
+        mixed $data,
+        ?string $version = null,
+        ?array $namespaces = null,
+    ): mixed;
+
+    /**
+     * @return list<string> Supported version tokens for the given type, or [] if no plugin is registered.
+     */
+    public function supportedSelectorVersions(ExpressionType $type): array;
 }

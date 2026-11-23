@@ -8,10 +8,9 @@ use Alama\Arazzo\Document\Parser\Loader;
 use Alama\Arazzo\Document\Parser\Parser;
 use Alama\Arazzo\Document\Validator\RuleSet;
 use Alama\Arazzo\Document\Validator\Validator;
-use Alama\Arazzo\Expression\ExpressionEngine;
 
 it('validates inputs against workflow declared schema', function (): void {
-    $validator = new Validator(RuleSet::default(new ExpressionEngine()));
+    $validator = new Validator(RuleSet::default());
 
     $yaml = <<<'YAML'
 arazzo: '1.0.0'

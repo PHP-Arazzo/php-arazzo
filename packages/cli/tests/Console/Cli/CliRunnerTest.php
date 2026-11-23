@@ -15,6 +15,7 @@ use Alama\Arazzo\Contracts\Spec\StepTarget;
 use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
 use Alama\Arazzo\Runner\Execution\InMemoryDefinitionRegistry;
+use Alama\Arazzo\Runner\OperationExecutorRegistry;
 use Alama\Arazzo\Runtime\State\FileStateStore;
 use Alama\Arazzo\Tests\Expression\Support\TestEvaluationEngine;
 
@@ -29,7 +30,7 @@ class CliFakeExecutor implements OperationExecutorPluginInterface
 
     public function priority(): int
     {
-        return 100;
+        return 0;
     }
 
     public function supports(Step $step, ArazzoDocument $document): bool
@@ -119,4 +120,12 @@ it('resumes a run from persisted file state without re-running completed steps',
     $result = $runner->resume(cliDocument(), 'cli_resume_1');
 
     expect($result->status)->toBe('succeeded');
+});
+
+beforeEach(function (): void {
+    OperationExecutorRegistry::reset();
+});
+
+afterEach(function (): void {
+    OperationExecutorRegistry::reset();
 });

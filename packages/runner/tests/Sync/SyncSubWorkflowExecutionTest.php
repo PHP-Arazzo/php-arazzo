@@ -24,8 +24,8 @@ use Alama\Arazzo\Protocol\Http\Resolver\OpenApiOperationHandle;
 use Alama\Arazzo\Protocol\Http\Resolver\OpenApiOperationResolver;
 use Alama\Arazzo\Runner\Execution\OperationRuntime;
 use Alama\Arazzo\Runner\OperationExecutorRegistry;
+use Alama\Arazzo\Runner\Plugins\OperationExecutor\SubWorkflowStepExecutor;
 use Alama\Arazzo\Runner\Sync\ExecutionGraphFactory;
-use Alama\Arazzo\Runner\Sync\SubWorkflowStepExecutor;
 use Alama\Arazzo\Runner\Sync\WorkflowExecutor;
 use Alama\Arazzo\Tests\Support\FakeOpenApiExecutor;
 use Alama\Arazzo\Tests\Support\FakeResponseValidator;
@@ -127,8 +127,13 @@ function subWorkflowGraph(OperationExecutorRegistry $registry): WorkflowExecutor
     ))->createWorkflowExecutor($registry);
 }
 
+afterEach(function (): void {
+    OperationExecutorRegistry::reset();
+});
+
 it('registers the sub-workflow executor on the synchronous graph, like the async assembler', function () {
-    $registry = new OperationExecutorRegistry();
+    OperationExecutorRegistry::reset();
+    $registry = OperationExecutorRegistry::create();
 
     subWorkflowGraph($registry);
 
@@ -138,7 +143,8 @@ it('registers the sub-workflow executor on the synchronous graph, like the async
 
 it('runs a parent -> child workflow synchronously', function () {
     $document = subWorkflowDocument();
-    $result = subWorkflowGraph(new OperationExecutorRegistry())
+    OperationExecutorRegistry::reset();
+    $result = subWorkflowGraph(OperationExecutorRegistry::create())
         ->execute($document->workflows[0], $document, []);
 
     expect($result->status)->toBe('succeeded')

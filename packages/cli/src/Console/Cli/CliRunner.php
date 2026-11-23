@@ -88,7 +88,7 @@ final class CliRunner
 
             public function release(string $key): void {}
         };
-        $this->executors = new OperationExecutorRegistry();
+        $this->executors = OperationExecutorRegistry::create();
         foreach ($protocolExecutors as $plugin) {
             $this->executors->register($plugin);
         }

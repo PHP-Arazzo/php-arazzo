@@ -104,18 +104,34 @@ $sources = Sources::create()
 ```
 
 ### 4. Registering Custom Normalizers
-Need to normalize non-standard formats into Arazzo? Register a normalizer implementing `SourceNormalizerInterface`:
+Need to normalize non-standard formats into Arazzo? Register a normalizer implementing `SourceNormalizerInterface` either per-instance via `withNormalizer()` or globally via `SourceNormalizerRegistry::create()` (with optional `#[AsSourceNormalizerPlugin]` metadata):
 
 ```php
 use Alama\Arazzo\Contracts\Interfaces\SourceNormalizerInterface;
+use Alama\Arazzo\Sources\Registries\SourceNormalizerRegistry;
+use Alama\Arazzo\Sources\Sources;
+
+// Per-instance override (takes precedence over global registry):
+$sources = Sources::create()
+    ->withNormalizer($customNormalizer);
+
+// Or register globally for all Sources instances:
+SourceNormalizerRegistry::create()->register($customNormalizer);
+```
+
+### 5. Seeding In-Memory Source Documents
+For tests or offline execution, seed pre-decoded `SourceDocument` instances immutably via `withDocument()`:
+
+```php
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
+use Alama\Arazzo\Contracts\Spec\SourceDocument;
 use Alama\Arazzo\Sources\Sources;
 
 $sources = Sources::create()
-    ->withNormalizer($customNormalizer);
+    ->withDocument(new SourceDocument('api', SourceType::Openapi, 'https://api.example/openapi.json', $openApiArray));
 ```
 
-### 5. Dependency Injection & Enterprise Frameworks
+### 6. Dependency Injection & Enterprise Frameworks
 The `Sources` class implements `SourcesInterface` and `SourceResolverInterface`, with optional constructor parameters for seamless DI autowiring in Symfony, Laravel, Drupal, Spryker, and WordPress:
 
 ```php
