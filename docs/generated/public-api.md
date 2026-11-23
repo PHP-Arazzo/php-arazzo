@@ -34,6 +34,15 @@ this file on a commit is a public API change — review it deliberately.
 - `public function toKnownOperations(): KnownOperations`
 - `public static function fromArray(array $operations): self`
 
+### `Alama\Arazzo\Contracts\Discovery`
+
+#### `PluginDiscovery` class
+- `public static function allClasses(): array`
+- `public static function classesWith(string $attributeClass): array`
+- `public static function instantiate(string $attributeClass, array $services = []): array`
+- `public static function overrideClasses(?array $classes): void`
+- `public static function reset(): void`
+
 ### `Alama\Arazzo\Contracts\Interfaces`
 
 #### `AiClientInterface` interface
@@ -94,6 +103,10 @@ this file on a commit is a public API change — review it deliberately.
 #### `StepProtocolExecutorInterface` interface
 - `public function execute(Step $step, WorkflowContext $context, ArazzoDocument $document, string $executionId): StepExecutionOutcome;`
 - `public function supports(Step $step, ArazzoDocument $document): bool;`
+
+#### `ValidationRuleInterface` interface
+- `public function check(ArazzoDocument $doc, SymbolTable $symbols, ErrorCollector $errors, ): void;`
+- `public function code(): string;`
 
 #### `WorkflowStateRepositoryInterface` interface
 - `public function delete(string $executionId): void;`
@@ -287,6 +300,32 @@ this file on a commit is a public API change — review it deliberately.
 - `public static function forChildInvocation(WorkflowContext $parent, Workflow $target, array $inputs, ): self`
 - `public static function fromPersisted(array $persisted, string $executionId): self`
 - `public static function reconciled(self $incoming, array $persisted, string $executionId): self`
+
+### `Alama\Arazzo\Contracts\Validation`
+
+#### `Error` class
+- `public function __construct(public string $code, public string $message, public string $path, public ?int $line = null, public Severity $severity = Severity::Error)`
+
+#### `ErrorCollector` class
+- `public function add(Error|Warning $diagnostic): void`
+- `public function error(string $code, string $message, string $path, ?int $line = null): void`
+- `public function errors(): array`
+- `public function warning(string $code, string $message, string $path, ?int $line = null): void`
+- `public function warnings(): array`
+
+#### `Severity` enum
+- Cases: `Error`, `Warning`
+
+#### `SymbolTable` class
+- `public function __construct(public array $workflows, public array $sourceDescriptions, public array $components, KnownOperations|array $knownOperations = new KnownOperations(), array $resolvedOperations = [])`
+- `public static function build(ArazzoDocument $doc, KnownOperations|array|null $resolvedOperations = null): self`
+
+#### `ValidationResult` class
+- `public function __construct(public ArazzoDocument $document, public array $errors, public array $warnings, public array $inputs = [])`
+- `public function isValid(): bool`
+
+#### `Warning` class
+- `public function __construct(public string $code, public string $message, public string $path, public ?int $line = null, public Severity $severity = Severity::Warning)`
 
 ## expression
 
@@ -494,18 +533,19 @@ this file on a commit is a public API change — review it deliberately.
 - `public function loadFromYaml(string $content, string $virtualPath = 'inline.yaml'): ArazzoDocument;`
 - `public function validate(ArazzoDocument $document, ?KnownOperations $operations = null): ValidationResult;`
 - `public function validateInputs(ArazzoDocument $document, string $workflowId, array $inputs): ValidationResult;`
+- `public function withRule(ValidationRuleInterface $rule): static;`
 
 ### `Alama\Arazzo\Document`
 
 #### `Document` class
-- `public function __construct(?ExpressionEngineInterface $expressionEngine = null, ?DecodePolicy $decodePolicy = null, ?Loader $loader = null, ?Parser $parser = null, ?Validator $validator = null)`
+- `public function __construct(?DecodePolicy $decodePolicy = null, ?Loader $loader = null, ?Parser $parser = null, ?Validator $validator = null, array $extraRules = [])`
 - `public function load(string $path): ArazzoDocument`
 - `public function loadFromJson(string $content, string $virtualPath = 'inline.json'): ArazzoDocument`
 - `public function loadFromYaml(string $content, string $virtualPath = 'inline.yaml'): ArazzoDocument`
 - `public function validate(ArazzoDocument $document, ?KnownOperations $operations = null): ValidationResult`
 - `public function validateInputs(ArazzoDocument $document, string $workflowId, array $inputs): ValidationResult`
 - `public function withDecodePolicy(DecodePolicy $policy): self`
-- `public function withExpressionEngine(ExpressionEngineInterface $engine): self`
+- `public function withRule(ValidationRuleInterface $rule): static`
 - `public static function create(): self`
 
 #### `OperationResolverInterface` interface
@@ -548,21 +588,15 @@ this file on a commit is a public API change — review it deliberately.
 - `public static function unsupportedVersion(ParseContext $ctx, string $actual): self`
 - `public static function wrongType(ParseContext $ctx, string $expected, mixed $actual): self`
 
-### `Alama\Arazzo\Document\Validator\Data`
+### `Alama\Arazzo\Document\Registries`
 
-#### `Error` class
-- `public function __construct(public string $code, public string $message, public string $path, public ?int $line = null, public Severity $severity = Severity::Error)`
-
-#### `SymbolTable` class
-- `public function __construct(public array $workflows, public array $sourceDescriptions, public array $components, KnownOperations|array $knownOperations = new KnownOperations(), array $resolvedOperations = [])`
-- `public static function build(ArazzoDocument $doc, KnownOperations|array|null $resolvedOperations = null): self`
-
-#### `ValidationResult` class
-- `public function __construct(public ArazzoDocument $document, public array $errors, public array $warnings, public array $inputs = [])`
-- `public function isValid(): bool`
-
-#### `Warning` class
-- `public function __construct(public string $code, public string $message, public string $path, public ?int $line = null, public Severity $severity = Severity::Warning)`
+#### `ValidationRuleRegistry` class
+- `public function all(): array`
+- `public function get(string $code): ?ValidationRuleInterface`
+- `public function has(string $code): bool`
+- `public function register(ValidationRuleInterface $rule, ?int $priority = null): void`
+- `public static function create(): self`
+- `public static function reset(): void`
 
 ## engine
 

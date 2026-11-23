@@ -6,10 +6,10 @@ namespace Alama\Arazzo\Tests\Validation\Rules;
 
 use Alama\Arazzo\Contracts\Spec\Expression;
 use Alama\Arazzo\Contracts\Spec\Workflow;
-use Alama\Arazzo\Document\Validator\Data\SymbolTable;
-use Alama\Arazzo\Document\Validator\ErrorCollector;
-use Alama\Arazzo\Document\Validator\Rules\ExpressionUnresolvedWorkflowRefRule;
+use Alama\Arazzo\Contracts\Validation\ErrorCollector;
+use Alama\Arazzo\Contracts\Validation\SymbolTable;
 use Alama\Arazzo\Expression\ExpressionEngine;
+use Alama\Arazzo\Expression\Validation\Rules\ExpressionUnresolvedWorkflowRefRule;
 use Alama\Arazzo\Tests\Support\Fx;
 
 it('flags unknown workflow, not-in-dependsOn, missing inputs/outputs; accepts declared inputs/outputs', function (): void {

@@ -8,12 +8,11 @@ use Alama\Arazzo\Contracts\Spec\Enum\Format;
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
 use Alama\Arazzo\Contracts\Spec\RawDocument;
 use Alama\Arazzo\Contracts\Spec\SourceDocument;
+use Alama\Arazzo\Contracts\Validation\ValidationResult;
 use Alama\Arazzo\Document\Parser\Decoders\SymfonyYamlDecoder;
 use Alama\Arazzo\Document\Parser\Parser;
-use Alama\Arazzo\Document\Validator\Data\ValidationResult;
 use Alama\Arazzo\Document\Validator\RuleSet;
 use Alama\Arazzo\Document\Validator\Validator;
-use Alama\Arazzo\Expression\ExpressionEngine;
 use Alama\Arazzo\Sources\Resolver\DefaultSourceResolver;
 
 /**
@@ -114,7 +113,7 @@ final class OaiCorpusRunner
 
         $document = (new Parser())->parse($raw);
 
-        return (new Validator(RuleSet::default(new ExpressionEngine())))->validate($document);
+        return (new Validator(RuleSet::default()))->validate($document);
     }
 
     /** Builds a registry pre-seeded with this document's local companions. */

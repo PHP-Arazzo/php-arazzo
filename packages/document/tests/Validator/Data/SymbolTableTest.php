@@ -14,7 +14,7 @@ use Alama\Arazzo\Contracts\Spec\StepFactory;
 use Alama\Arazzo\Contracts\Spec\StepFlow;
 use Alama\Arazzo\Contracts\Spec\StepIo;
 use Alama\Arazzo\Contracts\Spec\Workflow;
-use Alama\Arazzo\Document\Validator\Data\SymbolTable;
+use Alama\Arazzo\Contracts\Validation\SymbolTable;
 
 it('builds symbol table from document', function (): void {
     $step = StepFactory::http(

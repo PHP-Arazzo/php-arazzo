@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Document\Validator\Rules;
 
+use Alama\Arazzo\Contracts\Attributes\AsValidationRule;
+use Alama\Arazzo\Contracts\Interfaces\ValidationRuleInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
-use Alama\Arazzo\Document\Validator\Data\SymbolTable;
-use Alama\Arazzo\Document\Validator\ErrorCollector;
-use Alama\Arazzo\Document\Validator\Interfaces\Rule;
+use Alama\Arazzo\Contracts\Validation\ErrorCollector;
+use Alama\Arazzo\Contracts\Validation\SymbolTable;
 
 /**
  * Enum enforcement happens at parse time; this rule exists so that a stable
@@ -16,7 +17,8 @@ use Alama\Arazzo\Document\Validator\Interfaces\Rule;
  *
  * @internal stays out of the advertised contract; not part of the public API surface
  */
-final class SourceTypeMatchesRule implements Rule
+#[AsValidationRule]
+final class SourceTypeMatchesRule implements ValidationRuleInterface
 {
     public function code(): string
     {

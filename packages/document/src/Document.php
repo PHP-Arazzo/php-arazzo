@@ -5,20 +5,20 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Document;
 
 use Alama\Arazzo\Contracts\Data\KnownOperations;
+use Alama\Arazzo\Contracts\Interfaces\ValidationRuleInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
+use Alama\Arazzo\Contracts\Validation\ValidationResult;
 use Alama\Arazzo\Document\Parser\DecodePolicy;
 use Alama\Arazzo\Document\Parser\Loader;
 use Alama\Arazzo\Document\Parser\Parser;
-use Alama\Arazzo\Document\Validator\Data\ValidationResult;
 use Alama\Arazzo\Document\Validator\RuleSet;
 use Alama\Arazzo\Document\Validator\Validator;
-use Alama\Arazzo\Expression\ExpressionEngine;
-use Alama\Arazzo\Expression\Interfaces\ExpressionEngineInterface;
 
 /**
  * Public façade of the *document* package.
  *
- * Pure model work – no I/O, no cebe, no Guzzle.
+ * Pure model work – no I/O, no cebe, no Guzzle, no expression engine coupling.
+ * Validation rules are auto-discovered via {@see Registries\ValidationRuleRegistry}.
  */
 final readonly class Document implements DocumentInterface
 {
@@ -26,22 +26,27 @@ final readonly class Document implements DocumentInterface
 
     private Parser $parser;
 
-    private Validator $validator;
+    private ?Validator $validator;
+
+    /** @var array<string, ValidationRuleInterface> */
+    private array $extraRules;
 
     /**
      * Public autowirable constructor for enterprise DI containers.
+     *
+     * @param  array<string, ValidationRuleInterface>  $extraRules
      */
     public function __construct(
-        ?ExpressionEngineInterface $expressionEngine = null,
         ?DecodePolicy $decodePolicy = null,
         ?Loader $loader = null,
         ?Parser $parser = null,
         ?Validator $validator = null,
+        array $extraRules = [],
     ) {
-        $engine = $expressionEngine ?? new ExpressionEngine();
         $this->loader = $loader ?? ($decodePolicy !== null ? Loader::defineDecodePolicy($decodePolicy) : Loader::new());
         $this->parser = $parser ?? new Parser();
-        $this->validator = $validator ?? new Validator(RuleSet::default($engine));
+        $this->validator = $validator;
+        $this->extraRules = $extraRules;
     }
 
     public static function create(): self
@@ -55,15 +60,20 @@ final readonly class Document implements DocumentInterface
             loader: Loader::defineDecodePolicy($policy),
             parser: $this->parser,
             validator: $this->validator,
+            extraRules: $this->extraRules,
         );
     }
 
-    public function withExpressionEngine(ExpressionEngineInterface $engine): self
+    public function withRule(ValidationRuleInterface $rule): static
     {
+        $extraRules = $this->extraRules;
+        $extraRules[$rule->code()] = $rule;
+
         return new self(
             loader: $this->loader,
             parser: $this->parser,
-            validator: new Validator(RuleSet::default($engine)),
+            validator: $this->validator,
+            extraRules: $extraRules,
         );
     }
 
@@ -84,11 +94,25 @@ final readonly class Document implements DocumentInterface
 
     public function validate(ArazzoDocument $document, ?KnownOperations $operations = null): ValidationResult
     {
-        return $this->validator->validate($document, $operations);
+        return $this->resolveValidator()->validate($document, $operations);
     }
 
     public function validateInputs(ArazzoDocument $document, string $workflowId, array $inputs): ValidationResult
     {
-        return $this->validator->validateInputs($document, $workflowId, $inputs);
+        return $this->resolveValidator()->validateInputs($document, $workflowId, $inputs);
+    }
+
+    private function resolveValidator(): Validator
+    {
+        if ($this->validator !== null) {
+            return $this->validator;
+        }
+
+        $ruleSet = RuleSet::default();
+        foreach ($this->extraRules as $rule) {
+            $ruleSet = $ruleSet->withRule($rule);
+        }
+
+        return new Validator($ruleSet);
     }
 }

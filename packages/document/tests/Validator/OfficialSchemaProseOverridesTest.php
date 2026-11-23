@@ -7,10 +7,10 @@ namespace Tests\Validator;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Components;
 use Alama\Arazzo\Contracts\Spec\Info;
-use Alama\Arazzo\Document\Validator\Data\SymbolTable;
-use Alama\Arazzo\Document\Validator\ErrorCollector;
+use Alama\Arazzo\Contracts\Validation\ErrorCollector;
+use Alama\Arazzo\Contracts\Validation\SymbolTable;
 use Alama\Arazzo\Document\Validator\OfficialSchemaRule;
-use Alama\Arazzo\Expression\ExpressionEngine;
+use Alama\Arazzo\Expression\Validation\Rules\JsonPathCriterionConditionRule;
 
 /**
  * @param  list<array<string, mixed>>  $steps
@@ -65,7 +65,7 @@ function proseErrors(array $raw): ErrorCollector
     $doc = proseDoc($raw);
     $errors = new ErrorCollector();
 
-    (new OfficialSchemaRule(new ExpressionEngine()))->check($doc, SymbolTable::build($doc), $errors);
+    (new OfficialSchemaRule())->check($doc, SymbolTable::build($doc), $errors);
 
     return $errors;
 }
@@ -100,7 +100,7 @@ it('rejects a 1.0 criterion type object that is not a Criterion Expression Type 
 });
 
 it('rejects a 1.0 jsonpath condition that is not a JSONPath query', function (): void {
-    $errors = proseErrors(proseRaw('1.0.1', [[
+    $doc = proseDoc(proseRaw('1.0.1', [[
         'stepId' => 's',
         'operationId' => 'getToken',
         'successCriteria' => [[
@@ -109,15 +109,17 @@ it('rejects a 1.0 jsonpath condition that is not a JSONPath query', function ():
             'type' => 'jsonpath',
         ]],
     ]]));
+    $errors = new ErrorCollector();
+    (new JsonPathCriterionConditionRule())->check($doc, SymbolTable::build($doc), $errors);
 
     expect($errors->errors())->toHaveCount(1)
-        ->and($errors->errors()[0]->code)->toBe('schema.invalid')
+        ->and($errors->errors()[0]->code)->toBe('expr.jsonpath_condition')
         ->and($errors->errors()[0]->message)->toContain('JSONPath')
         ->and($errors->errors()[0]->path)->toBe('/workflows/0/steps/0/successCriteria/0/condition');
 });
 
 it('rejects a 1.1 jsonpath condition that is not a JSONPath query', function (): void {
-    $errors = proseErrors(proseRaw('1.1.0', [[
+    $doc = proseDoc(proseRaw('1.1.0', [[
         'stepId' => 's',
         'operationId' => 'getToken',
         'successCriteria' => [[
@@ -126,9 +128,11 @@ it('rejects a 1.1 jsonpath condition that is not a JSONPath query', function ():
             'type' => 'jsonpath',
         ]],
     ]]));
+    $errors = new ErrorCollector();
+    (new JsonPathCriterionConditionRule())->check($doc, SymbolTable::build($doc), $errors);
 
     expect($errors->errors())->toHaveCount(1)
-        ->and($errors->errors()[0]->code)->toBe('schema.invalid')
+        ->and($errors->errors()[0]->code)->toBe('expr.jsonpath_condition')
         ->and($errors->errors()[0]->message)->toContain('JSONPath');
 });
 

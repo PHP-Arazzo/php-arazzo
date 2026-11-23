@@ -7,10 +7,10 @@ namespace Alama\Arazzo\Tests\Validation\Rules;
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
 use Alama\Arazzo\Contracts\Spec\Enum\SpecVersion;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
-use Alama\Arazzo\Document\Validator\Data\SymbolTable;
-use Alama\Arazzo\Document\Validator\ErrorCollector;
-use Alama\Arazzo\Document\Validator\Rules\StepOperationPathSyntaxRule;
+use Alama\Arazzo\Contracts\Validation\ErrorCollector;
+use Alama\Arazzo\Contracts\Validation\SymbolTable;
 use Alama\Arazzo\Expression\ExpressionEngine;
+use Alama\Arazzo\Expression\Validation\Rules\StepOperationPathSyntaxRule;
 use Alama\Arazzo\Tests\Support\Fx;
 
 it('flags missing hash, unknown source, empty pointer, and non-slash pointer', function (): void {

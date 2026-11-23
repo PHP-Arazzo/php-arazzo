@@ -15,6 +15,13 @@ Arazzo document loader, parser, validator, and vendor-free domain model.
 composer require php-arazzo/arazzo-document
 ```
 
+> [!IMPORTANT]
+> **Standalone vs Full Validation**: `php-arazzo/arazzo-document` is intentionally decoupled from `php-arazzo/arazzo-expression` and protocol packages. Installing `arazzo-document` alone runs all structural and referential Arazzo specification rules, **not** runtime expression or JSONPath/XPath selector validation rules.
+>
+> - For full validation including runtime expressions (`expr.*`), selector versions, and `jsonpath` criteria (`expr.jsonpath_condition`), also install `php-arazzo/arazzo-expression` — or install the default umbrella package **`php-arazzo/arazzo-core`**, which bundles them together.
+> - Protocol-specific step rules (`step.wsdl_step`, `step.rpc_step`) auto-activate whenever `php-arazzo/arazzo-protocol-soap` or `php-arazzo/arazzo-protocol-rpc` is installed.
+> - All installed packages' rules are discovered automatically by `ValidationRuleRegistry` via Composer's `extra.arazzo.plugins` manifest and `#[AsValidationRule]` attributes — no manual wiring required.
+
 ---
 
 ## Quickstart
@@ -107,20 +114,29 @@ $policy = new DecodePolicy(
 $documentFacade = Document::create()->withDecodePolicy($policy);
 ```
 
-### 5. Dependency Injection & Enterprise Frameworks
-The `Document` class implements `DocumentInterface` and has a fully autowirable constructor, making it ready for Laravel, Symfony, Drupal, Spryker, and WordPress service containers:
+### 5. Registering Custom Validation Rules
+Register custom rules implementing `ValidationRuleInterface` either per-instance via `withRule()` or globally via `ValidationRuleRegistry::create()` (or declare them in your `composer.json` under `extra.arazzo.plugins` with `#[AsValidationRule]`):
+
+```php
+use Alama\Arazzo\Document\Document;
+use Alama\Arazzo\Document\Registries\ValidationRuleRegistry;
+
+// Per-instance override:
+$documentFacade = Document::create()->withRule($customRule);
+
+// Or globally for all Document instances:
+ValidationRuleRegistry::create()->register($customRule);
+```
+
+### 6. Dependency Injection & Enterprise Frameworks
+The `Document` class implements `DocumentInterface` and has a fully autowirable constructor with zero expression-engine coupling, making it ready for Laravel, Symfony, Drupal, Spryker, and WordPress service containers:
 
 ```php
 use Alama\Arazzo\Document\DocumentInterface;
 use Alama\Arazzo\Document\Document;
-use Alama\Arazzo\Expression\Interfaces\ExpressionEngineInterface;
 
 // Symfony / Laravel service definition:
-$container->singleton(DocumentInterface::class, function ($app) {
-    return new Document(
-        expressionEngine: $app->get(ExpressionEngineInterface::class)
-    );
-});
+$container->singleton(DocumentInterface::class, fn () => Document::create());
 ```
 
 ---

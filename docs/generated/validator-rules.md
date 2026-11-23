@@ -9,15 +9,13 @@ every commit.
 
 ```mermaid
 flowchart TD
-    ROOT["Validator rules (65)"]
-    G_Actions["Actions — 8"]
+    ROOT["Validator rules (50)"]
+    G_Actions["Actions — 7"]
     ROOT --> G_Actions
     R_ActionDuplicateRule["ActionDuplicate"]
     G_Actions --> R_ActionDuplicateRule
     R_ActionGotoTargetResolvesRule["ActionGotoTargetResolves"]
     G_Actions --> R_ActionGotoTargetResolvesRule
-    R_ActionOutputTargetExclusivityRule["ActionOutputTargetExclusivity"]
-    G_Actions --> R_ActionOutputTargetExclusivityRule
     R_ActionParameterInForbiddenRule["ActionParameterInForbidden"]
     G_Actions --> R_ActionParameterInForbiddenRule
     R_ActionRetryLimitsRule["ActionRetryLimits"]
@@ -46,52 +44,22 @@ flowchart TD
     G_Document_level --> R_DocumentInfoRequiredRule
     R_DocumentSourceDescriptionsPresentRule["DocumentSourceDescriptionsPresent"]
     G_Document_level --> R_DocumentSourceDescriptionsPresentRule
-    G_Expressions["Expressions — 8"]
-    ROOT --> G_Expressions
-    R_ExpressionContextMisuseRule["ExpressionContextMisuse"]
-    G_Expressions --> R_ExpressionContextMisuseRule
-    R_ExpressionJsonPointerSyntaxRule["ExpressionJsonPointerSyntax"]
-    G_Expressions --> R_ExpressionJsonPointerSyntaxRule
-    R_ExpressionSyntaxRule["ExpressionSyntax"]
-    G_Expressions --> R_ExpressionSyntaxRule
-    R_ExpressionUnresolvedComponentRefRule["ExpressionUnresolvedComponentRef"]
-    G_Expressions --> R_ExpressionUnresolvedComponentRefRule
-    R_ExpressionUnresolvedInputRefRule["ExpressionUnresolvedInputRef"]
-    G_Expressions --> R_ExpressionUnresolvedInputRefRule
-    R_ExpressionUnresolvedSourceRefRule["ExpressionUnresolvedSourceRef"]
-    G_Expressions --> R_ExpressionUnresolvedSourceRefRule
-    R_ExpressionUnresolvedStepRefRule["ExpressionUnresolvedStepRef"]
-    G_Expressions --> R_ExpressionUnresolvedStepRefRule
-    R_ExpressionUnresolvedWorkflowRefRule["ExpressionUnresolvedWorkflowRef"]
-    G_Expressions --> R_ExpressionUnresolvedWorkflowRefRule
-    G_General["General — 8"]
+    G_General["General — 4"]
     ROOT --> G_General
     R_GraphQlStepRule["GraphQlStep"]
     G_General --> R_GraphQlStepRule
     R_InteractionStepRule["InteractionStep"]
     G_General --> R_InteractionStepRule
-    R_MessageRefRequiresReceiveRule["MessageRefRequiresReceive"]
-    G_General --> R_MessageRefRequiresReceiveRule
     R_ReceiveStepSuccessCriteriaRule["ReceiveStepSuccessCriteria"]
     G_General --> R_ReceiveStepSuccessCriteriaRule
-    R_RpcStepRule["RpcStep"]
-    G_General --> R_RpcStepRule
     R_SubWorkflowInvokeTargetResolvesRule["SubWorkflowInvokeTargetResolves"]
     G_General --> R_SubWorkflowInvokeTargetResolvesRule
-    R_SuccessCriteriaVersionSupportedRule["SuccessCriteriaVersionSupported"]
-    G_General --> R_SuccessCriteriaVersionSupportedRule
-    R_WsdlStepRule["WsdlStep"]
-    G_General --> R_WsdlStepRule
     G_Parameters["Parameters — 2"]
     ROOT --> G_Parameters
     R_ParameterQuerystringOperationShapeRule["ParameterQuerystringOperationShape"]
     G_Parameters --> R_ParameterQuerystringOperationShapeRule
     R_ParameterReusableRefResolvesRule["ParameterReusableRefResolves"]
     G_Parameters --> R_ParameterReusableRefResolvesRule
-    G_Selectors["Selectors — 1"]
-    ROOT --> G_Selectors
-    R_SelectorTypeSupportedRule["SelectorTypeSupported"]
-    G_Selectors --> R_SelectorTypeSupportedRule
     G_Sources["Sources — 4"]
     ROOT --> G_Sources
     R_SelfUriSyntaxRule["SelfUriSyntax"]
@@ -106,7 +74,7 @@ flowchart TD
     ROOT --> G_Specification_extensions
     R_ExtensionsXPrefixRule["ExtensionsXPrefix"]
     G_Specification_extensions --> R_ExtensionsXPrefixRule
-    G_Step_level["Step-level — 21"]
+    G_Step_level["Step-level — 20"]
     ROOT --> G_Step_level
     R_StepAtLeastOneRule["StepAtLeastOne"]
     G_Step_level --> R_StepAtLeastOneRule
@@ -124,8 +92,6 @@ flowchart TD
     G_Step_level --> R_StepOperationIdResolvesRule
     R_StepOperationIdSourceScopedRule["StepOperationIdSourceScoped"]
     G_Step_level --> R_StepOperationIdSourceScopedRule
-    R_StepOperationPathSyntaxRule["StepOperationPathSyntax"]
-    G_Step_level --> R_StepOperationPathSyntaxRule
     R_StepOperationTargetPresentRule["StepOperationTargetPresent"]
     G_Step_level --> R_StepOperationTargetPresentRule
     R_StepOutputsUniqueRule["StepOutputsUnique"]
@@ -168,15 +134,13 @@ flowchart TD
 
 | Group | Rules |
 |---|---|
-| **Actions** | `ActionDuplicateRule`, `ActionGotoTargetResolvesRule`, `ActionOutputTargetExclusivityRule`, `ActionParameterInForbiddenRule`, `ActionRetryLimitsRule`, `ActionReusableRefResolvesRule`, `ActionTargetExclusivityRule`, `ActionTypeValidRule` |
+| **Actions** | `ActionDuplicateRule`, `ActionGotoTargetResolvesRule`, `ActionParameterInForbiddenRule`, `ActionRetryLimitsRule`, `ActionReusableRefResolvesRule`, `ActionTargetExclusivityRule`, `ActionTypeValidRule` |
 | **AsyncAPI** | `AsyncApiFieldsRequire11Rule` |
 | **Components** | `ComponentsUniqueNamesRule` |
 | **Document-level** | `DocUnknownFieldRule`, `DocumentArazzoVersionRule`, `DocumentInfoRequiredRule`, `DocumentSourceDescriptionsPresentRule` |
-| **Expressions** | `ExpressionContextMisuseRule`, `ExpressionJsonPointerSyntaxRule`, `ExpressionSyntaxRule`, `ExpressionUnresolvedComponentRefRule`, `ExpressionUnresolvedInputRefRule`, `ExpressionUnresolvedSourceRefRule`, `ExpressionUnresolvedStepRefRule`, `ExpressionUnresolvedWorkflowRefRule` |
-| **General** | `GraphQlStepRule`, `InteractionStepRule`, `MessageRefRequiresReceiveRule`, `ReceiveStepSuccessCriteriaRule`, `RpcStepRule`, `SubWorkflowInvokeTargetResolvesRule`, `SuccessCriteriaVersionSupportedRule`, `WsdlStepRule` |
+| **General** | `GraphQlStepRule`, `InteractionStepRule`, `ReceiveStepSuccessCriteriaRule`, `SubWorkflowInvokeTargetResolvesRule` |
 | **Parameters** | `ParameterQuerystringOperationShapeRule`, `ParameterReusableRefResolvesRule` |
-| **Selectors** | `SelectorTypeSupportedRule` |
 | **Sources** | `SelfUriSyntaxRule`, `SourceTypeMatchesRule`, `SourceUniqueNameRule`, `SourceUrlSyntaxRule` |
 | **Specification extensions** | `ExtensionsXPrefixRule` |
-| **Step-level** | `StepAtLeastOneRule`, `StepCriteriaTypeContextRule`, `StepDependsOnNoCycleRule`, `StepIdPatternRule`, `StepNestedWorkflowExistsRule`, `StepNestedWorkflowNoCycleRule`, `StepOperationIdResolvesRule`, `StepOperationIdSourceScopedRule`, `StepOperationPathSyntaxRule`, `StepOperationTargetPresentRule`, `StepOutputsUniqueRule`, `StepParameterDuplicateRule`, `StepParameterInValidRule`, `StepParameterRequiresInRule`, `StepParametersHaveNameRule`, `StepRequestBodyReplacementsTargetRule`, `StepRequestBodyWorkflowRule`, `StepSuccessActionParameterInRule`, `StepSuccessCriteriaConditionRule`, `StepTimeoutRequires11Rule`, `StepUniqueIdRule` |
+| **Step-level** | `StepAtLeastOneRule`, `StepCriteriaTypeContextRule`, `StepDependsOnNoCycleRule`, `StepIdPatternRule`, `StepNestedWorkflowExistsRule`, `StepNestedWorkflowNoCycleRule`, `StepOperationIdResolvesRule`, `StepOperationIdSourceScopedRule`, `StepOperationTargetPresentRule`, `StepOutputsUniqueRule`, `StepParameterDuplicateRule`, `StepParameterInValidRule`, `StepParameterRequiresInRule`, `StepParametersHaveNameRule`, `StepRequestBodyReplacementsTargetRule`, `StepRequestBodyWorkflowRule`, `StepSuccessActionParameterInRule`, `StepSuccessCriteriaConditionRule`, `StepTimeoutRequires11Rule`, `StepUniqueIdRule` |
 | **Workflow-level** | `WorkflowAtLeastOneRule`, `WorkflowDependsOnExistsRule`, `WorkflowDependsOnNoCycleRule`, `WorkflowIdPatternRule`, `WorkflowInputsValidSchemaRule`, `WorkflowUniqueIdRule` |

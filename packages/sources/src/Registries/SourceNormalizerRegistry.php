@@ -5,20 +5,17 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Sources\Registries;
 
 use Alama\Arazzo\Contracts\Attributes\AsSourceNormalizer;
+use Alama\Arazzo\Contracts\Discovery\PluginDiscovery;
 use Alama\Arazzo\Contracts\Interfaces\SourceNormalizerInterface;
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
-use Alama\Arazzo\Sources\Normalizer\OpenApi30Normalizer;
-use Alama\Arazzo\Sources\Normalizer\OpenApi31Normalizer;
-use Alama\Arazzo\Sources\Normalizer\OpenApiSourceNormalizer;
-use Alama\Arazzo\Sources\Normalizer\OpenApiVersionDetector;
 use ReflectionClass;
 
 /**
  * Public singleton registry of source normalizers.
  *
  * SPI registry holding stateless normalizer implementations keyed by name and
- * resolved by SourceType and priority. Auto-seeds the built-in zero-vendor
- * OpenApiSourceNormalizer on first creation.
+ * resolved by SourceType and priority. Auto-discovers `#[AsSourceNormalizer]`
+ * classes declared in installed packages' `composer.json` `extra.arazzo.plugins`.
  */
 final class SourceNormalizerRegistry
 {
@@ -27,21 +24,18 @@ final class SourceNormalizerRegistry
     /** @var array<string, array{normalizer: SourceNormalizerInterface, priority: int, type: ?SourceType}> */
     private array $normalizers = [];
 
-    private function __construct() {}
+    private function __construct()
+    {
+        foreach (PluginDiscovery::instantiate(AsSourceNormalizer::class) as $normalizer) {
+            if ($normalizer instanceof SourceNormalizerInterface) {
+                $this->register($normalizer);
+            }
+        }
+    }
 
     public static function create(): self
     {
-        if (self::$instance === null) {
-            $registry = new self();
-            $registry->register(new OpenApiSourceNormalizer(
-                new OpenApiVersionDetector(),
-                new OpenApi30Normalizer(),
-                new OpenApi31Normalizer(),
-            ));
-            self::$instance = $registry;
-        }
-
-        return self::$instance;
+        return self::$instance ??= new self();
     }
 
     public static function reset(): void

@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Tests;
 
 use Alama\Arazzo\Contracts\Data\KnownOperations;
+use Alama\Arazzo\Contracts\Interfaces\ValidationRuleInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
+use Alama\Arazzo\Contracts\Validation\ErrorCollector;
+use Alama\Arazzo\Contracts\Validation\SymbolTable;
 use Alama\Arazzo\Document\Document;
 use Alama\Arazzo\Document\Parser\DecodePolicy;
 use Alama\Arazzo\Document\Parser\Exceptions\LoaderException;
@@ -94,4 +97,31 @@ YAML;
 
     $invalid = $doc->validateInputs($arazzoDoc, 'wf-1', ['userId' => 'abc']);
     expect($invalid->isValid())->toBeFalse();
+});
+
+it('supports immutable per-instance validation rules via withRule()', function (): void {
+    $doc = createDocument();
+    $arazzoDoc = $doc->loadFromYaml("arazzo: '1.0.0'\ninfo:\n  title: Test\n  version: '1.0'\nsourceDescriptions:\n  - name: api\n    url: https://example.com/api.json\n    type: openapi\nworkflows:\n  - workflowId: wf1\n    steps:\n      - stepId: s1\n        operationId: api.ping\n");
+
+    $customRule = new class() implements ValidationRuleInterface
+    {
+        public function code(): string
+        {
+            return 'custom.require_description';
+        }
+
+        public function check(ArazzoDocument $doc, SymbolTable $symbols, ErrorCollector $errors): void
+        {
+            if ($doc->info->description === null) {
+                $errors->error($this->code(), 'Info description is required.', '/info/description');
+            }
+        }
+    };
+
+    $withCustom = $doc->withRule($customRule);
+
+    expect($withCustom)->not->toBe($doc)
+        ->and($doc->validate($arazzoDoc)->isValid())->toBeTrue()
+        ->and($withCustom->validate($arazzoDoc)->isValid())->toBeFalse()
+        ->and($withCustom->validate($arazzoDoc)->errors[0]->code)->toBe('custom.require_description');
 });

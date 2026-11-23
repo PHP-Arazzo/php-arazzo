@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Runner\Exceptions;
 
-use Alama\Arazzo\Document\Validator\Data\ValidationResult;
+use Alama\Arazzo\Contracts\Validation\ValidationResult;
 use RuntimeException;
 
 final class PreflightFailureException extends RuntimeException

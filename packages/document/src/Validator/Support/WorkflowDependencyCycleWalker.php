@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Document\Validator\Support;
 
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
-use Alama\Arazzo\Document\Validator\Data\SymbolTable;
-use Alama\Arazzo\Document\Validator\ErrorCollector;
+use Alama\Arazzo\Contracts\Validation\ErrorCollector;
+use Alama\Arazzo\Contracts\Validation\SymbolTable;
 
 /**
  * Depth-first walk of the workflow dependency graph, reporting the first back

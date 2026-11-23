@@ -4,90 +4,18 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Document\Validator;
 
-use Alama\Arazzo\Contracts\Spec\Enum\ExpressionType;
-use Alama\Arazzo\Document\Validator\Interfaces\Rule;
-use Alama\Arazzo\Document\Validator\Rules\ActionDuplicateRule;
-use Alama\Arazzo\Document\Validator\Rules\ActionGotoTargetResolvesRule;
-use Alama\Arazzo\Document\Validator\Rules\ActionOutputTargetExclusivityRule;
-use Alama\Arazzo\Document\Validator\Rules\ActionParameterInForbiddenRule;
-use Alama\Arazzo\Document\Validator\Rules\ActionRetryLimitsRule;
-use Alama\Arazzo\Document\Validator\Rules\ActionReusableRefResolvesRule;
-use Alama\Arazzo\Document\Validator\Rules\ActionTargetExclusivityRule;
-use Alama\Arazzo\Document\Validator\Rules\ActionTypeValidRule;
-use Alama\Arazzo\Document\Validator\Rules\AsyncApiFieldsRequire11Rule;
-use Alama\Arazzo\Document\Validator\Rules\ComponentsUniqueNamesRule;
-use Alama\Arazzo\Document\Validator\Rules\DocumentArazzoVersionRule;
-use Alama\Arazzo\Document\Validator\Rules\DocumentInfoRequiredRule;
-use Alama\Arazzo\Document\Validator\Rules\DocumentSourceDescriptionsPresentRule;
-use Alama\Arazzo\Document\Validator\Rules\DocUnknownFieldRule;
-use Alama\Arazzo\Document\Validator\Rules\ExpressionContextMisuseRule;
-use Alama\Arazzo\Document\Validator\Rules\ExpressionJsonPointerSyntaxRule;
-use Alama\Arazzo\Document\Validator\Rules\ExpressionSyntaxRule;
-use Alama\Arazzo\Document\Validator\Rules\ExpressionUnresolvedComponentRefRule;
-use Alama\Arazzo\Document\Validator\Rules\ExpressionUnresolvedInputRefRule;
-use Alama\Arazzo\Document\Validator\Rules\ExpressionUnresolvedSourceRefRule;
-use Alama\Arazzo\Document\Validator\Rules\ExpressionUnresolvedStepRefRule;
-use Alama\Arazzo\Document\Validator\Rules\ExpressionUnresolvedWorkflowRefRule;
-use Alama\Arazzo\Document\Validator\Rules\ExtensionsXPrefixRule;
-use Alama\Arazzo\Document\Validator\Rules\GraphQlStepRule;
-use Alama\Arazzo\Document\Validator\Rules\InteractionStepRule;
-use Alama\Arazzo\Document\Validator\Rules\MessageRefRequiresReceiveRule;
-use Alama\Arazzo\Document\Validator\Rules\ParameterQuerystringOperationShapeRule;
-use Alama\Arazzo\Document\Validator\Rules\ParameterReusableRefResolvesRule;
-use Alama\Arazzo\Document\Validator\Rules\ReceiveStepSuccessCriteriaRule;
-use Alama\Arazzo\Document\Validator\Rules\RpcStepRule;
-use Alama\Arazzo\Document\Validator\Rules\SelectorTypeSupportedRule;
-use Alama\Arazzo\Document\Validator\Rules\SelfUriSyntaxRule;
-use Alama\Arazzo\Document\Validator\Rules\SourceTypeMatchesRule;
-use Alama\Arazzo\Document\Validator\Rules\SourceUniqueNameRule;
-use Alama\Arazzo\Document\Validator\Rules\SourceUrlSyntaxRule;
-use Alama\Arazzo\Document\Validator\Rules\StepAtLeastOneRule;
-use Alama\Arazzo\Document\Validator\Rules\StepCriteriaTypeContextRule;
-use Alama\Arazzo\Document\Validator\Rules\StepDependsOnNoCycleRule;
-use Alama\Arazzo\Document\Validator\Rules\StepIdPatternRule;
-use Alama\Arazzo\Document\Validator\Rules\StepNestedWorkflowExistsRule;
-use Alama\Arazzo\Document\Validator\Rules\StepNestedWorkflowNoCycleRule;
-use Alama\Arazzo\Document\Validator\Rules\StepOperationIdResolvesRule;
-use Alama\Arazzo\Document\Validator\Rules\StepOperationIdSourceScopedRule;
-use Alama\Arazzo\Document\Validator\Rules\StepOperationPathSyntaxRule;
-use Alama\Arazzo\Document\Validator\Rules\StepOperationTargetPresentRule;
-use Alama\Arazzo\Document\Validator\Rules\StepOutputsUniqueRule;
-use Alama\Arazzo\Document\Validator\Rules\StepParameterDuplicateRule;
-use Alama\Arazzo\Document\Validator\Rules\StepParameterInValidRule;
-use Alama\Arazzo\Document\Validator\Rules\StepParameterRequiresInRule;
-use Alama\Arazzo\Document\Validator\Rules\StepParametersHaveNameRule;
-use Alama\Arazzo\Document\Validator\Rules\StepRequestBodyReplacementsTargetRule;
-use Alama\Arazzo\Document\Validator\Rules\StepRequestBodyWorkflowRule;
-use Alama\Arazzo\Document\Validator\Rules\StepSuccessCriteriaConditionRule;
-use Alama\Arazzo\Document\Validator\Rules\StepTimeoutRequires11Rule;
-use Alama\Arazzo\Document\Validator\Rules\StepUniqueIdRule;
-use Alama\Arazzo\Document\Validator\Rules\SubWorkflowInvokeTargetResolvesRule;
-use Alama\Arazzo\Document\Validator\Rules\SuccessCriteriaVersionSupportedRule;
-use Alama\Arazzo\Document\Validator\Rules\WorkflowAtLeastOneRule;
-use Alama\Arazzo\Document\Validator\Rules\WorkflowDependsOnExistsRule;
-use Alama\Arazzo\Document\Validator\Rules\WorkflowDependsOnNoCycleRule;
-use Alama\Arazzo\Document\Validator\Rules\WorkflowIdPatternRule;
-use Alama\Arazzo\Document\Validator\Rules\WorkflowInputsValidSchemaRule;
-use Alama\Arazzo\Document\Validator\Rules\WorkflowUniqueIdRule;
-use Alama\Arazzo\Document\Validator\Rules\WsdlStepRule;
-use Alama\Arazzo\Expression\Interfaces\ExpressionEngineInterface;
+use Alama\Arazzo\Contracts\Interfaces\ValidationRuleInterface;
+use Alama\Arazzo\Document\Registries\ValidationRuleRegistry;
 
 /**
- * The default validator rule set: the single place that names every rule and
- * the engine services each one needs.
- *
- * PHPMD's CouplingBetweenObjects finding stays above the default threshold
- * here, deliberately: this is the composition root, so naming every rule is the
- * job. Moving the list into a factory or per-domain groups would relocate the
- * same coupling, and each group would still reference more rules than the
- * threshold allows. Kept as one readable list (#257).
+ * Immutable set of active validation rules and strictness/disable filters.
  *
  * @internal stays out of the advertised contract; not part of the public API surface
  */
 final readonly class RuleSet
 {
     /**
-     * @param  list<Rule>  $rules
+     * @param  list<ValidationRuleInterface>  $rules
      * @param  list<string>  $disabled
      */
     public function __construct(
@@ -97,102 +25,46 @@ final readonly class RuleSet
     ) {}
 
     /**
+     * Builds the default RuleSet from {@see ValidationRuleRegistry::create()},
+     * which auto-discovers all `#[AsValidationRule]` rules across installed
+     * packages (`arazzo-document`, `arazzo-expression`, protocol packages, and
+     * user applications).
+     *
      * @param  list<string>  $disabled
      */
     public static function default(
-        ExpressionEngineInterface $engine,
         array $disabled = [],
         bool $strict = true,
     ): self {
-        return new self([
-            new OfficialSchemaRule($engine),
-            new ActionDuplicateRule(),
-            new ActionGotoTargetResolvesRule(),
-            new ActionTargetExclusivityRule(),
-            new ActionOutputTargetExclusivityRule($engine),
-            new ActionParameterInForbiddenRule(),
-            new ActionRetryLimitsRule(),
-            new ActionReusableRefResolvesRule(),
-            new ActionTypeValidRule(),
-            new AsyncApiFieldsRequire11Rule(),
-            new ComponentsUniqueNamesRule(),
-            new DocUnknownFieldRule(),
-            new DocumentArazzoVersionRule(),
-            new DocumentSourceDescriptionsPresentRule(),
-            new DocumentInfoRequiredRule(),
-            new ExpressionContextMisuseRule($engine),
-            new ExpressionJsonPointerSyntaxRule($engine),
-            new ExpressionSyntaxRule($engine),
-            new ExpressionUnresolvedComponentRefRule($engine),
-            new ExpressionUnresolvedInputRefRule($engine),
-            new ExpressionUnresolvedSourceRefRule($engine),
-            new ExpressionUnresolvedStepRefRule($engine),
-            new ExpressionUnresolvedWorkflowRefRule($engine),
-            new ExtensionsXPrefixRule(),
-            new ParameterQuerystringOperationShapeRule(),
-            new SelectorTypeSupportedRule($engine->supportedSelectorVersions(ExpressionType::JsonPath)),
-            new SelfUriSyntaxRule(),
-            new SourceTypeMatchesRule(),
-            new SourceUniqueNameRule(),
-            new SourceUrlSyntaxRule(),
-            new StepAtLeastOneRule(),
-            new StepCriteriaTypeContextRule(),
-            new StepDependsOnNoCycleRule(),
-            new StepIdPatternRule(),
-            new StepNestedWorkflowExistsRule(),
-            new StepNestedWorkflowNoCycleRule(),
-            new StepOperationIdResolvesRule(),
-            new StepOperationIdSourceScopedRule(),
-            new StepOperationPathSyntaxRule($engine),
-            new StepOperationTargetPresentRule(),
-            new WsdlStepRule($engine),
-            new StepTimeoutRequires11Rule(),
-            new StepOutputsUniqueRule(),
-            new StepParameterDuplicateRule(),
-            new ParameterReusableRefResolvesRule(),
-            new StepParameterRequiresInRule(),
-            new StepParameterInValidRule(),
-            new StepRequestBodyWorkflowRule(),
-            new StepParametersHaveNameRule(),
-            new StepRequestBodyReplacementsTargetRule(),
-            new StepSuccessCriteriaConditionRule(),
-            // Arazzo 1.1 §5.8.5.3 says authors SHOULD define successCriteria
-            // for receive steps, but MAY omit them when the channel's single
-            // message type unambiguously signals success. Warn; do not reject.
-            new ReceiveStepSuccessCriteriaRule(false),
-            new MessageRefRequiresReceiveRule($engine),
-            new StepUniqueIdRule(),
-            new SubWorkflowInvokeTargetResolvesRule(),
-            new SuccessCriteriaVersionSupportedRule($engine->supportedSelectorVersions(ExpressionType::XPath)),
-            new WorkflowAtLeastOneRule(),
-            new WorkflowDependsOnExistsRule(),
-            new WorkflowDependsOnNoCycleRule(),
-            new WorkflowIdPatternRule(),
-            new WorkflowInputsValidSchemaRule(),
-            new WorkflowUniqueIdRule(),
-            new RpcStepRule(),
-            new GraphQlStepRule(),
-            new InteractionStepRule(),
-        ], $disabled, $strict);
+        return new self(
+            ValidationRuleRegistry::create()->all(),
+            $disabled,
+            $strict,
+        );
     }
 
-    public function withRule(Rule $rule): self
+    public function withRule(ValidationRuleInterface $rule): self
     {
-        return new self([...$this->rules, $rule], $this->disabled, $this->strict);
+        $filtered = array_values(array_filter(
+            $this->rules,
+            static fn (ValidationRuleInterface $existing): bool => $existing->code() !== $rule->code(),
+        ));
+
+        return new self([...$filtered, $rule], $this->disabled, $this->strict);
     }
 
-    /** @return list<Rule> */
+    /** @return list<ValidationRuleInterface> */
     public function rules(): array
     {
         return $this->rules;
     }
 
-    /** @return list<Rule> */
+    /** @return list<ValidationRuleInterface> */
     public function activeRules(): array
     {
         return array_values(array_filter(
             $this->rules,
-            fn (Rule $r) => !in_array($r->code(), $this->disabled, true),
+            fn (ValidationRuleInterface $r): bool => !in_array($r->code(), $this->disabled, true),
         ));
     }
 

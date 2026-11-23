@@ -4,17 +4,19 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Document\Validator\Rules;
 
+use Alama\Arazzo\Contracts\Attributes\AsValidationRule;
 use Alama\Arazzo\Contracts\Dependency\ImplicitDependencies;
+use Alama\Arazzo\Contracts\Interfaces\ValidationRuleInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Workflow;
-use Alama\Arazzo\Document\Validator\Data\SymbolTable;
-use Alama\Arazzo\Document\Validator\ErrorCollector;
-use Alama\Arazzo\Document\Validator\Interfaces\Rule;
+use Alama\Arazzo\Contracts\Validation\ErrorCollector;
+use Alama\Arazzo\Contracts\Validation\SymbolTable;
 
 /**
  * @internal stays out of the advertised contract; not part of the public API surface
  */
-final class StepDependsOnNoCycleRule implements Rule
+#[AsValidationRule]
+final class StepDependsOnNoCycleRule implements ValidationRuleInterface
 {
     private const string CROSS_WORKFLOW_PATTERN = '/^\$workflows\.(?<workflowId>.+)\.steps\.(?<stepId>.+)$/';
 

@@ -37,6 +37,8 @@ This repository is organized as a monorepo containing the following Composer pac
 | **[php-arazzo/arazzo-cli](packages/cli)** | Console terminal edge: `arazzo run`, `validate`, `list`, `explain`, `render` commands. Thin OSS port using `RunnerFacadeInterface`. | `^1.0.0-alpha.1` |
 
 > **Note:** `alama/laravel-arazzo` has been extracted to its own repository at [`php-arazzo/laravel-arazzo`](https://github.com/PHP-Arazzo/laravel-arazzo). Use that repo for Laravel integration.
+>
+> **Modular Validation Discovery:** Installing `php-arazzo/arazzo-document` standalone validates structural and referential Arazzo rules only. Expression & selector validation rules ship in `php-arazzo/arazzo-expression` (and WSDL/RPC step rules in `arazzo-protocol-soap` / `arazzo-protocol-rpc`) and are auto-discovered via `extra.arazzo.plugins` whenever installed — in default setups using `php-arazzo/arazzo-core`, all of them are installed and active automatically.
 
 ---
 

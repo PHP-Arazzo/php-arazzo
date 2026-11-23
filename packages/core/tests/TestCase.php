@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Tests;
 
+use Alama\Arazzo\Contracts\Discovery\PluginDiscovery;
+use Alama\Arazzo\Document\Registries\ValidationRuleRegistry;
 use Alama\Arazzo\Evaluation\Registries\CriterionEvaluatorRegistry;
 use Alama\Arazzo\Evaluation\Registries\ExpressionEvaluatorRegistry;
 use Alama\Arazzo\Expression\Registries\SelectorPluginRegistry;
@@ -27,11 +29,17 @@ abstract class TestCase extends BaseTestCase
 
     private static function resetRegistries(): void
     {
+        if (class_exists(PluginDiscovery::class)) {
+            PluginDiscovery::reset();
+        }
         if (class_exists(SelectorPluginRegistry::class)) {
             SelectorPluginRegistry::reset();
         }
         if (class_exists(SourceNormalizerRegistry::class)) {
             SourceNormalizerRegistry::reset();
+        }
+        if (class_exists(ValidationRuleRegistry::class)) {
+            ValidationRuleRegistry::reset();
         }
         if (class_exists(OperationExecutorRegistry::class)) {
             OperationExecutorRegistry::reset();

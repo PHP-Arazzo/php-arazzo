@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Document;
 
 use Alama\Arazzo\Contracts\Data\KnownOperations;
+use Alama\Arazzo\Contracts\Interfaces\ValidationRuleInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
+use Alama\Arazzo\Contracts\Validation\ValidationResult;
 use Alama\Arazzo\Document\Parser\Exceptions\LoaderException;
 use Alama\Arazzo\Document\Parser\Exceptions\ParserException;
-use Alama\Arazzo\Document\Validator\Data\ValidationResult;
 
 /**
  * Entry-point seam for the document package.
@@ -40,6 +41,11 @@ interface DocumentInterface
      * @throws ParserException
      */
     public function loadFromJson(string $content, string $virtualPath = 'inline.json'): ArazzoDocument;
+
+    /**
+     * Immutably register an extra or overriding validation rule for this Document instance.
+     */
+    public function withRule(ValidationRuleInterface $rule): static;
 
     /**
      * Static validation of a parsed document against spec rules.

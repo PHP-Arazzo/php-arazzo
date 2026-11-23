@@ -16,10 +16,11 @@ when a boundary consciously moves.
 
 | Vendor | core refs | laravel refs | Policy in core |
 |---|---:|---:|---|
+| `Composer` | 1 | 0 | _unclassified_ ⚠ |
 | `GuzzleHttp` | 7 | 0 | **forbidden** ⚠ |
 | `JsonSchema` | 7 | 0 | _unclassified_ ⚠ |
 | `OpenTelemetry` | 25 | 0 | _unclassified_ ⚠ |
-| `Psr` | 62 | 0 | allowed |
+| `Psr` | 61 | 0 | allowed |
 | `Symfony` | 32 | 0 | **forbidden** ⚠ |
 | `cebe` | 16 | 0 | **forbidden** ⚠ |
 
@@ -31,6 +32,7 @@ when a boundary consciously moves.
 | cli | `cli:Console` | `Psr` | 4 |
 | cli | `cli:Console` | `Symfony` | 30 |
 | cli | `cli:Generator` | `Psr` | 3 |
+| contracts | `contracts:Discovery` | `Composer` | 1 |
 | contracts | `contracts:Interfaces` | `Psr` | 2 |
 | contracts | `contracts:Support` | `Psr` | 4 |
 | document | `document:Parser` | `Symfony` | 2 |
@@ -43,7 +45,6 @@ when a boundary consciously moves.
 | protocol-http | `protocol-http:Execution` | `Psr` | 8 |
 | protocol-http | `protocol-http:Execution` | `cebe` | 8 |
 | protocol-http | `protocol-http:Protocol` | `Psr` | 6 |
-| protocol-http | `protocol-http:Registrar` | `Psr` | 1 |
 | protocol-http | `protocol-http:Resolver` | `cebe` | 6 |
 | protocol-rpc | `protocol-rpc:Execution` | `Psr` | 4 |
 | protocol-rpc | `protocol-rpc:Transfer` | `Psr` | 1 |
@@ -59,9 +60,10 @@ when a boundary consciously moves.
 | sources | `sources:_` | `GuzzleHttp` | 1 |
 | sources | `sources:_` | `Psr` | 4 |
 
-**12 library boundary violation(s):**
+**13 library boundary violation(s):**
 - `cli:Console` imports `GuzzleHttp\*` (2 refs)
 - `cli:Console` imports `Symfony\*` (30 refs)
+- `contracts:Discovery` imports `Composer\*` (1 refs)
 - `document:Parser` imports `Symfony\*` (2 refs)
 - `document:Validator` imports `JsonSchema\*` (7 refs)
 - `engine:Execution` imports `cebe\*` (2 refs)
@@ -83,50 +85,58 @@ Cross-package references from library code must target `*Interface` facades, val
 
 **Clean** — no library package references another package's concrete entry-point facade (`ExpressionEngine`, `Document`, `SourceGraph`, `RunnerFacade`) from non-facade code; facade-to-facade transitions are allowed by the seam policy.
 
-### Facade-to-facade transitions (allowed by seam policy)
-
-| From package | To package | From | References concrete facade |
-|---|---|---|---|
-| `document` | `expression` | `Document` | `ExpressionEngine` |
-
 ### Concrete references outside facades (review list)
 
 Grouped cross-package uses of concrete internals (AST nodes, evaluators, resolvers): each row is a candidate to consolidate behind a `*Interface` facade. Throwables, enums, and `Contracts\Spec|State|Support` value types are data flow, not coupling, and are excluded.
 
 | From package | Target | In package | Refs | Example site |
 |---|---|---|---:|---|
-| `document` | `ExpressionReference` | `expression` | 2 | `ExpressionUnresolvedStepRefRule` |
+| `document` | `AsValidationRule` | `contracts` | 51 | `ValidationRuleRegistry` |
+| `document` | `ErrorCollector` | `contracts` | 53 | `Validator` |
 | `document` | `ImplicitDependencies` | `contracts` | 1 | `StepDependsOnNoCycleRule` |
-| `document` | `KnownOperations` | `contracts` | 4 | `Validator` |
+| `document` | `KnownOperations` | `contracts` | 3 | `Validator` |
+| `document` | `PluginDiscovery` | `contracts` | 1 | `ValidationRuleRegistry` |
+| `document` | `SymbolTable` | `contracts` | 53 | `Validator` |
+| `document` | `ValidationResult` | `contracts` | 3 | `Validator` |
+| `document` | `WorkflowSymbols` | `contracts` | 1 | `ActionGotoTargetResolvesRule` |
 | `evaluation` | `AsCriterionPlugin` | `contracts` | 2 | `JsonPathCriterionPlugin` |
 | `evaluation` | `AsExpressionPlugin` | `contracts` | 2 | `JsonPathExpressionPlugin` |
 | `evaluation` | `EvaluationContext` | `expression` | 5 | `ConditionEvaluator` |
 | `evaluation` | `Parser` | `expression` | 1 | `AccessorParser` |
+| `evaluation` | `PluginDiscovery` | `contracts` | 2 | `ExpressionEvaluatorRegistry` |
 | `expression` | `AsSelectorPlugin` | `contracts` | 4 | `XpathSelectorPlugin` |
+| `expression` | `AsValidationRule` | `contracts` | 14 | `ExpressionUnresolvedStepRefRule` |
+| `expression` | `ErrorCollector` | `contracts` | 14 | `ExpressionUnresolvedStepRefRule` |
+| `expression` | `PluginDiscovery` | `contracts` | 1 | `SelectorPluginRegistry` |
+| `expression` | `StepSymbols` | `contracts` | 1 | `ExpressionUnresolvedStepRefRule` |
+| `expression` | `SymbolTable` | `contracts` | 15 | `ExpressionWalker` |
+| `expression` | `WorkflowSymbols` | `contracts` | 4 | `ExpressionWalker` |
 | `protocol-http` | `AsOperationExecutor` | `contracts` | 2 | `HttpStepExecutor` |
 | `protocol-http` | `EvaluationContext` | `expression` | 2 | `StepOutputExtractor` |
-| `protocol-http` | `IdempotencyKeyInjector` | `engine` | 2 | `HttpStepExecutor` |
-| `protocol-http` | `OpenApi30Normalizer` | `sources` | 2 | `ProtocolHttpRegistrar` |
-| `protocol-http` | `OpenApi31Normalizer` | `sources` | 2 | `ProtocolHttpRegistrar` |
-| `protocol-http` | `OpenApiSourceNormalizer` | `sources` | 1 | `ProtocolHttpRegistrar` |
-| `protocol-http` | `OpenApiVersionDetector` | `sources` | 2 | `ProtocolHttpRegistrar` |
+| `protocol-http` | `IdempotencyKeyInjector` | `engine` | 1 | `HttpStepExecutor` |
+| `protocol-http` | `OpenApi30Normalizer` | `sources` | 1 | `OpenApiOperationResolver` |
+| `protocol-http` | `OpenApi31Normalizer` | `sources` | 1 | `OpenApiOperationResolver` |
+| `protocol-http` | `OpenApiVersionDetector` | `sources` | 1 | `OpenApiOperationResolver` |
 | `protocol-http` | `ParameterSerializer` | `engine` | 1 | `DefaultOpenApiExecutor` |
 | `protocol-http` | `RequestCompiler` | `engine` | 1 | `HttpStepExecutor` |
 | `protocol-http` | `ReusableParameterResolver` | `engine` | 1 | `AsyncApiStepExecutor` |
 | `protocol-http` | `SchemaValidator` | `engine` | 1 | `ResponseSchemaValidator` |
-| `protocol-http` | `SourceNormalizerRegistry` | `sources` | 1 | `ProtocolHttpRegistrar` |
 | `protocol-http` | `SourceReferenceParser` | `sources` | 1 | `OpenApiOperationResolver` |
 | `protocol-http` | `Sources` | `sources` | 1 | `OpenApiOperationResolver` |
 | `protocol-http` | `TypeCaster` | `engine` | 2 | `StepOutputExtractor` |
 | `protocol-rpc` | `AsOperationExecutor` | `contracts` | 1 | `RpcOperationExecutor` |
 | `protocol-rpc` | `AsSourceNormalizer` | `contracts` | 1 | `ProtoSourceNormalizer` |
+| `protocol-rpc` | `AsValidationRule` | `contracts` | 1 | `RpcStepRule` |
+| `protocol-rpc` | `ErrorCollector` | `contracts` | 1 | `RpcStepRule` |
 | `protocol-rpc` | `RequestCompiler` | `engine` | 1 | `RpcRequestBuilder` |
 | `protocol-rpc` | `ReusableParameterResolver` | `engine` | 1 | `RpcRequestBuilder` |
-| `protocol-rpc` | `SourceNormalizerRegistry` | `sources` | 1 | `RpcRegistrar` |
+| `protocol-rpc` | `SymbolTable` | `contracts` | 1 | `RpcStepRule` |
 | `protocol-soap` | `AsOperationExecutor` | `contracts` | 1 | `SoapOperationExecutor` |
 | `protocol-soap` | `AsSourceNormalizer` | `contracts` | 1 | `WsdlSourceNormalizer` |
+| `protocol-soap` | `AsValidationRule` | `contracts` | 1 | `WsdlStepRule` |
+| `protocol-soap` | `ErrorCollector` | `contracts` | 1 | `WsdlStepRule` |
 | `protocol-soap` | `RequestCompiler` | `engine` | 1 | `SoapRequestBuilder` |
-| `protocol-soap` | `SourceNormalizerRegistry` | `sources` | 1 | `SoapRegistrar` |
+| `protocol-soap` | `SymbolTable` | `contracts` | 1 | `WsdlStepRule` |
 | `runner` | `AsOperationExecutor` | `contracts` | 2 | `SubWorkflowStepExecutor` |
 | `runner` | `DependencyAnalyzer` | `contracts` | 1 | `StepOutcomeHandler` |
 | `runner` | `DependencyGraph` | `contracts` | 2 | `StepOutcomeHandler` |
@@ -140,9 +150,10 @@ Grouped cross-package uses of concrete internals (AST nodes, evaluators, resolve
 | `runner` | `RetryPolicy` | `engine` | 1 | `WorkflowEngine` |
 | `runner` | `ReusableParameterResolver` | `engine` | 1 | `SubWorkflowStepExecutor` |
 | `runner` | `StepParameterMerger` | `engine` | 2 | `StepExecutionWorker` |
-| `runner` | `ValidationResult` | `document` | 3 | `PreflightFailureException` |
+| `runner` | `ValidationResult` | `contracts` | 3 | `PreflightFailureException` |
 | `sources` | `AsSourceNormalizer` | `contracts` | 3 | `OpenApiSourceNormalizer` |
 | `sources` | `DecodePolicy` | `document` | 1 | `DefaultSourceResolver` |
 | `sources` | `Decoders` | `document` | 1 | `DefaultSourceResolver` |
 | `sources` | `KnownOperations` | `contracts` | 2 | `Sources` |
+| `sources` | `PluginDiscovery` | `contracts` | 1 | `SourceNormalizerRegistry` |
 | `sources` | `ResolvedOperationCollection` | `contracts` | 2 | `Sources` |

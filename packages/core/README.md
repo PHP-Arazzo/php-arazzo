@@ -26,7 +26,7 @@ composer require guzzlehttp/guzzle
 ## What this package does
 
 1. **Parses** an Arazzo YAML/JSON document into a typed, immutable object model (`Alama\Arazzo\Spec\*`).
-2. **Validates** a parsed document against the spec's structural and referential rules (`Alama\Arazzo\Validator\*`) — cycle detection, dangling references, unsupported feature combinations, and more.
+2. **Validates** a parsed document against the spec's structural, referential, and expression rules (`ValidationRuleRegistry`, auto-discovering rules from `arazzo-document`, `arazzo-expression`, and any installed protocol packages — note that installing `arazzo-document` standalone without `arazzo-expression` runs structural/referential rules only; `arazzo-core` bundles both by default).
 3. **Resolves** the external OpenAPI (and nested Arazzo) documents a workflow's `sourceDescriptions` point to (`Alama\Arazzo\Resolver\*`).
 4. **Executes** a workflow: runs each step's HTTP call, evaluates `{$...}` runtime expressions against accumulated state, checks `successCriteria`, and follows `onSuccess`/`onFailure` actions (`Alama\Arazzo\Runner\*`).
 

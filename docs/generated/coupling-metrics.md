@@ -14,21 +14,24 @@ targets. Regenerated before every commit.
 | `cli:Console` | 12 | 927 | 0 | 19 | 1.00 |  |
 | `cli:Generator` | 2 | 139 | 0 | 1 | 1.00 |  |
 | `cli:Renderer` | 1 | 254 | 1 | 1 | 0.50 |  |
-| `contracts:Attributes` | 5 | 80 | 14 | 1 | 0.07 |  |
-| `contracts:Data` | 2 | 153 | 4 | 1 | 0.20 |  |
+| `contracts:Attributes` | 6 | 99 | 19 | 1 | 0.05 |  |
+| `contracts:Data` | 2 | 153 | 5 | 1 | 0.17 |  |
 | `contracts:Dependency` | 3 | 333 | 4 | 2 | 0.33 |  |
+| `contracts:Discovery` | 1 | 293 | 4 | 0 | 0.00 |  |
 | `contracts:Exceptions` | 1 | 30 | 7 | 0 | 0.00 |  |
-| `contracts:Interfaces` | 20 | 363 | 31 | 3 | 0.09 |  |
-| `contracts:Spec` | 51 | 1228 | 47 | 1 | 0.02 |  |
+| `contracts:Interfaces` | 21 | 391 | 33 | 4 | 0.11 |  |
+| `contracts:Spec` | 51 | 1228 | 50 | 1 | 0.02 |  |
 | `contracts:State` | 3 | 974 | 15 | 1 | 0.06 |  |
 | `contracts:Support` | 5 | 180 | 10 | 0 | 0.00 |  |
+| `contracts:Validation` | 8 | 323 | 9 | 2 | 0.18 |  |
 | `document:Parser` | 24 | 2217 | 4 | 2 | 0.33 |  |
-| `document:Validator` | 82 | 5596 | 4 | 8 | 0.67 |  |
-| `(document root)` | 5 | 199 | 9 | 6 | 0.40 |  |
+| `document:Registries` | 1 | 93 | 1 | 3 | 0.75 |  |
+| `document:Validator` | 56 | 3723 | 1 | 8 | 0.89 |  |
+| `(document root)` | 5 | 229 | 9 | 6 | 0.40 |  |
 | `engine:Data` | 2 | 72 | 1 | 3 | 0.75 |  |
 | `engine:Enum` | 1 | 16 | 1 | 0 | 0.00 |  |
 | `engine:Exceptions` | 1 | 41 | 6 | 1 | 0.14 |  |
-| `engine:Execution` | 8 | 1023 | 7 | 4 | 0.36 |  |
+| `engine:Execution` | 8 | 1023 | 6 | 4 | 0.40 |  |
 | `engine:Runtime` | 19 | 1620 | 5 | 3 | 0.38 |  |
 | `(engine root)` | 2 | 192 | 1 | 3 | 0.75 |  |
 | `evaluation:Condition` | 17 | 1006 | 1 | 8 | 0.89 |  |
@@ -36,37 +39,36 @@ targets. Regenerated before every commit.
 | `evaluation:Enum` | 5 | 118 | 3 | 0 | 0.00 |  |
 | `evaluation:Events` | 1 | 26 | 2 | 1 | 0.33 |  |
 | `evaluation:Interfaces` | 2 | 42 | 2 | 3 | 0.60 |  |
-| `evaluation:Plugins` | 2 | 122 | 1 | 4 | 0.80 |  |
-| `evaluation:Registries` | 2 | 185 | 1 | 5 | 0.83 |  |
-| `(evaluation root)` | 6 | 820 | 10 | 13 | 0.57 |  |
+| `evaluation:Plugins` | 2 | 122 | 0 | 4 | 1.00 |  |
+| `evaluation:Registries` | 2 | 217 | 1 | 5 | 0.83 |  |
+| `(evaluation root)` | 6 | 820 | 9 | 13 | 0.59 |  |
 | `expression:Ast` | 15 | 340 | 4 | 2 | 0.33 |  |
 | `expression:Data` | 6 | 192 | 12 | 4 | 0.25 |  |
-| `expression:Enum` | 2 | 45 | 5 | 0 | 0.00 |  |
-| `expression:Exceptions` | 2 | 62 | 9 | 1 | 0.10 |  |
+| `expression:Enum` | 2 | 45 | 6 | 0 | 0.00 |  |
+| `expression:Exceptions` | 2 | 62 | 10 | 1 | 0.09 |  |
 | `expression:Interfaces` | 4 | 204 | 13 | 5 | 0.28 |  |
 | `expression:Internal` | 3 | 430 | 1 | 6 | 0.86 |  |
 | `expression:JsonPath` | 7 | 1371 | 1 | 2 | 0.67 |  |
-| `expression:Plugins` | 3 | 131 | 1 | 5 | 0.83 |  |
-| `expression:Registries` | 1 | 130 | 2 | 6 | 0.75 |  |
+| `expression:Plugins` | 3 | 131 | 0 | 5 | 1.00 |  |
+| `expression:Registries` | 1 | 129 | 2 | 4 | 0.67 |  |
 | `expression:Support` | 1 | 58 | 1 | 1 | 0.50 |  |
-| `expression:Xpath` | 3 | 170 | 3 | 2 | 0.40 |  |
-| `(expression root)` | 9 | 1326 | 6 | 11 | 0.65 |  |
-| `protocol-http:Execution` | 4 | 532 | 5 | 9 | 0.64 |  |
-| `protocol-http:Protocol` | 2 | 331 | 1 | 10 | 0.91 |  |
-| `protocol-http:Registrar` | 1 | 144 | 0 | 8 | 1.00 |  |
-| `protocol-http:Resolver` | 3 | 282 | 7 | 6 | 0.46 |  |
-| `protocol-rpc:Execution` | 3 | 312 | 1 | 10 | 0.91 |  |
-| `protocol-rpc:Normalizer` | 6 | 657 | 2 | 3 | 0.60 |  |
-| `protocol-rpc:Protocol` | 4 | 510 | 3 | 4 | 0.57 |  |
-| `protocol-rpc:Registrar` | 1 | 92 | 0 | 6 | 1.00 |  |
-| `protocol-rpc:Transfer` | 2 | 217 | 2 | 3 | 0.60 |  |
+| `expression:Validation` | 16 | 1396 | 0 | 9 | 1.00 |  |
+| `expression:Xpath` | 3 | 170 | 2 | 2 | 0.50 |  |
+| `(expression root)` | 9 | 1326 | 5 | 11 | 0.69 |  |
+| `protocol-http:Execution` | 4 | 532 | 4 | 9 | 0.69 |  |
+| `protocol-http:Protocol` | 2 | 331 | 0 | 10 | 1.00 |  |
+| `protocol-http:Resolver` | 3 | 282 | 6 | 6 | 0.50 |  |
+| `protocol-rpc:Execution` | 3 | 312 | 0 | 10 | 1.00 |  |
+| `protocol-rpc:Normalizer` | 6 | 657 | 1 | 3 | 0.75 |  |
+| `protocol-rpc:Protocol` | 4 | 510 | 2 | 4 | 0.67 |  |
+| `protocol-rpc:Transfer` | 2 | 217 | 1 | 3 | 0.75 |  |
+| `protocol-rpc:Validation` | 1 | 78 | 0 | 4 | 1.00 |  |
 | `protocol-soap:Exceptions` | 1 | 15 | 1 | 0 | 0.00 |  |
-| `protocol-soap:Execution` | 5 | 594 | 2 | 10 | 0.83 |  |
-| `protocol-soap:Normalizer` | 1 | 445 | 2 | 4 | 0.67 |  |
-| `protocol-soap:Registrar` | 1 | 96 | 0 | 7 | 1.00 |  |
-| `protocol-soap:Resolver` | 1 | 135 | 1 | 1 | 0.50 |  |
-| `protocol-soap:Transfer` | 2 | 201 | 2 | 1 | 0.33 |  |
-| `protocol-soap:Validation` | 1 | 138 | 1 | 4 | 0.80 |  |
+| `protocol-soap:Execution` | 5 | 594 | 1 | 10 | 0.91 |  |
+| `protocol-soap:Normalizer` | 1 | 445 | 1 | 4 | 0.80 |  |
+| `protocol-soap:Resolver` | 1 | 135 | 0 | 1 | 1.00 |  |
+| `protocol-soap:Transfer` | 2 | 201 | 1 | 1 | 0.50 |  |
+| `protocol-soap:Validation` | 2 | 351 | 0 | 9 | 1.00 |  |
 | `runner:Async` | 7 | 1344 | 2 | 17 | 0.89 |  |
 | `runner:Events` | 11 | 317 | 5 | 1 | 0.17 |  |
 | `runner:Exceptions` | 1 | 19 | 2 | 1 | 0.33 |  |
@@ -76,26 +78,26 @@ targets. Regenerated before every commit.
 | `runner:Sync` | 6 | 1076 | 3 | 21 | 0.88 | ⚠ unstable hub |
 | `(runner root)` | 9 | 561 | 3 | 18 | 0.86 | ⚠ unstable hub |
 | `sources:Exceptions` | 5 | 60 | 2 | 0 | 0.00 |  |
-| `sources:Normalizer` | 6 | 586 | 3 | 4 | 0.57 |  |
-| `sources:Registries` | 1 | 103 | 4 | 4 | 0.50 |  |
+| `sources:Normalizer` | 6 | 586 | 1 | 4 | 0.80 |  |
+| `sources:Registries` | 1 | 97 | 1 | 4 | 0.80 |  |
 | `sources:Resolver` | 11 | 467 | 3 | 4 | 0.57 |  |
 | `(sources root)` | 2 | 227 | 2 | 7 | 0.78 |  |
 
-Total cross-module edges: **1221**
+Total cross-module edges: **1483**
 
 ## Most entangled module pairs
 
 | From → To | References |
 |---|---:|
-| `document:Validator` → `contracts:Spec` | 148 |
+| `document:Validator` → `contracts:Validation` | 110 |
+| `document:Validator` → `contracts:Spec` | 105 |
+| `document:Validator` → `contracts:Interfaces` | 52 |
+| `document:Validator` → `contracts:Attributes` | 50 |
 | `document:Parser` → `contracts:Spec` | 39 |
+| `expression:Validation` → `contracts:Validation` | 35 |
+| `expression:Validation` → `contracts:Spec` | 33 |
 | `(evaluation root)` → `contracts:Spec` | 26 |
 | `runner:Sync` → `contracts:Spec` | 25 |
-| `contracts:Interfaces` → `contracts:Spec` | 23 |
+| `contracts:Interfaces` → `contracts:Spec` | 24 |
 | `runner:Async` → `contracts:Spec` | 23 |
 | `(expression root)` → `expression:Ast` | 20 |
-| `protocol-soap:Execution` → `contracts:Spec` | 15 |
-| `(runner root)` → `contracts:Interfaces` | 14 |
-| `document:Validator` → `expression:Interfaces` | 14 |
-| `runner:Async` → `runner:Events` | 14 |
-| `engine:Execution` → `contracts:Spec` | 13 |

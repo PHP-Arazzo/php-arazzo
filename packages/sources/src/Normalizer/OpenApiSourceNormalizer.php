@@ -27,9 +27,9 @@ final class OpenApiSourceNormalizer implements SourceNormalizerInterface
     private const METHODS = ['get', 'put', 'post', 'delete', 'options', 'head', 'patch', 'trace'];
 
     public function __construct(
-        private readonly OpenApiVersionDetector $versionDetector,
-        private readonly OpenApi30Normalizer $normalizer30,
-        private readonly OpenApi31Normalizer $normalizer31,
+        private readonly OpenApiVersionDetector $versionDetector = new OpenApiVersionDetector(),
+        private readonly OpenApi30Normalizer $normalizer30 = new OpenApi30Normalizer(),
+        private readonly OpenApi31Normalizer $normalizer31 = new OpenApi31Normalizer(),
     ) {}
 
     public function name(): string

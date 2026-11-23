@@ -5,13 +5,9 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Expression\Registries;
 
 use Alama\Arazzo\Contracts\Attributes\AsSelectorPlugin;
+use Alama\Arazzo\Contracts\Discovery\PluginDiscovery;
 use Alama\Arazzo\Contracts\Spec\Enum\ExpressionType;
 use Alama\Arazzo\Expression\Interfaces\SelectorPluginInterface;
-use Alama\Arazzo\Expression\JsonPathEvaluator;
-use Alama\Arazzo\Expression\Plugins\JsonPathSelectorPlugin;
-use Alama\Arazzo\Expression\Plugins\JsonPointerSelectorPlugin;
-use Alama\Arazzo\Expression\Plugins\XpathSelectorPlugin;
-use Alama\Arazzo\Expression\Xpath\Xpath31Evaluator;
 use InvalidArgumentException;
 use ReflectionClass;
 
@@ -19,7 +15,8 @@ use ReflectionClass;
  * Concrete singleton registry for selector plugins.
  *
  * Plugins are keyed by {@see ExpressionType} and stored with an integer
- * priority (higher = earlier).
+ * priority (higher = earlier). Auto-discovers `#[AsSelectorPlugin]` classes
+ * declared in installed packages' `composer.json` `extra.arazzo.plugins`.
  */
 final class SelectorPluginRegistry
 {
@@ -30,9 +27,11 @@ final class SelectorPluginRegistry
 
     private function __construct()
     {
-        $this->register(new JsonPathSelectorPlugin(new JsonPathEvaluator()));
-        $this->register(new JsonPointerSelectorPlugin());
-        $this->register(new XpathSelectorPlugin(new Xpath31Evaluator()));
+        foreach (PluginDiscovery::instantiate(AsSelectorPlugin::class) as $plugin) {
+            if ($plugin instanceof SelectorPluginInterface) {
+                $this->register($plugin);
+            }
+        }
     }
 
     public static function create(): self

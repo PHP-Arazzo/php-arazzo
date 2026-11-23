@@ -74,5 +74,13 @@
         }
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "extra": {
+        "arazzo": {
+            "plugins": [
+                "Alama\\Arazzo\\Protocol\\Http\\Protocol\\AsyncApiStepExecutor",
+                "Alama\\Arazzo\\Protocol\\Http\\Protocol\\HttpStepExecutor"
+            ]
+        }
+    }
 }

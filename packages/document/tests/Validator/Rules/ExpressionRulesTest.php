@@ -15,17 +15,17 @@ use Alama\Arazzo\Contracts\Spec\StepFactory;
 use Alama\Arazzo\Contracts\Spec\StepFlow;
 use Alama\Arazzo\Contracts\Spec\StepIo;
 use Alama\Arazzo\Contracts\Spec\Workflow;
-use Alama\Arazzo\Document\Validator\Data\SymbolTable;
-use Alama\Arazzo\Document\Validator\ErrorCollector;
-use Alama\Arazzo\Document\Validator\Rules\ExpressionContextMisuseRule;
-use Alama\Arazzo\Document\Validator\Rules\ExpressionJsonPointerSyntaxRule;
-use Alama\Arazzo\Document\Validator\Rules\ExpressionSyntaxRule;
-use Alama\Arazzo\Document\Validator\Rules\ExpressionUnresolvedComponentRefRule;
-use Alama\Arazzo\Document\Validator\Rules\ExpressionUnresolvedInputRefRule;
-use Alama\Arazzo\Document\Validator\Rules\ExpressionUnresolvedSourceRefRule;
-use Alama\Arazzo\Document\Validator\Rules\ExpressionUnresolvedStepRefRule;
-use Alama\Arazzo\Document\Validator\Rules\ExpressionUnresolvedWorkflowRefRule;
+use Alama\Arazzo\Contracts\Validation\ErrorCollector;
+use Alama\Arazzo\Contracts\Validation\SymbolTable;
 use Alama\Arazzo\Expression\ExpressionEngine;
+use Alama\Arazzo\Expression\Validation\Rules\ExpressionContextMisuseRule;
+use Alama\Arazzo\Expression\Validation\Rules\ExpressionJsonPointerSyntaxRule;
+use Alama\Arazzo\Expression\Validation\Rules\ExpressionSyntaxRule;
+use Alama\Arazzo\Expression\Validation\Rules\ExpressionUnresolvedComponentRefRule;
+use Alama\Arazzo\Expression\Validation\Rules\ExpressionUnresolvedInputRefRule;
+use Alama\Arazzo\Expression\Validation\Rules\ExpressionUnresolvedSourceRefRule;
+use Alama\Arazzo\Expression\Validation\Rules\ExpressionUnresolvedStepRefRule;
+use Alama\Arazzo\Expression\Validation\Rules\ExpressionUnresolvedWorkflowRefRule;
 
 function stepE(string $id, array $params = [], array $outs = []): Step
 {

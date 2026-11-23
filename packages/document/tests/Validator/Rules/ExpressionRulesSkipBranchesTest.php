@@ -10,16 +10,16 @@ use Alama\Arazzo\Contracts\Spec\Expression;
 use Alama\Arazzo\Contracts\Spec\Parameter;
 use Alama\Arazzo\Contracts\Spec\RequestBody;
 use Alama\Arazzo\Contracts\Spec\Workflow;
-use Alama\Arazzo\Document\Validator\Data\SymbolTable;
-use Alama\Arazzo\Document\Validator\ErrorCollector;
-use Alama\Arazzo\Document\Validator\Rules\ExpressionContextMisuseRule;
-use Alama\Arazzo\Document\Validator\Rules\ExpressionJsonPointerSyntaxRule;
-use Alama\Arazzo\Document\Validator\Rules\ExpressionUnresolvedComponentRefRule;
-use Alama\Arazzo\Document\Validator\Rules\ExpressionUnresolvedInputRefRule;
-use Alama\Arazzo\Document\Validator\Rules\ExpressionUnresolvedSourceRefRule;
-use Alama\Arazzo\Document\Validator\Rules\ExpressionUnresolvedStepRefRule;
-use Alama\Arazzo\Document\Validator\Rules\ExpressionUnresolvedWorkflowRefRule;
+use Alama\Arazzo\Contracts\Validation\ErrorCollector;
+use Alama\Arazzo\Contracts\Validation\SymbolTable;
 use Alama\Arazzo\Expression\ExpressionEngine;
+use Alama\Arazzo\Expression\Validation\Rules\ExpressionContextMisuseRule;
+use Alama\Arazzo\Expression\Validation\Rules\ExpressionJsonPointerSyntaxRule;
+use Alama\Arazzo\Expression\Validation\Rules\ExpressionUnresolvedComponentRefRule;
+use Alama\Arazzo\Expression\Validation\Rules\ExpressionUnresolvedInputRefRule;
+use Alama\Arazzo\Expression\Validation\Rules\ExpressionUnresolvedSourceRefRule;
+use Alama\Arazzo\Expression\Validation\Rules\ExpressionUnresolvedStepRefRule;
+use Alama\Arazzo\Expression\Validation\Rules\ExpressionUnresolvedWorkflowRefRule;
 use Alama\Arazzo\Tests\Support\Fx;
 
 /** Doc mixing broken expressions and unrelated AST types to exercise every rule's skip branches. */

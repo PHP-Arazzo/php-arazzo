@@ -6,8 +6,8 @@ namespace Alama\Arazzo\Tests\Validation\Rules;
 
 use Alama\Arazzo\Contracts\Spec\Enum\InteractionMode;
 use Alama\Arazzo\Contracts\Spec\Interaction;
-use Alama\Arazzo\Document\Validator\Data\SymbolTable;
-use Alama\Arazzo\Document\Validator\ErrorCollector;
+use Alama\Arazzo\Contracts\Validation\ErrorCollector;
+use Alama\Arazzo\Contracts\Validation\SymbolTable;
 use Alama\Arazzo\Document\Validator\Rules\InteractionStepRule;
 use Alama\Arazzo\Tests\Support\Fx;
 

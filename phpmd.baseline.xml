@@ -22,8 +22,6 @@
   <violation rule="PHPMD\Rule\Design\TooManyMethods" file="packages/document/src/Parser/Parser.php"/>
   <violation rule="PHPMD\Rule\Design\ExcessiveClassComplexity" file="packages/document/src/Parser/Parser.php"/>
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/document/src/Parser/Parser.php"/>
-  <violation rule="PHPMD\Rule\UnusedLocalVariable" file="packages/document/src/Validator/Data/SymbolTable.php"/>
-  <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/document/src/Validator/RuleSet.php"/>
   <violation rule="PHPMD\Rule\UnusedLocalVariable" file="packages/document/src/Validator/Rules/DocUnknownFieldRule.php"/>
   <violation rule="PHPMD\Rule\UnusedLocalVariable" file="packages/document/src/Validator/Rules/ExtensionsXPrefixRule.php"/>
   <violation rule="PHPMD\Rule\Design\ExcessiveClassComplexity" file="packages/engine/src/Execution/SchemaValidator.php"/>
@@ -66,9 +64,6 @@
   <violation rule="PHPMD\Rule\Design\NPathComplexity" file="packages/protocol-http/src/Execution/StepOutputExtractor.php" method="castOutputAgainstResponseSchema"/>
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/protocol-http/src/Protocol/AsyncApiStepExecutor.php"/>
   <violation rule="PHPMD\Rule\Naming\LongVariable" file="packages/protocol-http/src/Protocol/HttpStepExecutor.php"/>
-  <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/protocol-http/src/Registrar/ProtocolHttpRegistrar.php"/>
-  <violation rule="PHPMD\Rule\Design\ExcessiveParameterList" file="packages/protocol-http/src/Registrar/ProtocolHttpRegistrar.php" method="__construct"/>
-  <violation rule="PHPMD\Rule\Naming\LongVariable" file="packages/protocol-http/src/Registrar/ProtocolHttpRegistrar.php"/>
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/protocol-http/src/Resolver/OpenApiOperationResolver.php"/>
   <violation rule="PHPMD\Rule\CyclomaticComplexity" file="packages/protocol-http/src/Resolver/OpenApiOperationResolver.php" method="resolve"/>
   <violation rule="PHPMD\Rule\Design\NPathComplexity" file="packages/protocol-http/src/Resolver/OpenApiOperationResolver.php" method="resolve"/>

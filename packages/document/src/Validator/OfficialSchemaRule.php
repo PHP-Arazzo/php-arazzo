@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Document\Validator;
 
+use Alama\Arazzo\Contracts\Attributes\AsValidationRule;
+use Alama\Arazzo\Contracts\Interfaces\ValidationRuleInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
-use Alama\Arazzo\Document\Validator\Data\SymbolTable;
-use Alama\Arazzo\Document\Validator\Interfaces\Rule;
+use Alama\Arazzo\Contracts\Validation\ErrorCollector;
+use Alama\Arazzo\Contracts\Validation\SymbolTable;
 use Alama\Arazzo\Document\Validator\Schema\DefectRepairs;
 use Alama\Arazzo\Document\Validator\Schema\RefHoister;
-use Alama\Arazzo\Expression\Interfaces\ExpressionEngineInterface;
 use JsonSchema\Constraints\Constraint;
 use JsonSchema\Exception\ValidationException;
 use JsonSchema\SchemaStorage;
@@ -25,7 +26,8 @@ use JsonSchema\Validator as JsonSchemaValidator;
  *
  * @internal stays out of the advertised contract; not part of the public API surface
  */
-final class OfficialSchemaRule implements Rule
+#[AsValidationRule(priority: 100)]
+final class OfficialSchemaRule implements ValidationRuleInterface
 {
     private const SCHEMA_FILES = [
         '1.0' => __DIR__.'/../../resources/schemas/arazzo-1.0.schema.json',
@@ -33,7 +35,7 @@ final class OfficialSchemaRule implements Rule
         '1.2' => __DIR__.'/../../resources/schemas/arazzo-1.2.schema.json',
     ];
 
-    public function __construct(private ExpressionEngineInterface $engine) {}
+    public function __construct() {}
 
     public function check(ArazzoDocument $doc, SymbolTable $symbols, ErrorCollector $errors): void
     {
@@ -145,8 +147,6 @@ final class OfficialSchemaRule implements Rule
     /**
      * Applies spec prose where it is stricter than the official schema.
      *
-     * - A `jsonpath` Criterion Object condition MUST be a JSONPath query
-     *   (Arazzo 1.1 §5.8.11.4.3). The schema only checks that it is a string.
      * - Arazzo 1.0.1 types a Reusable Object `value` as a string; the vendored
      *   1.0 schema also accepts booleans, numbers, arrays, objects, and null.
      *   The 1.1 typing is contested by the conformance suite and left unscored.
@@ -155,65 +155,13 @@ final class OfficialSchemaRule implements Rule
      */
     private function applyProseOverrides(array $raw, string $arazzo, ErrorCollector $errors): void
     {
-        $checkReusableValue = str_starts_with($arazzo, '1.0');
+        if (!str_starts_with($arazzo, '1.0')) {
+            return;
+        }
 
-        self::walkRaw($raw, '', function (array $node, string $path) use ($checkReusableValue, $errors): void {
-            $this->checkJsonPathCondition($node, $path, $errors);
-
-            if ($checkReusableValue) {
-                self::checkReusableStringValue($node, $path, $errors);
-            }
+        self::walkRaw($raw, '', static function (array $node, string $path) use ($errors): void {
+            self::checkReusableStringValue($node, $path, $errors);
         });
-    }
-
-    /**
-     * @param  array<array-key, mixed>  $node
-     */
-    private function checkJsonPathCondition(array $node, string $path, ErrorCollector $errors): void
-    {
-        $condition = $node['condition'] ?? null;
-        if (!is_string($condition)) {
-            return;
-        }
-
-        $type = $node['type'] ?? null;
-        $isJsonPath = $type === 'jsonpath'
-            || (is_array($type) && ($type['type'] ?? null) === 'jsonpath');
-
-        if (!$isJsonPath || $this->isJsonPathQuery($condition)) {
-            return;
-        }
-
-        $errors->error(
-            'schema.invalid',
-            "Criterion condition '{$condition}' is not a valid JSONPath query; a jsonpath condition MUST be a JSONPath expression (Arazzo 1.1 §5.8.11.4.3).",
-            $path.'/condition',
-        );
-    }
-
-    /**
-     * Reports whether the condition parses as a JSONPath query. The engine
-     * happily parses bare member names and treats `$name` as a root member, so
-     * require a JSONPath root before asking it to parse: this rejects runtime
-     * expressions (`$response.body`) and simple-condition fragments
-     * (`$statusCode == 200`). Parsing against empty data runs no selectors; an
-     * unparseable expression surfaces as an exception.
-     */
-    private function isJsonPathQuery(string $condition): bool
-    {
-        $condition = trim($condition);
-
-        if ($condition === '' || preg_match('/^\$(?=$|[.\[])/', $condition) !== 1) {
-            return false;
-        }
-
-        try {
-            $this->engine->jsonPath($condition, []);
-        } catch (\Throwable) {
-            return false;
-        }
-
-        return true;
     }
 
     /**

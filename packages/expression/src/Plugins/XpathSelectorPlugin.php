@@ -8,22 +8,22 @@ use Alama\Arazzo\Contracts\Attributes\AsSelectorPlugin;
 use Alama\Arazzo\Contracts\Spec\Enum\ExpressionType;
 use Alama\Arazzo\Expression\Interfaces\SelectorPluginInterface;
 use Alama\Arazzo\Expression\Xpath\DomXpathEvaluator;
+use Alama\Arazzo\Expression\Xpath\Xpath31Evaluator;
 use Alama\Arazzo\Expression\Xpath\XpathEvaluator;
 
 /**
  * XPath selector plugin. Delegates to a bound {@see XpathEvaluator}.
  *
- * The default {@see DomXpathEvaluator} implements
- * XPath 1.0 only and reports ['xpath-10'] as its supported version. A custom
- * XpathEvaluator (e.g. Saxon/C for XPath 3.1) can be bound to advertise
- * additional versions.
+ * The default {@see Xpath31Evaluator} (backed by {@see DomXpathEvaluator})
+ * advertises its supported versions. A custom XpathEvaluator (e.g. Saxon/C for
+ * XPath 3.1) can be bound to advertise additional versions.
  *
  * @internal stays out of the advertised contract; not part of the public API surface.
  */
 #[AsSelectorPlugin(ExpressionType::XPath, 0)]
 final class XpathSelectorPlugin implements SelectorPluginInterface
 {
-    public function __construct(private XpathEvaluator $evaluator) {}
+    public function __construct(private XpathEvaluator $evaluator = new Xpath31Evaluator()) {}
 
     public function supports(ExpressionType $type): bool
     {

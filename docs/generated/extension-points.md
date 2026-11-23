@@ -83,6 +83,7 @@ mindmap
     SelectorPluginInterface
       JsonPathSelectorPlugin
       JsonPointerSelectorPlugin
+      XpathSelectorPlugin
     SourceNormalizerInterface
       OpenApiSourceNormalizer
       ProtoSourceNormalizer
@@ -96,6 +97,73 @@ mindmap
       AsyncApiStepExecutor
       HttpStepExecutor
       SubWorkflowStepExecutor
+    ValidationRuleInterface
+      ActionOutputTargetExclusivityRule
+      ExpressionContextMisuseRule
+      ExpressionJsonPointerSyntaxRule
+      ExpressionSyntaxRule
+      ExpressionUnresolvedComponentRefRule
+      ExpressionUnresolvedInputRefRule
+      ExpressionUnresolvedSourceRefRule
+      ExpressionUnresolvedStepRefRule
+      ExpressionUnresolvedWorkflowRefRule
+      JsonPathCriterionConditionRule
+      MessageRefRequiresReceiveRule
+      SelectorTypeSupportedRule
+      StepOperationPathSyntaxRule
+      OfficialSchemaRule
+      ActionDuplicateRule
+      ActionGotoTargetResolvesRule
+      ActionParameterInForbiddenRule
+      ActionRetryLimitsRule
+      ActionReusableRefResolvesRule
+      ActionTargetExclusivityRule
+      ActionTypeValidRule
+      AsyncApiFieldsRequire11Rule
+      ComponentsUniqueNamesRule
+      DocUnknownFieldRule
+      DocumentArazzoVersionRule
+      DocumentInfoRequiredRule
+      DocumentSourceDescriptionsPresentRule
+      ExtensionsXPrefixRule
+      GraphQlStepRule
+      InteractionStepRule
+      ParameterQuerystringOperationShapeRule
+      ParameterReusableRefResolvesRule
+      ReceiveStepSuccessCriteriaRule
+      SelfUriSyntaxRule
+      SourceTypeMatchesRule
+      SourceUniqueNameRule
+      SourceUrlSyntaxRule
+      StepAtLeastOneRule
+      StepCriteriaTypeContextRule
+      StepDependsOnNoCycleRule
+      StepIdPatternRule
+      StepNestedWorkflowExistsRule
+      StepNestedWorkflowNoCycleRule
+      StepOperationIdResolvesRule
+      StepOperationIdSourceScopedRule
+      StepOperationTargetPresentRule
+      StepOutputsUniqueRule
+      StepParameterDuplicateRule
+      StepParameterInValidRule
+      StepParameterRequiresInRule
+      StepParametersHaveNameRule
+      StepRequestBodyReplacementsTargetRule
+      StepRequestBodyWorkflowRule
+      StepSuccessActionParameterInRule
+      StepSuccessCriteriaConditionRule
+      StepTimeoutRequires11Rule
+      StepUniqueIdRule
+      SubWorkflowInvokeTargetResolvesRule
+      WorkflowAtLeastOneRule
+      WorkflowDependsOnExistsRule
+      WorkflowDependsOnNoCycleRule
+      WorkflowIdPatternRule
+      WorkflowInputsValidSchemaRule
+      WorkflowUniqueIdRule
+      RpcStepRule
+      WsdlStepRule
     WorkflowContextInterface
       WorkflowContext
     WorkflowStateRepositoryInterface
@@ -133,11 +201,12 @@ mindmap
 | `ResponseValidatorInterface` | no | `ResponseSchemaValidator` <small>core</small>, `XsdResponseValidator` <small>core</small> |
 | `RunnerFacadeInterface` | no | `RunnerFacade` <small>core</small> |
 | `RunnerGraphBuilderInterface` | no | `RunnerGraphBuilder` <small>core</small> |
-| `SelectorPluginInterface` | no | `JsonPathSelectorPlugin` <small>core</small>, `JsonPointerSelectorPlugin` <small>core</small> |
+| `SelectorPluginInterface` | no | `JsonPathSelectorPlugin` <small>core</small>, `JsonPointerSelectorPlugin` <small>core</small>, `XpathSelectorPlugin` <small>core</small> |
 | `SourceNormalizerInterface` | no | `OpenApiSourceNormalizer` <small>core</small>, `ProtoSourceNormalizer` <small>core</small>, `WsdlSourceNormalizer` <small>core</small> |
 | `SourcesInterface` | no | `Sources` <small>core</small> |
 | `StateStoreInterface` | no | `FileStateStore` <small>core</small>, `InMemoryStateStore` <small>core</small> |
 | `StepProtocolExecutorInterface` | no | `AsyncApiStepExecutor` <small>core</small>, `HttpStepExecutor` <small>core</small>, `SubWorkflowStepExecutor` <small>core</small> |
+| `ValidationRuleInterface` | no | `ActionOutputTargetExclusivityRule` <small>core</small>, `ExpressionContextMisuseRule` <small>core</small>, `ExpressionJsonPointerSyntaxRule` <small>core</small>, `ExpressionSyntaxRule` <small>core</small>, `ExpressionUnresolvedComponentRefRule` <small>core</small>, `ExpressionUnresolvedInputRefRule` <small>core</small>, `ExpressionUnresolvedSourceRefRule` <small>core</small>, `ExpressionUnresolvedStepRefRule` <small>core</small>, `ExpressionUnresolvedWorkflowRefRule` <small>core</small>, `JsonPathCriterionConditionRule` <small>core</small>, `MessageRefRequiresReceiveRule` <small>core</small>, `SelectorTypeSupportedRule` <small>core</small>, `StepOperationPathSyntaxRule` <small>core</small>, `OfficialSchemaRule` <small>core</small>, `ActionDuplicateRule` <small>core</small>, `ActionGotoTargetResolvesRule` <small>core</small>, `ActionParameterInForbiddenRule` <small>core</small>, `ActionRetryLimitsRule` <small>core</small>, `ActionReusableRefResolvesRule` <small>core</small>, `ActionTargetExclusivityRule` <small>core</small>, `ActionTypeValidRule` <small>core</small>, `AsyncApiFieldsRequire11Rule` <small>core</small>, `ComponentsUniqueNamesRule` <small>core</small>, `DocUnknownFieldRule` <small>core</small>, `DocumentArazzoVersionRule` <small>core</small>, `DocumentInfoRequiredRule` <small>core</small>, `DocumentSourceDescriptionsPresentRule` <small>core</small>, `ExtensionsXPrefixRule` <small>core</small>, `GraphQlStepRule` <small>core</small>, `InteractionStepRule` <small>core</small>, `ParameterQuerystringOperationShapeRule` <small>core</small>, `ParameterReusableRefResolvesRule` <small>core</small>, `ReceiveStepSuccessCriteriaRule` <small>core</small>, `SelfUriSyntaxRule` <small>core</small>, `SourceTypeMatchesRule` <small>core</small>, `SourceUniqueNameRule` <small>core</small>, `SourceUrlSyntaxRule` <small>core</small>, `StepAtLeastOneRule` <small>core</small>, `StepCriteriaTypeContextRule` <small>core</small>, `StepDependsOnNoCycleRule` <small>core</small>, `StepIdPatternRule` <small>core</small>, `StepNestedWorkflowExistsRule` <small>core</small>, `StepNestedWorkflowNoCycleRule` <small>core</small>, `StepOperationIdResolvesRule` <small>core</small>, `StepOperationIdSourceScopedRule` <small>core</small>, `StepOperationTargetPresentRule` <small>core</small>, `StepOutputsUniqueRule` <small>core</small>, `StepParameterDuplicateRule` <small>core</small>, `StepParameterInValidRule` <small>core</small>, `StepParameterRequiresInRule` <small>core</small>, `StepParametersHaveNameRule` <small>core</small>, `StepRequestBodyReplacementsTargetRule` <small>core</small>, `StepRequestBodyWorkflowRule` <small>core</small>, `StepSuccessActionParameterInRule` <small>core</small>, `StepSuccessCriteriaConditionRule` <small>core</small>, `StepTimeoutRequires11Rule` <small>core</small>, `StepUniqueIdRule` <small>core</small>, `SubWorkflowInvokeTargetResolvesRule` <small>core</small>, `WorkflowAtLeastOneRule` <small>core</small>, `WorkflowDependsOnExistsRule` <small>core</small>, `WorkflowDependsOnNoCycleRule` <small>core</small>, `WorkflowIdPatternRule` <small>core</small>, `WorkflowInputsValidSchemaRule` <small>core</small>, `WorkflowUniqueIdRule` <small>core</small>, `RpcStepRule` <small>core</small>, `WsdlStepRule` <small>core</small> |
 | `WorkflowContextInterface` | no | `WorkflowContext` <small>core</small> |
 | `WorkflowStateRepositoryInterface` | no | `StoredWorkflowStateRepository` <small>core</small> |
 | `WritableDefinitionRegistryInterface` | no | `InMemoryDefinitionRegistry` <small>core</small> |

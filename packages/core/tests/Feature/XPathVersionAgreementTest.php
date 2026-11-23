@@ -16,8 +16,8 @@ use Alama\Arazzo\Contracts\Spec\StepIo;
 use Alama\Arazzo\Contracts\Spec\SuccessCriterion;
 use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
-use Alama\Arazzo\Document\Validator\Data\Error;
-use Alama\Arazzo\Document\Validator\Data\ValidationResult;
+use Alama\Arazzo\Contracts\Validation\Error;
+use Alama\Arazzo\Contracts\Validation\ValidationResult;
 use Alama\Arazzo\Document\Validator\RuleSet;
 use Alama\Arazzo\Document\Validator\Validator;
 use Alama\Arazzo\Evaluation\EvaluationEngine;
@@ -52,7 +52,7 @@ function xpathVersionDocument(?string $version): array
 
 function xpathVersionResult(ArazzoDocument $document): ValidationResult
 {
-    return (new Validator(RuleSet::default(new ExpressionEngine())))->validate($document);
+    return (new Validator(RuleSet::default()))->validate($document);
 }
 
 /** @param list<Error> $errors */

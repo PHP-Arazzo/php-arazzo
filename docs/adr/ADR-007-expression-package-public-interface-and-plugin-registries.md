@@ -57,6 +57,12 @@ A clear architectural distinction is established across all monorepo packages:
   - `SourceNormalizerRegistry` (Phase 2: promoted to `Alama\Arazzo\Sources\Registries\SourceNormalizerRegistry`, `SourceNormalizerRegistryInterface` deleted, singleton `create()` auto-seeding zero-vendor `OpenApiSourceNormalizer`, paired with per-instance `Sources::withNormalizer()` overrides).
   - `OperationExecutorRegistry` (Phase 2: singleton `create()`).
   - `ExpressionEvaluatorRegistry` & `CriterionEvaluatorRegistry` (Phase 2: singleton `create()`, encapsulated in `EvaluationEngine`).
+  - `ValidationRuleRegistry` (Phase 3: `Alama\Arazzo\Document\Registries\ValidationRuleRegistry`, singleton `create()`, auto-discovering `#[AsValidationRule]` rules across `document`, `expression`, `protocol-soap`, `protocol-rpc`, and consumer apps).
+- **Zero-Scan Auto-Discovery (`PluginDiscovery`) & Registrar Retirement (Phase 3)**:
+  - `Alama\Arazzo\Contracts\Discovery\PluginDiscovery` reads installed packages' `composer.json` `extra.arazzo.plugins` manifests via `Composer\InstalledVersions` and filters by PHP 8 `#[As*]` attributes.
+  - All 5 stateless registries (`SelectorPluginRegistry`, `SourceNormalizerRegistry`, `ValidationRuleRegistry`, `ExpressionEvaluatorRegistry`, `CriterionEvaluatorRegistry`) auto-discover plugins inside `create()`.
+  - `ProtocolHttpRegistrar`, `SoapRegistrar`, and `RpcRegistrar` are deleted; framework bridges discover DI-bound executors via `PluginDiscovery::classesWith(AsOperationExecutor::class)`.
+  - Validation SPI (`ValidationRuleInterface`, `SymbolTable`, `ErrorCollector`, `Error`, `Warning`, `Severity`, `ValidationResult`) is promoted to `packages/contracts`; expression validation rules (including `JsonPathCriterionConditionRule` with code `expr.jsonpath_condition`) move to `packages/expression`, `WsdlStepRule` moves to `packages/protocol-soap`, `RpcStepRule` moves to `packages/protocol-rpc`, and `packages/document` drops its dependency on `php-arazzo/arazzo-expression`.
 - **Runtime State / Cache Stores**:
   - `SourceRegistry` is not a plugin registry. It is eliminated in Phase 2 by merging document memoization (`$cache`), explicit document seeding (`$seeded`, exposed publicly via `SourcesInterface::withDocument()`), and circular-reference detection (`$resolving`) directly into `DefaultSourceResolver`.
   - State stores (`ExecutionRegistry`, `DefinitionRegistry`, `PendingCorrelationRegistry`) remain scoped to runtime/process lifecycles and are never singletons.

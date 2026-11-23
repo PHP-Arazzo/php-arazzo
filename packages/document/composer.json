@@ -7,7 +7,6 @@
     "require": {
         "php": "^8.4",
         "php-arazzo/arazzo-contracts": "@dev",
-        "php-arazzo/arazzo-expression": "@dev",
         "justinrainbow/json-schema": "^6.0",
         "symfony/yaml": "^7.0"
     },
@@ -39,5 +38,61 @@
         }
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "extra": {
+        "arazzo": {
+            "plugins": [
+                "Alama\\Arazzo\\Document\\Validator\\OfficialSchemaRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\ActionDuplicateRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\ActionGotoTargetResolvesRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\ActionParameterInForbiddenRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\ActionRetryLimitsRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\ActionReusableRefResolvesRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\ActionTargetExclusivityRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\ActionTypeValidRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\AsyncApiFieldsRequire11Rule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\ComponentsUniqueNamesRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\DocUnknownFieldRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\DocumentArazzoVersionRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\DocumentInfoRequiredRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\DocumentSourceDescriptionsPresentRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\ExtensionsXPrefixRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\GraphQlStepRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\InteractionStepRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\ParameterQuerystringOperationShapeRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\ParameterReusableRefResolvesRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\ReceiveStepSuccessCriteriaRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\SelfUriSyntaxRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\SourceTypeMatchesRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\SourceUniqueNameRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\SourceUrlSyntaxRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\StepAtLeastOneRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\StepCriteriaTypeContextRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\StepDependsOnNoCycleRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\StepIdPatternRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\StepNestedWorkflowExistsRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\StepNestedWorkflowNoCycleRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\StepOperationIdResolvesRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\StepOperationIdSourceScopedRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\StepOperationTargetPresentRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\StepOutputsUniqueRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\StepParameterDuplicateRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\StepParameterInValidRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\StepParameterRequiresInRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\StepParametersHaveNameRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\StepRequestBodyReplacementsTargetRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\StepRequestBodyWorkflowRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\StepSuccessCriteriaConditionRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\StepTimeoutRequires11Rule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\StepUniqueIdRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\SubWorkflowInvokeTargetResolvesRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\WorkflowAtLeastOneRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\WorkflowDependsOnExistsRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\WorkflowDependsOnNoCycleRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\WorkflowIdPatternRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\WorkflowInputsValidSchemaRule",
+                "Alama\\Arazzo\\Document\\Validator\\Rules\\WorkflowUniqueIdRule"
+            ]
+        }
+    }
 }

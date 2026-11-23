@@ -15,12 +15,15 @@ flowchart LR
     contracts_Attributes["Alama\Arazzo\Contracts\Attributes"]:::coreNode
     contracts_Data["Alama\Arazzo\Contracts\Data"]:::coreNode
     contracts_Dependency["Alama\Arazzo\Contracts\Dependency"]:::coreNode
+    contracts_Discovery["Alama\Arazzo\Contracts\Discovery"]:::coreNode
     contracts_Exceptions["Alama\Arazzo\Contracts\Exceptions"]:::coreNode
     contracts_Interfaces["Alama\Arazzo\Contracts\Interfaces"]:::coreNode
     contracts_Spec["Alama\Arazzo\Contracts\Spec"]:::coreNode
     contracts_State["Alama\Arazzo\Contracts\State"]:::coreNode
     contracts_Support["Alama\Arazzo\Contracts\Support\Events\Dispatcher"]:::coreNode
+    contracts_Validation["Alama\Arazzo\Contracts\Validation"]:::coreNode
     document_Parser["Alama\Arazzo\Document\Parser\Exceptions"]:::coreNode
+    document_Registries["Alama\Arazzo\Document\Registries"]:::coreNode
     document_Validator["Alama\Arazzo\Document\Validator\Rules"]:::coreNode
     document__["(document package root)"]:::coreNode
     engine_Data["Alama\Arazzo\Engine\Data"]:::coreNode
@@ -47,21 +50,20 @@ flowchart LR
     expression_Plugins["Alama\Arazzo\Expression\Plugins"]:::coreNode
     expression_Registries["Alama\Arazzo\Expression\Registries"]:::coreNode
     expression_Support["Alama\Arazzo\Expression\Support"]:::coreNode
+    expression_Validation["Alama\Arazzo\Expression\Validation\Rules"]:::coreNode
     expression_Xpath["Alama\Arazzo\Expression\Xpath"]:::coreNode
     expression__["(expression package root)"]:::coreNode
     protocol_http_Execution["Alama\Arazzo\Protocol\Http\Execution"]:::coreNode
     protocol_http_Protocol["Alama\Arazzo\Protocol\Http\Protocol"]:::coreNode
-    protocol_http_Registrar["Alama\Arazzo\Protocol\Http\Registrar"]:::coreNode
     protocol_http_Resolver["Alama\Arazzo\Protocol\Http\Resolver"]:::coreNode
     protocol_rpc_Execution["Alama\Arazzo\Protocol\Rpc\Execution"]:::coreNode
     protocol_rpc_Normalizer["Alama\Arazzo\Protocol\Rpc\Normalizer"]:::coreNode
     protocol_rpc_Protocol["Alama\Arazzo\Protocol\Rpc\Protocol"]:::coreNode
-    protocol_rpc_Registrar["Alama\Arazzo\Protocol\Rpc\Registrar"]:::coreNode
     protocol_rpc_Transfer["Alama\Arazzo\Protocol\Rpc\Transfer"]:::coreNode
+    protocol_rpc_Validation["Alama\Arazzo\Protocol\Rpc\Validation"]:::coreNode
     protocol_soap_Exceptions["Alama\Arazzo\Protocol\Soap\Exceptions"]:::coreNode
     protocol_soap_Execution["Alama\Arazzo\Protocol\Soap\Execution"]:::coreNode
     protocol_soap_Normalizer["Alama\Arazzo\Protocol\Soap\Normalizer"]:::coreNode
-    protocol_soap_Registrar["Alama\Arazzo\Protocol\Soap\Registrar"]:::coreNode
     protocol_soap_Resolver["Alama\Arazzo\Protocol\Soap\Resolver"]:::coreNode
     protocol_soap_Transfer["Alama\Arazzo\Protocol\Soap\Transfer"]:::coreNode
     protocol_soap_Validation["Alama\Arazzo\Protocol\Soap\Validation"]:::coreNode
@@ -85,8 +87,11 @@ flowchart LR
     contracts_Interfaces --> contracts_Spec
     contracts_Interfaces --> contracts_State
     contracts_Interfaces --> contracts_Exceptions
+    contracts_Interfaces --> contracts_Validation
     contracts_Spec --> contracts_Interfaces
     contracts_State --> contracts_Spec
+    contracts_Validation --> contracts_Spec
+    contracts_Validation --> contracts_Data
     expression_Ast --> expression_Data
     expression_Ast --> expression_Enum
     expression_Data --> expression_Exceptions
@@ -113,12 +118,19 @@ flowchart LR
     expression_Plugins --> expression_Xpath
     expression_Plugins --> expression__
     expression_Registries --> contracts_Attributes
+    expression_Registries --> contracts_Discovery
     expression_Registries --> contracts_Spec
     expression_Registries --> expression_Interfaces
-    expression_Registries --> expression__
-    expression_Registries --> expression_Plugins
-    expression_Registries --> expression_Xpath
     expression_Support --> expression_Ast
+    expression_Validation --> contracts_Spec
+    expression_Validation --> contracts_Validation
+    expression_Validation --> contracts_Attributes
+    expression_Validation --> contracts_Interfaces
+    expression_Validation --> expression_Data
+    expression_Validation --> expression_Enum
+    expression_Validation --> expression__
+    expression_Validation --> expression_Interfaces
+    expression_Validation --> expression_Exceptions
     expression_Xpath --> contracts_Spec
     expression_Xpath --> expression_Exceptions
     expression__ --> contracts_Spec
@@ -151,9 +163,9 @@ flowchart LR
     evaluation_Plugins --> contracts_Spec
     evaluation_Plugins --> expression_Interfaces
     evaluation_Registries --> contracts_Attributes
+    evaluation_Registries --> contracts_Discovery
     evaluation_Registries --> contracts_Interfaces
     evaluation_Registries --> contracts_Spec
-    evaluation_Registries --> evaluation_Plugins
     evaluation_Registries --> expression_Interfaces
     evaluation__ --> contracts_Spec
     evaluation__ --> contracts_State
@@ -170,28 +182,31 @@ flowchart LR
     evaluation__ --> expression_Exceptions
     document_Parser --> contracts_Spec
     document_Parser --> contracts_Support
+    document_Registries --> contracts_Attributes
+    document_Registries --> contracts_Discovery
+    document_Registries --> contracts_Interfaces
     document_Validator --> contracts_Data
     document_Validator --> contracts_Spec
-    document_Validator --> expression_Interfaces
-    document_Validator --> expression_Enum
-    document_Validator --> expression_Exceptions
-    document_Validator --> expression_Data
+    document_Validator --> contracts_Validation
+    document_Validator --> contracts_Interfaces
+    document_Validator --> document_Registries
+    document_Validator --> contracts_Attributes
     document_Validator --> contracts_Support
     document_Validator --> contracts_Dependency
     document__ --> contracts_Data
+    document__ --> contracts_Interfaces
     document__ --> contracts_Spec
+    document__ --> contracts_Validation
     document__ --> document_Parser
     document__ --> document_Validator
-    document__ --> expression__
-    document__ --> expression_Interfaces
     sources_Normalizer --> contracts_Spec
     sources_Normalizer --> contracts_Attributes
     sources_Normalizer --> contracts_Interfaces
     sources_Normalizer --> sources_Resolver
     sources_Registries --> contracts_Attributes
+    sources_Registries --> contracts_Discovery
     sources_Registries --> contracts_Interfaces
     sources_Registries --> contracts_Spec
-    sources_Registries --> sources_Normalizer
     sources_Resolver --> contracts_Interfaces
     sources_Resolver --> contracts_Spec
     sources_Resolver --> document_Parser
@@ -235,7 +250,7 @@ flowchart LR
     runner_Async --> runner_Preflight
     runner_Async --> contracts_Dependency
     runner_Events --> contracts_Support
-    runner_Exceptions --> document_Validator
+    runner_Exceptions --> contracts_Validation
     runner_Execution --> document__
     runner_Execution --> protocol_http_Resolver
     runner_Execution --> contracts_Spec
@@ -250,7 +265,7 @@ flowchart LR
     runner_Interfaces --> contracts_Spec
     runner_Preflight --> contracts_Spec
     runner_Preflight --> document__
-    runner_Preflight --> document_Validator
+    runner_Preflight --> contracts_Validation
     runner_Sync --> contracts_Spec
     runner_Sync --> contracts_Dependency
     runner_Sync --> contracts_State
@@ -269,7 +284,7 @@ flowchart LR
     runner_Sync --> document__
     runner_Sync --> runner_Preflight
     runner_Sync --> contracts_Attributes
-    runner_Sync --> document_Validator
+    runner_Sync --> contracts_Validation
     runner_Sync --> runner_Events
     runner_Sync --> runner_Exceptions
     runner__ --> contracts_Interfaces
@@ -330,14 +345,6 @@ flowchart LR
     protocol_http_Protocol --> protocol_http_Resolver
     protocol_http_Protocol --> engine_Exceptions
     protocol_http_Protocol --> expression_Data
-    protocol_http_Registrar --> contracts_Interfaces
-    protocol_http_Registrar --> engine_Execution
-    protocol_http_Registrar --> evaluation__
-    protocol_http_Registrar --> protocol_http_Execution
-    protocol_http_Registrar --> protocol_http_Protocol
-    protocol_http_Registrar --> protocol_http_Resolver
-    protocol_http_Registrar --> sources_Normalizer
-    protocol_http_Registrar --> sources_Registries
     protocol_http_Resolver --> contracts_Spec
     protocol_http_Resolver --> contracts_Interfaces
     protocol_http_Resolver --> document__
@@ -361,15 +368,13 @@ flowchart LR
     protocol_rpc_Protocol --> contracts_Spec
     protocol_rpc_Protocol --> document__
     protocol_rpc_Protocol --> protocol_rpc_Normalizer
-    protocol_rpc_Registrar --> contracts_Interfaces
-    protocol_rpc_Registrar --> protocol_rpc_Execution
-    protocol_rpc_Registrar --> protocol_rpc_Normalizer
-    protocol_rpc_Registrar --> protocol_rpc_Protocol
-    protocol_rpc_Registrar --> protocol_rpc_Transfer
-    protocol_rpc_Registrar --> sources_Registries
     protocol_rpc_Transfer --> contracts_Interfaces
     protocol_rpc_Transfer --> contracts_Spec
     protocol_rpc_Transfer --> protocol_rpc_Protocol
+    protocol_rpc_Validation --> contracts_Attributes
+    protocol_rpc_Validation --> contracts_Interfaces
+    protocol_rpc_Validation --> contracts_Spec
+    protocol_rpc_Validation --> contracts_Validation
     protocol_soap_Execution --> contracts_Spec
     protocol_soap_Execution --> protocol_soap_Transfer
     protocol_soap_Execution --> contracts_Interfaces
@@ -384,18 +389,16 @@ flowchart LR
     protocol_soap_Normalizer --> contracts_Interfaces
     protocol_soap_Normalizer --> contracts_Spec
     protocol_soap_Normalizer --> protocol_soap_Exceptions
-    protocol_soap_Registrar --> contracts_Interfaces
-    protocol_soap_Registrar --> protocol_soap_Execution
-    protocol_soap_Registrar --> protocol_soap_Normalizer
-    protocol_soap_Registrar --> protocol_soap_Resolver
-    protocol_soap_Registrar --> protocol_soap_Transfer
-    protocol_soap_Registrar --> protocol_soap_Validation
-    protocol_soap_Registrar --> sources_Registries
     protocol_soap_Resolver --> contracts_Interfaces
     protocol_soap_Transfer --> contracts_Interfaces
-    protocol_soap_Validation --> contracts_Exceptions
+    protocol_soap_Validation --> contracts_Attributes
     protocol_soap_Validation --> contracts_Interfaces
     protocol_soap_Validation --> contracts_Spec
+    protocol_soap_Validation --> contracts_Validation
+    protocol_soap_Validation --> expression_Enum
+    protocol_soap_Validation --> expression_Exceptions
+    protocol_soap_Validation --> expression_Interfaces
+    protocol_soap_Validation --> contracts_Exceptions
     protocol_soap_Validation --> protocol_soap_Execution
     classDef coreNode fill:#e8f0fe,stroke:#4285f4,color:#1a1a1a;
     classDef laravelNode fill:#fef7e0,stroke:#f9ab00,color:#1a1a1a;

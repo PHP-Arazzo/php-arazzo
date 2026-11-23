@@ -1382,13 +1382,12 @@
             "dist": {
                 "type": "path",
                 "url": "packages/document",
-                "reference": "857515a300f140e6ac843f429b58eceb15d79c93"
+                "reference": "bf14a06694c79cd6ed510fef3df9576ce6d6d30f"
             },
             "require": {
                 "justinrainbow/json-schema": "^6.0",
                 "php": "^8.4",
                 "php-arazzo/arazzo-contracts": "@dev",
-                "php-arazzo/arazzo-expression": "@dev",
                 "symfony/yaml": "^7.0"
             },
             "require-dev": {
@@ -1402,6 +1401,62 @@
                 "phpstan/phpstan-phpunit": "^2.0"
             },
             "type": "library",
+            "extra": {
+                "arazzo": {
+                    "plugins": [
+                        "Alama\\Arazzo\\Document\\Validator\\OfficialSchemaRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\ActionDuplicateRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\ActionGotoTargetResolvesRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\ActionParameterInForbiddenRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\ActionRetryLimitsRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\ActionReusableRefResolvesRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\ActionTargetExclusivityRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\ActionTypeValidRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\AsyncApiFieldsRequire11Rule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\ComponentsUniqueNamesRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\DocUnknownFieldRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\DocumentArazzoVersionRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\DocumentInfoRequiredRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\DocumentSourceDescriptionsPresentRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\ExtensionsXPrefixRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\GraphQlStepRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\InteractionStepRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\ParameterQuerystringOperationShapeRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\ParameterReusableRefResolvesRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\ReceiveStepSuccessCriteriaRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\SelfUriSyntaxRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\SourceTypeMatchesRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\SourceUniqueNameRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\SourceUrlSyntaxRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\StepAtLeastOneRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\StepCriteriaTypeContextRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\StepDependsOnNoCycleRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\StepIdPatternRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\StepNestedWorkflowExistsRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\StepNestedWorkflowNoCycleRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\StepOperationIdResolvesRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\StepOperationIdSourceScopedRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\StepOperationTargetPresentRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\StepOutputsUniqueRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\StepParameterDuplicateRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\StepParameterInValidRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\StepParameterRequiresInRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\StepParametersHaveNameRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\StepRequestBodyReplacementsTargetRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\StepRequestBodyWorkflowRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\StepSuccessCriteriaConditionRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\StepTimeoutRequires11Rule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\StepUniqueIdRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\SubWorkflowInvokeTargetResolvesRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\WorkflowAtLeastOneRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\WorkflowDependsOnExistsRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\WorkflowDependsOnNoCycleRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\WorkflowIdPatternRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\WorkflowInputsValidSchemaRule",
+                        "Alama\\Arazzo\\Document\\Validator\\Rules\\WorkflowUniqueIdRule"
+                    ]
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "Alama\\Arazzo\\Document\\": "src/"
@@ -1465,7 +1520,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/evaluation",
-                "reference": "ece4e9945a16b28c80d88795736591b73f18c1cb"
+                "reference": "5e01cece36b9ab2f66781cd2342ccb13f8280b37"
             },
             "require": {
                 "php": "^8.4",
@@ -1485,6 +1540,14 @@
                 "phpstan/phpstan-phpunit": "^2.0"
             },
             "type": "library",
+            "extra": {
+                "arazzo": {
+                    "plugins": [
+                        "Alama\\Arazzo\\Evaluation\\Plugins\\JsonPathCriterionPlugin",
+                        "Alama\\Arazzo\\Evaluation\\Plugins\\JsonPathExpressionPlugin"
+                    ]
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "Alama\\Arazzo\\Evaluation\\": "src/"
@@ -1509,7 +1572,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/expression",
-                "reference": "63db8dcb21601357f376ce8263607c648c4afae0"
+                "reference": "5f46ec854eb8b5d1f476fccbb08517d1113a6587"
             },
             "require": {
                 "php": "^8.4",
@@ -1529,6 +1592,29 @@
                 "phpstan/phpstan-phpunit": "^2.0"
             },
             "type": "library",
+            "extra": {
+                "arazzo": {
+                    "plugins": [
+                        "Alama\\Arazzo\\Expression\\Plugins\\JsonPathSelectorPlugin",
+                        "Alama\\Arazzo\\Expression\\Plugins\\JsonPointerSelectorPlugin",
+                        "Alama\\Arazzo\\Expression\\Plugins\\XpathSelectorPlugin",
+                        "Alama\\Arazzo\\Expression\\Validation\\Rules\\ActionOutputTargetExclusivityRule",
+                        "Alama\\Arazzo\\Expression\\Validation\\Rules\\ExpressionContextMisuseRule",
+                        "Alama\\Arazzo\\Expression\\Validation\\Rules\\ExpressionJsonPointerSyntaxRule",
+                        "Alama\\Arazzo\\Expression\\Validation\\Rules\\ExpressionSyntaxRule",
+                        "Alama\\Arazzo\\Expression\\Validation\\Rules\\ExpressionUnresolvedComponentRefRule",
+                        "Alama\\Arazzo\\Expression\\Validation\\Rules\\ExpressionUnresolvedInputRefRule",
+                        "Alama\\Arazzo\\Expression\\Validation\\Rules\\ExpressionUnresolvedSourceRefRule",
+                        "Alama\\Arazzo\\Expression\\Validation\\Rules\\ExpressionUnresolvedStepRefRule",
+                        "Alama\\Arazzo\\Expression\\Validation\\Rules\\ExpressionUnresolvedWorkflowRefRule",
+                        "Alama\\Arazzo\\Expression\\Validation\\Rules\\JsonPathCriterionConditionRule",
+                        "Alama\\Arazzo\\Expression\\Validation\\Rules\\MessageRefRequiresReceiveRule",
+                        "Alama\\Arazzo\\Expression\\Validation\\Rules\\SelectorTypeSupportedRule",
+                        "Alama\\Arazzo\\Expression\\Validation\\Rules\\StepOperationPathSyntaxRule",
+                        "Alama\\Arazzo\\Expression\\Validation\\Rules\\SuccessCriteriaVersionSupportedRule"
+                    ]
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "Alama\\Arazzo\\Expression\\": "src/"
@@ -1553,7 +1639,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/protocol-http",
-                "reference": "d57ac48b0d9ca79c58cc6af4968f7fe659433e86"
+                "reference": "b2be2d7184330b2e2ba18698cbb4b549d1ca3c58"
             },
             "require": {
                 "cebe/php-openapi": "^1.7",
@@ -1575,6 +1661,14 @@
                 "pestphp/pest-plugin-arch": "^5.0"
             },
             "type": "library",
+            "extra": {
+                "arazzo": {
+                    "plugins": [
+                        "Alama\\Arazzo\\Protocol\\Http\\Protocol\\AsyncApiStepExecutor",
+                        "Alama\\Arazzo\\Protocol\\Http\\Protocol\\HttpStepExecutor"
+                    ]
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "Alama\\Arazzo\\Protocol\\Http\\": "src/"
@@ -1607,7 +1701,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/protocol-rpc",
-                "reference": "1b3be3d847a3e1f953a7c67bfb35a2a190baa91f"
+                "reference": "c38530abf67abafeb39ce0067667e8fa94a351ce"
             },
             "require": {
                 "php": "^8.4",
@@ -1626,6 +1720,15 @@
                 "pestphp/pest-plugin-arch": "^5.0"
             },
             "type": "library",
+            "extra": {
+                "arazzo": {
+                    "plugins": [
+                        "Alama\\Arazzo\\Protocol\\Rpc\\Execution\\RpcOperationExecutor",
+                        "Alama\\Arazzo\\Protocol\\Rpc\\Normalizer\\ProtoSourceNormalizer",
+                        "Alama\\Arazzo\\Protocol\\Rpc\\Validation\\RpcStepRule"
+                    ]
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "Alama\\Arazzo\\Protocol\\Rpc\\": "src/"
@@ -1661,7 +1764,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/protocol-soap",
-                "reference": "f45f25aaf045feb1c0410240f16d68e32839a563"
+                "reference": "72a988b9a0dadff1be49ce68c6e0c788dfa3466e"
             },
             "require": {
                 "ext-dom": "*",
@@ -1682,6 +1785,15 @@
                 "pestphp/pest-plugin-arch": "^5.0"
             },
             "type": "library",
+            "extra": {
+                "arazzo": {
+                    "plugins": [
+                        "Alama\\Arazzo\\Protocol\\Soap\\Execution\\SoapOperationExecutor",
+                        "Alama\\Arazzo\\Protocol\\Soap\\Normalizer\\WsdlSourceNormalizer",
+                        "Alama\\Arazzo\\Protocol\\Soap\\Validation\\WsdlStepRule"
+                    ]
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "Alama\\Arazzo\\Protocol\\Soap\\": "src/"
@@ -1714,7 +1826,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/runner",
-                "reference": "eab8dba473d1295a8a0d32885c9b81947470cc5f"
+                "reference": "1ff75fa24de2c603f359afc7826de99bb2feaf41"
             },
             "require": {
                 "guzzlehttp/guzzle": "^7.9",
@@ -1741,6 +1853,13 @@
                 "pestphp/pest-plugin-arch": "^5.0"
             },
             "type": "library",
+            "extra": {
+                "arazzo": {
+                    "plugins": [
+                        "Alama\\Arazzo\\Runner\\Sync\\SubWorkflowStepExecutor"
+                    ]
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "Alama\\Arazzo\\Runner\\": "src/",
@@ -1767,7 +1886,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/sources",
-                "reference": "a389fa2601ba1b2e782bad7d0cbe763b8027da03"
+                "reference": "013534f3d41f8bd97d0d2f9daa966e1d29d28bdb"
             },
             "require": {
                 "ext-dom": "*",
@@ -1793,6 +1912,13 @@
                 "phpstan/phpstan-phpunit": "^2.0"
             },
             "type": "library",
+            "extra": {
+                "arazzo": {
+                    "plugins": [
+                        "Alama\\Arazzo\\Sources\\Normalizer\\OpenApiSourceNormalizer"
+                    ]
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "Alama\\Arazzo\\Sources\\": "src/"

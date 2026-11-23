@@ -40,25 +40,31 @@ contracts-Data,contracts-Spec,1
 contracts-Dependency,contracts-Spec,6
 contracts-Dependency,contracts-State,1
 contracts-Interfaces,contracts-Exceptions,1
-contracts-Interfaces,contracts-Spec,23
+contracts-Interfaces,contracts-Spec,24
 contracts-Interfaces,contracts-State,2
+contracts-Interfaces,contracts-Validation,2
 contracts-State,contracts-Spec,3
+contracts-Validation,contracts-Data,1
+contracts-Validation,contracts-Spec,4
 document-Parser,contracts-Spec,39
 document-Parser,contracts-Support,2
-document-Validator,contracts-Data,2
+document-Registries,contracts-Attributes,1
+document-Registries,contracts-Discovery,1
+document-Registries,contracts-Interfaces,1
+document-Validator,contracts-Attributes,50
+document-Validator,contracts-Data,1
 document-Validator,contracts-Dependency,1
-document-Validator,contracts-Spec,148
+document-Validator,contracts-Interfaces,52
+document-Validator,contracts-Spec,105
 document-Validator,contracts-Support,1
-document-Validator,expression-Data,2
-document-Validator,expression-Enum,11
-document-Validator,expression-Exceptions,2
-document-Validator,expression-Interfaces,14
+document-Validator,contracts-Validation,110
+document-Validator,document-Registries,1
 document-root,contracts-Data,2
+document-root,contracts-Interfaces,2
 document-root,contracts-Spec,7
+document-root,contracts-Validation,2
 document-root,document-Parser,5
-document-root,document-Validator,4
-document-root,expression-Interfaces,1
-document-root,expression-root,1
+document-root,document-Validator,2
 engine-Data,contracts-Spec,3
 engine-Data,contracts-State,1
 engine-Data,engine-Enum,1
@@ -92,9 +98,9 @@ evaluation-Plugins,contracts-Interfaces,2
 evaluation-Plugins,contracts-Spec,5
 evaluation-Plugins,expression-Interfaces,2
 evaluation-Registries,contracts-Attributes,2
+evaluation-Registries,contracts-Discovery,2
 evaluation-Registries,contracts-Interfaces,2
 evaluation-Registries,contracts-Spec,3
-evaluation-Registries,evaluation-Plugins,2
 evaluation-Registries,expression-Interfaces,2
 evaluation-root,contracts-Interfaces,1
 evaluation-root,contracts-Spec,26
@@ -119,6 +125,7 @@ expression-Interfaces,contracts-Spec,8
 expression-Interfaces,expression-Ast,1
 expression-Interfaces,expression-Data,3
 expression-Interfaces,expression-Exceptions,2
+expression-Interfaces,expression-Registries,1
 expression-Internal,contracts-Spec,1
 expression-Internal,expression-Ast,10
 expression-Internal,expression-Data,1
@@ -129,13 +136,21 @@ expression-JsonPath,expression-Exceptions,1
 expression-Plugins,contracts-Attributes,3
 expression-Plugins,contracts-Spec,3
 expression-Plugins,expression-Interfaces,3
-expression-Plugins,expression-Xpath,2
+expression-Plugins,expression-Xpath,3
+expression-Plugins,expression-root,2
 expression-Registries,contracts-Attributes,1
+expression-Registries,contracts-Discovery,1
 expression-Registries,contracts-Spec,1
-expression-Registries,expression-Interfaces,1
-expression-Registries,expression-Plugins,3
-expression-Registries,expression-Xpath,1
 expression-Support,expression-Ast,1
+expression-Validation,contracts-Attributes,14
+expression-Validation,contracts-Interfaces,14
+expression-Validation,contracts-Spec,33
+expression-Validation,contracts-Validation,35
+expression-Validation,expression-Data,2
+expression-Validation,expression-Enum,10
+expression-Validation,expression-Exceptions,1
+expression-Validation,expression-Interfaces,12
+expression-Validation,expression-root,14
 expression-Xpath,contracts-Spec,1
 expression-Xpath,expression-Exceptions,2
 expression-root,contracts-Spec,9
@@ -168,14 +183,6 @@ protocol-http-Protocol,evaluation-root,2
 protocol-http-Protocol,expression-Data,1
 protocol-http-Protocol,protocol-http-Execution,1
 protocol-http-Protocol,protocol-http-Resolver,1
-protocol-http-Registrar,contracts-Interfaces,5
-protocol-http-Registrar,engine-Execution,1
-protocol-http-Registrar,evaluation-root,1
-protocol-http-Registrar,protocol-http-Execution,2
-protocol-http-Registrar,protocol-http-Protocol,2
-protocol-http-Registrar,protocol-http-Resolver,2
-protocol-http-Registrar,sources-Normalizer,4
-protocol-http-Registrar,sources-Registries,1
 protocol-http-Resolver,contracts-Interfaces,2
 protocol-http-Resolver,contracts-Spec,5
 protocol-http-Resolver,document-root,1
@@ -199,15 +206,13 @@ protocol-rpc-Protocol,contracts-Interfaces,1
 protocol-rpc-Protocol,contracts-Spec,6
 protocol-rpc-Protocol,document-root,1
 protocol-rpc-Protocol,protocol-rpc-Normalizer,1
-protocol-rpc-Registrar,contracts-Interfaces,1
-protocol-rpc-Registrar,protocol-rpc-Execution,3
-protocol-rpc-Registrar,protocol-rpc-Normalizer,1
-protocol-rpc-Registrar,protocol-rpc-Protocol,2
-protocol-rpc-Registrar,protocol-rpc-Transfer,1
-protocol-rpc-Registrar,sources-Registries,1
 protocol-rpc-Transfer,contracts-Interfaces,1
 protocol-rpc-Transfer,contracts-Spec,1
 protocol-rpc-Transfer,protocol-rpc-Protocol,2
+protocol-rpc-Validation,contracts-Attributes,1
+protocol-rpc-Validation,contracts-Interfaces,1
+protocol-rpc-Validation,contracts-Spec,2
+protocol-rpc-Validation,contracts-Validation,2
 protocol-soap-Execution,contracts-Attributes,1
 protocol-soap-Execution,contracts-Interfaces,4
 protocol-soap-Execution,contracts-Spec,15
@@ -222,18 +227,16 @@ protocol-soap-Normalizer,contracts-Attributes,1
 protocol-soap-Normalizer,contracts-Interfaces,1
 protocol-soap-Normalizer,contracts-Spec,5
 protocol-soap-Normalizer,protocol-soap-Exceptions,1
-protocol-soap-Registrar,contracts-Interfaces,1
-protocol-soap-Registrar,protocol-soap-Execution,4
-protocol-soap-Registrar,protocol-soap-Normalizer,1
-protocol-soap-Registrar,protocol-soap-Resolver,1
-protocol-soap-Registrar,protocol-soap-Transfer,1
-protocol-soap-Registrar,protocol-soap-Validation,1
-protocol-soap-Registrar,sources-Registries,1
 protocol-soap-Resolver,contracts-Interfaces,2
 protocol-soap-Transfer,contracts-Interfaces,1
+protocol-soap-Validation,contracts-Attributes,1
 protocol-soap-Validation,contracts-Exceptions,1
-protocol-soap-Validation,contracts-Interfaces,1
-protocol-soap-Validation,contracts-Spec,2
+protocol-soap-Validation,contracts-Interfaces,2
+protocol-soap-Validation,contracts-Spec,8
+protocol-soap-Validation,contracts-Validation,2
+protocol-soap-Validation,expression-Enum,1
+protocol-soap-Validation,expression-Exceptions,1
+protocol-soap-Validation,expression-Interfaces,1
 protocol-soap-Validation,protocol-soap-Execution,1
 runner-Async,contracts-Dependency,2
 runner-Async,contracts-Exceptions,1
@@ -252,7 +255,7 @@ runner-Async,runner-Execution,11
 runner-Async,runner-Preflight,3
 runner-Async,runner-Sync,7
 runner-Events,contracts-Support,1
-runner-Exceptions,document-Validator,1
+runner-Exceptions,contracts-Validation,1
 runner-Execution,contracts-Interfaces,2
 runner-Execution,contracts-Spec,2
 runner-Execution,contracts-State,1
@@ -265,7 +268,7 @@ runner-Execution,runner-Preflight,1
 runner-Interfaces,contracts-Interfaces,1
 runner-Interfaces,contracts-Spec,2
 runner-Preflight,contracts-Spec,7
-runner-Preflight,document-Validator,3
+runner-Preflight,contracts-Validation,3
 runner-Preflight,document-root,1
 runner-Sync,contracts-Attributes,1
 runner-Sync,contracts-Dependency,1
@@ -274,7 +277,7 @@ runner-Sync,contracts-Interfaces,7
 runner-Sync,contracts-Spec,25
 runner-Sync,contracts-State,5
 runner-Sync,contracts-Support,2
-runner-Sync,document-Validator,1
+runner-Sync,contracts-Validation,1
 runner-Sync,document-root,2
 runner-Sync,engine-Exceptions,3
 runner-Sync,engine-Execution,4
@@ -310,9 +313,9 @@ sources-Normalizer,contracts-Interfaces,1
 sources-Normalizer,contracts-Spec,10
 sources-Normalizer,sources-Resolver,1
 sources-Registries,contracts-Attributes,1
+sources-Registries,contracts-Discovery,1
 sources-Registries,contracts-Interfaces,1
 sources-Registries,contracts-Spec,1
-sources-Registries,sources-Normalizer,4
 sources-Resolver,contracts-Interfaces,3
 sources-Resolver,contracts-Spec,5
 sources-Resolver,document-Parser,2
@@ -334,10 +337,8 @@ These references exist in the code but are not drawn: drawing them would close a
 |---|---|---:|
 | `contracts-Spec` | `contracts-Interfaces` | 1 |
 | `expression-Data` | `expression-Interfaces` | 1 |
-| `expression-Interfaces` | `expression-Registries` | 1 |
 | `expression-Internal` | `expression-root` | 2 |
-| `expression-Plugins` | `expression-root` | 2 |
-| `expression-Registries` | `expression-root` | 1 |
+| `expression-Registries` | `expression-Interfaces` | 1 |
 | `runner-Async` | `runner-root` | 4 |
 | `runner-Execution` | `runner-Sync` | 1 |
 | `runner-Sync` | `runner-root` | 2 |

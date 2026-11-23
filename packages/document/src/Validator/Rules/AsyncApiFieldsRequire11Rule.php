@@ -4,16 +4,18 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Document\Validator\Rules;
 
+use Alama\Arazzo\Contracts\Attributes\AsValidationRule;
+use Alama\Arazzo\Contracts\Interfaces\ValidationRuleInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Enum\SpecVersion;
-use Alama\Arazzo\Document\Validator\Data\SymbolTable;
-use Alama\Arazzo\Document\Validator\ErrorCollector;
-use Alama\Arazzo\Document\Validator\Interfaces\Rule;
+use Alama\Arazzo\Contracts\Validation\ErrorCollector;
+use Alama\Arazzo\Contracts\Validation\SymbolTable;
 
 /**
  * @internal stays out of the advertised contract; not part of the public API surface
  */
-final class AsyncApiFieldsRequire11Rule implements Rule
+#[AsValidationRule]
+final class AsyncApiFieldsRequire11Rule implements ValidationRuleInterface
 {
     public function check(ArazzoDocument $doc, SymbolTable $symbols, ErrorCollector $errors): void
     {

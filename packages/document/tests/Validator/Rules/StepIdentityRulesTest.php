@@ -15,16 +15,16 @@ use Alama\Arazzo\Contracts\Spec\StepFlow;
 use Alama\Arazzo\Contracts\Spec\StepIo;
 use Alama\Arazzo\Contracts\Spec\StepTarget;
 use Alama\Arazzo\Contracts\Spec\Workflow;
-use Alama\Arazzo\Document\Validator\Data\SymbolTable;
-use Alama\Arazzo\Document\Validator\ErrorCollector;
+use Alama\Arazzo\Contracts\Validation\ErrorCollector;
+use Alama\Arazzo\Contracts\Validation\SymbolTable;
 use Alama\Arazzo\Document\Validator\Rules\StepAtLeastOneRule;
 use Alama\Arazzo\Document\Validator\Rules\StepIdPatternRule;
 use Alama\Arazzo\Document\Validator\Rules\StepNestedWorkflowExistsRule;
 use Alama\Arazzo\Document\Validator\Rules\StepOperationIdSourceScopedRule;
-use Alama\Arazzo\Document\Validator\Rules\StepOperationPathSyntaxRule;
 use Alama\Arazzo\Document\Validator\Rules\StepOperationTargetPresentRule;
 use Alama\Arazzo\Document\Validator\Rules\StepUniqueIdRule;
 use Alama\Arazzo\Expression\ExpressionEngine;
+use Alama\Arazzo\Expression\Validation\Rules\StepOperationPathSyntaxRule;
 
 function stepIdMk(string $id, ?string $opId = 'op', ?string $opPath = null, ?string $wfId = null): Step
 {

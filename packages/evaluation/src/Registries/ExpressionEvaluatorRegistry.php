@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Evaluation\Registries;
 
 use Alama\Arazzo\Contracts\Attributes\AsExpressionPlugin;
+use Alama\Arazzo\Contracts\Discovery\PluginDiscovery;
 use Alama\Arazzo\Contracts\Interfaces\ExpressionEvaluatorPluginInterface;
 use Alama\Arazzo\Contracts\Spec\Expression;
-use Alama\Arazzo\Evaluation\Plugins\JsonPathExpressionPlugin;
 use Alama\Arazzo\Expression\Interfaces\ExpressionEngineInterface;
 use InvalidArgumentException;
 use ReflectionClass;
@@ -15,20 +15,24 @@ use ReflectionClass;
 /**
  * Registry for expression evaluator plugins.
  *
- * Plugins are stored with an integer priority (higher = earlier). The registry
- * returns the first plugin whose {@see ExpressionEvaluatorPluginInterface::supports()}
- * returns true.
+ * Plugins are stored with an integer priority (higher = earlier). Auto-discovers
+ * `#[AsExpressionPlugin]` classes declared in installed packages' `composer.json`
+ * `extra.arazzo.plugins`.
  */
 final class ExpressionEvaluatorRegistry
 {
     private static ?self $instance = null;
 
-    /** @var array<int, list<ExpressionEvaluatorPluginInterface>> */
+    /** @var array<string, array{plugin: ExpressionEvaluatorPluginInterface, priority: int}> */
     private array $plugins = [];
 
     private function __construct(ExpressionEngineInterface $expression)
     {
-        $this->register(new JsonPathExpressionPlugin($expression), 0);
+        foreach (PluginDiscovery::instantiate(AsExpressionPlugin::class, [$expression]) as $plugin) {
+            if ($plugin instanceof ExpressionEvaluatorPluginInterface) {
+                $this->register($plugin);
+            }
+        }
     }
 
     public static function create(?ExpressionEngineInterface $expression = null): self
@@ -62,31 +66,43 @@ final class ExpressionEvaluatorRegistry
 
         $priority ??= $plugin->priority();
 
-        $this->plugins[$priority][] = $plugin;
-        krsort($this->plugins); // higher priority first
+        $this->plugins[$plugin->name()] = [
+            'plugin' => $plugin,
+            'priority' => $priority,
+        ];
     }
 
     public function resolve(Expression $expression): ?ExpressionEvaluatorPluginInterface
     {
-        foreach ($this->plugins as $priorityPlugins) {
-            foreach ($priorityPlugins as $plugin) {
-                if ($plugin->supports($expression)) {
-                    return $plugin;
-                }
+        foreach ($this->ordered() as $entry) {
+            if ($entry['plugin']->supports($expression)) {
+                return $entry['plugin'];
             }
         }
 
         return null;
     }
 
-    /** @return ExpressionEvaluatorPluginInterface[] */
+    /** @return list<ExpressionEvaluatorPluginInterface> */
     public function all(): array
     {
-        $flat = [];
-        foreach ($this->plugins as $priorityPlugins) {
-            $flat = array_merge($flat, $priorityPlugins);
-        }
+        return array_map(
+            static fn (array $entry): ExpressionEvaluatorPluginInterface => $entry['plugin'],
+            $this->ordered(),
+        );
+    }
 
-        return $flat;
+    /**
+     * @return list<array{plugin: ExpressionEvaluatorPluginInterface, priority: int}>
+     */
+    private function ordered(): array
+    {
+        $entries = array_values($this->plugins);
+        usort(
+            $entries,
+            static fn (array $a, array $b): int => $b['priority'] <=> $a['priority'],
+        );
+
+        return $entries;
     }
 }
