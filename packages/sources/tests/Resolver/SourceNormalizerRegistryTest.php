@@ -9,7 +9,8 @@ use Alama\Arazzo\Contracts\Interfaces\SourceNormalizerInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
-use Alama\Arazzo\Sources\Resolver\SourceNormalizerRegistry;
+use Alama\Arazzo\Sources\Normalizer\OpenApiSourceNormalizer;
+use Alama\Arazzo\Sources\Registries\SourceNormalizerRegistry;
 
 final class FakeNormalizer implements SourceNormalizerInterface
 {
@@ -73,28 +74,28 @@ afterEach(function (): void {
     SourceNormalizerRegistry::reset();
 });
 
-it('operates as a singleton with create() and reset()', function (): void {
+it('operates as a singleton with create() and reset() and auto-seeds OpenApiSourceNormalizer', function (): void {
     $a = SourceNormalizerRegistry::create();
     $b = SourceNormalizerRegistry::create();
 
-    expect($a)->toBe($b);
+    expect($a)->toBe($b)
+        ->and($a->get(SourceType::Openapi))->toBeInstanceOf(OpenApiSourceNormalizer::class);
 
     SourceNormalizerRegistry::reset();
     $c = SourceNormalizerRegistry::create();
 
-    expect($c)->not->toBe($a);
+    expect($c)->not->toBe($a)
+        ->and($c->get(SourceType::Openapi))->toBeInstanceOf(OpenApiSourceNormalizer::class);
 });
 
 it('returns null when no normalizer supports the requested source type', function (): void {
     $registry = SourceNormalizerRegistry::create();
-    $openapi = new FakeNormalizer('openapi', 0, [SourceType::Openapi]);
-    $registry->register($openapi);
 
-    expect($registry->get(SourceType::Openapi))->toBe($openapi);
+    expect($registry->get(SourceType::Openapi))->toBeInstanceOf(OpenApiSourceNormalizer::class);
     expect($registry->get(SourceType::Asyncapi))->toBeNull();
 });
 
-it('returns the first registered normalizer that supports the requested type', function (): void {
+it('returns the registered normalizer that supports the requested type', function (): void {
     $registry = SourceNormalizerRegistry::create();
     $openapi = new FakeNormalizer('openapi', 0, [SourceType::Openapi]);
     $asyncapi = new FakeNormalizer('asyncapi', 0, [SourceType::Asyncapi]);
@@ -107,7 +108,7 @@ it('returns the first registered normalizer that supports the requested type', f
 
 it('prefers the highest-priority normalizer, then registration order for ties', function (): void {
     $registry = SourceNormalizerRegistry::create();
-    $lenient = new FakeNormalizer('openapi-lenient', 0, [SourceType::Openapi]);
+    $lenient = new FakeNormalizer('openapi-lenient', 10, [SourceType::Openapi]);
     $strict = new FakeNormalizer('openapi-strict', 100, [SourceType::Openapi]);
     $registry->register($lenient);
     $registry->register($strict);
@@ -116,8 +117,8 @@ it('prefers the highest-priority normalizer, then registration order for ties', 
 
     SourceNormalizerRegistry::reset();
     $registry2 = SourceNormalizerRegistry::create();
-    $first = new FakeNormalizer('first', 0, [SourceType::Openapi]);
-    $second = new FakeNormalizer('second', 0, [SourceType::Openapi]);
+    $first = new FakeNormalizer('first', 10, [SourceType::Openapi]);
+    $second = new FakeNormalizer('second', 10, [SourceType::Openapi]);
     $registry2->register($first);
     $registry2->register($second);
 

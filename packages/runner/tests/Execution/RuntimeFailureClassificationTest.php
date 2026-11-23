@@ -18,7 +18,6 @@ use Alama\Arazzo\Runner\Sync\StepExecutor;
 use Alama\Arazzo\Runner\Sync\WorkflowEngine;
 use Alama\Arazzo\Runner\Sync\WorkflowExecutor;
 use Alama\Arazzo\Sources\Resolver\Exceptions\UnresolvableReferenceException;
-use Alama\Arazzo\Sources\SourceRuntime;
 use Alama\Arazzo\Tests\Conformance\ConformanceHarness;
 use Alama\Arazzo\Tests\Support\FakePsr18Client;
 use Alama\Arazzo\Tests\Support\RecordingEventDispatcher;
@@ -45,7 +44,7 @@ $classificationHarness = new class() extends ConformanceHarness
         return $this->prepare($fixture);
     }
 
-    public function sourceRuntime(): SourceRuntime
+    public function sourceRuntime(): object
     {
         return $this->runtime($this->sourceRegistry);
     }

@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Tests\Protocol\Http\Execution;
 
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
+use Alama\Arazzo\Contracts\Spec\NormalizedOpenApiOperation;
 use Alama\Arazzo\Contracts\Spec\OpenApiPayload;
+use Alama\Arazzo\Contracts\Spec\ResolvedOperation;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Spec\SourceDocument;
-use Alama\Arazzo\Document\NormalizedOpenApiOperation;
-use Alama\Arazzo\Document\ResolvedOperation;
 use Alama\Arazzo\Protocol\Http\Execution\DefaultOpenApiExecutor;
-use Alama\Arazzo\Sources\Normalizer\OpenApiOperationHandle;
+use Alama\Arazzo\Protocol\Http\Resolver\OpenApiOperationHandle;
 use Alama\Arazzo\Sources\Resolver\Interfaces\SourceResolver;
 use cebe\openapi\Reader;
 use GuzzleHttp\Psr7\Request;

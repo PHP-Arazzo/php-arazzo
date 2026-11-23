@@ -4,18 +4,11 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Sources\Resolver\Exceptions;
 
-use RuntimeException;
+use Alama\Arazzo\Sources\Exceptions\UnsupportedSourceVersionException as BaseException;
 
 /**
+ * @deprecated Relocated to Alama\Arazzo\Sources\Exceptions\UnsupportedSourceVersionException.
+ *
  * @internal stays out of the advertised contract; not part of the public API surface
  */
-final class UnsupportedSourceVersionException extends RuntimeException
-{
-    public static function forVersion(string $version, string $sourceName): self
-    {
-        return new self(
-            "Source '{$sourceName}' declares version '{$version}', which is not supported. "
-            .'Supported: OpenAPI 3.0.x and 3.1.x. Swagger 2.0 documents are not supported yet.',
-        );
-    }
-}
+final class UnsupportedSourceVersionException extends BaseException {}

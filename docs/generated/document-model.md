@@ -26,6 +26,7 @@ classDiagram
     class Info
     class Interaction
     class InteractionMode
+    class NormalizedOpenApiOperation
     class OpenApiPayload
     class Parameter
     class ParameterIn
@@ -33,6 +34,7 @@ classDiagram
     class PendingCorrelation
     class RawDocument
     class RequestBody
+    class ResolvedOperation
     class ResponseTransfer
     class RetryAction <<value>>
     class Reusable
@@ -95,6 +97,11 @@ classDiagram
     PayloadReplacement "1" --> "0..1" Selector : holds
     RawDocument "1" --> "0..1" Format : holds
     RequestBody "1" --> "0..1" PayloadReplacement : holds
+    ResolvedOperation "1" --> "0..*" SourceDescription : holds
+    ResolvedOperation "1" --> "0..1" NormalizedOpenApiOperation : holds
+    ResolvedOperation "1" --> "0..1" RpcProtocol : holds
+    ResolvedOperation "1" --> "0..1" GraphQlOperation : holds
+    ResolvedOperation "1" --> "0..1" Interaction : holds
     Reusable "1" --> "0..1" Expression : holds
     Reusable "1" --> "0..1" Selector : holds
     Selector "1" --> "0..1" ExpressionType : holds

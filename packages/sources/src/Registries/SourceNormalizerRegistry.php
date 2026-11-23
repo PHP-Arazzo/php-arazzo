@@ -2,19 +2,23 @@
 
 declare(strict_types=1);
 
-namespace Alama\Arazzo\Sources\Resolver;
+namespace Alama\Arazzo\Sources\Registries;
 
 use Alama\Arazzo\Contracts\Attributes\AsSourceNormalizer;
 use Alama\Arazzo\Contracts\Interfaces\SourceNormalizerInterface;
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
+use Alama\Arazzo\Sources\Normalizer\OpenApi30Normalizer;
+use Alama\Arazzo\Sources\Normalizer\OpenApi31Normalizer;
+use Alama\Arazzo\Sources\Normalizer\OpenApiSourceNormalizer;
+use Alama\Arazzo\Sources\Normalizer\OpenApiVersionDetector;
 use ReflectionClass;
 
 /**
- * Concrete singleton registry of source normalizers.
+ * Public singleton registry of source normalizers.
  *
- * SPI registry holding stateless normalizer implementations keyed by SourceType.
- *
- * @internal stays out of the advertised contract; not part of the public API surface
+ * SPI registry holding stateless normalizer implementations keyed by name and
+ * resolved by SourceType and priority. Auto-seeds the built-in zero-vendor
+ * OpenApiSourceNormalizer on first creation.
  */
 final class SourceNormalizerRegistry
 {
@@ -27,7 +31,17 @@ final class SourceNormalizerRegistry
 
     public static function create(): self
     {
-        return self::$instance ??= new self();
+        if (self::$instance === null) {
+            $registry = new self();
+            $registry->register(new OpenApiSourceNormalizer(
+                new OpenApiVersionDetector(),
+                new OpenApi30Normalizer(),
+                new OpenApi31Normalizer(),
+            ));
+            self::$instance = $registry;
+        }
+
+        return self::$instance;
     }
 
     public static function reset(): void

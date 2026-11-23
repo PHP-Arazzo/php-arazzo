@@ -6,6 +6,7 @@ namespace Alama\Arazzo\Sources\Resolver\Fetchers;
 
 use Alama\Arazzo\Sources\Resolver\Exceptions\SourceFetchException;
 use Alama\Arazzo\Sources\Resolver\Interfaces\SourceFetcher;
+use GuzzleHttp\Psr7\HttpFactory;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
@@ -15,10 +16,14 @@ use Psr\Http\Message\RequestFactoryInterface;
  */
 final class HttpFetcher implements SourceFetcher
 {
+    private readonly RequestFactoryInterface $requestFactory;
+
     public function __construct(
         private readonly ClientInterface $client,
-        private readonly RequestFactoryInterface $requestFactory,
-    ) {}
+        ?RequestFactoryInterface $requestFactory = null,
+    ) {
+        $this->requestFactory = $requestFactory ?? new HttpFactory();
+    }
 
     public function fetch(string $urlOrPath, string $basePath): string
     {

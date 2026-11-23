@@ -6,14 +6,17 @@ namespace Alama\Arazzo\Runner\Tests\Preflight;
 
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Components;
+use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
 use Alama\Arazzo\Contracts\Spec\Info;
+use Alama\Arazzo\Contracts\Spec\NormalizedOpenApiOperation;
+use Alama\Arazzo\Contracts\Spec\ResolvedOperation;
+use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Contracts\Spec\StepFlow;
 use Alama\Arazzo\Contracts\Spec\StepIo;
 use Alama\Arazzo\Contracts\Spec\StepTarget;
 use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Document\OperationResolverInterface;
-use Alama\Arazzo\Document\ResolvedOperation;
 use Alama\Arazzo\Runner\Preflight\OperationResolvers;
 use Alama\Arazzo\Runner\Preflight\Preflight;
 
@@ -27,7 +30,15 @@ it('validates steps using registered operation resolvers', function (): void {
 
         public function resolve(Step $step, ArazzoDocument $document): ResolvedOperation
         {
-            return \Mockery::mock(ResolvedOperation::class);
+            return new ResolvedOperation(
+                source: new SourceDescription('src', 'http://example.com', SourceType::Openapi),
+                normalized: new NormalizedOpenApiOperation('/test', 'get', null, [], [], [], [], [], []),
+                rpcProtocol: null,
+                operationName: null,
+                rpcMethod: null,
+                graphqlOperation: null,
+                interaction: null,
+            );
         }
     };
 

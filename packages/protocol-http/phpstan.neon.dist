@@ -10,6 +10,7 @@ parameters:
         - tests
     scanDirectories:
         - ../contracts/src
+        - ../document/src
         - ../expression/src
         - ../evaluation/src
         - ../engine/src

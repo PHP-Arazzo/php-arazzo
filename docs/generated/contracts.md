@@ -45,8 +45,11 @@ flowchart LR
     I_SelectorContext["SelectorContext<br/><small>expression:JsonPath</small>"]:::contract
     I_SelectorPluginInterface["SelectorPluginInterface<br/><small>expression:Interfaces</small>"]:::contract
     I_SourceFetcher["SourceFetcher<br/><small>sources:Resolver</small>"]:::contract
+    I_SourceFetcherInterface["SourceFetcherInterface<br/><small>contracts:Interfaces</small>"]:::contract
     I_SourceNormalizerInterface["SourceNormalizerInterface<br/><small>contracts:Interfaces</small>"]:::contract
     I_SourceResolver["SourceResolver<br/><small>sources:Resolver</small>"]:::contract
+    I_SourceResolverInterface["SourceResolverInterface<br/><small>contracts:Interfaces</small>"]:::contract
+    I_SourcesInterface["SourcesInterface<br/><small>(sources root)</small>"]:::contract
     I_StateStoreInterface["StateStoreInterface<br/><small>engine:Runtime</small>"]:::contract
     I_StepProtocolExecutorInterface["StepProtocolExecutorInterface<br/><small>contracts:Interfaces</small>"]:::contract
     I_WorkflowContextInterface["WorkflowContextInterface<br/><small>contracts:Spec</small>"]:::contract
@@ -108,20 +111,12 @@ flowchart LR
     C_evaluation_evaluation_Plugins_JsonPathExpressionPlugin -.->|implements| I_ExpressionEvaluatorPluginInterface
     C_sources_sources_Normalizer_OpenApi30Normalizer["OpenApi30Normalizer<br/><small>sources:Normalizer</small>"]:::implCore
     C_sources_sources_Normalizer_OpenApi30Normalizer -.->|implements| I_OpenApiNormalizerInterface
-    C_sources_sources_Normalizer_Swagger2Normalizer["Swagger2Normalizer<br/><small>sources:Normalizer</small>"]:::implCore
-    C_sources_sources_Normalizer_Swagger2Normalizer -.->|implements| I_OpenApiNormalizerInterface
-    C_sources_sources_Normalizer_OpenApiOperationResolver["OpenApiOperationResolver<br/><small>sources:Normalizer</small>"]:::implCore
-    C_sources_sources_Normalizer_OpenApiOperationResolver -.->|implements| I_OperationResolverInterface
-    C_protocol_rpc_protocol_rpc_Protocol_ProtobufOperationResolver["ProtobufOperationResolver<br/><small>protocol-rpc:Protocol</small>"]:::implCore
-    C_protocol_rpc_protocol_rpc_Protocol_ProtobufOperationResolver -.->|implements| I_OperationResolverInterface
-    C_protocol_soap_protocol_soap_Execution_WsdlOperationResolver["WsdlOperationResolver<br/><small>protocol-soap:Execution</small>"]:::implCore
-    C_protocol_soap_protocol_soap_Execution_WsdlOperationResolver -.->|implements| I_OperationResolverInterface
     C_sources_sources_Normalizer_OpenApiSourceNormalizer["OpenApiSourceNormalizer<br/><small>sources:Normalizer</small>"]:::implCore
     C_sources_sources_Normalizer_OpenApiSourceNormalizer -.->|implements| I_SourceNormalizerInterface
-    C_sources_sources_Normalizer_WsdlSourceNormalizer["WsdlSourceNormalizer<br/><small>sources:Normalizer</small>"]:::implCore
-    C_sources_sources_Normalizer_WsdlSourceNormalizer -.->|implements| I_SourceNormalizerInterface
     C_protocol_rpc_protocol_rpc_Normalizer_ProtoSourceNormalizer["ProtoSourceNormalizer<br/><small>protocol-rpc:Normalizer</small>"]:::implCore
     C_protocol_rpc_protocol_rpc_Normalizer_ProtoSourceNormalizer -.->|implements| I_SourceNormalizerInterface
+    C_protocol_soap_protocol_soap_Normalizer_WsdlSourceNormalizer["WsdlSourceNormalizer<br/><small>protocol-soap:Normalizer</small>"]:::implCore
+    C_protocol_soap_protocol_soap_Normalizer_WsdlSourceNormalizer -.->|implements| I_SourceNormalizerInterface
     C_sources_sources_Resolver_DefaultSourceResolver["DefaultSourceResolver<br/><small>sources:Resolver</small>"]:::implCore
     C_sources_sources_Resolver_DefaultSourceResolver -.->|implements| I_SourceResolver
     C_sources_sources_Resolver_CachedFetcher["CachedFetcher<br/><small>sources:Resolver</small>"]:::implCore
@@ -130,6 +125,8 @@ flowchart LR
     C_sources_sources_Resolver_HttpFetcher -.->|implements| I_SourceFetcher
     C_sources_sources_Resolver_LocalFetcher["LocalFetcher<br/><small>sources:Resolver</small>"]:::implCore
     C_sources_sources_Resolver_LocalFetcher -.->|implements| I_SourceFetcher
+    C_sources_sources___Sources["Sources<br/><small>(sources root)</small>"]:::implCore
+    C_sources_sources___Sources -.->|implements| I_SourcesInterface
     C_document_document___Document["Document<br/><small>(document root)</small>"]:::implCore
     C_document_document___Document -.->|implements| I_DocumentInterface
     C_document_document_Parser_NativeJsonDecoder["NativeJsonDecoder<br/><small>document:Parser</small>"]:::implCore
@@ -306,6 +303,12 @@ flowchart LR
     C_protocol_http_protocol_http_Protocol_HttpStepExecutor -.->|implements| I_StepProtocolExecutorInterface
     C_runner_runner_Sync_SubWorkflowStepExecutor["SubWorkflowStepExecutor<br/><small>runner:Sync</small>"]:::implCore
     C_runner_runner_Sync_SubWorkflowStepExecutor -.->|implements| I_StepProtocolExecutorInterface
+    C_protocol_http_protocol_http_Resolver_OpenApiOperationResolver["OpenApiOperationResolver<br/><small>protocol-http:Resolver</small>"]:::implCore
+    C_protocol_http_protocol_http_Resolver_OpenApiOperationResolver -.->|implements| I_OperationResolverInterface
+    C_protocol_rpc_protocol_rpc_Protocol_ProtobufOperationResolver["ProtobufOperationResolver<br/><small>protocol-rpc:Protocol</small>"]:::implCore
+    C_protocol_rpc_protocol_rpc_Protocol_ProtobufOperationResolver -.->|implements| I_OperationResolverInterface
+    C_protocol_soap_protocol_soap_Execution_WsdlOperationResolver["WsdlOperationResolver<br/><small>protocol-soap:Execution</small>"]:::implCore
+    C_protocol_soap_protocol_soap_Execution_WsdlOperationResolver -.->|implements| I_OperationResolverInterface
     C_protocol_soap_protocol_soap_Resolver_XPathReplacementTargetResolver["XPathReplacementTargetResolver<br/><small>protocol-soap:Resolver</small>"]:::implCore
     C_protocol_soap_protocol_soap_Resolver_XPathReplacementTargetResolver -.->|implements| I_ReplacementTargetResolverInterface
     C_runner_runner_Execution_InMemoryDefinitionRegistry["InMemoryDefinitionRegistry<br/><small>runner:Execution</small>"]:::implCore
@@ -330,6 +333,8 @@ flowchart LR
     N_HttpClientInterface["no implementation found"]:::orphan --> I_HttpClientInterface
     N_PluginInterface["no implementation found"]:::orphan --> I_PluginInterface
     N_ProtocolExecutorRegistryInterface["no implementation found"]:::orphan --> I_ProtocolExecutorRegistryInterface
+    N_SourceFetcherInterface["no implementation found"]:::orphan --> I_SourceFetcherInterface
+    N_SourceResolverInterface["no implementation found"]:::orphan --> I_SourceResolverInterface
     N_WorkflowEngineInterface["no implementation found"]:::orphan --> I_WorkflowEngineInterface
     classDef contract fill:#e8f0fe,stroke:#4285f4,color:#1a1a1a;
     classDef contractLaravel fill:#e8f0fe,stroke:#4285f4,color:#1a1a1a;

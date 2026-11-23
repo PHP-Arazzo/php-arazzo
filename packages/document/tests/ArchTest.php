@@ -1,8 +1,8 @@
 <?php
 
 declare(strict_types=1);
+use Alama\Arazzo\Contracts\Data\KnownOperations;
 use Alama\Arazzo\Document\Document;
-use Alama\Arazzo\Document\KnownOperations;
 use Alama\Arazzo\Document\Parser\Decoders;
 
 arch('document does not depend on illuminate framework')

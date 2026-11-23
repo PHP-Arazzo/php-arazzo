@@ -19,9 +19,9 @@ when a boundary consciously moves.
 | `GuzzleHttp` | 7 | 0 | **forbidden** ⚠ |
 | `JsonSchema` | 7 | 0 | _unclassified_ ⚠ |
 | `OpenTelemetry` | 25 | 0 | _unclassified_ ⚠ |
-| `Psr` | 60 | 0 | allowed |
+| `Psr` | 62 | 0 | allowed |
 | `Symfony` | 32 | 0 | **forbidden** ⚠ |
-| `cebe` | 18 | 0 | **forbidden** ⚠ |
+| `cebe` | 16 | 0 | **forbidden** ⚠ |
 
 ## Module detail
 
@@ -44,6 +44,7 @@ when a boundary consciously moves.
 | protocol-http | `protocol-http:Execution` | `cebe` | 8 |
 | protocol-http | `protocol-http:Protocol` | `Psr` | 6 |
 | protocol-http | `protocol-http:Registrar` | `Psr` | 1 |
+| protocol-http | `protocol-http:Resolver` | `cebe` | 6 |
 | protocol-rpc | `protocol-rpc:Execution` | `Psr` | 4 |
 | protocol-rpc | `protocol-rpc:Transfer` | `Psr` | 1 |
 | protocol-soap | `protocol-soap:Execution` | `Psr` | 4 |
@@ -53,11 +54,10 @@ when a boundary consciously moves.
 | runner | `runner:Execution` | `Psr` | 2 |
 | runner | `runner:Sync` | `Psr` | 3 |
 | runner | `runner:_` | `Psr` | 2 |
-| sources | `sources:Normalizer` | `cebe` | 8 |
 | sources | `sources:Resolver` | `GuzzleHttp` | 2 |
 | sources | `sources:Resolver` | `Psr` | 4 |
 | sources | `sources:_` | `GuzzleHttp` | 1 |
-| sources | `sources:_` | `Psr` | 2 |
+| sources | `sources:_` | `Psr` | 4 |
 
 **12 library boundary violation(s):**
 - `cli:Console` imports `GuzzleHttp\*` (2 refs)
@@ -68,8 +68,8 @@ when a boundary consciously moves.
 - `engine:Runtime` imports `OpenTelemetry\*` (23 refs)
 - `protocol-http:Execution` imports `GuzzleHttp\*` (2 refs)
 - `protocol-http:Execution` imports `cebe\*` (8 refs)
+- `protocol-http:Resolver` imports `cebe\*` (6 refs)
 - `runner:Async` imports `OpenTelemetry\*` (2 refs)
-- `sources:Normalizer` imports `cebe\*` (8 refs)
 - `sources:Resolver` imports `GuzzleHttp\*` (2 refs)
 - `sources:_` imports `GuzzleHttp\*` (1 refs)
 
@@ -88,7 +88,6 @@ Cross-package references from library code must target `*Interface` facades, val
 | From package | To package | From | References concrete facade |
 |---|---|---|---|
 | `document` | `expression` | `Document` | `ExpressionEngine` |
-| `sources` | `document` | `SourceGraph` | `Document` |
 
 ### Concrete references outside facades (review list)
 
@@ -98,6 +97,7 @@ Grouped cross-package uses of concrete internals (AST nodes, evaluators, resolve
 |---|---|---|---:|---|
 | `document` | `ExpressionReference` | `expression` | 2 | `ExpressionUnresolvedStepRefRule` |
 | `document` | `ImplicitDependencies` | `contracts` | 1 | `StepDependsOnNoCycleRule` |
+| `document` | `KnownOperations` | `contracts` | 4 | `Validator` |
 | `evaluation` | `AsCriterionPlugin` | `contracts` | 2 | `JsonPathCriterionPlugin` |
 | `evaluation` | `AsExpressionPlugin` | `contracts` | 2 | `JsonPathExpressionPlugin` |
 | `evaluation` | `EvaluationContext` | `expression` | 5 | `ConditionEvaluator` |
@@ -106,52 +106,43 @@ Grouped cross-package uses of concrete internals (AST nodes, evaluators, resolve
 | `protocol-http` | `AsOperationExecutor` | `contracts` | 2 | `HttpStepExecutor` |
 | `protocol-http` | `EvaluationContext` | `expression` | 2 | `StepOutputExtractor` |
 | `protocol-http` | `IdempotencyKeyInjector` | `engine` | 2 | `HttpStepExecutor` |
-| `protocol-http` | `OpenApi30Normalizer` | `sources` | 1 | `ProtocolHttpRegistrar` |
-| `protocol-http` | `OpenApi31Normalizer` | `sources` | 1 | `ProtocolHttpRegistrar` |
-| `protocol-http` | `OpenApiDocumentLoader` | `sources` | 1 | `ProtocolHttpRegistrar` |
-| `protocol-http` | `OpenApiOperationHandle` | `sources` | 3 | `StepOutputExtractor` |
-| `protocol-http` | `OpenApiOperationResolver` | `sources` | 4 | `ResponseSchemaValidator` |
+| `protocol-http` | `OpenApi30Normalizer` | `sources` | 2 | `ProtocolHttpRegistrar` |
+| `protocol-http` | `OpenApi31Normalizer` | `sources` | 2 | `ProtocolHttpRegistrar` |
 | `protocol-http` | `OpenApiSourceNormalizer` | `sources` | 1 | `ProtocolHttpRegistrar` |
-| `protocol-http` | `OpenApiVersionDetector` | `sources` | 1 | `ProtocolHttpRegistrar` |
+| `protocol-http` | `OpenApiVersionDetector` | `sources` | 2 | `ProtocolHttpRegistrar` |
 | `protocol-http` | `ParameterSerializer` | `engine` | 1 | `DefaultOpenApiExecutor` |
 | `protocol-http` | `RequestCompiler` | `engine` | 1 | `HttpStepExecutor` |
 | `protocol-http` | `ReusableParameterResolver` | `engine` | 1 | `AsyncApiStepExecutor` |
 | `protocol-http` | `SchemaValidator` | `engine` | 1 | `ResponseSchemaValidator` |
 | `protocol-http` | `SourceNormalizerRegistry` | `sources` | 1 | `ProtocolHttpRegistrar` |
+| `protocol-http` | `SourceReferenceParser` | `sources` | 1 | `OpenApiOperationResolver` |
+| `protocol-http` | `Sources` | `sources` | 1 | `OpenApiOperationResolver` |
 | `protocol-http` | `TypeCaster` | `engine` | 2 | `StepOutputExtractor` |
 | `protocol-rpc` | `AsOperationExecutor` | `contracts` | 1 | `RpcOperationExecutor` |
 | `protocol-rpc` | `AsSourceNormalizer` | `contracts` | 1 | `ProtoSourceNormalizer` |
-| `protocol-rpc` | `NormalizedOpenApiOperation` | `document` | 1 | `ProtoSourceNormalizer` |
 | `protocol-rpc` | `RequestCompiler` | `engine` | 1 | `RpcRequestBuilder` |
-| `protocol-rpc` | `ResolvedOperation` | `document` | 4 | `RpcRequestBuilder` |
 | `protocol-rpc` | `ReusableParameterResolver` | `engine` | 1 | `RpcRequestBuilder` |
-| `protocol-rpc` | `SourceFetcher` | `sources` | 1 | `ProtobufOperationResolver` |
 | `protocol-rpc` | `SourceNormalizerRegistry` | `sources` | 1 | `RpcRegistrar` |
 | `protocol-soap` | `AsOperationExecutor` | `contracts` | 1 | `SoapOperationExecutor` |
-| `protocol-soap` | `NormalizedOpenApiOperation` | `document` | 1 | `SoapRequestBuilder` |
+| `protocol-soap` | `AsSourceNormalizer` | `contracts` | 1 | `WsdlSourceNormalizer` |
 | `protocol-soap` | `RequestCompiler` | `engine` | 1 | `SoapRequestBuilder` |
-| `protocol-soap` | `ResolvedOperation` | `document` | 3 | `WsdlOperationResolver` |
-| `protocol-soap` | `SourceFetcher` | `sources` | 1 | `WsdlOperationResolver` |
 | `protocol-soap` | `SourceNormalizerRegistry` | `sources` | 1 | `SoapRegistrar` |
-| `protocol-soap` | `WsdlSourceNormalizer` | `sources` | 2 | `WsdlOperationResolver` |
 | `runner` | `AsOperationExecutor` | `contracts` | 2 | `SubWorkflowStepExecutor` |
 | `runner` | `DependencyAnalyzer` | `contracts` | 1 | `StepOutcomeHandler` |
 | `runner` | `DependencyGraph` | `contracts` | 2 | `StepOutcomeHandler` |
 | `runner` | `EvaluationContext` | `expression` | 5 | `SubWorkflowInvoker` |
 | `runner` | `ExecutionContext` | `engine` | 2 | `Transition` |
 | `runner` | `IdempotencyKeyInjector` | `engine` | 2 | `AsyncExecutionGraphAssembler` |
-| `runner` | `OpenApiOperationHandle` | `sources` | 2 | `OpenApiExecutorInterface` |
-| `runner` | `OpenApiOperationResolver` | `sources` | 3 | `OperationRuntime` |
+| `runner` | `OpenApiOperationHandle` | `protocol-http` | 2 | `OpenApiExecutorInterface` |
+| `runner` | `OpenApiOperationResolver` | `protocol-http` | 3 | `OperationRuntime` |
 | `runner` | `OtelSetup` | `engine` | 1 | `StepExecutionWorker` |
 | `runner` | `RequestCompiler` | `engine` | 1 | `StepExecutor` |
-| `runner` | `ResolvedOperation` | `document` | 1 | `OperationResolvers` |
 | `runner` | `RetryPolicy` | `engine` | 1 | `WorkflowEngine` |
 | `runner` | `ReusableParameterResolver` | `engine` | 1 | `SubWorkflowStepExecutor` |
 | `runner` | `StepParameterMerger` | `engine` | 2 | `StepExecutionWorker` |
 | `runner` | `ValidationResult` | `document` | 3 | `PreflightFailureException` |
-| `sources` | `AsSourceNormalizer` | `contracts` | 3 | `WsdlSourceNormalizer` |
+| `sources` | `AsSourceNormalizer` | `contracts` | 3 | `OpenApiSourceNormalizer` |
 | `sources` | `DecodePolicy` | `document` | 1 | `DefaultSourceResolver` |
 | `sources` | `Decoders` | `document` | 1 | `DefaultSourceResolver` |
-| `sources` | `KnownOperations` | `document` | 1 | `SourceLoader` |
-| `sources` | `NormalizedOpenApiOperation` | `document` | 4 | `WsdlSourceNormalizer` |
-| `sources` | `ResolvedOperation` | `document` | 5 | `WsdlSourceNormalizer` |
+| `sources` | `KnownOperations` | `contracts` | 2 | `Sources` |
+| `sources` | `ResolvedOperationCollection` | `contracts` | 2 | `Sources` |

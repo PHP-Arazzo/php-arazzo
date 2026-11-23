@@ -90,6 +90,8 @@ final class QueueFixtureRunner extends ConformanceHarness
             }
         } catch (\Throwable) {
             // Terminal failures are observed through the event stream.
+        } finally {
+            OperationExecutorRegistry::reset();
         }
 
         return $this->observe();

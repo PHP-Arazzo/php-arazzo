@@ -12,7 +12,7 @@ use Alama\Arazzo\Protocol\Rpc\Normalizer\ProtoSourceNormalizer;
 use Alama\Arazzo\Protocol\Rpc\Protocol\ProtobufOperationResolver;
 use Alama\Arazzo\Protocol\Rpc\Protocol\RpcMessageCodec;
 use Alama\Arazzo\Protocol\Rpc\Transfer\RpcResponseTransferMapper;
-use Alama\Arazzo\Sources\Resolver\SourceNormalizerRegistry;
+use Alama\Arazzo\Sources\Registries\SourceNormalizerRegistry;
 
 /**
  * Framework-agnostic registration of the RPC vertical slice into the core SPI

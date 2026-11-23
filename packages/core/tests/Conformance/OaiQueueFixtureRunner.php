@@ -138,6 +138,8 @@ final class OaiQueueFixtureRunner extends ConformanceHarness
             }
         } catch (\Throwable) {
             // Observed through the event stream.
+        } finally {
+            OperationExecutorRegistry::reset();
         }
 
         return $this->observe();

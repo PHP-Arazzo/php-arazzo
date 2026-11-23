@@ -4,24 +4,15 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Cli\Console\Command;
 
+use Alama\Arazzo\Cli\Console\RunnerFactory;
 use Alama\Arazzo\Contracts\Exceptions\SchemaValidationException;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Document\Document;
+use Alama\Arazzo\Document\DocumentInterface;
 use Alama\Arazzo\Document\Parser\Exceptions\LoaderException;
 use Alama\Arazzo\Document\Parser\Exceptions\ParserException;
-use Alama\Arazzo\Evaluation\EvaluationEngine;
-use Alama\Arazzo\Expression\ExpressionEngine;
-use Alama\Arazzo\Protocol\Http\Execution\DefaultOpenApiExecutor;
-use Alama\Arazzo\Protocol\Http\Execution\ResponseSchemaValidator;
-use Alama\Arazzo\Protocol\Http\Execution\StepOutputExtractor;
-use Alama\Arazzo\Runner\RunnerFacade;
-use Alama\Arazzo\Sources\Resolver\Interfaces\SourceResolver;
-use Alama\Arazzo\Sources\SourceGraph;
-use GuzzleHttp\Client;
-use GuzzleHttp\Psr7\HttpFactory;
-use Psr\Http\Client\ClientInterface;
-use Psr\Http\Message\RequestFactoryInterface;
+use Alama\Arazzo\Runner\RunnerFacadeInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -33,9 +24,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 final class RunCommand extends Command
 {
     public function __construct(
-        private readonly ?ClientInterface $httpClient = null,
-        private readonly ?RequestFactoryInterface $httpFactory = null,
-        private readonly ?SourceResolver $registry = null,
+        private readonly ?RunnerFacadeInterface $runner = null,
+        private readonly ?DocumentInterface $document = null,
     ) {
         parent::__construct();
     }
@@ -53,8 +43,10 @@ final class RunCommand extends Command
         /** @var string $file */
         $file = $input->getArgument('file');
 
+        $documentFacade = $this->document ?? Document::create();
+
         try {
-            $document = Document::create()->load($file);
+            $document = $documentFacade->load($file);
         } catch (LoaderException|ParserException $e) {
             $output->writeln('<error>PARSE ERROR</error> '.$e->getMessage());
 
@@ -78,19 +70,8 @@ final class RunCommand extends Command
             return Command::FAILURE;
         }
 
-        // One transport for the whole execution graph: the source resolver and
-        // the operation executor must share it, or a document fetched through
-        // one client is executed against another.
-        $client = $this->httpClient ?? new Client();
-        $factory = $this->httpFactory ?? new HttpFactory();
-        $registry = $this->registry ?? SourceGraph::createRegistry($client, $factory);
-
-        $expressionEngine = new ExpressionEngine();
-        $engine = new EvaluationEngine(expression: $expressionEngine);
-        $runtime = SourceGraph::runtime(registry: $registry);
-
         // Preflight input-schema validation before any side effect.
-        $preflightResult = $runtime->document->validateInputs($document, (string) $workflow->workflowId, $inputs);
+        $preflightResult = $documentFacade->validateInputs($document, (string) $workflow->workflowId, $inputs);
         if (!$preflightResult->isValid()) {
             foreach ($preflightResult->errors as $error) {
                 $output->writeln('<error>'.$error->message.'</error>');
@@ -102,15 +83,7 @@ final class RunCommand extends Command
         // Use the validated, default-populated input map (defaults applied).
         $inputs = $preflightResult->inputs;
 
-        $runner = new RunnerFacade(
-            $runtime->document,
-            $runtime->operations,
-            $engine,
-            inspector: null,
-            openApiExecutor: new DefaultOpenApiExecutor($client, $factory),
-            outputExtractor: new StepOutputExtractor($runtime->operations, $engine, $expressionEngine),
-            schemaValidator: new ResponseSchemaValidator($runtime->operations),
-        );
+        $runner = $this->runner ?? RunnerFactory::create(document: $documentFacade);
 
         /** @var array<string, mixed> $inputs */
         try {

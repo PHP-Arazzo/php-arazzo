@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Alama\Arazzo\Document;
+namespace Alama\Arazzo\Contracts\Data;
 
 final readonly class KnownOperations
 {

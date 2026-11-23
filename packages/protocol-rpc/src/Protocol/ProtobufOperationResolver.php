@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Protocol\Rpc\Protocol;
 
+use Alama\Arazzo\Contracts\Interfaces\SourceFetcherInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
+use Alama\Arazzo\Contracts\Spec\ResolvedOperation;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Document\OperationResolverInterface;
-use Alama\Arazzo\Document\ResolvedOperation;
 use Alama\Arazzo\Protocol\Rpc\Normalizer\ProtoSourceNormalizer;
-use Alama\Arazzo\Sources\Resolver\Interfaces\SourceFetcher;
 use RuntimeException;
 
 /**
@@ -35,7 +35,7 @@ final class ProtobufOperationResolver implements OperationResolverInterface
     private const DOTTED_REFERENCE = '/^\$sourceDescriptions\.([A-Za-z0-9_-]+)\.([A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*)\/([A-Za-z_][A-Za-z0-9_]*)$/';
 
     public function __construct(
-        private SourceFetcher $fetcher,
+        private SourceFetcherInterface $fetcher,
         private ProtoSourceNormalizer $normalizer,
     ) {}
 

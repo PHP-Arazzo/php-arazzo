@@ -9,6 +9,7 @@ use Alama\Arazzo\Contracts\Spec\Enum\Format;
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
 use Alama\Arazzo\Contracts\Spec\RawDocument;
 use Alama\Arazzo\Contracts\Spec\SourceDocument;
+use Alama\Arazzo\Document\Document;
 use Alama\Arazzo\Document\DocumentInterface;
 use Alama\Arazzo\Document\Parser\Parser;
 use Alama\Arazzo\Evaluation\EvaluationEngine;
@@ -22,9 +23,9 @@ use Alama\Arazzo\Events\StepStartedEvent;
 use Alama\Arazzo\Expression\ExpressionEngine;
 use Alama\Arazzo\Protocol\Http\Execution\ResponseSchemaValidator;
 use Alama\Arazzo\Protocol\Http\Execution\StepOutputExtractor;
+use Alama\Arazzo\Protocol\Http\Resolver\OpenApiOperationResolver;
 use Alama\Arazzo\Sources\Resolver\DefaultSourceResolver;
-use Alama\Arazzo\Sources\SourceGraph;
-use Alama\Arazzo\Sources\SourceRuntime;
+use Alama\Arazzo\Sources\Sources;
 use Alama\Arazzo\Tests\Support\FakePsr18Client;
 use Alama\Arazzo\Tests\Support\RecordingEventDispatcher;
 use GuzzleHttp\Psr7\Response;
@@ -102,27 +103,30 @@ abstract class ConformanceHarness
         return new EvaluationEngine(expression: new ExpressionEngine());
     }
 
-    protected function runtime(DefaultSourceResolver $registry): SourceRuntime
+    protected function runtime(DefaultSourceResolver $registry): object
     {
-        return SourceGraph::runtime($registry);
+        return (object) [
+            'document' => Document::create(),
+            'operations' => OpenApiOperationResolver::create(new Sources($registry)),
+        ];
     }
 
     protected function documents(DefaultSourceResolver $registry): DocumentInterface
     {
-        return $this->runtime($registry)->document;
+        return Document::create();
     }
 
-    protected function resolver(SourceRuntime $runtime): EvaluationEngineInterface
+    protected function resolver(object $runtime): EvaluationEngineInterface
     {
         return $this->engine();
     }
 
-    protected function outputExtractor(SourceRuntime $runtime): StepOutputExtractor
+    protected function outputExtractor(object $runtime): StepOutputExtractor
     {
         return new StepOutputExtractor($runtime->operations, $this->engine(), new ExpressionEngine());
     }
 
-    protected function schemaValidator(SourceRuntime $runtime): ResponseSchemaValidator
+    protected function schemaValidator(object $runtime): ResponseSchemaValidator
     {
         return new ResponseSchemaValidator($runtime->operations);
     }

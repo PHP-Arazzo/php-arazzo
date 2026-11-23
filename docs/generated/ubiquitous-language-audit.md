@@ -19,12 +19,12 @@ Evans' first question: does the code speak one language?
 - **Executor**: `AsOperationExecutor`, `AsyncApiStepExecutor`, `DefaultOpenApiExecutor`, `HttpStepExecutor` + 10 more (14 types)
 - **Invoke**: `SubWorkflowInvokeTargetResolvesRule`, `SubWorkflowInvoker` (2 types)
 - **Run**: `CliRunResult`, `CliRunner`, `OperationRuntime`, `RunCommand` + 11 more (15 types)
-- **Runner**: `CliRunner`, `RunnerFacade`, `RunnerFacadeInterface`, `RunnerGraphBuilder` + 1 more (5 types)
+- **Runner**: `CliRunner`, `RunnerFacade`, `RunnerFacadeInterface`, `RunnerFactory` + 2 more (6 types)
 
 ### parse vs load vs decode
 
 - **Decoder**: `DecoderInterface`, `DecoderRegistry`, `Decoders`, `NativeJsonDecoder` + 1 more (5 types)
-- **Loader**: `Loader`, `LoaderException`, `OpenApiDocumentLoader`, `SourceLoader` (4 types)
+- **Loader**: `Loader`, `LoaderException`, `OpenApiDocumentLoader` (3 types)
 - **Parser**: `AccessorParser`, `CachedParser`, `FieldParser`, `Parser` + 4 more (8 types)
 
 ### document vs definition vs spec
@@ -35,8 +35,8 @@ Evans' first question: does the code speak one language?
 
 ### fetch vs resolve vs retrieve
 
-- **Fetcher**: `CachedFetcher`, `HttpFetcher`, `LocalFetcher`, `SourceFetcher` (4 types)
-- **Resolver**: `DefaultSourceResolver`, `InputSchemaResolver`, `OpenApiOperationResolver`, `OperationResolverInterface` + 9 more (13 types)
+- **Fetcher**: `CachedFetcher`, `HttpFetcher`, `LocalFetcher`, `SourceFetcher` + 1 more (5 types)
+- **Resolver**: `DefaultSourceResolver`, `InputSchemaResolver`, `OpenApiOperationResolver`, `OperationResolverInterface` + 10 more (14 types)
 
 ### state vs status
 
@@ -65,10 +65,17 @@ Evans' first question: does the code speak one language?
 | Name | Locations | Packages |
 |---|---|---|
 | `Lexer` | `Expression\Lexer`<br/>`Evaluation\Condition\Lexer` | expression, evaluation |
+| `NormalizedOpenApiOperation` | `Contracts\Spec\NormalizedOpenApiOperation`<br/>`Document\NormalizedOpenApiOperation` | contracts, document |
 | `OpenApiExecutorInterface` | `Protocol\Http\Execution\Interfaces\OpenApiExecutorInterface`<br/>`Runner\Execution\Interfaces\OpenApiExecutorInterface` | protocol-http, runner |
 | `Parser` | `Expression\JsonPath\Parser`<br/>`Expression\Parser`<br/>`Evaluation\Condition\Parser`<br/>`Document\Parser\Parser` | expression, evaluation, document |
 | `ParserInterface` | `Expression\Interfaces\ParserInterface`<br/>`Evaluation\Condition\ParserInterface` | expression, evaluation |
+| `ResolvedOperation` | `Contracts\Spec\ResolvedOperation`<br/>`Document\ResolvedOperation` | contracts, document |
+| `SourceFetchException` | `Sources\Exceptions\SourceFetchException`<br/>`Sources\Resolver\Exceptions\SourceFetchException` | sources |
+| `SourceParseException` | `Sources\Exceptions\SourceParseException`<br/>`Sources\Resolver\Exceptions\SourceParseException` | sources |
+| `SourceResolutionException` | `Sources\Exceptions\SourceResolutionException`<br/>`Sources\Resolver\Exceptions\SourceResolutionException` | sources |
 | `StepResult` | `Runtime\State\Data\StepResult`<br/>`Runner\Execution\Data\StepResult` | engine, runner |
 | `Token` | `Expression\Data\Token`<br/>`Evaluation\Condition\Token` | expression, evaluation |
 | `TokenKind` | `Expression\Enum\TokenKind`<br/>`Evaluation\Enum\TokenKind` | expression, evaluation |
 | `Transition` | `Engine\Data\Transition`<br/>`Runner\Execution\Data\Transition` | engine, runner |
+| `UnresolvableReferenceException` | `Sources\Exceptions\UnresolvableReferenceException`<br/>`Sources\Resolver\Exceptions\UnresolvableReferenceException` | sources |
+| `UnsupportedSourceVersionException` | `Sources\Exceptions\UnsupportedSourceVersionException`<br/>`Sources\Resolver\Exceptions\UnsupportedSourceVersionException`<br/>`Protocol\Soap\Exceptions\UnsupportedSourceVersionException` | sources, protocol-soap |

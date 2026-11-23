@@ -54,11 +54,11 @@ Introduce `#[AsSelectorPlugin(ExpressionType $type, int $priority = 0)]` attribu
 A clear architectural distinction is established across all monorepo packages:
 - **Stateless Plugin / Strategy Registries**: Must follow the concrete singleton `create()` + `reset()` pattern without redundant interfaces:
   - `SelectorPluginRegistry` (Phase 1).
-  - `SourceNormalizerRegistry` (Phase 2: delete `SourceNormalizerRegistryInterface`, singleton `create()`).
+  - `SourceNormalizerRegistry` (Phase 2: promoted to `Alama\Arazzo\Sources\Registries\SourceNormalizerRegistry`, `SourceNormalizerRegistryInterface` deleted, singleton `create()` auto-seeding zero-vendor `OpenApiSourceNormalizer`, paired with per-instance `Sources::withNormalizer()` overrides).
   - `OperationExecutorRegistry` (Phase 2: singleton `create()`).
   - `ExpressionEvaluatorRegistry` & `CriterionEvaluatorRegistry` (Phase 2: singleton `create()`, encapsulated in `EvaluationEngine`).
 - **Runtime State / Cache Stores**:
-  - `SourceRegistry` is not a plugin registry. It will be eliminated in Phase 2 by merging document memoization and circular-reference detection directly into `DefaultSourceResolver`.
+  - `SourceRegistry` is not a plugin registry. It is eliminated in Phase 2 by merging document memoization (`$cache`), explicit document seeding (`$seeded`, exposed publicly via `SourcesInterface::withDocument()`), and circular-reference detection (`$resolving`) directly into `DefaultSourceResolver`.
   - State stores (`ExecutionRegistry`, `DefinitionRegistry`, `PendingCorrelationRegistry`) remain scoped to runtime/process lifecycles and are never singletons.
 
 ## Consequences

@@ -1553,13 +1553,14 @@
             "dist": {
                 "type": "path",
                 "url": "packages/protocol-http",
-                "reference": "c3cd0499eb16b22a62813b231b5db9c8a809ea7d"
+                "reference": "d57ac48b0d9ca79c58cc6af4968f7fe659433e86"
             },
             "require": {
                 "cebe/php-openapi": "^1.7",
                 "guzzlehttp/guzzle": "^7.8||^8.0",
                 "php": "^8.4",
                 "php-arazzo/arazzo-contracts": "@dev",
+                "php-arazzo/arazzo-document": "@dev",
                 "php-arazzo/arazzo-engine": "@dev",
                 "php-arazzo/arazzo-evaluation": "@dev",
                 "php-arazzo/arazzo-expression": "@dev",
@@ -1766,10 +1767,9 @@
             "dist": {
                 "type": "path",
                 "url": "packages/sources",
-                "reference": "553d99d2d54cd5982753dc1efedffc05cbaf8f1b"
+                "reference": "a389fa2601ba1b2e782bad7d0cbe763b8027da03"
             },
             "require": {
-                "cebe/php-openapi": "^1.7",
                 "ext-dom": "*",
                 "ext-libxml": "*",
                 "guzzlehttp/guzzle": "^7.9",

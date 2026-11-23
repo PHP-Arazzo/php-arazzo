@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Alama\Arazzo\Cli\Console\Command\RunCommand;
+use Alama\Arazzo\Cli\Console\RunnerFactory;
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
 use Alama\Arazzo\Contracts\Spec\SourceDocument;
 use Alama\Arazzo\Document\Document;
@@ -11,10 +12,10 @@ use Alama\Arazzo\Expression\ExpressionEngine;
 use Alama\Arazzo\Protocol\Http\Execution\DefaultOpenApiExecutor;
 use Alama\Arazzo\Protocol\Http\Execution\ResponseSchemaValidator;
 use Alama\Arazzo\Protocol\Http\Execution\StepOutputExtractor;
+use Alama\Arazzo\Protocol\Http\Resolver\OpenApiOperationResolver;
 use Alama\Arazzo\Runner\RunnerFacade;
-use Alama\Arazzo\Sources\Resolver\DefaultSourceResolver;
-use Alama\Arazzo\Sources\Resolver\Interfaces\SourceResolver;
-use Alama\Arazzo\Sources\SourceGraph;
+use Alama\Arazzo\Sources\Sources;
+use Alama\Arazzo\Sources\SourcesInterface;
 use GuzzleHttp\Psr7\HttpFactory;
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Client\ClientInterface;
@@ -58,9 +59,11 @@ function arazzoDoc(string $tmp): void
         YAML);
 }
 
-function createTestRegistry(ClientInterface $client, RequestFactoryInterface $factory): DefaultSourceResolver
+function createTestSources(ClientInterface $client, RequestFactoryInterface $factory, array $openApi = PETSTORE_MINI): SourcesInterface
 {
-    return SourceGraph::createRegistry($client, $factory);
+    return Sources::create()
+        ->withHttpClient($client, $factory)
+        ->withDocument(new SourceDocument('api', SourceType::Openapi, 'https://mini.test/openapi.json', $openApi));
 }
 
 it('runs a workflow end-to-end through the CLI', function (): void {
@@ -74,10 +77,9 @@ it('runs a workflow end-to-end through the CLI', function (): void {
     };
     $factory = new HttpFactory();
 
-    $registry = createTestRegistry($client, $factory);
-    $registry->register(new SourceDocument('api', SourceType::Openapi, 'https://mini.test/openapi.json', PETSTORE_MINI));
+    $sources = createTestSources($client, $factory);
 
-    $command = new RunCommand($client, $factory, $registry);
+    $command = new RunCommand(RunnerFactory::create(httpClient: $client, httpFactory: $factory, sources: $sources));
     $tester = new CommandTester($command);
 
     $doc = sys_get_temp_dir().'/arazzo-cli-run-'.uniqid().'.yaml';
@@ -102,10 +104,9 @@ it('fails with a clear message for an unknown workflow id', function (): void {
     };
     $factory = new HttpFactory();
 
-    $registry = createTestRegistry($client, $factory);
-    $registry->register(new SourceDocument('api', SourceType::Openapi, 'https://mini.test/openapi.json', PETSTORE_MINI));
+    $sources = createTestSources($client, $factory);
 
-    $command = new RunCommand($client, $factory, $registry);
+    $command = new RunCommand(RunnerFactory::create(httpClient: $client, httpFactory: $factory, sources: $sources));
     $tester = new CommandTester($command);
 
     $doc = sys_get_temp_dir().'/arazzo-cli-unknown-'.uniqid().'.yaml';
@@ -129,22 +130,21 @@ it('exposes the facade result shape the CLI output rendering depends on', functi
     };
     $factory = new HttpFactory();
 
-    $registry = createTestRegistry($client, $factory);
-    $registry->register(new SourceDocument('api', SourceType::Openapi, 'https://mini.test/openapi.json', PETSTORE_MINI));
+    $sources = createTestSources($client, $factory);
 
     $doc = sys_get_temp_dir().'/arazzo-cli-shape-'.uniqid().'.yaml';
     arazzoDoc($doc);
 
     $document = Document::create()->load($doc);
-    $runtime = SourceGraph::runtime(registry: $registry);
+    $operationResolver = OpenApiOperationResolver::create($sources);
     $engine = new EvaluationEngine(expression: new ExpressionEngine());
     $runner = new RunnerFacade(
-        $runtime->document,
-        $runtime->operations,
+        Document::create(),
+        $operationResolver,
         $engine,
         openApiExecutor: new DefaultOpenApiExecutor($client, $factory),
-        outputExtractor: new StepOutputExtractor($runtime->operations, $engine, new ExpressionEngine()),
-        schemaValidator: new ResponseSchemaValidator($runtime->operations),
+        outputExtractor: new StepOutputExtractor($operationResolver, $engine, new ExpressionEngine()),
+        schemaValidator: new ResponseSchemaValidator($operationResolver),
     );
 
     unlink($doc);
@@ -197,9 +197,11 @@ YAML);
     return $tmp;
 }
 
-function cliCommand(ClientInterface $client, RequestFactoryInterface $factory, SourceResolver $registry): RunCommand
+function cliCommand(ClientInterface $client, RequestFactoryInterface $factory, SourcesInterface $sources): RunCommand
 {
-    return new RunCommand($client, $factory, $registry);
+    $runner = RunnerFactory::create(httpClient: $client, httpFactory: $factory, sources: $sources);
+
+    return new RunCommand($runner);
 }
 
 function okClient(): ClientInterface
@@ -216,12 +218,11 @@ function okClient(): ClientInterface
 it('validates inputs before execution (S1)', function (): void {
     $client = okClient();
     $factory = new HttpFactory();
-    $registry = createTestRegistry($client, $factory);
-    $registry->register(new SourceDocument('api', SourceType::Openapi, 'https://mini.test/openapi.json', PETSTORE_MINI));
+    $sources = createTestSources($client, $factory);
 
     $doc = inputsDoc('create', "      type: object\n      required: [username]\n      properties:\n        username:\n          type: string");
 
-    $command = cliCommand($client, $factory, $registry);
+    $command = cliCommand($client, $factory, $sources);
     $tester = new CommandTester($command);
 
     $tester->execute(['file' => $doc, '--input' => '{"username": "alice"}']);
@@ -235,12 +236,11 @@ it('validates inputs before execution (S1)', function (): void {
 it('fails on missing required input (S2)', function (): void {
     $client = okClient();
     $factory = new HttpFactory();
-    $registry = createTestRegistry($client, $factory);
-    $registry->register(new SourceDocument('api', SourceType::Openapi, 'https://mini.test/openapi.json', PETSTORE_MINI));
+    $sources = createTestSources($client, $factory);
 
     $doc = inputsDoc('create', "      type: object\n      required: [username]\n      properties:\n        username:\n          type: string");
 
-    $command = cliCommand($client, $factory, $registry);
+    $command = cliCommand($client, $factory, $sources);
     $tester = new CommandTester($command);
 
     $tester->execute(['file' => $doc, '--input' => '{"retries": 5}']);
@@ -254,12 +254,11 @@ it('fails on missing required input (S2)', function (): void {
 it('fails on type mismatch (S3)', function (): void {
     $client = okClient();
     $factory = new HttpFactory();
-    $registry = createTestRegistry($client, $factory);
-    $registry->register(new SourceDocument('api', SourceType::Openapi, 'https://mini.test/openapi.json', PETSTORE_MINI));
+    $sources = createTestSources($client, $factory);
 
     $doc = inputsDoc('create', "      type: object\n      properties:\n        timeout:\n          type: integer");
 
-    $command = cliCommand($client, $factory, $registry);
+    $command = cliCommand($client, $factory, $sources);
     $tester = new CommandTester($command);
 
     $tester->execute(['file' => $doc, '--input' => '{"timeout": "thirty"}']);
@@ -273,12 +272,11 @@ it('fails on type mismatch (S3)', function (): void {
 it('fails on enum violation (S4)', function (): void {
     $client = okClient();
     $factory = new HttpFactory();
-    $registry = createTestRegistry($client, $factory);
-    $registry->register(new SourceDocument('api', SourceType::Openapi, 'https://mini.test/openapi.json', PETSTORE_MINI));
+    $sources = createTestSources($client, $factory);
 
     $doc = inputsDoc('create', "      type: object\n      properties:\n        region:\n          type: string\n          enum: [eu, us]");
 
-    $command = cliCommand($client, $factory, $registry);
+    $command = cliCommand($client, $factory, $sources);
     $tester = new CommandTester($command);
 
     $tester->execute(['file' => $doc, '--input' => '{"region": "mars"}']);
@@ -292,12 +290,11 @@ it('fails on enum violation (S4)', function (): void {
 it('applies schema defaults from validated map (S5)', function (): void {
     $client = okClient();
     $factory = new HttpFactory();
-    $registry = createTestRegistry($client, $factory);
-    $registry->register(new SourceDocument('api', SourceType::Openapi, 'https://mini.test/openapi.json', PETSTORE_MINI));
+    $sources = createTestSources($client, $factory);
 
     $doc = inputsDoc('create', "      type: object\n      required: [username]\n      properties:\n        username:\n          type: string\n        retries:\n          type: integer\n          default: 3");
 
-    $command = cliCommand($client, $factory, $registry);
+    $command = cliCommand($client, $factory, $sources);
     $tester = new CommandTester($command);
 
     // retries omitted; default 3 should be injected by validation
@@ -312,8 +309,7 @@ it('applies schema defaults from validated map (S5)', function (): void {
 it('accepts arbitrary inputs when no schema declared (S6)', function (): void {
     $client = okClient();
     $factory = new HttpFactory();
-    $registry = createTestRegistry($client, $factory);
-    $registry->register(new SourceDocument('api', SourceType::Openapi, 'https://mini.test/openapi.json', PETSTORE_MINI));
+    $sources = createTestSources($client, $factory);
 
     $doc = inputsDoc('create', '', [
         'create' => [
@@ -321,7 +317,7 @@ it('accepts arbitrary inputs when no schema declared (S6)', function (): void {
         ],
     ]);
 
-    $command = cliCommand($client, $factory, $registry);
+    $command = cliCommand($client, $factory, $sources);
     $tester = new CommandTester($command);
 
     $tester->execute(['file' => $doc, '--input' => '{"anything": "goes"}']);
@@ -441,12 +437,9 @@ function realHttpDoc(string $workflow): string
     return $doc;
 }
 
-function realHttpRegistry(ClientInterface $client, RequestFactoryInterface $factory): DefaultSourceResolver
+function realHttpRegistry(ClientInterface $client, RequestFactoryInterface $factory): SourcesInterface
 {
-    $registry = createTestRegistry($client, $factory);
-    $registry->register(new SourceDocument('api', SourceType::Openapi, 'https://mini.test/openapi.json', REAL_HTTP_OPENAPI));
-
-    return $registry;
+    return createTestSources($client, $factory, REAL_HTTP_OPENAPI);
 }
 
 it('sends the real request through the injected HTTP client (method, URL, path, query, header, body)', function (): void {
@@ -488,7 +481,7 @@ it('sends the real request through the injected HTTP client (method, URL, path, 
                   - condition: $statusCode == 200
         YAML);
 
-    $tester = new CommandTester(new RunCommand($client, $factory, realHttpRegistry($client, $factory)));
+    $tester = new CommandTester(new RunCommand(RunnerFactory::create(httpClient: $client, httpFactory: $factory, sources: realHttpRegistry($client, $factory))));
     $tester->execute(['file' => $doc]);
 
     unlink($doc);
@@ -543,7 +536,7 @@ it('exposes step outputs to downstream steps and workflow outputs', function ():
                   - condition: $statusCode == 200
         YAML);
 
-    $tester = new CommandTester(new RunCommand($client, $factory, realHttpRegistry($client, $factory)));
+    $tester = new CommandTester(new RunCommand(RunnerFactory::create(httpClient: $client, httpFactory: $factory, sources: realHttpRegistry($client, $factory))));
     $tester->execute(['file' => $doc]);
 
     unlink($doc);
@@ -585,7 +578,7 @@ it('fails the run and renders the violation when a response breaks its schema', 
                   - condition: $statusCode == 200
         YAML);
 
-    $tester = new CommandTester(new RunCommand($client, $factory, realHttpRegistry($client, $factory)));
+    $tester = new CommandTester(new RunCommand(RunnerFactory::create(httpClient: $client, httpFactory: $factory, sources: realHttpRegistry($client, $factory))));
     $tester->execute(['file' => $doc]);
 
     unlink($doc);
@@ -624,7 +617,7 @@ it('fails the run when success criteria are not met', function (): void {
                   - condition: $statusCode == 200
         YAML);
 
-    $tester = new CommandTester(new RunCommand($client, $factory, realHttpRegistry($client, $factory)));
+    $tester = new CommandTester(new RunCommand(RunnerFactory::create(httpClient: $client, httpFactory: $factory, sources: realHttpRegistry($client, $factory))));
     $tester->execute(['file' => $doc]);
 
     unlink($doc);

@@ -47,7 +47,6 @@ mindmap
       DefaultOpenApiExecutor
     OpenApiNormalizerInterface
       OpenApi30Normalizer
-      Swagger2Normalizer
     OperationExecutorPluginInterface
       AsyncApiStepExecutor
       HttpStepExecutor
@@ -86,8 +85,10 @@ mindmap
       JsonPointerSelectorPlugin
     SourceNormalizerInterface
       OpenApiSourceNormalizer
-      WsdlSourceNormalizer
       ProtoSourceNormalizer
+      WsdlSourceNormalizer
+    SourcesInterface
+      Sources
     StateStoreInterface
       FileStateStore
       InMemoryStateStore
@@ -120,7 +121,7 @@ mindmap
 | `LockManagerInterface` | no | `CliRunner` <small>core</small> |
 | `LockStrategyInterface` | no | `FileLockStrategy` <small>core</small>, `NullLockStrategy` <small>core</small>, `PessimisticLockStrategy` <small>core</small> |
 | `OpenApiExecutorInterface` | no | `DefaultOpenApiExecutor` <small>core</small> |
-| `OpenApiNormalizerInterface` | no | `OpenApi30Normalizer` <small>core</small>, `Swagger2Normalizer` <small>core</small> |
+| `OpenApiNormalizerInterface` | no | `OpenApi30Normalizer` <small>core</small> |
 | `OperationExecutorPluginInterface` | no | `AsyncApiStepExecutor` <small>core</small>, `HttpStepExecutor` <small>core</small>, `RpcOperationExecutor` <small>core</small>, `SoapOperationExecutor` <small>core</small>, `SubWorkflowStepExecutor` <small>core</small> |
 | `OperationResolverInterface` | no | `OpenApiOperationResolver` <small>core</small>, `ProtobufOperationResolver` <small>core</small>, `WsdlOperationResolver` <small>core</small> |
 | `OutputExtractorInterface` | no | `StepOutputExtractor` <small>core</small> |
@@ -133,7 +134,8 @@ mindmap
 | `RunnerFacadeInterface` | no | `RunnerFacade` <small>core</small> |
 | `RunnerGraphBuilderInterface` | no | `RunnerGraphBuilder` <small>core</small> |
 | `SelectorPluginInterface` | no | `JsonPathSelectorPlugin` <small>core</small>, `JsonPointerSelectorPlugin` <small>core</small> |
-| `SourceNormalizerInterface` | no | `OpenApiSourceNormalizer` <small>core</small>, `WsdlSourceNormalizer` <small>core</small>, `ProtoSourceNormalizer` <small>core</small> |
+| `SourceNormalizerInterface` | no | `OpenApiSourceNormalizer` <small>core</small>, `ProtoSourceNormalizer` <small>core</small>, `WsdlSourceNormalizer` <small>core</small> |
+| `SourcesInterface` | no | `Sources` <small>core</small> |
 | `StateStoreInterface` | no | `FileStateStore` <small>core</small>, `InMemoryStateStore` <small>core</small> |
 | `StepProtocolExecutorInterface` | no | `AsyncApiStepExecutor` <small>core</small>, `HttpStepExecutor` <small>core</small>, `SubWorkflowStepExecutor` <small>core</small> |
 | `WorkflowContextInterface` | no | `WorkflowContext` <small>core</small> |
@@ -148,4 +150,6 @@ Declared but nothing in src implements them — candidates for removal or for a 
 - `HttpClientInterface` <small>Interfaces</small>
 - `PluginInterface` <small>Interfaces</small>
 - `ProtocolExecutorRegistryInterface` <small>Interfaces</small>
+- `SourceFetcherInterface` <small>Interfaces</small>
+- `SourceResolverInterface` <small>Interfaces</small>
 - `WorkflowEngineInterface` <small></small>

@@ -18,6 +18,10 @@
         },
         {
             "type": "path",
+            "url": "../document"
+        },
+        {
+            "type": "path",
             "url": "../expression"
         },
         {
@@ -36,6 +40,7 @@
     "require": {
         "php": "^8.4",
         "php-arazzo/arazzo-contracts": "@dev",
+        "php-arazzo/arazzo-document": "@dev",
         "php-arazzo/arazzo-expression": "@dev",
         "php-arazzo/arazzo-evaluation": "@dev",
         "php-arazzo/arazzo-engine": "@dev",

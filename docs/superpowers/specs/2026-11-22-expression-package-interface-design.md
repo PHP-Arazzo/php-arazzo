@@ -50,10 +50,10 @@ Registries read these attributes via reflection during `register(object $plugin)
 ### 2.3 Phase 2: Cross-Monorepo Registry Unification
 - **`SourceNormalizerRegistry`**:
   - Delete `SourceNormalizerRegistryInterface` from `packages/contracts`.
-  - Convert `SourceNormalizerRegistry` into a concrete singleton with `create(): self` and `reset(): void`.
-  - Decorate `OpenApiSourceNormalizer`, `WsdlSourceNormalizer`, `ProtoSourceNormalizer` with `#[AsSourceNormalizer]`.
+  - Promote and move `SourceNormalizerRegistry` to `Alama\Arazzo\Sources\Registries\SourceNormalizerRegistry` as a concrete singleton with `create(): self` (auto-seeding zero-vendor `OpenApiSourceNormalizer`) and `reset(): void`.
+  - Decorate `OpenApiSourceNormalizer`, `WsdlSourceNormalizer` (in `protocol-soap`), and `ProtoSourceNormalizer` with `#[AsSourceNormalizer]`.
   - Protocol registrars register directly into `SourceNormalizerRegistry::create()`.
-  - `SourceLoader` and `SourceGraph` drop registry parameters and use `create()` internally.
+  - `Sources` checks per-instance `withNormalizer()` overrides first and falls back to `SourceNormalizerRegistry::create()->get($type)`.
 - **`OperationExecutorRegistry`**:
   - Convert `OperationExecutorRegistry` into a concrete singleton with `create(): self` and `reset(): void`.
   - Decorate `HttpStepExecutor`, `AsyncApiStepExecutor`, `RpcOperationExecutor`, `SoapOperationExecutor`, `SubWorkflowStepExecutor` with `#[AsOperationExecutor]`.
@@ -64,8 +64,8 @@ Registries read these attributes via reflection during `register(object $plugin)
   - Remove `$expressionRegistry` and `$criterionRegistry` from `EvaluationEngine::__construct()`, encapsulating them inside `EvaluationEngine`.
 - **Eliminate `SourceRegistry`**:
   - Delete `SourceRegistry` decorator entirely.
-  - Move document memoization and circular-reference detection directly into `DefaultSourceResolver`.
-  - Provide `DefaultSourceResolver::withDefaults()` and `DefaultSourceResolver::inMemory(array $documents)`.
+  - Move document memoization (`$cache`), explicit document seeding (`$seeded`), and circular-reference detection (`$resolving`) directly into `DefaultSourceResolver` (`withFetcher()` preserves `$seeded` and clears `$cache`).
+  - Expose immutable in-memory document seeding publicly via `SourcesInterface::withDocument(SourceDocument $document): static`.
 - **Framework Bridges**:
   - In `alama/laravel-arazzo` and `cli`, auto-tag classes annotated with `#[As...]` attributes and bind them into the core singletons.
 

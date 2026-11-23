@@ -38,4 +38,4 @@ use Alama\Arazzo\Tests\TestCase;
 
 pest()->tia()->locally();
 
-uses(TestCase::class)->in(dirname(__DIR__), $cwd);
+uses(TestCase::class)->in('../packages', '.');

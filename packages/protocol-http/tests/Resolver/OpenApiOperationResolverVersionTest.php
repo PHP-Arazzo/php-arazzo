@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Alama\Arazzo\Tests\Normalizer;
+namespace Alama\Arazzo\Tests\Protocol\Http\Resolver;
 
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Components;
@@ -12,13 +12,13 @@ use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Spec\StepFactory;
 use Alama\Arazzo\Contracts\Spec\StepFlow;
 use Alama\Arazzo\Contracts\Spec\StepIo;
+use Alama\Arazzo\Protocol\Http\Resolver\OpenApiDocumentLoader;
+use Alama\Arazzo\Protocol\Http\Resolver\OpenApiOperationResolver;
+use Alama\Arazzo\Sources\Exceptions\UnsupportedSourceVersionException;
 use Alama\Arazzo\Sources\Normalizer\OpenApi30Normalizer;
 use Alama\Arazzo\Sources\Normalizer\OpenApi31Normalizer;
-use Alama\Arazzo\Sources\Normalizer\OpenApiDocumentLoader;
-use Alama\Arazzo\Sources\Normalizer\OpenApiOperationResolver;
 use Alama\Arazzo\Sources\Normalizer\OpenApiVersionDetector;
 use Alama\Arazzo\Sources\Resolver\DefaultSourceResolver;
-use Alama\Arazzo\Sources\Resolver\Exceptions\UnsupportedSourceVersionException;
 use Alama\Arazzo\Sources\Resolver\Fetchers\LocalFetcher;
 
 it('rejects Swagger 2.0 sources with a typed error instead of mis-routing them to the 3.0 normalizer', function () {
@@ -62,7 +62,7 @@ it('rejects Swagger 2.0 sources with a typed error instead of mis-routing them t
             description: null,
             flow: new StepFlow(),
             io: new StepIo(),
-            operationId: 'legacy-api.listPets',
+            operationId: '$sourceDescriptions.legacy-api.listPets',
         );
 
         $resolver->resolve($step, $document);
@@ -115,14 +115,14 @@ it('resolves a supported operation into both the cebe handle and the vendor-free
         );
 
         $handle = $resolver->resolve($step, $document);
+        $model = $resolver->resolveModel($step, $document);
 
         expect($handle->cebeOperation->operationId)->toBe('listPets')
             ->and($handle->openApi->openapi)->toBe('3.0.3')
             ->and($handle->operation->normalized->path)->toBe('/pets')
-            // The seam exposes only the vendor-free projection, so
-            // resolveModel() and resolve()->operation must agree.
-            ->and($resolver->resolveModel($step, $document)->normalized->method)
-            ->toBe($handle->operation->normalized->method);
+            ->and($handle->operation->normalized->method)->toBe('get')
+            ->and($model->normalized->path)->toBe('/pets')
+            ->and($model->normalized->method)->toBe('get');
     } finally {
         @unlink($openApiFile);
     }

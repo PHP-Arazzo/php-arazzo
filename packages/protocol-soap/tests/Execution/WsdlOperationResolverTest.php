@@ -8,14 +8,14 @@ use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Components;
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
 use Alama\Arazzo\Contracts\Spec\Info;
+use Alama\Arazzo\Contracts\Spec\ResolvedOperation;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Contracts\Spec\StepFlow;
 use Alama\Arazzo\Contracts\Spec\StepIo;
 use Alama\Arazzo\Contracts\Spec\StepTarget;
-use Alama\Arazzo\Document\ResolvedOperation;
 use Alama\Arazzo\Protocol\Soap\Execution\WsdlOperationResolver;
-use Alama\Arazzo\Sources\Normalizer\WsdlSourceNormalizer;
+use Alama\Arazzo\Protocol\Soap\Normalizer\WsdlSourceNormalizer;
 use Alama\Arazzo\Sources\Resolver\Fetchers\LocalFetcher;
 use RuntimeException;
 
@@ -46,7 +46,7 @@ function wsdlSource(string $name, string $path, SourceType $type = SourceType::W
 it('resolves a dotted source reference to the indexed WSDL operation', function (): void {
     $resolver = makeWsdlOperationResolver();
     [$document, $step] = wsdlStepDocument(
-        [wsdlSource('calculator', __DIR__.'/../../../sources/tests/fixtures/calculator.wsdl')],
+        [wsdlSource('calculator', __DIR__.'/../fixtures/calculator.wsdl')],
         '$sourceDescriptions.calculator.Add',
     );
 
@@ -62,7 +62,7 @@ it('resolves a dotted source reference to the indexed WSDL operation', function 
 it('resolves a plain operation id against the single described WSDL source', function (): void {
     $resolver = makeWsdlOperationResolver();
     [$document, $step] = wsdlStepDocument(
-        [wsdlSource('calculator', __DIR__.'/../../../sources/tests/fixtures/calculator.wsdl')],
+        [wsdlSource('calculator', __DIR__.'/../fixtures/calculator.wsdl')],
         'Add',
     );
 
@@ -75,18 +75,18 @@ it('supports steps that reference a WSDL source and rejects others', function ()
     $resolver = makeWsdlOperationResolver();
 
     [$wsdlDocument, $wsdlStep] = wsdlStepDocument(
-        [wsdlSource('calculator', __DIR__.'/../../../sources/tests/fixtures/calculator.wsdl')],
+        [wsdlSource('calculator', __DIR__.'/../fixtures/calculator.wsdl')],
         '$sourceDescriptions.calculator.Add',
     );
 
     [$openApiDocument, $openApiStep] = wsdlStepDocument(
-        [wsdlSource('rest', __DIR__.'/../../../sources/tests/fixtures/calculator.wsdl', SourceType::Openapi)],
+        [wsdlSource('rest', __DIR__.'/../fixtures/calculator.wsdl', SourceType::Openapi)],
         '$sourceDescriptions.rest.Add',
     );
 
     [$mixedDocument, $mixedStep] = wsdlStepDocument(
         [
-            wsdlSource('calc', __DIR__.'/../../../sources/tests/fixtures/calculator.wsdl'),
+            wsdlSource('calc', __DIR__.'/../fixtures/calculator.wsdl'),
             wsdlSource('orders', __DIR__.'/../../../sources/tests/fixtures/order-service.wsdl'),
         ],
         'Add',
@@ -102,7 +102,7 @@ it('rejects action steps even when a WSDL source is described', function (): voi
     $document = new ArazzoDocument(
         '1.0.0',
         new Info('T', null, null, '1'),
-        [wsdlSource('calculator', __DIR__.'/../../../sources/tests/fixtures/calculator.wsdl')],
+        [wsdlSource('calculator', __DIR__.'/../fixtures/calculator.wsdl')],
         [],
         new Components([], [], [], []),
         [],
@@ -115,7 +115,7 @@ it('rejects action steps even when a WSDL source is described', function (): voi
 it('throws when the referenced operation does not exist in the WSDL', function (): void {
     $resolver = makeWsdlOperationResolver();
     [$document, $step] = wsdlStepDocument(
-        [wsdlSource('calculator', __DIR__.'/../../../sources/tests/fixtures/calculator.wsdl')],
+        [wsdlSource('calculator', __DIR__.'/../fixtures/calculator.wsdl')],
         '$sourceDescriptions.calculator.Divide',
     );
 
@@ -125,7 +125,7 @@ it('throws when the referenced operation does not exist in the WSDL', function (
 it('throws when the step does not reference a WSDL source', function (): void {
     $resolver = makeWsdlOperationResolver();
     [$document, $step] = wsdlStepDocument(
-        [wsdlSource('rest', __DIR__.'/../../../sources/tests/fixtures/calculator.wsdl', SourceType::Openapi)],
+        [wsdlSource('rest', __DIR__.'/../fixtures/calculator.wsdl', SourceType::Openapi)],
         '$sourceDescriptions.rest.Add',
     );
 
@@ -135,7 +135,7 @@ it('throws when the step does not reference a WSDL source', function (): void {
 it('resolves a dotted source reference supplied through operationName (spec form)', function (): void {
     $resolver = makeWsdlOperationResolver();
     [$document, $step] = wsdlStepDocument(
-        [wsdlSource('calculator', __DIR__.'/../../../sources/tests/fixtures/calculator.wsdl')],
+        [wsdlSource('calculator', __DIR__.'/../fixtures/calculator.wsdl')],
         operationName: '$sourceDescriptions.calculator.Add',
     );
 
@@ -148,7 +148,7 @@ it('resolves a dotted source reference supplied through operationName (spec form
 it('resolves a plain operationName against the single described WSDL source', function (): void {
     $resolver = makeWsdlOperationResolver();
     [$document, $step] = wsdlStepDocument(
-        [wsdlSource('calculator', __DIR__.'/../../../sources/tests/fixtures/calculator.wsdl')],
+        [wsdlSource('calculator', __DIR__.'/../fixtures/calculator.wsdl')],
         operationName: 'Add',
     );
 
@@ -158,7 +158,7 @@ it('resolves a plain operationName against the single described WSDL source', fu
 it('prefers operationName over operationId when both are present', function (): void {
     $resolver = makeWsdlOperationResolver();
     [$document, $step] = wsdlStepDocument(
-        [wsdlSource('calculator', __DIR__.'/../../../sources/tests/fixtures/calculator.wsdl')],
+        [wsdlSource('calculator', __DIR__.'/../fixtures/calculator.wsdl')],
         operationId: '$sourceDescriptions.calculator.Divide',
         operationName: '$sourceDescriptions.calculator.Add',
     );

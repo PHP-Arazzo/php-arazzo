@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Tests\Protocol\Rpc\Normalizer;
 
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
+use Alama\Arazzo\Contracts\Spec\ResolvedOperation;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
-use Alama\Arazzo\Document\ResolvedOperation;
 use Alama\Arazzo\Protocol\Rpc\Normalizer\ProtoSourceNormalizer;
 use InvalidArgumentException;
 

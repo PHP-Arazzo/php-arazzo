@@ -179,8 +179,8 @@ public contract between packages.
 
 ### Cross-boundary value types
 
-- `OpenApiOperationHandle` — present
-- `SourceRuntime` — present
+- `OpenApiOperationHandle` — not found
+- `SourceRuntime` — not found
 - `SourceFetchException` — present
 - `SourceParseException` — present
 - `SourceResolutionException` — present
@@ -199,12 +199,12 @@ public contract between packages.
 - `OpenApiNormalizerInterface` — `@internal`: yes
 - `OpenApi30Normalizer` — `@internal`: yes
 - `OpenApi31Normalizer` — `@internal`: yes
-- `Swagger2Normalizer` — `@internal`: yes
+- `Swagger2Normalizer` — _not found in scan_
 - `OpenApiVersionDetector` — `@internal`: yes
-- `OpenApiDocumentLoader` — `@internal`: yes
-- `OpenApiOperationResolver` — `@internal`: yes
+- `OpenApiDocumentLoader` — _not found in scan_
+- `OpenApiOperationResolver` — _not found in scan_
 - `PreflightValidator` — _not found in scan_
-- `SourceGraph` — `@internal`: no (target for the sweep)
+- `SourceGraph` — _not found in scan_
 - `Normalizer\*` — whole namespace (declared target)
 - `Resolver\*` — whole namespace (declared target)
 
@@ -326,7 +326,7 @@ _None — the entry surface exchanges plain arrays._
 - `Application` (`class`)
   - `public function __construct()`
 - `RunCommand` (`class`)
-  - `public function __construct(private readonly ?ClientInterface $httpClient = null, private readonly ?RequestFactoryInterface $httpFactory = null, private readonly ?SourceResolver $registry = null)`
+  - `public function __construct(private readonly ?RunnerFacadeInterface $runner = null, private readonly ?DocumentInterface $document = null)`
 - `ValidateCommand` (`class`)
 - `ListWorkflowsCommand` (`class`)
 - `ExplainCommand` (`class`)

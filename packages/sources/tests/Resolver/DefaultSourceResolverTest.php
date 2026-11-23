@@ -9,10 +9,10 @@ use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Spec\SourceDocument;
 use Alama\Arazzo\Document\Parser\DecodePolicy;
 use Alama\Arazzo\Document\Parser\YamlPolicy;
+use Alama\Arazzo\Sources\Exceptions\SourceFetchException;
+use Alama\Arazzo\Sources\Exceptions\SourceParseException;
+use Alama\Arazzo\Sources\Exceptions\UnresolvableReferenceException;
 use Alama\Arazzo\Sources\Resolver\DefaultSourceResolver;
-use Alama\Arazzo\Sources\Resolver\Exceptions\SourceFetchException;
-use Alama\Arazzo\Sources\Resolver\Exceptions\SourceParseException;
-use Alama\Arazzo\Sources\Resolver\Exceptions\UnresolvableReferenceException;
 use Alama\Arazzo\Sources\Resolver\Interfaces\SourceFetcher;
 
 it('resolves http url using http fetcher and decodes json', function (): void {
@@ -221,4 +221,37 @@ it('detects circular references during source acquisition', function (): void {
 
     expect(fn () => $resolver->resolve($source, '/base'))
         ->toThrow(UnresolvableReferenceException::class, "Circular reference detected when resolving source 'circular-api'");
+});
+
+it('preserves seeded documents across withFetcher() while clearing fetched cache', function (): void {
+    $firstFetcher = new class() implements SourceFetcher
+    {
+        public function fetch(string $urlOrPath, string $basePath): string
+        {
+            return '{"source": "first"}';
+        }
+    };
+    $secondFetcher = new class() implements SourceFetcher
+    {
+        public function fetch(string $urlOrPath, string $basePath): string
+        {
+            return '{"source": "second"}';
+        }
+    };
+
+    $seeded = new SourceDocument('seeded', SourceType::Openapi, 'memory://seeded', ['seeded' => true]);
+    $resolver = (new DefaultSourceResolver(['file' => $firstFetcher]))->withDocument($seeded);
+
+    // Fetch a remote/file doc into $cache
+    $fetched1 = $resolver->resolve(new SourceDescription('dynamic', 'api.json', SourceType::Openapi), '/base');
+    expect($fetched1->content)->toBe(['source' => 'first']);
+
+    // Rebinding fetcher must preserve $seeded and clear $cache
+    $rebound = $resolver->withFetcher('file', $secondFetcher);
+    $fetched2 = $rebound->resolve(new SourceDescription('dynamic', 'api.json', SourceType::Openapi), '/base');
+    $resolvedSeeded = $rebound->resolve(new SourceDescription('seeded', 'ignored.json', SourceType::Openapi), '/base');
+
+    expect($fetched2->content)->toBe(['source' => 'second'])
+        ->and($resolvedSeeded)->toBe($seeded)
+        ->and($rebound->get('seeded'))->toBe($seeded);
 });

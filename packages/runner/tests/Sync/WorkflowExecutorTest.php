@@ -23,11 +23,12 @@ use Alama\Arazzo\Expression\ExpressionEngine;
 use Alama\Arazzo\Protocol\Http\Execution\DefaultOpenApiExecutor;
 use Alama\Arazzo\Protocol\Http\Execution\ResponseSchemaValidator;
 use Alama\Arazzo\Protocol\Http\Execution\StepOutputExtractor;
+use Alama\Arazzo\Protocol\Http\Resolver\OpenApiOperationResolver;
 use Alama\Arazzo\Runner\Sync\StepExecutor;
 use Alama\Arazzo\Runner\Sync\WorkflowEngine;
 use Alama\Arazzo\Runner\Sync\WorkflowExecutor;
 use Alama\Arazzo\Sources\Resolver\Interfaces\SourceResolver;
-use Alama\Arazzo\Sources\SourceGraph;
+use Alama\Arazzo\Sources\Sources;
 use Alama\Arazzo\Tests\Expression\Support\TestEvaluationEngine;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
@@ -497,12 +498,12 @@ it('executes a workflow end-to-end', function () {
         }
     };
     $engine = new EvaluationEngine(expression: new ExpressionEngine());
-    $runtime = SourceGraph::runtime($sourceResolver);
-    $outputExtractor = new StepOutputExtractor($runtime->operations, $engine, new ExpressionEngine());
-    $schemaValidator = new ResponseSchemaValidator($runtime->operations);
+    $operations = OpenApiOperationResolver::create(new Sources($sourceResolver));
+    $outputExtractor = new StepOutputExtractor($operations, $engine, new ExpressionEngine());
+    $schemaValidator = new ResponseSchemaValidator($operations);
 
     $openApiExecutor = new DefaultOpenApiExecutor($httpClient, $requestFactory);
-    $stepExecutor = new StepExecutor($openApiExecutor, $runtime->operations, $engine, $outputExtractor, $schemaValidator);
+    $stepExecutor = new StepExecutor($openApiExecutor, $operations, $engine, $outputExtractor, $schemaValidator);
 
     $workflowExecutor = new WorkflowExecutor($stepExecutor, new WorkflowEngine(new TestEvaluationEngine()));
 

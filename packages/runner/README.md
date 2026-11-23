@@ -24,16 +24,19 @@ composer require alama/arazzo-protocol-http
 The entry point is [`RunnerFacade`](src/RunnerFacade.php): hand it your parsed document, an operation resolver, and the protocol value seams, then call `run()`.
 
 ```php
+use Alama\Arazzo\Document\Document;
 use Alama\Arazzo\Evaluation\EvaluationEngine;
 use Alama\Arazzo\Expression\ExpressionEngine;
-use Alama\Arazzo\Runner\RunnerFacade;
-use Alama\Arazzo\Sources\SourceGraph;
 use Alama\Arazzo\Protocol\Http\Execution\DefaultOpenApiExecutor;
 use Alama\Arazzo\Protocol\Http\Execution\ResponseSchemaValidator;
 use Alama\Arazzo\Protocol\Http\Execution\StepOutputExtractor;
+use Alama\Arazzo\Protocol\Http\Resolver\OpenApiOperationResolver;
+use Alama\Arazzo\Runner\RunnerFacade;
+use Alama\Arazzo\Sources\Sources;
 
-$documents = SourceGraph::document();
-$operationResolver = SourceGraph::operations();
+$document = Document::create();
+$sources = Sources::create()->withHttpClient($httpClient, $requestFactory);
+$operationResolver = OpenApiOperationResolver::create($sources);
 $evaluationEngine = new EvaluationEngine();
 
 // protocol-http value seams (each optional — register only what a step needs)
@@ -42,9 +45,10 @@ $outputs = new StepOutputExtractor($operationResolver, $evaluationEngine, new Ex
 $schema = new ResponseSchemaValidator($operationResolver);
 
 $runner = new RunnerFacade(
-    documents: $documents,
+    document: $document,
     operationResolver: $operationResolver,
     evaluationEngine: $evaluationEngine,
+    inspector: null,
     openApiExecutor: $executor,
     outputExtractor: $outputs,
     schemaValidator: $schema,

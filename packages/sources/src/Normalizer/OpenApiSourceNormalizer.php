@@ -8,25 +8,16 @@ use Alama\Arazzo\Contracts\Attributes\AsSourceNormalizer;
 use Alama\Arazzo\Contracts\Interfaces\SourceNormalizerInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
+use Alama\Arazzo\Contracts\Spec\ResolvedOperation;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
-use Alama\Arazzo\Document\ResolvedOperation;
 use Alama\Arazzo\Sources\Normalizer\Interfaces\OpenApiNormalizerInterface;
 use Alama\Arazzo\Sources\Resolver\Exceptions\UnsupportedSourceVersionException;
-use cebe\openapi\spec\OpenApi;
-use cebe\openapi\spec\Operation;
 use InvalidArgumentException;
 
 /**
  * Port (D2): turns a described source + raw content into an operation index.
  *
- * Index keys mirror OpenApiOperationResolver's accepted references:
- *   - plain operationId
- *   - "$sourceDescriptions.<name>.<operationId>"
- *   - "#/paths/<escaped-path>/<method>"
- *
- * Values are two-axis ResolvedOperation objects (mixed-compatible with the
- * contracts array signature). Privileged in `document` during D; relocated
- * to alama/arazzo-protocol-http in F1.
+ * Pure array, zero vendor.
  *
  * @internal stays out of the advertised contract; not part of the public API surface
  */
@@ -36,7 +27,6 @@ final class OpenApiSourceNormalizer implements SourceNormalizerInterface
     private const METHODS = ['get', 'put', 'post', 'delete', 'options', 'head', 'patch', 'trace'];
 
     public function __construct(
-        private readonly OpenApiDocumentLoader $loader,
         private readonly OpenApiVersionDetector $versionDetector,
         private readonly OpenApi30Normalizer $normalizer30,
         private readonly OpenApi31Normalizer $normalizer31,
@@ -69,10 +59,9 @@ final class OpenApiSourceNormalizer implements SourceNormalizerInterface
         }
 
         $version = $this->detectVersion($rawDocument, $source);
-        $openApi = $this->loadOpenApi($source);
         $normalizer = $this->chooseNormalizer($version);
 
-        return $this->buildIndex($rawDocument, $openApi, $normalizer, $source);
+        return $this->buildIndex($rawDocument, $normalizer, $source);
     }
 
     /**
@@ -88,17 +77,6 @@ final class OpenApiSourceNormalizer implements SourceNormalizerInterface
         return $version;
     }
 
-    private function loadOpenApi(SourceDescription $source): OpenApi
-    {
-        $basePath = $this->extractBasePath($source);
-        $openApi = $this->loader->load($source, $basePath);
-        if ($openApi === null) {
-            throw new InvalidArgumentException('Failed to load OpenAPI document.');
-        }
-
-        return $openApi;
-    }
-
     private function chooseNormalizer(string $version): OpenApiNormalizerInterface
     {
         return $version === '3.0' ? $this->normalizer30 : $this->normalizer31;
@@ -108,7 +86,7 @@ final class OpenApiSourceNormalizer implements SourceNormalizerInterface
      * @param  array<string,mixed>  $rawDocument
      * @return array<string, ResolvedOperation>
      */
-    private function buildIndex(array $rawDocument, OpenApi $openApi, OpenApiNormalizerInterface $normalizer, SourceDescription $source): array
+    private function buildIndex(array $rawDocument, OpenApiNormalizerInterface $normalizer, SourceDescription $source): array
     {
         $index = [];
 
@@ -123,13 +101,9 @@ final class OpenApiSourceNormalizer implements SourceNormalizerInterface
                 if (!isset($pathItem[$method]) || !is_array($pathItem[$method])) {
                     continue;
                 }
+
                 $operation = $pathItem[$method];
                 $operationId = $operation['operationId'] ?? null;
-
-                $cebeOperation = $openApi->paths->getPath($path)?->{$method};
-                if (!$cebeOperation instanceof Operation) {
-                    continue;
-                }
 
                 $normalized = $normalizer->normalize($rawDocument, $path, $method);
 
@@ -154,18 +128,6 @@ final class OpenApiSourceNormalizer implements SourceNormalizerInterface
         }
 
         return $index;
-    }
-
-    private function extractBasePath(SourceDescription $source): string
-    {
-        $url = $source->url;
-        if (str_starts_with($url, 'file://')) {
-            $path = substr($url, 7);
-
-            return dirname($path);
-        }
-
-        return '';
     }
 
     private function jsonPointerForPath(string $path, string $method): string
