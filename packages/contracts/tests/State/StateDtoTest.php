@@ -166,3 +166,15 @@ it('survives corrupt step records in the workflow context', function (): void {
         ->and($updated->getStepAttempts('step_1'))->toBe(1)
         ->and($updated->getStepStatus('step_1'))->toBe(StepStatus::Succeeded);
 });
+
+it('hydrates persisted payloads without budget keys cleanly', function (): void {
+    $hydrated = WorkflowContext::fromPersisted([
+        'definitionId' => 'def_1',
+        'workflowId' => 'wf_1',
+        'inputs' => ['a' => 1],
+    ], 'exec_no_budget');
+
+    expect($hydrated->getExecutionId())->toBe('exec_no_budget')
+        ->and($hydrated->getStepsSpent())->toBe(0)
+        ->and($hydrated->getWorkflowCallStack())->toBe([]);
+});

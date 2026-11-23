@@ -1,18 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Method analyze has too high cyclomatic complexity \(16\)\. Maximum allowed is 10\.$#'
-			identifier: arazzo.custom.cyclomaticComplexity
-			count: 1
-			path: src/Dependency/DependencyGraph.php
-
-		-
-			message: '#^Method fromStep has too high cyclomatic complexity \(12\)\. Maximum allowed is 10\.$#'
-			identifier: arazzo.custom.cyclomaticComplexity
-			count: 1
-			path: src/Dependency/ImplicitDependencies.php
-
-		-
 			message: '#^Method __construct has too many parameters \(6\)\. Maximum allowed is 5\.$#'
 			identifier: arazzo.custom.maxParameterCount
 			count: 1
@@ -141,12 +129,6 @@ parameters:
 		-
 			message: '#^Method __construct has too many parameters \(12\)\. Maximum allowed is 5\.$#'
 			identifier: arazzo.custom.maxParameterCount
-			count: 1
-			path: src/State/WorkflowContext.php
-
-		-
-			message: '#^Method fromPersisted has too high cyclomatic complexity \(11\)\. Maximum allowed is 10\.$#'
-			identifier: arazzo.custom.cyclomaticComplexity
 			count: 1
 			path: src/State/WorkflowContext.php
 

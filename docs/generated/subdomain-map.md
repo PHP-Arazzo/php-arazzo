@@ -28,7 +28,7 @@ flowchart LR
         S_sources_Resolver["sources:Resolver<br/><small>629 LOC</small>"]:::supportingDomain
     end
     subgraph S_generic["Generic subdomain"]
-        S_contracts_State["contracts:State<br/><small>1007 LOC</small>"]:::genericDomain
+        S_contracts_State["contracts:State<br/><small>1062 LOC</small>"]:::genericDomain
         S_contracts_Support["contracts:Support<br/><small>185 LOC</small>"]:::genericDomain
         S_evaluation_Events["evaluation:Events<br/><small>27 LOC</small>"]:::genericDomain
         S_expression_Support["expression:Support<br/><small>192 LOC</small>"]:::genericDomain
@@ -39,7 +39,7 @@ flowchart LR
         S_contracts_Attributes["contracts:Attributes<br/><small>106 LOC</small>"]:::unknownDomain
         S_contracts_Clock["contracts:Clock<br/><small>20 LOC</small>"]:::unknownDomain
         S_contracts_Data["contracts:Data<br/><small>155 LOC</small>"]:::unknownDomain
-        S_contracts_Dependency["contracts:Dependency<br/><small>336 LOC</small>"]:::unknownDomain
+        S_contracts_Dependency["contracts:Dependency<br/><small>375 LOC</small>"]:::unknownDomain
         S_contracts_Discovery["contracts:Discovery<br/><small>421 LOC</small>"]:::unknownDomain
         S_contracts_Exceptions["contracts:Exceptions<br/><small>31 LOC</small>"]:::unknownDomain
         S_contracts_Interfaces["contracts:Interfaces<br/><small>387 LOC</small>"]:::unknownDomain
@@ -109,8 +109,8 @@ flowchart LR
 |---|---:|---:|---:|---:|
 | Core domain | 1 | 1,300 | 0 | 4% |
 | Supporting | 8 | 5,152 | 0 | 16% |
-| Generic subdomain | 6 | 1,623 | 0 | 5% |
-| Unclassified | 62 | 24,138 | 0 | 75% |
+| Generic subdomain | 6 | 1,678 | 0 | 5% |
+| Unclassified | 62 | 24,177 | 0 | 75% |
 
 **Unclassified modules** — classify them in `SUBDOMAINS` or delete them:
 - `contracts:Attributes`

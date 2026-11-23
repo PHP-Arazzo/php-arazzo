@@ -40,6 +40,22 @@ class DependencyGraph
 
     private function analyze(): void
     {
+        $this->buildEffectiveDependencies();
+
+        /** @var array<string, int> $color 0=white,1=grey,2=black */
+        $color = array_fill_keys(array_keys($this->stepsById), 0);
+        /** @var list<string> $path */
+        $path = [];
+
+        foreach (array_keys($this->stepsById) as $id) {
+            if ($color[$id] === 0 && $this->visitNode($id, $color, $path)) {
+                break;
+            }
+        }
+    }
+
+    private function buildEffectiveDependencies(): void
+    {
         foreach ($this->stepsById as $id => $step) {
             $deps = $step->flow->dependsOn;
             foreach (ImplicitDependencies::fromStep($step) as $implicit) {
@@ -49,71 +65,63 @@ class DependencyGraph
             }
             $this->effectiveDependencies[$id] = $deps;
         }
+    }
 
-        /** @var array<string,int> $color 0=white,1=grey,2=black */
-        $color = [];
-        foreach (array_keys($this->stepsById) as $id) {
-            $color[$id] = 0;
-        }
+    /**
+     * Depth-first traversal returning true as soon as a cycle is recorded.
+     *
+     * @param  array<string, int>  $color
+     * @param  list<string>  $path
+     */
+    private function visitNode(string $node, array &$color, array &$path): bool
+    {
+        $color[$node] = 1;
+        $path[] = $node;
 
-        $path = [];
-        $reported = false;
-
-        $dfs = function (string $node) use (&$dfs, &$color, &$path, &$reported): void {
-            if ($reported) {
-                return;
-            }
-
-            if (!isset($this->stepsById[$node])) {
-                return;
-            }
-
-            $color[$node] = 1;
-            $path[] = $node;
-
-            $step = $this->stepsById[$node];
-            foreach ($this->effectiveDependencies[$node] ?? [] as $next) {
-                if (!isset($this->stepsById[$next])) {
-                    $this->unresolvedReferences[$node][] = $next;
-
-                    continue;
-                }
-
-                if ($color[$next] === 1) {
-                    $cycleIndex = array_search($next, $path, true);
-                    if ($cycleIndex !== false) {
-                        $this->cycle = array_slice($path, (int) $cycleIndex);
-                        $this->cycle[] = $next;
-                    }
-                    $reported = true;
-
-                    return;
-                }
-
-                if ($color[$next] === 0) {
-                    $dfs($next);
-                }
-
-                /** @phpstan-ignore if.alwaysFalse */
-                if ($reported) {
-                    return;
-                }
-            }
-
-            $color[$node] = 2;
-            array_pop($path);
-            $this->topologicalOrder[] = $node;
-        };
-
-        foreach (array_keys($this->stepsById) as $id) {
-            if ($color[$id] === 0) {
-                $dfs($id);
-            }
-            if ($reported) {
-                break;
+        foreach ($this->effectiveDependencies[$node] ?? [] as $next) {
+            if ($this->visitEdge($node, $next, $color, $path)) {
+                return true;
             }
         }
 
+        $color[$node] = 2;
+        array_pop($path);
+        $this->topologicalOrder[] = $node;
+
+        return false;
+    }
+
+    /**
+     * @param  array<string, int>  $color
+     * @param  list<string>  $path
+     */
+    private function visitEdge(string $node, string $next, array &$color, array &$path): bool
+    {
+        if (!isset($this->stepsById[$next])) {
+            $this->unresolvedReferences[$node][] = $next;
+
+            return false;
+        }
+
+        if ($color[$next] === 1) {
+            $this->recordCycle($next, $path);
+
+            return true;
+        }
+
+        return $color[$next] === 0 && $this->visitNode($next, $color, $path);
+    }
+
+    /**
+     * @param  list<string>  $path
+     */
+    private function recordCycle(string $target, array $path): void
+    {
+        $cycleIndex = array_search($target, $path, true);
+        if ($cycleIndex !== false) {
+            $this->cycle = array_slice($path, (int) $cycleIndex);
+            $this->cycle[] = $target;
+        }
     }
 
     /**

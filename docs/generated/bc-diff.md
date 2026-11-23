@@ -31,14 +31,16 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 | removed method | `DocumentInterface` | `preflightInputs` | `public function preflightInputs(ArazzoDocument $document, string $workflowId, array $inputs): ValidationResult` |
 | removed method | `DocumentInterface` | `resolveOperation` | `public function resolveOperation(Step $step, ArazzoDocument $document): ResolvedOperation` |
 
-**Additions (non-breaking):** 74
+**Additions (non-breaking):** 80
 
 | Kind | Class | Member |
 |---|---|---|
 | added method | `DocumentInterface` | `all` |
 | added method | `DocumentInterface` | `arazzoSourceNotAddressable` |
+| added method | `DocumentInterface` | `calculateDelay` |
 | added method | `DocumentInterface` | `consumeCorrelation` |
 | added method | `DocumentInterface` | `create` |
+| added method | `DocumentInterface` | `default` |
 | added method | `DocumentInterface` | `deleteState` |
 | added method | `DocumentInterface` | `dispatch` |
 | added method | `DocumentInterface` | `dottedKeyReserved` |
@@ -55,6 +57,7 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 | added method | `DocumentInterface` | `has` |
 | added method | `DocumentInterface` | `hasPendingCorrelations` |
 | added method | `DocumentInterface` | `injectContext` |
+| added method | `DocumentInterface` | `isExhausted` |
 | added method | `DocumentInterface` | `isFailed` |
 | added method | `DocumentInterface` | `loadFromJson` |
 | added method | `DocumentInterface` | `loadFromYaml` |
@@ -82,6 +85,8 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 | added method | `DocumentInterface` | `validateInputs` |
 | added method | `DocumentInterface` | `withAllowCustomTags` |
 | added method | `DocumentInterface` | `withAllowObjectDeserialization` |
+| added method | `DocumentInterface` | `withBackoffMultiplier` |
+| added method | `DocumentInterface` | `withCalculator` |
 | added method | `DocumentInterface` | `withClock` |
 | added method | `DocumentInterface` | `withDecodePolicy` |
 | added method | `DocumentInterface` | `withDefinitions` |
@@ -91,6 +96,7 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 | added method | `DocumentInterface` | `withLockManager` |
 | added method | `DocumentInterface` | `withLogger` |
 | added method | `DocumentInterface` | `withMaxAliases` |
+| added method | `DocumentInterface` | `withMaxAttempts` |
 | added method | `DocumentInterface` | `withMaxBytes` |
 | added method | `DocumentInterface` | `withMaxDepth` |
 | added method | `DocumentInterface` | `withMaxNodes` |

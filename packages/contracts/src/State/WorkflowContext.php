@@ -77,32 +77,7 @@ final readonly class WorkflowContext implements WorkflowContextInterface
      */
     public static function fromPersisted(array $persisted, string $executionId): self
     {
-        $definitionId = is_string($persisted['definitionId'] ?? null) ? $persisted['definitionId'] : '';
-        $workflowId = is_string($persisted['workflowId'] ?? null) ? $persisted['workflowId'] : '';
-
-        /** @var array<string, mixed> $inputs */
-        $inputs = is_array($persisted['inputs'] ?? null) ? $persisted['inputs'] : [];
-
-        /** @var array<string, array<string, mixed>> $steps */
-        $steps = is_array($persisted['steps'] ?? null) ? $persisted['steps'] : [];
-
-        /** @var array<string, mixed> $components */
-        $components = is_array($persisted['components'] ?? null) ? $persisted['components'] : [];
-        /** @var list<string> $skippedSteps */
-        $skippedSteps = is_array($persisted['skippedSteps'] ?? null) ? $persisted['skippedSteps'] : [];
-
-        $context = new self($definitionId, $inputs, $steps, $components, $workflowId, $executionId, workflows: WorkflowDataMap::from($persisted['workflows'] ?? null), skippedSteps: $skippedSteps);
-
-        if (array_key_exists('stepsSpent', $persisted) || array_key_exists('workflowCallStack', $persisted)) {
-            $stack = is_array($persisted['workflowCallStack'] ?? null) ? $persisted['workflowCallStack'] : [];
-
-            $context = $context->withBudget(
-                is_int($persisted['stepsSpent'] ?? null) ? $persisted['stepsSpent'] : 0,
-                array_values(array_filter($stack, 'is_string')),
-            );
-        }
-
-        return $context;
+        return WorkflowContextHydrator::fromPersisted($persisted, $executionId);
     }
 
     /**
@@ -114,44 +89,7 @@ final readonly class WorkflowContext implements WorkflowContextInterface
      */
     public static function reconciled(self $incoming, array $persisted, string $executionId): self
     {
-        /** @var array<string, array<string, mixed>> $persistedSteps */
-        $persistedSteps = is_array($persisted['steps'] ?? null) ? $persisted['steps'] : [];
-
-        /** @var array<string, array<string, mixed>> $mergedSteps */
-        $mergedSteps = array_merge($incoming->getSteps(), $persistedSteps);
-
-        $persistedWorkflows = WorkflowDataMap::from($persisted['workflows'] ?? null);
-
-        /** @var list<string> $skippedSteps */
-        $skippedSteps = $persisted['skippedSteps'] ?? $incoming->getSkippedSteps();
-
-        $restored = new self(
-            $incoming->getDefinitionId(),
-            $incoming->getInputs(),
-            $mergedSteps,
-            $incoming->getComponents(),
-            $incoming->getWorkflowId(),
-            $executionId,
-            workflows: $incoming->getWorkflows(),
-            skippedSteps: $skippedSteps,
-        );
-
-        if (array_key_exists('stepsSpent', $persisted) || array_key_exists('workflowCallStack', $persisted)) {
-            $stack = is_array($persisted['workflowCallStack'] ?? null) ? $persisted['workflowCallStack'] : [];
-
-            $restored = $restored->withBudget(
-                is_int($persisted['stepsSpent'] ?? null) ? $persisted['stepsSpent'] : 0,
-                array_values(array_filter($stack, 'is_string')),
-            );
-        }
-
-        // Persisted workflow outputs are newer than anything the incoming
-        // job carried, so they win per workflow without dropping untouched ones.
-        foreach ($persistedWorkflows as $workflowId => $data) {
-            $restored = $restored->withWorkflowData($workflowId, $data);
-        }
-
-        return $restored;
+        return WorkflowContextHydrator::reconciled($incoming, $persisted, $executionId);
     }
 
     /**

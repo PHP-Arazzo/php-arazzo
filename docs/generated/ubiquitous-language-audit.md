@@ -52,7 +52,7 @@ Evans' first question: does the code speak one language?
 ### workflow vs process vs flow
 
 - **Flow**: `RunControlFlow`, `StepFlow` (2 types)
-- **Workflow**: `ExpressionUnresolvedWorkflowRefRule`, `ListWorkflowsCommand`, `StepNestedWorkflowExistsRule`, `StepNestedWorkflowNoCycleRule` + 29 more (33 types)
+- **Workflow**: `ExpressionUnresolvedWorkflowRefRule`, `ListWorkflowsCommand`, `StepNestedWorkflowExistsRule`, `StepNestedWorkflowNoCycleRule` + 30 more (34 types)
 
 ### render vs generate
 
