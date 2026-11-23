@@ -113,11 +113,11 @@ quadrantChart
 | `contracts/Interfaces` | 0.10 | 47 | 20 | 100% |
 | `contracts/Observability` | 0.00 | 9 | 4 | 100% |
 | `contracts/Policy` | 0.00 | 12 | 5 | 100% |
-| `contracts/Spec` | 0.02 | 288 | 52 | 100% |
+| `contracts/Spec` | 0.02 | 289 | 52 | 100% |
 | `contracts/State` | 0.10 | 84 | 4 | 100% |
 | `contracts/Support` | 0.00 | 12 | 5 | 100% |
 | `contracts/Validation` | 0.11 | 91 | 9 | 100% |
-| `document/Parser` | 0.29 | 62 | 24 | 100% |
+| `document/Parser` | 0.29 | 63 | 31 | 100% |
 | `document/Plugins` | 1.00 | 52 | 50 | 100% |
 | `document/Registries` | 0.80 | 3 | 1 | 100% |
 | `document/Validator` | 0.71 | 25 | 6 | 100% |
@@ -126,7 +126,7 @@ quadrantChart
 | `engine/Exceptions` | 0.11 | 8 | 1 | 100% |
 | `engine/Execution` | 0.31 | 14 | 8 | 100% |
 | `engine/Runtime` | 0.56 | 23 | 21 | 100% |
-| `evaluation/Condition` | 0.89 | 78 | 17 | 100% |
+| `evaluation/Condition` | 0.89 | 79 | 17 | 100% |
 | `evaluation/Data` | 0.40 | 13 | 2 | 100% |
 | `evaluation/Enum` | 0.00 | 6 | 5 | 100% |
 | `evaluation/Events` | 0.33 | 1 | 1 | 100% |
@@ -139,7 +139,7 @@ quadrantChart
 | `expression/Exceptions` | 0.09 | 18 | 2 | 100% |
 | `expression/Interfaces` | 0.33 | 23 | 4 | 100% |
 | `expression/Internal` | 0.78 | 1 | 6 | 17% |
-| `expression/JsonPath` | 0.67 | 62 | 9 | 100% |
+| `expression/JsonPath` | 0.67 | 63 | 9 | 100% |
 | `expression/Plugins` | 1.00 | 22 | 17 | 100% |
 | `expression/Policy` | 0.00 | 3 | 1 | 100% |
 | `expression/Registries` | 0.57 | 4 | 1 | 100% |

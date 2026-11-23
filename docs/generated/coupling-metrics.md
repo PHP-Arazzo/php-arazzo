@@ -27,7 +27,7 @@ targets. Regenerated before every commit.
 | `contracts:State` | 4 | 1058 | 17 | 2 | 0.11 |  |
 | `contracts:Support` | 5 | 180 | 8 | 0 | 0.00 |  |
 | `contracts:Validation` | 9 | 339 | 16 | 2 | 0.11 |  |
-| `document:Parser` | 24 | 2217 | 5 | 2 | 0.29 |  |
+| `document:Parser` | 31 | 2403 | 5 | 2 | 0.29 |  |
 | `document:Plugins` | 50 | 3068 | 0 | 7 | 1.00 |  |
 | `document:Registries` | 1 | 96 | 1 | 4 | 0.80 |  |
 | `document:Validator` | 6 | 656 | 2 | 5 | 0.71 |  |
@@ -96,7 +96,7 @@ targets. Regenerated before every commit.
 | `sources:Resolver` | 12 | 617 | 3 | 6 | 0.67 |  |
 | `(sources root)` | 2 | 339 | 3 | 9 | 0.75 |  |
 
-Total cross-module edges: **1624**
+Total cross-module edges: **1642**
 
 ## Most entangled module pairs
 
@@ -104,9 +104,9 @@ Total cross-module edges: **1624**
 |---|---:|
 | `document:Plugins` → `contracts:Validation` | 102 |
 | `document:Plugins` → `contracts:Spec` | 99 |
+| `document:Parser` → `contracts:Spec` | 57 |
 | `document:Plugins` → `contracts:Attributes` | 50 |
 | `document:Plugins` → `contracts:Interfaces` | 50 |
-| `document:Parser` → `contracts:Spec` | 39 |
 | `expression:Plugins` → `contracts:Validation` | 32 |
 | `expression:Plugins` → `contracts:Spec` | 28 |
 | `(evaluation root)` → `contracts:Spec` | 26 |

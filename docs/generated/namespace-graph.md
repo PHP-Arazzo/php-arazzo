@@ -25,7 +25,7 @@ flowchart LR
     contracts_State["Alama\Arazzo\Contracts\State"]:::coreNode
     contracts_Support["Alama\Arazzo\Contracts\Support\Events\Dispatcher"]:::coreNode
     contracts_Validation["Alama\Arazzo\Contracts\Validation"]:::coreNode
-    document_Parser["Alama\Arazzo\Document\Parser\Exceptions"]:::coreNode
+    document_Parser["Alama\Arazzo\Document\Parser"]:::coreNode
     document_Plugins["Alama\Arazzo\Document\Plugins\ValidationRule"]:::coreNode
     document_Registries["Alama\Arazzo\Document\Registries"]:::coreNode
     document_Validator["Alama\Arazzo\Document\Validator"]:::coreNode

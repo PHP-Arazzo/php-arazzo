@@ -25,7 +25,7 @@ Evans' first question: does the code speak one language?
 
 - **Decoder**: `DecoderInterface`, `DecoderRegistry`, `Decoders`, `NativeJsonDecoder` + 1 more (5 types)
 - **Loader**: `Loader`, `LoaderException`, `OpenApiDocumentLoader` (3 types)
-- **Parser**: `AccessorParser`, `CachedParser`, `FieldParser`, `FilterParser` + 8 more (12 types)
+- **Parser**: `AccessorParser`, `ActionParser`, `CachedParser`, `ComponentsParser` + 15 more (19 types)
 
 ### document vs definition vs spec
 

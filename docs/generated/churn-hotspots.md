@@ -17,7 +17,7 @@ xychart-beta
     bar [52, 40, 30, 22, 19, 19, 18, 16, 16, 13, 11, 11]
 ```
 
-Analyzed 477 total file-touches across 77 modules.
+Analyzed 478 total file-touches across 77 modules.
 
 | Module | Touches | Share | LOC | Touches/KLOC |
 |---|---:|---:|---:|---:|
@@ -29,7 +29,7 @@ Analyzed 477 total file-touches across 77 modules.
 | `sources:Normalizer` | 19 | 4% | 448 | 42.4 |
 | `expression:Interfaces` | 18 | 4% | 214 | 84.1 |
 | `contracts:Interfaces` | 16 | 3% | 387 | 41.3 |
-| `document:Parser` | 16 | 3% | 2,241 | 7.1 |
+| `document:Parser` | 16 | 3% | 2,434 | 6.6 |
 | `contracts:Spec` | 13 | 3% | 1,300 | 10 |
 | `expression:Data` | 11 | 2% | 199 | 55.3 |
 | `sources:Resolver` | 11 | 2% | 629 | 17.5 |
@@ -38,8 +38,8 @@ Analyzed 477 total file-touches across 77 modules.
 | `protocol-soap:Execution` | 9 | 2% | 484 | 18.6 |
 | `engine:Execution` | 8 | 2% | 1,031 | 7.8 |
 | `contracts:State` | 7 | 1% | 1,062 | 6.6 |
+| `evaluation:Condition` | 7 | 1% | 1,054 | 6.6 |
 | `expression:Plugins` | 7 | 1% | 1,371 | 5.1 |
-| `evaluation:Condition` | 6 | 1% | 1,054 | 5.7 |
 | `protocol-http:Execution` | 6 | 1% | 927 | 6.5 |
 | `protocol-rpc:Execution` | 6 | 1% | 188 | 31.9 |
 | `runner:Events` | 6 | 1% | 187 | 32.1 |

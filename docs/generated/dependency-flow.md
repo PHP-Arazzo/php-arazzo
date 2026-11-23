@@ -48,7 +48,7 @@ contracts-State,contracts-Policy,1
 contracts-State,contracts-Spec,3
 contracts-Validation,contracts-Data,1
 contracts-Validation,contracts-Spec,4
-document-Parser,contracts-Spec,39
+document-Parser,contracts-Spec,57
 document-Parser,contracts-Support,2
 document-Plugins,contracts-Attributes,50
 document-Plugins,contracts-Dependency,1

@@ -39,7 +39,7 @@ quadrantChart
     contracts/State: [0.105, 0]
     contracts/Support: [0, 0.2]
     contracts/Validation: [0.111, 0]
-    document/Parser: [0.286, 0.083]
+    document/Parser: [0.286, 0.065]
     document/Plugins: [1, 0]
     document/Registries: [0.8, 0]
     document/Validator: [0.714, 0]
@@ -115,7 +115,6 @@ Concrete types over 300 LOC:
 
 | Class | Module | LOC |
 |---|---|---:|
-| `Parser` | `document:Parser` | 931 |
 | `ExecutionContext` | `engine:Runtime` | 553 |
 | `ExecutionState` | `contracts:State` | 465 |
 | `ProtoParser` | `protocol-rpc:Normalizer` | 446 |
