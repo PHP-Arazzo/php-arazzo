@@ -18,7 +18,7 @@ flowchart LR
         S_contracts_Spec["contracts:Spec<br/><small>1300 LOC</small>"]:::coreDomain
     end
     subgraph S_supporting["Supporting"]
-        S_cli_Console["cli:Console<br/><small>939 LOC</small>"]:::supportingDomain
+        S_cli_Console["cli:Console<br/><small>803 LOC</small>"]:::supportingDomain
         S_cli_Generator["cli:Generator<br/><small>141 LOC</small>"]:::supportingDomain
         S_cli_Renderer["cli:Renderer<br/><small>255 LOC</small>"]:::supportingDomain
         S_document_Parser["document:Parser<br/><small>2241 LOC</small>"]:::supportingDomain
@@ -28,19 +28,23 @@ flowchart LR
         S_sources_Resolver["sources:Resolver<br/><small>478 LOC</small>"]:::supportingDomain
     end
     subgraph S_generic["Generic subdomain"]
-        S_contracts_State["contracts:State<br/><small>977 LOC</small>"]:::genericDomain
+        S_contracts_State["contracts:State<br/><small>1007 LOC</small>"]:::genericDomain
         S_contracts_Support["contracts:Support<br/><small>185 LOC</small>"]:::genericDomain
         S_evaluation_Events["evaluation:Events<br/><small>27 LOC</small>"]:::genericDomain
         S_expression_Support["expression:Support<br/><small>192 LOC</small>"]:::genericDomain
-        S_runner_Events["runner:Events<br/><small>328 LOC</small>"]:::genericDomain
+        S_runner_Events["runner:Events<br/><small>187 LOC</small>"]:::genericDomain
+        S_runner_Queue["runner:Queue<br/><small>25 LOC</small>"]:::genericDomain
     end
     subgraph S_unclassified["Unclassified"]
         S_contracts_Attributes["contracts:Attributes<br/><small>106 LOC</small>"]:::unknownDomain
+        S_contracts_Clock["contracts:Clock<br/><small>20 LOC</small>"]:::unknownDomain
         S_contracts_Data["contracts:Data<br/><small>155 LOC</small>"]:::unknownDomain
         S_contracts_Dependency["contracts:Dependency<br/><small>336 LOC</small>"]:::unknownDomain
         S_contracts_Discovery["contracts:Discovery<br/><small>421 LOC</small>"]:::unknownDomain
         S_contracts_Exceptions["contracts:Exceptions<br/><small>31 LOC</small>"]:::unknownDomain
         S_contracts_Interfaces["contracts:Interfaces<br/><small>412 LOC</small>"]:::unknownDomain
+        S_contracts_Observability["contracts:Observability<br/><small>108 LOC</small>"]:::unknownDomain
+        S_contracts_Policy["contracts:Policy<br/><small>268 LOC</small>"]:::unknownDomain
         S_contracts_Validation["contracts:Validation<br/><small>348 LOC</small>"]:::unknownDomain
         S_document_Plugins["document:Plugins<br/><small>3118 LOC</small>"]:::unknownDomain
         S_document_Registries["document:Registries<br/><small>97 LOC</small>"]:::unknownDomain
@@ -48,7 +52,7 @@ flowchart LR
         S_engine_Enum["engine:Enum<br/><small>17 LOC</small>"]:::unknownDomain
         S_engine_Exceptions["engine:Exceptions<br/><small>42 LOC</small>"]:::unknownDomain
         S_engine_Execution["engine:Execution<br/><small>1031 LOC</small>"]:::unknownDomain
-        S_engine_Runtime["engine:Runtime<br/><small>1639 LOC</small>"]:::unknownDomain
+        S_engine_Runtime["engine:Runtime<br/><small>1776 LOC</small>"]:::unknownDomain
         S_evaluation_Condition["evaluation:Condition<br/><small>1023 LOC</small>"]:::unknownDomain
         S_evaluation_Data["evaluation:Data<br/><small>86 LOC</small>"]:::unknownDomain
         S_evaluation_Enum["evaluation:Enum<br/><small>123 LOC</small>"]:::unknownDomain
@@ -77,13 +81,16 @@ flowchart LR
         S_protocol_soap_Plugins["protocol-soap:Plugins<br/><small>778 LOC</small>"]:::unknownDomain
         S_protocol_soap_Transfer["protocol-soap:Transfer<br/><small>203 LOC</small>"]:::unknownDomain
         S_protocol_soap_Validation["protocol-soap:Validation<br/><small>139 LOC</small>"]:::unknownDomain
-        S_runner_Async["runner:Async<br/><small>1351 LOC</small>"]:::unknownDomain
-        S_runner_Exceptions["runner:Exceptions<br/><small>20 LOC</small>"]:::unknownDomain
-        S_runner_Execution["runner:Execution<br/><small>384 LOC</small>"]:::unknownDomain
-        S_runner_Interfaces["runner:Interfaces<br/><small>25 LOC</small>"]:::unknownDomain
-        S_runner_Plugins["runner:Plugins<br/><small>95 LOC</small>"]:::unknownDomain
-        S_runner_Preflight["runner:Preflight<br/><small>150 LOC</small>"]:::unknownDomain
-        S_runner_Sync["runner:Sync<br/><small>990 LOC</small>"]:::unknownDomain
+        S_runner_Async["runner:Async<br/><small>1435 LOC</small>"]:::unknownDomain
+        S_runner_Data["runner:Data<br/><small>123 LOC</small>"]:::unknownDomain
+        S_runner_Exceptions["runner:Exceptions<br/><small>134 LOC</small>"]:::unknownDomain
+        S_runner_Execution["runner:Execution<br/><small>679 LOC</small>"]:::unknownDomain
+        S_runner_Plugins["runner:Plugins<br/><small>86 LOC</small>"]:::unknownDomain
+        S_runner_Policy["runner:Policy<br/><small>124 LOC</small>"]:::unknownDomain
+        S_runner_Preflight["runner:Preflight<br/><small>156 LOC</small>"]:::unknownDomain
+        S_runner_Registries["runner:Registries<br/><small>151 LOC</small>"]:::unknownDomain
+        S_runner_Store["runner:Store<br/><small>138 LOC</small>"]:::unknownDomain
+        S_runner_Sync["runner:Sync<br/><small>975 LOC</small>"]:::unknownDomain
         S_sources_Exceptions["sources:Exceptions<br/><small>65 LOC</small>"]:::unknownDomain
         S_sources_Normalizer["sources:Normalizer<br/><small>448 LOC</small>"]:::unknownDomain
         S_sources_Plugins["sources:Plugins<br/><small>147 LOC</small>"]:::unknownDomain
@@ -98,17 +105,20 @@ flowchart LR
 | Subdomain | Modules | Core pkg LOC | Laravel pkg LOC | Share |
 |---|---:|---:|---:|---:|
 | Core domain | 1 | 1,300 | 0 | 4% |
-| Supporting | 8 | 5,137 | 0 | 17% |
-| Generic subdomain | 5 | 1,709 | 0 | 6% |
-| Unclassified | 53 | 21,835 | 0 | 73% |
+| Supporting | 8 | 5,001 | 0 | 16% |
+| Generic subdomain | 6 | 1,623 | 0 | 5% |
+| Unclassified | 59 | 23,354 | 0 | 75% |
 
 **Unclassified modules** — classify them in `SUBDOMAINS` or delete them:
 - `contracts:Attributes`
+- `contracts:Clock`
 - `contracts:Data`
 - `contracts:Dependency`
 - `contracts:Discovery`
 - `contracts:Exceptions`
 - `contracts:Interfaces`
+- `contracts:Observability`
+- `contracts:Policy`
 - `contracts:Validation`
 - `document:Plugins`
 - `document:Registries`
@@ -146,11 +156,14 @@ flowchart LR
 - `protocol-soap:Transfer`
 - `protocol-soap:Validation`
 - `runner:Async`
+- `runner:Data`
 - `runner:Exceptions`
 - `runner:Execution`
-- `runner:Interfaces`
 - `runner:Plugins`
+- `runner:Policy`
 - `runner:Preflight`
+- `runner:Registries`
+- `runner:Store`
 - `runner:Sync`
 - `sources:Exceptions`
 - `sources:Normalizer`

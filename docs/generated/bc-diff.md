@@ -13,44 +13,97 @@ tag (or the second-latest when HEAD sits exactly on a tag).
 
 Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 
-**11 breaking change(s):**
+**13 breaking change(s):**
 
 | Kind | Class | Member | Detail |
 |---|---|---|---|
-| changed method | `DocumentInterface` | `__construct` | `public function __construct(public StepState $from, public StepState $to, public string $reason, public StepTransitionType $type = StepTransitionType::Enter, public array $actions = [])` → `public function __construct(ResolvedOperation $operation, public readonly OpenApi $openApi, public readonly Operation $cebeOperation)` |
+| changed method | `DocumentInterface` | `__construct` | `public function __construct(public StepState $from, public StepState $to, public string $reason, public StepTransitionType $type = StepTransitionType::Enter, public array $actions = [])` → `public function __construct(private readonly ?RunnerInterface $runner = null, private readonly ?DocumentInterface $document = null)` |
 | changed method | `DocumentInterface` | `load` | `public function load(string $path): ArazzoDocument;` → `public function load(string $path): ArazzoDocument` |
+| changed method | `DocumentInterface` | `preflight` | `public function preflight(ArazzoDocument $document): ValidationResult` → `public function preflight(ArazzoDocument $document, ?string $workflowId = null, array $inputs = []): ValidationResult;` |
+| changed method | `DocumentInterface` | `resolve` | `public function resolve(Step $step, ArazzoDocument $document): ResolvedOperation;` → `public function resolve(Step $step, ArazzoDocument $document, array $overrides = []): ?OperationExecutorPluginInterface` |
 | changed method | `DocumentInterface` | `validate` | `public function validate(ArazzoDocument $document): ValidationResult` → `public function validate(ArazzoDocument $document, ?KnownOperations $operations = null): ValidationResult` |
-| changed method | `RunnerFacade` | `__construct` | `public function __construct(private readonly ?ClientInterface $httpClient = null, private readonly ?RequestFactoryInterface $httpFactory = null, private readonly ?SourceRegistry $registry = null)` → `public function __construct(private readonly ?RunnerFacadeInterface $runner = null, private readonly ?DocumentInterface $document = null)` |
+| removed class | `RunnerFacade` | — | was class |
+| removed class | `RunnerFacadeInterface` | — | was interface |
 | removed class | `SourceGraph` | — | was class |
 | removed method | `DocumentInterface` | `binding` | `public function binding(): string` |
 | removed method | `DocumentInterface` | `isValid` | `public function isValid(): bool` |
 | removed method | `DocumentInterface` | `parse` | `public function parse(RawDocument $raw): ArazzoDocument` |
-| removed method | `DocumentInterface` | `preflight` | `public function preflight(ArazzoDocument $document): ValidationResult` |
 | removed method | `DocumentInterface` | `preflightInputs` | `public function preflightInputs(ArazzoDocument $document, string $workflowId, array $inputs): ValidationResult` |
 | removed method | `DocumentInterface` | `resolveOperation` | `public function resolveOperation(Step $step, ArazzoDocument $document): ResolvedOperation` |
 
-**Additions (non-breaking):** 21
+**Additions (non-breaking):** 72
 
 | Kind | Class | Member |
 |---|---|---|
 | added method | `DocumentInterface` | `all` |
+| added method | `DocumentInterface` | `arazzoSourceNotAddressable` |
+| added method | `DocumentInterface` | `consumeCorrelation` |
 | added method | `DocumentInterface` | `create` |
+| added method | `DocumentInterface` | `deleteState` |
+| added method | `DocumentInterface` | `dispatch` |
+| added method | `DocumentInterface` | `dottedKeyReserved` |
+| added method | `DocumentInterface` | `duplicateSourceUrl` |
+| added method | `DocumentInterface` | `executor` |
+| added method | `DocumentInterface` | `extractContext` |
+| added method | `DocumentInterface` | `find` |
+| added method | `DocumentInterface` | `findCorrelation` |
 | added method | `DocumentInterface` | `for` |
+| added method | `DocumentInterface` | `forId` |
 | added method | `DocumentInterface` | `forVersion` |
 | added method | `DocumentInterface` | `get` |
+| added method | `DocumentInterface` | `handleStep` |
 | added method | `DocumentInterface` | `has` |
+| added method | `DocumentInterface` | `hasPendingCorrelations` |
+| added method | `DocumentInterface` | `injectContext` |
+| added method | `DocumentInterface` | `isFailed` |
 | added method | `DocumentInterface` | `loadFromJson` |
 | added method | `DocumentInterface` | `loadFromYaml` |
+| added method | `DocumentInterface` | `loadState` |
+| added method | `DocumentInterface` | `markCompleted` |
+| added method | `DocumentInterface` | `markStarted` |
+| added method | `DocumentInterface` | `maxSteps` |
+| added method | `DocumentInterface` | `maxWorkflowDepth` |
+| added method | `DocumentInterface` | `outputExtractor` |
 | added method | `DocumentInterface` | `register` |
 | added method | `DocumentInterface` | `reset` |
+| added method | `DocumentInterface` | `resolver` |
+| added method | `DocumentInterface` | `resume` |
+| added method | `DocumentInterface` | `resumeCorrelation` |
+| added method | `DocumentInterface` | `run` |
+| added method | `DocumentInterface` | `save` |
+| added method | `DocumentInterface` | `saveCorrelation` |
+| added method | `DocumentInterface` | `saveState` |
+| added method | `DocumentInterface` | `snapshot` |
+| added method | `DocumentInterface` | `sourcePolicy` |
+| added method | `DocumentInterface` | `start` |
+| added method | `DocumentInterface` | `statusOf` |
+| added method | `DocumentInterface` | `toArray` |
+| added method | `DocumentInterface` | `unknownSource` |
 | added method | `DocumentInterface` | `validateInputs` |
 | added method | `DocumentInterface` | `withAllowCustomTags` |
 | added method | `DocumentInterface` | `withAllowObjectDeserialization` |
+| added method | `DocumentInterface` | `withClock` |
 | added method | `DocumentInterface` | `withDecodePolicy` |
+| added method | `DocumentInterface` | `withDefinitions` |
+| added method | `DocumentInterface` | `withEventDispatcher` |
+| added method | `DocumentInterface` | `withExecutor` |
+| added method | `DocumentInterface` | `withLockManager` |
+| added method | `DocumentInterface` | `withLogger` |
 | added method | `DocumentInterface` | `withMaxAliases` |
 | added method | `DocumentInterface` | `withMaxBytes` |
 | added method | `DocumentInterface` | `withMaxDepth` |
 | added method | `DocumentInterface` | `withMaxNodes` |
+| added method | `DocumentInterface` | `withMaxSteps` |
+| added method | `DocumentInterface` | `withMaxWorkflowDepth` |
+| added method | `DocumentInterface` | `withOperationResolver` |
+| added method | `DocumentInterface` | `withOutputExtractor` |
+| added method | `DocumentInterface` | `withPolicy` |
+| added method | `DocumentInterface` | `withPreflight` |
+| added method | `DocumentInterface` | `withQueueDriver` |
+| added method | `DocumentInterface` | `withRetryPolicy` |
 | added method | `DocumentInterface` | `withRule` |
+| added method | `DocumentInterface` | `withSourcePolicy` |
+| added method | `DocumentInterface` | `withStateTtlSeconds` |
+| added method | `DocumentInterface` | `withStore` |
+| added method | `DocumentInterface` | `withTracer` |
 | added method | `DocumentInterface` | `withYamlPolicy` |
-| added method | `RunnerFacade` | `supports` |

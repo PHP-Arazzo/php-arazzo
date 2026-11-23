@@ -17,10 +17,10 @@ when a boundary consciously moves.
 | Vendor | core refs | laravel refs | Policy in core |
 |---|---:|---:|---|
 | `Composer` | 1 | 0 | _unclassified_ ⚠ |
-| `GuzzleHttp` | 7 | 0 | **forbidden** ⚠ |
+| `GuzzleHttp` | 9 | 0 | **forbidden** ⚠ |
 | `JsonSchema` | 7 | 0 | _unclassified_ ⚠ |
-| `OpenTelemetry` | 25 | 0 | _unclassified_ ⚠ |
-| `Psr` | 61 | 0 | allowed |
+| `OpenTelemetry` | 26 | 0 | _unclassified_ ⚠ |
+| `Psr` | 85 | 0 | allowed |
 | `Symfony` | 32 | 0 | **forbidden** ⚠ |
 | `cebe` | 16 | 0 | **forbidden** ⚠ |
 
@@ -29,9 +29,10 @@ when a boundary consciously moves.
 | Package | Module | Vendor | References |
 |---|---|---|---:|
 | cli | `cli:Console` | `GuzzleHttp` | 2 |
-| cli | `cli:Console` | `Psr` | 4 |
+| cli | `cli:Console` | `Psr` | 3 |
 | cli | `cli:Console` | `Symfony` | 30 |
 | cli | `cli:Generator` | `Psr` | 3 |
+| contracts | `contracts:Clock` | `Psr` | 1 |
 | contracts | `contracts:Discovery` | `Composer` | 1 |
 | contracts | `contracts:Interfaces` | `Psr` | 2 |
 | contracts | `contracts:Support` | `Psr` | 4 |
@@ -40,24 +41,26 @@ when a boundary consciously moves.
 | document | `document:Validator` | `JsonSchema` | 3 |
 | engine | `engine:Execution` | `Psr` | 4 |
 | engine | `engine:Execution` | `cebe` | 2 |
-| engine | `engine:Runtime` | `OpenTelemetry` | 23 |
+| engine | `engine:Runtime` | `OpenTelemetry` | 26 |
 | evaluation | `evaluation:_` | `Psr` | 2 |
 | protocol-http | `protocol-http:Execution` | `GuzzleHttp` | 2 |
 | protocol-http | `protocol-http:Execution` | `Psr` | 8 |
 | protocol-http | `protocol-http:Execution` | `cebe` | 8 |
 | protocol-http | `protocol-http:Plugins` | `Psr` | 6 |
 | protocol-http | `protocol-http:Resolver` | `cebe` | 6 |
+| protocol-http | `protocol-http:_` | `GuzzleHttp` | 2 |
+| protocol-http | `protocol-http:_` | `Psr` | 2 |
 | protocol-rpc | `protocol-rpc:Execution` | `Psr` | 3 |
 | protocol-rpc | `protocol-rpc:Plugins` | `Psr` | 1 |
 | protocol-rpc | `protocol-rpc:Transfer` | `Psr` | 1 |
 | protocol-soap | `protocol-soap:Execution` | `Psr` | 3 |
 | protocol-soap | `protocol-soap:Plugins` | `Psr` | 1 |
 | protocol-soap | `protocol-soap:Transfer` | `Psr` | 1 |
-| runner | `runner:Async` | `OpenTelemetry` | 2 |
-| runner | `runner:Async` | `Psr` | 3 |
-| runner | `runner:Execution` | `Psr` | 2 |
+| runner | `runner:Async` | `Psr` | 9 |
+| runner | `runner:Execution` | `Psr` | 7 |
+| runner | `runner:Store` | `Psr` | 1 |
 | runner | `runner:Sync` | `Psr` | 3 |
-| runner | `runner:_` | `Psr` | 2 |
+| runner | `runner:_` | `Psr` | 12 |
 | sources | `sources:Resolver` | `GuzzleHttp` | 2 |
 | sources | `sources:Resolver` | `Psr` | 4 |
 | sources | `sources:_` | `GuzzleHttp` | 1 |
@@ -71,11 +74,11 @@ when a boundary consciously moves.
 - `document:Plugins` imports `JsonSchema\*` (4 refs)
 - `document:Validator` imports `JsonSchema\*` (3 refs)
 - `engine:Execution` imports `cebe\*` (2 refs)
-- `engine:Runtime` imports `OpenTelemetry\*` (23 refs)
+- `engine:Runtime` imports `OpenTelemetry\*` (26 refs)
 - `protocol-http:Execution` imports `GuzzleHttp\*` (2 refs)
 - `protocol-http:Execution` imports `cebe\*` (8 refs)
 - `protocol-http:Resolver` imports `cebe\*` (6 refs)
-- `runner:Async` imports `OpenTelemetry\*` (2 refs)
+- `protocol-http:_` imports `GuzzleHttp\*` (2 refs)
 - `sources:Resolver` imports `GuzzleHttp\*` (2 refs)
 - `sources:_` imports `GuzzleHttp\*` (1 refs)
 
@@ -87,7 +90,17 @@ when a boundary consciously moves.
 
 Cross-package references from library code must target `*Interface` facades, value types, or throwables. `laravel`/`cli` wiring is exempt by design.
 
-**Clean** — no library package references another package's concrete entry-point facade (`ExpressionEngine`, `Document`, `SourceGraph`, `RunnerFacade`) from non-facade code; facade-to-facade transitions are allowed by the seam policy.
+**Clean** — no library package references another package's concrete entry-point facade (`ExpressionEngine`, `Document`, `SourceGraph`, `Runner`, `AsyncRunner`, `HttpProtocol`) from non-facade code; facade-to-facade transitions are allowed by the seam policy.
+
+### Facade-to-facade transitions (allowed by seam policy)
+
+| From package | To package | From | References concrete facade |
+|---|---|---|---|
+| `protocol-http` | `expression` | `HttpProtocol` | `ExpressionEngine` |
+| `runner` | `document` | `AsyncRunner` | `Document` |
+| `runner` | `document` | `Runner` | `Document` |
+| `runner` | `expression` | `AsyncRunner` | `ExpressionEngine` |
+| `runner` | `expression` | `Runner` | `ExpressionEngine` |
 
 ### Concrete references outside facades (review list)
 
@@ -117,7 +130,8 @@ Grouped cross-package uses of concrete internals (AST nodes, evaluators, resolve
 | `expression` | `WorkflowSymbols` | `contracts` | 4 | `ExpressionSite` |
 | `protocol-http` | `AsOperationExecutorPlugin` | `contracts` | 2 | `HttpStepExecutor` |
 | `protocol-http` | `EvaluationContext` | `expression` | 2 | `StepOutputExtractor` |
-| `protocol-http` | `IdempotencyKeyInjector` | `engine` | 1 | `HttpStepExecutor` |
+| `protocol-http` | `EvaluationEngine` | `evaluation` | 1 | `HttpProtocol` |
+| `protocol-http` | `IdempotencyKeyInjector` | `engine` | 2 | `HttpStepExecutor` |
 | `protocol-http` | `OpenApi30Normalizer` | `sources` | 1 | `OpenApiOperationResolver` |
 | `protocol-http` | `OpenApi31Normalizer` | `sources` | 1 | `OpenApiOperationResolver` |
 | `protocol-http` | `OpenApiVersionDetector` | `sources` | 1 | `OpenApiOperationResolver` |
@@ -126,7 +140,7 @@ Grouped cross-package uses of concrete internals (AST nodes, evaluators, resolve
 | `protocol-http` | `ReusableParameterResolver` | `engine` | 1 | `AsyncApiStepExecutor` |
 | `protocol-http` | `SchemaValidator` | `engine` | 1 | `ResponseSchemaValidator` |
 | `protocol-http` | `SourceReferenceParser` | `sources` | 1 | `OpenApiOperationResolver` |
-| `protocol-http` | `Sources` | `sources` | 1 | `OpenApiOperationResolver` |
+| `protocol-http` | `Sources` | `sources` | 2 | `OpenApiOperationResolver` |
 | `protocol-http` | `TypeCaster` | `engine` | 2 | `StepOutputExtractor` |
 | `protocol-rpc` | `AsOperationExecutorPlugin` | `contracts` | 1 | `RpcOperationExecutor` |
 | `protocol-rpc` | `AsSourceNormalizerPlugin` | `contracts` | 1 | `ProtoSourceNormalizer` |
@@ -144,17 +158,16 @@ Grouped cross-package uses of concrete internals (AST nodes, evaluators, resolve
 | `runner` | `AsOperationExecutorPlugin` | `contracts` | 2 | `SubWorkflowStepExecutor` |
 | `runner` | `DependencyAnalyzer` | `contracts` | 1 | `StepOutcomeHandler` |
 | `runner` | `DependencyGraph` | `contracts` | 2 | `StepOutcomeHandler` |
-| `runner` | `EvaluationContext` | `expression` | 5 | `SubWorkflowInvoker` |
+| `runner` | `EvaluationContext` | `expression` | 6 | `SubWorkflowInvoker` |
+| `runner` | `EvaluationEngine` | `evaluation` | 2 | `Runner` |
 | `runner` | `ExecutionContext` | `engine` | 2 | `Transition` |
-| `runner` | `IdempotencyKeyInjector` | `engine` | 2 | `AsyncExecutionGraphAssembler` |
-| `runner` | `OpenApiOperationHandle` | `protocol-http` | 2 | `OpenApiExecutorInterface` |
-| `runner` | `OpenApiOperationResolver` | `protocol-http` | 3 | `OperationRuntime` |
-| `runner` | `OtelSetup` | `engine` | 1 | `StepExecutionWorker` |
-| `runner` | `RequestCompiler` | `engine` | 1 | `StepExecutor` |
-| `runner` | `RetryPolicy` | `engine` | 1 | `WorkflowEngine` |
+| `runner` | `NullTracer` | `contracts` | 1 | `ObservabilityContext` |
+| `runner` | `RetryPolicy` | `engine` | 2 | `ExecutionPolicy` |
 | `runner` | `ReusableParameterResolver` | `engine` | 1 | `SubWorkflowStepExecutor` |
+| `runner` | `SourcePolicy` | `contracts` | 2 | `SourcePolicyResolver` |
 | `runner` | `StepParameterMerger` | `engine` | 2 | `StepExecutionWorker` |
-| `runner` | `ValidationResult` | `contracts` | 3 | `PreflightFailureException` |
+| `runner` | `SystemClock` | `contracts` | 2 | `ObservabilityContext` |
+| `runner` | `ValidationResult` | `contracts` | 6 | `AsyncExecutionGraphAssembler` |
 | `sources` | `AsSourceNormalizerPlugin` | `contracts` | 2 | `OpenApiSourceNormalizer` |
 | `sources` | `DecodePolicy` | `document` | 1 | `DefaultSourceResolver` |
 | `sources` | `Decoders` | `document` | 1 | `DefaultSourceResolver` |

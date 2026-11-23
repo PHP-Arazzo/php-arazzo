@@ -1,12 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Method __construct has too many parameters \(11\)\. Maximum allowed is 5\.$#'
-			identifier: arazzo.custom.maxParameterCount
-			count: 1
-			path: src/Console/Cli/CliRunner.php
-
-		-
 			message: '#^Method __construct has too many parameters \(7\)\. Maximum allowed is 5\.$#'
 			identifier: arazzo.custom.maxParameterCount
 			count: 1

@@ -16,18 +16,15 @@ use Alama\Arazzo\Contracts\Spec\StepTarget;
 use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Contracts\Support\Events\Dispatcher\SimpleEventDispatcher;
 use Alama\Arazzo\Evaluation\EvaluationEngine;
-use Alama\Arazzo\Events\RunStartedEvent;
 use Alama\Arazzo\Expression\ExpressionEngine;
 use Alama\Arazzo\Protocol\Http\Resolver\OpenApiOperationResolver;
+use Alama\Arazzo\Runner\Events\RunStartedEvent;
 use Alama\Arazzo\Runner\Exceptions\PreflightFailureException;
 use Alama\Arazzo\Runner\Preflight\OperationResolvers;
 use Alama\Arazzo\Runner\Preflight\Preflight;
 use Alama\Arazzo\Runner\Sync\StepExecutor;
 use Alama\Arazzo\Runner\Sync\WorkflowEngine;
 use Alama\Arazzo\Runner\Sync\WorkflowExecutor;
-use Alama\Arazzo\Tests\Support\FakeOpenApiExecutor;
-use Alama\Arazzo\Tests\Support\FakeOutputExtractor;
-use Alama\Arazzo\Tests\Support\FakeResponseValidator;
 
 require_once __DIR__.'/../Support/FakeSeams.php';
 
@@ -70,13 +67,7 @@ it('guards the synchronous adapter before any side effect or event fires', funct
     $engine = new EvaluationEngine(expression: new ExpressionEngine());
 
     $executor = new WorkflowExecutor(
-        new StepExecutor(
-            new FakeOpenApiExecutor(),
-            $resolver,
-            $engine,
-            new FakeOutputExtractor(),
-            new FakeResponseValidator(),
-        ),
+        new StepExecutor($engine),
         new WorkflowEngine($engine),
         events: $events,
         preflight: $preflight,

@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use Alama\Arazzo\Contracts\Interfaces\PendingCorrelationRegistryInterface;
 use Alama\Arazzo\Contracts\Interfaces\QueueDriverInterface;
 use Alama\Arazzo\Contracts\Spec\Action\SubWorkflowSuccessAction;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
@@ -16,40 +15,29 @@ use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
 use Alama\Arazzo\Evaluation\Data\CriterionResultCollection;
 use Alama\Arazzo\Evaluation\EvaluationEngineInterface;
-use Alama\Arazzo\Events\Interfaces\EventLedgerInterface;
 use Alama\Arazzo\Runner\Async\StepOutcomeHandler;
 use Alama\Arazzo\Runner\Async\SubWorkflowInvoker;
 use Alama\Arazzo\Runner\Execution\Data\RunControlFlow;
-use Alama\Arazzo\Runner\Execution\Data\RunPersistence;
 use Alama\Arazzo\Runner\Execution\Data\SubWorkflowResult;
+use Alama\Arazzo\Runner\ExecutionStoreInterface;
 use Alama\Arazzo\Runner\Sync\WorkflowEngine;
-use Alama\Arazzo\Runtime\State\Interfaces\ExecutionRegistryInterface;
-use Alama\Arazzo\Runtime\State\Interfaces\StateStoreInterface;
 
 it('routes SubWorkflowSuccessAction to SubWorkflowInvoker', function () {
     $invoker = Mockery::mock(SubWorkflowInvoker::class);
     $action = new SubWorkflowSuccessAction('sub1', 'workflow_2', [], []);
     $invoker->shouldReceive('invoke')->with($action, Mockery::type(WorkflowContext::class))->once()->andReturn(new SubWorkflowResult(['subOut' => 'abc'], ExecutionStatus::Succeeded->value, 'child_1'));
 
-    $store = Mockery::mock(StateStoreInterface::class);
-    $store->shouldReceive('save');
-
-    $pending = Mockery::mock(PendingCorrelationRegistryInterface::class);
-    $pending->shouldReceive('existsForExecution')->once()->andReturn(false);
-
-    $exec = Mockery::mock(ExecutionRegistryInterface::class);
-    $exec->shouldReceive('complete')->once();
-
-    $ledger = Mockery::mock(EventLedgerInterface::class);
-    $ledger->shouldReceive('append')->once();
+    $store = Mockery::mock(ExecutionStoreInterface::class);
+    $store->shouldReceive('saveState');
+    $store->shouldReceive('hasPendingCorrelations')->once()->andReturn(false);
+    $store->shouldReceive('markCompleted')->once();
 
     $resolver = Mockery::mock(EvaluationEngineInterface::class);
     $resolver->shouldReceive('evaluateCriteria')->andReturn(new CriterionResultCollection([]));
 
     $handler = new StepOutcomeHandler(
-        new RunPersistence($store, $ledger, $exec),
+        $store,
         new RunControlFlow(new WorkflowEngine($resolver), Mockery::mock(QueueDriverInterface::class)),
-        pendingCorrelations: $pending,
         invoker: $invoker,
         evaluationEngine: Mockery::mock(EvaluationEngineInterface::class),
     );

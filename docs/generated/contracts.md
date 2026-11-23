@@ -10,23 +10,25 @@ from both packages. Core defines contracts; Laravel implements them.
 flowchart LR
     I_Accessor["Accessor<br/><small>evaluation:Condition</small>"]:::contract
     I_AiClientInterface["AiClientInterface<br/><small>contracts:Interfaces</small>"]:::contract
+    I_AsyncRunnerInterface["AsyncRunnerInterface<br/><small>(runner root)</small>"]:::contract
     I_BackoffCalculatorInterface["BackoffCalculatorInterface<br/><small>contracts:Interfaces</small>"]:::contract
     I_ConditionNode["ConditionNode<br/><small>evaluation:Interfaces</small>"]:::contract
     I_CriteriaEvaluatorInterface["CriteriaEvaluatorInterface<br/><small>evaluation:Interfaces</small>"]:::contract
     I_CriterionEvaluatorPluginInterface["CriterionEvaluatorPluginInterface<br/><small>contracts:Interfaces</small>"]:::contract
     I_DecoderInterface["DecoderInterface<br/><small>document:Parser</small>"]:::contract
     I_DefinitionRegistryInterface["DefinitionRegistryInterface<br/><small>engine:Runtime</small>"]:::contract
+    I_DefinitionStoreInterface["DefinitionStoreInterface<br/><small>(runner root)</small>"]:::contract
     I_DocumentInterface["DocumentInterface<br/><small>(document root)</small>"]:::contract
     I_EvaluationEngineInterface["EvaluationEngineInterface<br/><small>(evaluation root)</small>"]:::contract
     I_EvaluationInputInterface["EvaluationInputInterface<br/><small>expression:Interfaces</small>"]:::contract
-    I_EventLedgerInterface["EventLedgerInterface<br/><small>runner:Events</small>"]:::contract
     I_ExecutionRegistryInterface["ExecutionRegistryInterface<br/><small>engine:Runtime</small>"]:::contract
+    I_ExecutionStoreInterface["ExecutionStoreInterface<br/><small>(runner root)</small>"]:::contract
     I_ExpressionEngineInterface["ExpressionEngineInterface<br/><small>expression:Interfaces</small>"]:::contract
     I_ExpressionEvaluatorPluginInterface["ExpressionEvaluatorPluginInterface<br/><small>contracts:Interfaces</small>"]:::contract
     I_HttpClientInterface["HttpClientInterface<br/><small>contracts:Interfaces</small>"]:::contract
     I_LockManagerInterface["LockManagerInterface<br/><small>contracts:Interfaces</small>"]:::contract
     I_LockStrategyInterface["LockStrategyInterface<br/><small>contracts:Interfaces</small>"]:::contract
-    I_OpenApiExecutorInterface["OpenApiExecutorInterface<br/><small>runner:Execution</small>"]:::contract
+    I_OpenApiExecutorInterface["OpenApiExecutorInterface<br/><small>protocol-http:Execution</small>"]:::contract
     I_OpenApiNormalizerInterface["OpenApiNormalizerInterface<br/><small>sources:Normalizer</small>"]:::contract
     I_OperationExecutorPluginInterface["OperationExecutorPluginInterface<br/><small>contracts:Interfaces</small>"]:::contract
     I_OperationResolverInterface["OperationResolverInterface<br/><small>(document root)</small>"]:::contract
@@ -34,13 +36,11 @@ flowchart LR
     I_ParserInterface["ParserInterface<br/><small>evaluation:Condition</small>"]:::contract
     I_PendingCorrelationRegistryInterface["PendingCorrelationRegistryInterface<br/><small>contracts:Interfaces</small>"]:::contract
     I_PluginInterface["PluginInterface<br/><small>contracts:Interfaces</small>"]:::contract
-    I_ProtocolExecutorRegistryInterface["ProtocolExecutorRegistryInterface<br/><small>runner:Interfaces</small>"]:::contract
     I_QueueDriverInterface["QueueDriverInterface<br/><small>contracts:Interfaces</small>"]:::contract
     I_ReplacementTargetResolverInterface["ReplacementTargetResolverInterface<br/><small>contracts:Interfaces</small>"]:::contract
     I_ResponseTransferInterface["ResponseTransferInterface<br/><small>contracts:Interfaces</small>"]:::contract
     I_ResponseValidatorInterface["ResponseValidatorInterface<br/><small>contracts:Interfaces</small>"]:::contract
-    I_RunnerFacadeInterface["RunnerFacadeInterface<br/><small>(runner root)</small>"]:::contract
-    I_RunnerGraphBuilderInterface["RunnerGraphBuilderInterface<br/><small>(runner root)</small>"]:::contract
+    I_RunnerInterface["RunnerInterface<br/><small>(runner root)</small>"]:::contract
     I_SelectorContext["SelectorContext<br/><small>expression:JsonPath</small>"]:::contract
     I_SelectorPluginInterface["SelectorPluginInterface<br/><small>expression:Interfaces</small>"]:::contract
     I_SourceFetcher["SourceFetcher<br/><small>sources:Resolver</small>"]:::contract
@@ -49,14 +49,24 @@ flowchart LR
     I_SourceResolver["SourceResolver<br/><small>sources:Resolver</small>"]:::contract
     I_SourceResolverInterface["SourceResolverInterface<br/><small>contracts:Interfaces</small>"]:::contract
     I_SourcesInterface["SourcesInterface<br/><small>(sources root)</small>"]:::contract
+    I_SpanInterface["SpanInterface<br/><small>contracts:Observability</small>"]:::contract
     I_StateStoreInterface["StateStoreInterface<br/><small>engine:Runtime</small>"]:::contract
     I_StepProtocolExecutorInterface["StepProtocolExecutorInterface<br/><small>contracts:Interfaces</small>"]:::contract
+    I_TracerInterface["TracerInterface<br/><small>contracts:Observability</small>"]:::contract
     I_ValidationRuleInterface["ValidationRuleInterface<br/><small>contracts:Interfaces</small>"]:::contract
     I_WorkflowContextInterface["WorkflowContextInterface<br/><small>contracts:Spec</small>"]:::contract
     I_WorkflowEngineInterface["WorkflowEngineInterface<br/><small>(engine root)</small>"]:::contract
     I_WorkflowStateRepositoryInterface["WorkflowStateRepositoryInterface<br/><small>contracts:Interfaces</small>"]:::contract
     I_WritableDefinitionRegistryInterface["WritableDefinitionRegistryInterface<br/><small>engine:Runtime</small>"]:::contract
     I_XpathEvaluator["XpathEvaluator<br/><small>expression:Xpath</small>"]:::contract
+    C_contracts_contracts_Observability_NullSpan["NullSpan<br/><small>contracts:Observability</small>"]:::implCore
+    C_contracts_contracts_Observability_NullSpan -.->|implements| I_SpanInterface
+    C_engine_engine_Runtime_OtelSpan["OtelSpan<br/><small>engine:Runtime</small>"]:::implCore
+    C_engine_engine_Runtime_OtelSpan -.->|implements| I_SpanInterface
+    C_contracts_contracts_Observability_NullTracer["NullTracer<br/><small>contracts:Observability</small>"]:::implCore
+    C_contracts_contracts_Observability_NullTracer -.->|implements| I_TracerInterface
+    C_engine_engine_Runtime_OtelTracer["OtelTracer<br/><small>engine:Runtime</small>"]:::implCore
+    C_engine_engine_Runtime_OtelTracer -.->|implements| I_TracerInterface
     C_contracts_contracts_Spec_ResponseTransfer["ResponseTransfer<br/><small>contracts:Spec</small>"]:::implCore
     C_contracts_contracts_Spec_ResponseTransfer -.->|implements| I_ResponseTransferInterface
     C_protocol_rpc_protocol_rpc_Transfer_RpcResponseTransfer["RpcResponseTransfer<br/><small>protocol-rpc:Transfer</small>"]:::implCore
@@ -289,6 +299,8 @@ flowchart LR
     C_protocol_soap_protocol_soap_Validation_XsdResponseValidator -.->|implements| I_ResponseValidatorInterface
     C_protocol_http_protocol_http_Execution_StepOutputExtractor["StepOutputExtractor<br/><small>protocol-http:Execution</small>"]:::implCore
     C_protocol_http_protocol_http_Execution_StepOutputExtractor -.->|implements| I_OutputExtractorInterface
+    C_runner_runner_Execution_EvaluationOutputExtractor["EvaluationOutputExtractor<br/><small>runner:Execution</small>"]:::implCore
+    C_runner_runner_Execution_EvaluationOutputExtractor -.->|implements| I_OutputExtractorInterface
     C_protocol_http_protocol_http_Plugins_AsyncApiStepExecutor["AsyncApiStepExecutor<br/><small>protocol-http:Plugins</small>"]:::implCore
     C_protocol_http_protocol_http_Plugins_AsyncApiStepExecutor -.->|implements| I_OperationExecutorPluginInterface
     C_protocol_http_protocol_http_Plugins_HttpStepExecutor["HttpStepExecutor<br/><small>protocol-http:Plugins</small>"]:::implCore
@@ -303,8 +315,6 @@ flowchart LR
     C_protocol_http_protocol_http_Plugins_AsyncApiStepExecutor -.->|implements| I_StepProtocolExecutorInterface
     C_protocol_http_protocol_http_Plugins_HttpStepExecutor["HttpStepExecutor<br/><small>protocol-http:Plugins</small>"]:::implCore
     C_protocol_http_protocol_http_Plugins_HttpStepExecutor -.->|implements| I_StepProtocolExecutorInterface
-    C_runner_runner_Plugins_SubWorkflowStepExecutor["SubWorkflowStepExecutor<br/><small>runner:Plugins</small>"]:::implCore
-    C_runner_runner_Plugins_SubWorkflowStepExecutor -.->|implements| I_StepProtocolExecutorInterface
     C_protocol_http_protocol_http_Resolver_OpenApiOperationResolver["OpenApiOperationResolver<br/><small>protocol-http:Resolver</small>"]:::implCore
     C_protocol_http_protocol_http_Resolver_OpenApiOperationResolver -.->|implements| I_OperationResolverInterface
     C_protocol_rpc_protocol_rpc_Protocol_ProtobufOperationResolver["ProtobufOperationResolver<br/><small>protocol-rpc:Protocol</small>"]:::implCore
@@ -313,31 +323,32 @@ flowchart LR
     C_protocol_soap_protocol_soap_Execution_WsdlOperationResolver -.->|implements| I_OperationResolverInterface
     C_protocol_soap_protocol_soap_Resolver_XPathReplacementTargetResolver["XPathReplacementTargetResolver<br/><small>protocol-soap:Resolver</small>"]:::implCore
     C_protocol_soap_protocol_soap_Resolver_XPathReplacementTargetResolver -.->|implements| I_ReplacementTargetResolverInterface
-    C_runner_runner_Execution_InMemoryDefinitionRegistry["InMemoryDefinitionRegistry<br/><small>runner:Execution</small>"]:::implCore
-    C_runner_runner_Execution_InMemoryDefinitionRegistry -.->|implements| I_WritableDefinitionRegistryInterface
-    C_runner_runner_Execution_SyncQueueDriver["SyncQueueDriver<br/><small>runner:Execution</small>"]:::implCore
-    C_runner_runner_Execution_SyncQueueDriver -.->|implements| I_QueueDriverInterface
-    C_runner_runner___RunnerFacade["RunnerFacade<br/><small>(runner root)</small>"]:::implCore
-    C_runner_runner___RunnerFacade -.->|implements| I_RunnerFacadeInterface
-    C_runner_runner___RunnerGraphBuilder["RunnerGraphBuilder<br/><small>(runner root)</small>"]:::implCore
-    C_runner_runner___RunnerGraphBuilder -.->|implements| I_RunnerGraphBuilderInterface
-    C_cli_cli_Console_CliRunner["CliRunner<br/><small>cli:Console</small>"]:::implCore
-    C_cli_cli_Console_CliRunner -.->|implements| I_LockManagerInterface
-    C_cli_cli_Console_InProcessExecutionRegistry["InProcessExecutionRegistry<br/><small>cli:Console</small>"]:::implCore
-    C_cli_cli_Console_InProcessExecutionRegistry -.->|implements| I_ExecutionRegistryInterface
-    C_cli_cli_Console_InProcessPendingCorrelationRegistry["InProcessPendingCorrelationRegistry<br/><small>cli:Console</small>"]:::implCore
-    C_cli_cli_Console_InProcessPendingCorrelationRegistry -.->|implements| I_PendingCorrelationRegistryInterface
-    C_cli_cli_Console_NullEventLedger["NullEventLedger<br/><small>cli:Console</small>"]:::implCore
-    C_cli_cli_Console_NullEventLedger -.->|implements| I_EventLedgerInterface
+    C_runner_runner___AsyncRunner["AsyncRunner<br/><small>(runner root)</small>"]:::implCore
+    C_runner_runner___AsyncRunner -.->|implements| I_AsyncRunnerInterface
+    C_runner_runner_Execution_ExecutionStoreCorrelationBridge["ExecutionStoreCorrelationBridge<br/><small>runner:Execution</small>"]:::implCore
+    C_runner_runner_Execution_ExecutionStoreCorrelationBridge -.->|implements| I_PendingCorrelationRegistryInterface
+    C_runner_runner_Execution_InMemoryLockManager["InMemoryLockManager<br/><small>runner:Execution</small>"]:::implCore
+    C_runner_runner_Execution_InMemoryLockManager -.->|implements| I_LockManagerInterface
+    C_runner_runner_Queue_SyncQueueDriver["SyncQueueDriver<br/><small>runner:Queue</small>"]:::implCore
+    C_runner_runner_Queue_SyncQueueDriver -.->|implements| I_QueueDriverInterface
+    C_runner_runner___Runner["Runner<br/><small>(runner root)</small>"]:::implCore
+    C_runner_runner___Runner -.->|implements| I_RunnerInterface
+    C_runner_runner_Store_InMemoryDefinitionStore["InMemoryDefinitionStore<br/><small>runner:Store</small>"]:::implCore
+    C_runner_runner_Store_InMemoryDefinitionStore -.->|implements| I_DefinitionStoreInterface
+    C_runner_runner_Store_InMemoryExecutionStore["InMemoryExecutionStore<br/><small>runner:Store</small>"]:::implCore
+    C_runner_runner_Store_InMemoryExecutionStore -.->|implements| I_ExecutionStoreInterface
+    C_cli_cli_Console_CliExecutionStore["CliExecutionStore<br/><small>cli:Console</small>"]:::implCore
+    C_cli_cli_Console_CliExecutionStore -.->|implements| I_ExecutionStoreInterface
     C_cli_cli_Generator_OpenAiClient["OpenAiClient<br/><small>cli:Generator</small>"]:::implCore
     C_cli_cli_Generator_OpenAiClient -.->|implements| I_AiClientInterface
     N_DefinitionRegistryInterface["no implementation found"]:::orphan --> I_DefinitionRegistryInterface
+    N_ExecutionRegistryInterface["no implementation found"]:::orphan --> I_ExecutionRegistryInterface
     N_HttpClientInterface["no implementation found"]:::orphan --> I_HttpClientInterface
     N_PluginInterface["no implementation found"]:::orphan --> I_PluginInterface
-    N_ProtocolExecutorRegistryInterface["no implementation found"]:::orphan --> I_ProtocolExecutorRegistryInterface
     N_SourceFetcherInterface["no implementation found"]:::orphan --> I_SourceFetcherInterface
     N_SourceResolverInterface["no implementation found"]:::orphan --> I_SourceResolverInterface
     N_WorkflowEngineInterface["no implementation found"]:::orphan --> I_WorkflowEngineInterface
+    N_WritableDefinitionRegistryInterface["no implementation found"]:::orphan --> I_WritableDefinitionRegistryInterface
     classDef contract fill:#e8f0fe,stroke:#4285f4,color:#1a1a1a;
     classDef contractLaravel fill:#e8f0fe,stroke:#4285f4,color:#1a1a1a;
     classDef implCore fill:#e6f4ea,stroke:#34a853,color:#1a1a1a;

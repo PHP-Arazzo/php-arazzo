@@ -6,10 +6,14 @@ namespace Alama\Arazzo\Runner\Tests\Preflight;
 
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Components;
+use Alama\Arazzo\Contracts\Spec\Enum\ExpressionType;
+use Alama\Arazzo\Contracts\Spec\Enum\ParameterIn;
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
 use Alama\Arazzo\Contracts\Spec\Info;
 use Alama\Arazzo\Contracts\Spec\NormalizedOpenApiOperation;
+use Alama\Arazzo\Contracts\Spec\Parameter;
 use Alama\Arazzo\Contracts\Spec\ResolvedOperation;
+use Alama\Arazzo\Contracts\Spec\Selector;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Contracts\Spec\StepFlow;
@@ -73,4 +77,39 @@ it('validates steps using registered operation resolvers', function (): void {
     expect($result->isValid())->toBeFalse()
         ->and($result->errors)->toHaveCount(1)
         ->and($result->errors[0]->code)->toBe('preflight.no_resolver');
+});
+
+it('rejects unsupported XPath selector versions on parameters and outputs, and throws on empty OperationResolvers::resolve()', function (): void {
+    $resolvers = new OperationResolvers([]);
+    $preflight = new Preflight($resolvers);
+
+    $step = new Step(
+        's1',
+        null,
+        new StepTarget(),
+        new StepFlow(),
+        new StepIo(
+            parameters: [
+                new Parameter('p1', ParameterIn::Query, new Selector(null, '//item', ExpressionType::XPath, 'xpath-30')),
+            ],
+            outputs: [
+                'out' => new Selector(null, '//id', ExpressionType::XPath, 'xpath-20'),
+            ],
+        ),
+    );
+    $doc = new ArazzoDocument(
+        arazzo: '1.0.0',
+        info: new Info('Test', null, null, '1.0'),
+        sourceDescriptions: [],
+        workflows: [new Workflow('wf1', null, null, null, [], [$step], [], [], [], [])],
+        components: new Components([], [], [], []),
+        specificationExtensions: [],
+    );
+
+    $result = $preflight->validate($doc);
+    expect($result->isValid())->toBeFalse()
+        ->and($result->errors)->toHaveCount(2)
+        ->and($result->errors[0]->code)->toBe('preflight.unsupported_selector_version');
+
+    expect(fn () => $resolvers->resolve($step, $doc))->toThrow(\RuntimeException::class);
 });

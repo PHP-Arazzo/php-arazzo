@@ -11,8 +11,7 @@ parameters:
     scanDirectories:
         - ../contracts/src
         - ../expression/src
+        - ../evaluation/src
         - ../document/src
-        - ../sources/src
         - ../engine/src
-        - ../protocol-http/src
     reportUnmatchedIgnoredErrors: true

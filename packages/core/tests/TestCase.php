@@ -9,7 +9,7 @@ use Alama\Arazzo\Document\Registries\ValidationRuleRegistry;
 use Alama\Arazzo\Evaluation\Registries\CriterionEvaluatorRegistry;
 use Alama\Arazzo\Evaluation\Registries\ExpressionEvaluatorRegistry;
 use Alama\Arazzo\Expression\Registries\SelectorPluginRegistry;
-use Alama\Arazzo\Runner\OperationExecutorRegistry;
+use Alama\Arazzo\Runner\Registries\OperationExecutorRegistry;
 use Alama\Arazzo\Sources\Registries\SourceNormalizerRegistry;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 

@@ -6,7 +6,6 @@ namespace Tests\Execution;
 
 use Alama\Arazzo\Contracts\Interfaces\LockManagerInterface;
 use Alama\Arazzo\Contracts\Interfaces\OutputExtractorInterface;
-use Alama\Arazzo\Contracts\Interfaces\PendingCorrelationRegistryInterface;
 use Alama\Arazzo\Contracts\Interfaces\QueueDriverInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Components;
@@ -27,19 +26,19 @@ use Alama\Arazzo\Contracts\State\WorkflowContext;
 use Alama\Arazzo\Evaluation\Data\CriterionResult;
 use Alama\Arazzo\Evaluation\Data\CriterionResultCollection;
 use Alama\Arazzo\Evaluation\EvaluationEngineInterface;
-use Alama\Arazzo\Events\CorrelationPendingEvent;
-use Alama\Arazzo\Events\Interfaces\EventLedgerInterface;
 use Alama\Arazzo\Expression\Data\EvaluationContext;
 use Alama\Arazzo\Expression\Interfaces\EvaluationInputInterface;
 use Alama\Arazzo\Runner\Async\CorrelationResumer;
 use Alama\Arazzo\Runner\Async\StepOutcomeHandler;
 use Alama\Arazzo\Runner\Async\SubWorkflowInvoker;
+use Alama\Arazzo\Runner\Events\CorrelationPendingEvent;
+use Alama\Arazzo\Runner\Events\CorrelationResumedEvent;
+use Alama\Arazzo\Runner\Execution\Data\AsyncPorts;
+use Alama\Arazzo\Runner\Execution\Data\ObservabilityContext;
 use Alama\Arazzo\Runner\Execution\Data\RunControlFlow;
-use Alama\Arazzo\Runner\Execution\Data\RunPersistence;
-use Alama\Arazzo\Runner\Execution\InMemoryDefinitionRegistry;
+use Alama\Arazzo\Runner\ExecutionStoreInterface;
+use Alama\Arazzo\Runner\Store\InMemoryDefinitionStore;
 use Alama\Arazzo\Runner\Sync\WorkflowEngine;
-use Alama\Arazzo\Runtime\State\Interfaces\ExecutionRegistryInterface;
-use Alama\Arazzo\Runtime\State\Interfaces\StateStoreInterface;
 use Closure;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
@@ -56,9 +55,15 @@ class HandoffMockEventDispatcher implements EventDispatcherInterface
     }
 }
 
-class HandoffMockPendingCorrelations implements PendingCorrelationRegistryInterface
+class HandoffMockStore implements ExecutionStoreInterface
 {
     public ?PendingCorrelation $toReturn = null;
+
+    /** @var array<string, array<string, mixed>> */
+    public array $saves = [];
+
+    /** @var array<string, mixed>|null */
+    public ?array $preloaded = null;
 
     /** @var list<array{correlationId: string, executionId: string, stepId: string, channelPath: string, timeoutSeconds: ?int}> */
     public array $created = [];
@@ -66,7 +71,27 @@ class HandoffMockPendingCorrelations implements PendingCorrelationRegistryInterf
     /** @var list<string> */
     public array $consumed = [];
 
-    public function create(string $correlationId, string $executionId, string $stepId, string $channelPath, ?int $timeoutSeconds = null): void
+    public function saveState(string $executionId, array $state, ?int $ttlSeconds = null): void
+    {
+        $this->saves[$executionId] = $state;
+    }
+
+    public function loadState(string $executionId): ?array
+    {
+        return $this->preloaded ?? $this->saves[$executionId] ?? null;
+    }
+
+    public function deleteState(string $executionId): void
+    {
+        unset($this->saves[$executionId]);
+        $this->preloaded = null;
+    }
+
+    public function markStarted(string $executionId, string $definitionId, string $workflowId): void {}
+
+    public function markCompleted(string $executionId, ExecutionStatus $status): void {}
+
+    public function saveCorrelation(string $correlationId, string $executionId, string $stepId, string $channelPath, ?int $timeoutSeconds = null): void
     {
         $this->created[] = [
             'correlationId' => $correlationId,
@@ -77,17 +102,17 @@ class HandoffMockPendingCorrelations implements PendingCorrelationRegistryInterf
         ];
     }
 
-    public function findByCorrelationId(string $correlationId): ?PendingCorrelation
+    public function findCorrelation(string $correlationId): ?PendingCorrelation
     {
         return $this->toReturn;
     }
 
-    public function consume(string $correlationId): void
+    public function consumeCorrelation(string $correlationId): void
     {
         $this->consumed[] = $correlationId;
     }
 
-    public function existsForExecution(string $executionId): bool
+    public function hasPendingCorrelations(string $executionId): bool
     {
         return false;
     }
@@ -111,9 +136,6 @@ class HandoffMockExpressionResolver implements EvaluationEngineInterface
         return true;
     }
 
-    /**
-     * @return list<CriterionResult>
-     */
     public function evaluateCriteria(array $criteria, Step $step, WorkflowContextInterface $context, ?ArazzoDocument $document = null): CriterionResultCollection
     {
         return new CriterionResultCollection([]);
@@ -170,49 +192,6 @@ class HandoffMockExpressionResolver implements EvaluationEngineInterface
     }
 }
 
-class HandoffMockStateStore implements StateStoreInterface
-{
-    /** @var array<string, array<string, mixed>> */
-    public array $saves = [];
-
-    /** @var array<string, mixed>|null */
-    public ?array $preloaded = null;
-
-    public function save(string $executionId, array $state, ?int $ttlSeconds = null): void
-    {
-        $this->saves[$executionId] = $state;
-    }
-
-    public function load(string $executionId): ?array
-    {
-        return $this->preloaded ?? $this->saves[$executionId] ?? null;
-    }
-
-    public function delete(string $executionId): void
-    {
-        unset($this->saves[$executionId]);
-        $this->preloaded = null;
-    }
-}
-
-class HandoffMockEventLedger implements EventLedgerInterface
-{
-    /** @var list<array{executionId: string, eventType: string, payload: array<string, mixed>}> */
-    public array $appended = [];
-
-    public function append(string $executionId, string $eventType, array $payload): void
-    {
-        $this->appended[] = ['executionId' => $executionId, 'eventType' => $eventType, 'payload' => $payload];
-    }
-}
-
-class HandoffMockExecutionRegistry implements ExecutionRegistryInterface
-{
-    public function start(string $executionId, string $definitionId, string $workflowId): void {}
-
-    public function complete(string $executionId, ExecutionStatus $status): void {}
-}
-
 class HandoffMockQueueDriver implements QueueDriverInterface
 {
     /** @var list<object> */
@@ -265,29 +244,23 @@ function handoffActorContext(Step $step, string $executionId = 'exec_1'): Workfl
 }
 
 /**
- * Builds a StepOutcomeHandler wired to a real engine, so a suspended outcome
- * (handle's $suspended flag) flows through the canonical engine as a genuine
- * Suspend transition before the handler routes it to the handoff path.
- *
- * @return array{0: StepOutcomeHandler, 1: HandoffMockPendingCorrelations, 2: HandoffMockEventDispatcher, 3: HandoffMockExpressionResolver, 4: HandoffMockQueueDriver}
+ * @return array{0: StepOutcomeHandler, 1: HandoffMockStore, 2: HandoffMockEventDispatcher, 3: HandoffMockExpressionResolver, 4: HandoffMockQueueDriver}
  */
 function makeHandoffOutcomeHandler(WorkflowEngine $engine): array
 {
     $queue = new HandoffMockQueueDriver();
-    $pendingCorrelations = new HandoffMockPendingCorrelations();
+    $store = new HandoffMockStore();
     $resolver = new HandoffMockExpressionResolver();
     $events = new HandoffMockEventDispatcher();
 
     $handler = new StepOutcomeHandler(
-        new RunPersistence(new HandoffMockStateStore(), new HandoffMockEventLedger(), new HandoffMockExecutionRegistry()),
-        new RunControlFlow($engine, $queue, $events),
-        pendingCorrelations: $pendingCorrelations,
+        $store,
+        new RunControlFlow($engine, $queue, new ObservabilityContext(events: $events)),
         invoker: \Mockery::mock(SubWorkflowInvoker::class),
         evaluationEngine: $resolver,
-        stateTtlSeconds: 86400,
     );
 
-    return [$handler, $pendingCorrelations, $events, $resolver, $queue];
+    return [$handler, $store, $events, $resolver, $queue];
 }
 
 /** @return list<CorrelationPendingEvent> */
@@ -305,12 +278,12 @@ it('registers the pending record and emits the event for a suspended interaction
     $document = handoffActorDocument([$workflow]);
     $context = handoffActorContext($step);
 
-    [$handler, $pending, $events] = makeHandoffOutcomeHandler(new WorkflowEngine(new HandoffMockExpressionResolver()));
+    [$handler, $store, $events] = makeHandoffOutcomeHandler(new WorkflowEngine(new HandoffMockExpressionResolver()));
 
     $handler->handle($document, $workflow, $step, $context, 'exec_1', false, suspended: true);
 
-    expect($pending->created)->toHaveCount(1)
-        ->and($pending->created[0])->toMatchArray([
+    expect($store->created)->toHaveCount(1)
+        ->and($store->created[0])->toMatchArray([
             'correlationId' => '',
             'executionId' => 'exec_1',
             'stepId' => 'ask-human',
@@ -330,13 +303,13 @@ it('registers the evaluated correlation id for a suspended receive step', functi
     $document = handoffActorDocument([$workflow]);
     $context = handoffActorContext($step);
 
-    [$handler, $pending, $events] = makeHandoffOutcomeHandler(new WorkflowEngine(new HandoffMockExpressionResolver()));
+    [$handler, $store, $events] = makeHandoffOutcomeHandler(new WorkflowEngine(new HandoffMockExpressionResolver()));
 
     $handler->handle($document, $workflow, $step, $context, 'exec_1', false, suspended: true);
 
-    expect($pending->created)->toHaveCount(1)
-        ->and($pending->created[0]['correlationId'])->toBe('$request.body#/id')
-        ->and($pending->created[0]['channelPath'])->toBe('channels/approvals');
+    expect($store->created)->toHaveCount(1)
+        ->and($store->created[0]['correlationId'])->toBe('$request.body#/id')
+        ->and($store->created[0]['channelPath'])->toBe('channels/approvals');
 
     $pendingEvents = handoffPendingEvents($events);
     expect($pendingEvents)->toHaveCount(1)
@@ -349,13 +322,13 @@ it('produces an empty correlation id rather than a cast error for a non-scalar c
     $document = handoffActorDocument([$workflow]);
     $context = handoffActorContext($step);
 
-    [$handler, $pending, $events, $resolver] = makeHandoffOutcomeHandler(new WorkflowEngine(new HandoffMockExpressionResolver()));
+    [$handler, $store, $events, $resolver] = makeHandoffOutcomeHandler(new WorkflowEngine(new HandoffMockExpressionResolver()));
     $resolver->correlationHook = static fn (string $raw): mixed => new \stdClass();
 
     $handler->handle($document, $workflow, $step, $context, 'exec_1', false, suspended: true);
 
-    expect($pending->created)->toHaveCount(1)
-        ->and($pending->created[0]['correlationId'])->toBe('');
+    expect($store->created)->toHaveCount(1)
+        ->and($store->created[0]['correlationId'])->toBe('');
 
     $pendingEvents = handoffPendingEvents($events);
     expect($pendingEvents)->toHaveCount(1)
@@ -368,11 +341,11 @@ it('does nothing for a suspended step that is not an actor handoff candidate', f
     $document = handoffActorDocument([$workflow]);
     $context = handoffActorContext($step);
 
-    [$handler, $pending, $events] = makeHandoffOutcomeHandler(new WorkflowEngine(new HandoffMockExpressionResolver()));
+    [$handler, $store, $events] = makeHandoffOutcomeHandler(new WorkflowEngine(new HandoffMockExpressionResolver()));
 
     $handler->handle($document, $workflow, $step, $context, 'exec_1', false, suspended: true);
 
-    expect($pending->created)->toBe([])
+    expect($store->created)->toBe([])
         ->and(handoffPendingEvents($events))->toBe([]);
 });
 
@@ -382,10 +355,10 @@ it('resumes an interaction step with the actor input and completes the step', fu
     $workflow = new Workflow('wf_1', null, null, null, [], [$step1, $step2], [], [], [], []);
     $document = handoffActorDocument([$workflow]);
 
-    $definitionRegistry = new InMemoryDefinitionRegistry();
-    $definitionId = $definitionRegistry->register($document);
+    $definitions = new InMemoryDefinitionStore();
+    $definitionId = $definitions->save($document);
 
-    $store = new HandoffMockStateStore();
+    $store = new HandoffMockStore();
     $store->preloaded = [
         'definitionId' => $definitionId,
         'workflowId' => 'wf_1',
@@ -395,42 +368,38 @@ it('resumes an interaction step with the actor input and completes the step', fu
         'stepsSpent' => 0,
         'workflowCallStack' => ['wf_1'],
     ];
+    $store->toReturn = new PendingCorrelation('corr_1', 'exec_1', 'wait-approval', 'channels/approvals');
 
-    $eventLedger = new HandoffMockEventLedger();
+    $events = new HandoffMockEventDispatcher();
     $queue = new HandoffMockQueueDriver();
-    $executionRegistry = new HandoffMockExecutionRegistry();
-    $pending = new HandoffMockPendingCorrelations();
-    $pending->toReturn = new PendingCorrelation('corr_1', 'exec_1', 'wait-approval', 'channels/approvals');
+    $observability = new ObservabilityContext(events: $events);
 
     $engine = new WorkflowEngine(new HandoffMockExpressionResolver(), maxRetryAttempts: 10, retryBackoffMultiplier: 1.0);
     $handler = new StepOutcomeHandler(
-        new RunPersistence($store, $eventLedger, $executionRegistry),
-        new RunControlFlow($engine, $queue),
-        pendingCorrelations: $pending,
+        $store,
+        new RunControlFlow($engine, $queue, $observability),
         invoker: \Mockery::mock(SubWorkflowInvoker::class),
         evaluationEngine: new HandoffMockExpressionResolver(),
-        stateTtlSeconds: 86400,
     );
 
+    $extractor = \Mockery::mock(OutputExtractorInterface::class)->shouldReceive('extractOutputs')->andReturn([])->getMock();
     $resumer = new CorrelationResumer(
-        $pending,
-        $store,
-        $definitionRegistry,
-        \Mockery::mock(OutputExtractorInterface::class)->shouldReceive('extractOutputs')->andReturn([])->getMock(),
+        new AsyncPorts($store, $definitions, $queue, new HandoffMockLockManager(), $extractor),
         new HandoffMockExpressionResolver(),
         $handler,
-        $eventLedger,
-        new HandoffMockLockManager(),
+        $observability,
     );
 
     $resumer->resume('corr_1', ['body' => ['approved' => true]]);
 
-    expect($pending->consumed)->toContain('corr_1')
-        ->and($eventLedger->appended)->toContainEqual([
-            'executionId' => 'exec_1',
-            'eventType' => 'step.resumed',
-            'payload' => ['stepId' => 'wait-approval', 'correlationId' => 'corr_1'],
-        ])
+    $resumedEvents = array_values(array_filter(
+        $events->dispatched,
+        static fn (object $event): bool => $event instanceof CorrelationResumedEvent,
+    ));
+
+    expect($store->consumed)->toContain('corr_1')
+        ->and($resumedEvents)->toHaveCount(1)
+        ->and($resumedEvents[0]->correlationId)->toBe('corr_1')
         ->and($store->saves['exec_1']['steps']['wait-approval']['status'])->toBe(StepStatus::Succeeded)
         ->and($queue->dispatched)->toHaveCount(1);
 });

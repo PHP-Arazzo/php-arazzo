@@ -4,16 +4,12 @@ declare(strict_types=1);
 
 use Alama\Arazzo\Cli\Console\Command\RunCommand;
 use Alama\Arazzo\Cli\Console\RunnerFactory;
+use Alama\Arazzo\Contracts\Spec\Enum\ExecutionStatus;
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
 use Alama\Arazzo\Contracts\Spec\SourceDocument;
 use Alama\Arazzo\Document\Document;
-use Alama\Arazzo\Evaluation\EvaluationEngine;
-use Alama\Arazzo\Expression\ExpressionEngine;
-use Alama\Arazzo\Protocol\Http\Execution\DefaultOpenApiExecutor;
-use Alama\Arazzo\Protocol\Http\Execution\ResponseSchemaValidator;
-use Alama\Arazzo\Protocol\Http\Execution\StepOutputExtractor;
-use Alama\Arazzo\Protocol\Http\Resolver\OpenApiOperationResolver;
-use Alama\Arazzo\Runner\RunnerFacade;
+use Alama\Arazzo\Protocol\Http\HttpProtocol;
+use Alama\Arazzo\Runner\Runner;
 use Alama\Arazzo\Sources\Sources;
 use Alama\Arazzo\Sources\SourcesInterface;
 use GuzzleHttp\Psr7\HttpFactory;
@@ -136,24 +132,19 @@ it('exposes the facade result shape the CLI output rendering depends on', functi
     arazzoDoc($doc);
 
     $document = Document::create()->load($doc);
-    $operationResolver = OpenApiOperationResolver::create($sources);
-    $engine = new EvaluationEngine(expression: new ExpressionEngine());
-    $runner = new RunnerFacade(
-        Document::create(),
-        $operationResolver,
-        $engine,
-        openApiExecutor: new DefaultOpenApiExecutor($client, $factory),
-        outputExtractor: new StepOutputExtractor($operationResolver, $engine, new ExpressionEngine()),
-        schemaValidator: new ResponseSchemaValidator($operationResolver),
-    );
+    $http = HttpProtocol::create($client, $factory, $sources);
+    $runner = Runner::create()
+        ->withExecutor($http->executor())
+        ->withOperationResolver($http->resolver());
 
     unlink($doc);
 
-    $result = $runner->execute($document, 'pingFlow');
+    $result = $runner->run($document, 'pingFlow');
 
-    expect($result['status'])->toBe('succeeded')
-        ->and($result['steps'])->toHaveKey('ping')
-        ->and($result['steps']['ping'])->toMatchArray(['stepId' => 'ping', 'success' => true, 'error' => null]);
+    expect($result->status)->toBe(ExecutionStatus::Succeeded)
+        ->and($result->isSucceeded())->toBeTrue()
+        ->and($result->stepResults)->toHaveKey('ping')
+        ->and($result->stepResults['ping']->toArray())->toMatchArray(['stepId' => 'ping', 'success' => true, 'error' => null]);
 });
 
 function inputsDoc(string $workflowId, string $schemaYaml = '', array $steps = []): string
@@ -666,4 +657,21 @@ it('catches an unsupported-version parser exception and exits 1', function (): v
     expect($tester->getStatusCode())->toBe(1)
         ->and($tester->getDisplay())->toContain('PARSE ERROR')
         ->and($tester->getDisplay())->toContain('Unsupported arazzo version');
+});
+
+it('fails cleanly when --input is not a valid JSON object', function (): void {
+    $client = okClient();
+    $factory = new HttpFactory();
+    $sources = createTestSources($client, $factory);
+
+    $doc = sys_get_temp_dir().'/arazzo-cli-bad-input-'.uniqid().'.yaml';
+    arazzoDoc($doc);
+
+    $tester = new CommandTester(cliCommand($client, $factory, $sources));
+    $tester->execute(['file' => $doc, '--input' => 'not-json']);
+
+    unlink($doc);
+
+    expect($tester->getStatusCode())->toBe(1)
+        ->and($tester->getDisplay())->toContain('--input must be a JSON object');
 });

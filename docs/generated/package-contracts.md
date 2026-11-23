@@ -275,9 +275,7 @@ public contract between packages.
 
 ### Public entry surface
 
-- `RunnerFacadeInterface` (`interface`)
-  - `public function run(ArazzoDocument $document, string $workflowId, array $inputs = []): array;`
-  - `public function execute(ArazzoDocument $document, string $workflowId, array $inputs = []): array;`
+- `RunnerFacadeInterface` — _not found in scan_
 
 ### Cross-boundary value types
 
@@ -292,10 +290,10 @@ _None — the entry surface exchanges plain arrays._
 - `PendingCorrelationRegistryInterface` — _not found in scan_
 - `InMemoryStateStore` — _not found in scan_
 - `FileStateStore` — _not found in scan_
-- `EventLedgerInterface` — `@internal`: yes
+- `EventLedgerInterface` — _not found in scan_
 - `HttpClientInterface` — _not found in scan_
-- `ProtocolExecutorRegistryInterface` — `@internal`: yes
-- `OpenApiExecutorInterface` — `@internal`: yes
+- `ProtocolExecutorRegistryInterface` — _not found in scan_
+- `OpenApiExecutorInterface` — _not found in scan_
 - `PessimisticLockStrategy` — _not found in scan_
 - `NullLockStrategy` — _not found in scan_
 - `FileLockStrategy` — _not found in scan_
@@ -327,7 +325,7 @@ _None — the entry surface exchanges plain arrays._
 - `Application` (`class`)
   - `public function __construct()`
 - `RunCommand` (`class`)
-  - `public function __construct(private readonly ?RunnerFacadeInterface $runner = null, private readonly ?DocumentInterface $document = null)`
+  - `public function __construct(private readonly ?RunnerInterface $runner = null, private readonly ?DocumentInterface $document = null)`
 - `ValidateCommand` (`class`)
 - `ListWorkflowsCommand` (`class`)
 - `ExplainCommand` (`class`)
@@ -345,6 +343,6 @@ _None — the entry surface exchanges plain arrays._
 - `DocumentLoader` — _not found in scan_
 - `CliRunner` — `@internal`: yes
 - `CliRunResult` — `@internal`: yes
-- `NullEventLedger` — `@internal`: yes
-- `InProcessExecutionRegistry` — `@internal`: yes
+- `NullEventLedger` — _not found in scan_
+- `InProcessExecutionRegistry` — _not found in scan_
 

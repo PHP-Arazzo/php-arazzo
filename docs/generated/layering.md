@@ -20,11 +20,14 @@ package boundaries directly, not just a flat list of namespaces.
 flowchart TB
     subgraph PKG_M_contracts["contracts"]
         M_contracts_Attributes["contracts:Attributes"]:::node
+        M_contracts_Clock["contracts:Clock"]:::node
         M_contracts_Data["contracts:Data"]:::node
         M_contracts_Dependency["contracts:Dependency"]:::node
         M_contracts_Discovery["contracts:Discovery"]:::node
         M_contracts_Exceptions["contracts:Exceptions"]:::node
         M_contracts_Interfaces["contracts:Interfaces"]:::node
+        M_contracts_Observability["contracts:Observability"]:::node
+        M_contracts_Policy["contracts:Policy"]:::node
         M_contracts_Spec["contracts:Spec"]:::node
         M_contracts_State["contracts:State"]:::node
         M_contracts_Support["contracts:Support"]:::node
@@ -77,10 +80,26 @@ flowchart TB
         M_sources_Resolver["sources:Resolver"]:::node
         M_sources__["(sources package root)"]:::node
     end
+    subgraph PKG_M_runner["runner"]
+        M_runner_Async["runner:Async"]:::node
+        M_runner_Data["runner:Data"]:::node
+        M_runner_Events["runner:Events"]:::node
+        M_runner_Exceptions["runner:Exceptions"]:::node
+        M_runner_Execution["runner:Execution"]:::node
+        M_runner_Plugins["runner:Plugins"]:::node
+        M_runner_Policy["runner:Policy"]:::node
+        M_runner_Preflight["runner:Preflight"]:::node
+        M_runner_Queue["runner:Queue"]:::node
+        M_runner_Registries["runner:Registries"]:::node
+        M_runner_Store["runner:Store"]:::node
+        M_runner_Sync["runner:Sync"]:::node
+        M_runner__["(runner package root)"]:::node
+    end
     subgraph PKG_M_protocol_http["protocol-http"]
         M_protocol_http_Execution["protocol-http:Execution"]:::node
         M_protocol_http_Plugins["protocol-http:Plugins"]:::node
         M_protocol_http_Resolver["protocol-http:Resolver"]:::node
+        M_protocol_http__["(protocol-http package root)"]:::node
     end
     subgraph PKG_M_protocol_rpc["protocol-rpc"]
         M_protocol_rpc_Execution["protocol-rpc:Execution"]:::node
@@ -97,39 +116,28 @@ flowchart TB
         M_protocol_soap_Transfer["protocol-soap:Transfer"]:::node
         M_protocol_soap_Validation["protocol-soap:Validation"]:::node
     end
-    subgraph PKG_M_runner["runner"]
-        M_runner_Async["runner:Async"]:::node
-        M_runner_Events["runner:Events"]:::node
-        M_runner_Exceptions["runner:Exceptions"]:::node
-        M_runner_Execution["runner:Execution"]:::node
-        M_runner_Interfaces["runner:Interfaces"]:::node
-        M_runner_Plugins["runner:Plugins"]:::node
-        M_runner_Preflight["runner:Preflight"]:::node
-        M_runner_Sync["runner:Sync"]:::node
-        M_runner__["(runner package root)"]:::node
-    end
     subgraph PKG_M_cli["cli"]
         M_cli_Console["cli:Console"]:::node
         M_cli_Generator["cli:Generator"]:::node
         M_cli_Renderer["cli:Renderer"]:::node
     end
     M_cli_Console --> M_cli_Renderer
+    M_cli_Console --> M_contracts_Clock
     M_cli_Console --> M_contracts_Data
     M_cli_Console --> M_contracts_Dependency
     M_cli_Console --> M_contracts_Exceptions
     M_cli_Console --> M_contracts_Interfaces
+    M_cli_Console --> M_contracts_Observability
     M_cli_Console --> M_contracts_Spec
-    M_cli_Console --> M_contracts_State
     M_cli_Console --> M_document_Parser
     M_cli_Console --> M_document__
     M_cli_Console --> M_engine_Runtime
     M_cli_Console --> M_evaluation__
     M_cli_Console --> M_expression__
-    M_cli_Console --> M_protocol_http_Execution
-    M_cli_Console --> M_protocol_http_Resolver
-    M_cli_Console --> M_runner_Async
-    M_cli_Console --> M_runner_Events
-    M_cli_Console --> M_runner_Execution
+    M_cli_Console --> M_protocol_http__
+    M_cli_Console --> M_runner_Data
+    M_cli_Console --> M_runner_Queue
+    M_cli_Console --> M_runner_Store
     M_cli_Console --> M_runner__
     M_cli_Console --> M_sources__
     M_cli_Generator --> M_contracts_Interfaces
@@ -144,6 +152,7 @@ flowchart TB
     M_contracts_Interfaces --> M_contracts_State
     M_contracts_Interfaces --> M_contracts_Validation
     M_contracts_Spec --> M_contracts_Interfaces
+    M_contracts_State --> M_contracts_Policy
     M_contracts_State --> M_contracts_Spec
     M_contracts_Validation --> M_contracts_Data
     M_contracts_Validation --> M_contracts_Spec
@@ -180,6 +189,7 @@ flowchart TB
     M_engine_Execution --> M_document_Parser
     M_engine_Execution -.->|violation| M_evaluation__
     M_engine_Runtime --> M_contracts_Interfaces
+    M_engine_Runtime --> M_contracts_Observability
     M_engine_Runtime --> M_contracts_Spec
     M_engine_Runtime --> M_contracts_State
     M_engine__ --> M_contracts_Spec
@@ -301,6 +311,16 @@ flowchart TB
     M_protocol_http_Resolver --> M_sources_Normalizer
     M_protocol_http_Resolver --> M_sources_Resolver
     M_protocol_http_Resolver --> M_sources__
+    M_protocol_http__ --> M_contracts_Interfaces
+    M_protocol_http__ --> M_document__
+    M_protocol_http__ --> M_engine_Execution
+    M_protocol_http__ --> M_evaluation__
+    M_protocol_http__ --> M_expression_Interfaces
+    M_protocol_http__ --> M_expression__
+    M_protocol_http__ --> M_protocol_http_Execution
+    M_protocol_http__ --> M_protocol_http_Plugins
+    M_protocol_http__ --> M_protocol_http_Resolver
+    M_protocol_http__ --> M_sources__
     M_protocol_rpc_Execution --> M_contracts_Spec
     M_protocol_rpc_Execution --> M_contracts_State
     M_protocol_rpc_Execution --> M_engine_Exceptions
@@ -357,35 +377,49 @@ flowchart TB
     M_runner_Async --> M_contracts_Dependency
     M_runner_Async --> M_contracts_Exceptions
     M_runner_Async --> M_contracts_Interfaces
+    M_runner_Async --> M_contracts_Observability
     M_runner_Async --> M_contracts_Spec
     M_runner_Async --> M_contracts_State
-    M_runner_Async --> M_contracts_Support
+    M_runner_Async --> M_contracts_Validation
+    M_runner_Async --> M_document__
     M_runner_Async --> M_engine_Exceptions
     M_runner_Async --> M_engine_Execution
-    M_runner_Async --> M_engine_Runtime
     M_runner_Async --> M_evaluation__
     M_runner_Async --> M_expression_Data
+    M_runner_Async --> M_runner_Data
     M_runner_Async --> M_runner_Events
     M_runner_Async --> M_runner_Exceptions
     M_runner_Async --> M_runner_Execution
     M_runner_Async --> M_runner_Plugins
+    M_runner_Async --> M_runner_Policy
     M_runner_Async --> M_runner_Preflight
+    M_runner_Async --> M_runner_Registries
     M_runner_Async --> M_runner_Sync
     M_runner_Async --> M_runner__
-    M_runner_Events --> M_contracts_Support
+    M_runner_Data --> M_contracts_Spec
+    M_runner_Data --> M_contracts_State
+    M_runner_Data --> M_runner__
+    M_runner_Exceptions --> M_contracts_Support
     M_runner_Exceptions --> M_contracts_Validation
+    M_runner_Exceptions --> M_runner_Policy
+    M_runner_Execution --> M_contracts_Clock
     M_runner_Execution --> M_contracts_Interfaces
+    M_runner_Execution --> M_contracts_Observability
+    M_runner_Execution --> M_contracts_Policy
     M_runner_Execution --> M_contracts_Spec
     M_runner_Execution --> M_contracts_State
     M_runner_Execution --> M_contracts_Support
     M_runner_Execution --> M_document__
     M_runner_Execution --> M_engine_Runtime
-    M_runner_Execution --> M_protocol_http_Resolver
-    M_runner_Execution --> M_runner_Events
+    M_runner_Execution --> M_evaluation__
+    M_runner_Execution --> M_expression_Data
+    M_runner_Execution --> M_runner_Exceptions
+    M_runner_Execution --> M_runner_Policy
     M_runner_Execution --> M_runner_Preflight
+    M_runner_Execution --> M_runner_Queue
+    M_runner_Execution --> M_runner_Store
     M_runner_Execution --> M_runner_Sync
-    M_runner_Interfaces --> M_contracts_Interfaces
-    M_runner_Interfaces --> M_contracts_Spec
+    M_runner_Execution --> M_runner__
     M_runner_Plugins --> M_contracts_Attributes
     M_runner_Plugins --> M_contracts_Interfaces
     M_runner_Plugins --> M_contracts_Spec
@@ -395,15 +429,24 @@ flowchart TB
     M_runner_Plugins --> M_evaluation__
     M_runner_Plugins --> M_expression_Data
     M_runner_Plugins --> M_runner_Sync
+    M_runner_Policy --> M_contracts_Policy
+    M_runner_Policy --> M_engine_Runtime
     M_runner_Preflight --> M_contracts_Spec
     M_runner_Preflight --> M_contracts_Validation
     M_runner_Preflight --> M_document__
+    M_runner_Queue --> M_contracts_Interfaces
+    M_runner_Registries --> M_contracts_Attributes
+    M_runner_Registries --> M_contracts_Interfaces
+    M_runner_Registries --> M_contracts_Spec
+    M_runner_Store --> M_contracts_Clock
+    M_runner_Store --> M_contracts_Spec
+    M_runner_Store --> M_runner__
     M_runner_Sync --> M_contracts_Dependency
     M_runner_Sync --> M_contracts_Exceptions
     M_runner_Sync --> M_contracts_Interfaces
+    M_runner_Sync --> M_contracts_Observability
     M_runner_Sync --> M_contracts_Spec
     M_runner_Sync --> M_contracts_State
-    M_runner_Sync --> M_contracts_Support
     M_runner_Sync --> M_contracts_Validation
     M_runner_Sync --> M_document__
     M_runner_Sync --> M_engine_Exceptions
@@ -411,30 +454,27 @@ flowchart TB
     M_runner_Sync --> M_engine_Runtime
     M_runner_Sync --> M_evaluation__
     M_runner_Sync --> M_expression_Data
-    M_runner_Sync --> M_protocol_http_Execution
-    M_runner_Sync --> M_protocol_http_Resolver
+    M_runner_Sync --> M_runner_Data
     M_runner_Sync --> M_runner_Events
     M_runner_Sync --> M_runner_Exceptions
     M_runner_Sync --> M_runner_Execution
     M_runner_Sync --> M_runner_Plugins
+    M_runner_Sync --> M_runner_Policy
     M_runner_Sync --> M_runner_Preflight
-    M_runner_Sync --> M_runner__
-    M_runner__ --> M_contracts_Attributes
+    M_runner_Sync --> M_runner_Registries
     M_runner__ --> M_contracts_Exceptions
     M_runner__ --> M_contracts_Interfaces
+    M_runner__ --> M_contracts_Observability
     M_runner__ --> M_contracts_Spec
-    M_runner__ --> M_contracts_State
+    M_runner__ --> M_contracts_Validation
     M_runner__ --> M_document__
-    M_runner__ --> M_engine_Exceptions
-    M_runner__ --> M_engine_Runtime
-    M_runner__ --> M_engine__
     M_runner__ --> M_evaluation__
-    M_runner__ --> M_expression_Interfaces
-    M_runner__ --> M_protocol_http_Execution
-    M_runner__ --> M_protocol_http_Resolver
+    M_runner__ --> M_expression__
     M_runner__ --> M_runner_Async
-    M_runner__ --> M_runner_Events
+    M_runner__ --> M_runner_Data
+    M_runner__ --> M_runner_Exceptions
     M_runner__ --> M_runner_Execution
+    M_runner__ --> M_runner_Policy
     M_runner__ --> M_runner_Preflight
     M_runner__ --> M_runner_Sync
     M_sources_Normalizer --> M_contracts_Spec
@@ -474,27 +514,27 @@ flowchart TB
 
 | From package | To package | Refs |
 |---|---|---:|
-| `cli` | `contracts` | 27 |
+| `cli` | `contracts` | 22 |
 | `cli` | `document` | 12 |
-| `cli` | `engine` | 7 |
+| `cli` | `engine` | 2 |
 | `cli` | `evaluation` | 2 |
 | `cli` | `expression` | 1 |
-| `cli` | `protocol-http` | 4 |
-| `cli` | `runner` | 11 |
+| `cli` | `protocol-http` | 1 |
+| `cli` | `runner` | 13 |
 | `cli` | `sources` | 3 |
 | `document` | `contracts` | 379 |
-| `engine` | `contracts` | 47 |
+| `engine` | `contracts` | 50 |
 | `engine` | `document` | 1 |
 | `engine` | `evaluation` | 1 |
 | `evaluation` | `contracts` | 62 |
 | `evaluation` | `expression` | 20 |
 | `expression` | `contracts` | 127 |
-| `protocol-http` | `contracts` | 42 |
-| `protocol-http` | `document` | 1 |
-| `protocol-http` | `engine` | 8 |
-| `protocol-http` | `evaluation` | 3 |
-| `protocol-http` | `expression` | 4 |
-| `protocol-http` | `sources` | 6 |
+| `protocol-http` | `contracts` | 44 |
+| `protocol-http` | `document` | 2 |
+| `protocol-http` | `engine` | 9 |
+| `protocol-http` | `evaluation` | 5 |
+| `protocol-http` | `expression` | 6 |
+| `protocol-http` | `sources` | 8 |
 | `protocol-rpc` | `contracts` | 37 |
 | `protocol-rpc` | `document` | 2 |
 | `protocol-rpc` | `engine` | 4 |
@@ -504,12 +544,11 @@ flowchart TB
 | `protocol-soap` | `engine` | 3 |
 | `protocol-soap` | `evaluation` | 1 |
 | `protocol-soap` | `expression` | 3 |
-| `runner` | `contracts` | 143 |
-| `runner` | `document` | 5 |
-| `runner` | `engine` | 34 |
-| `runner` | `evaluation` | 11 |
-| `runner` | `expression` | 6 |
-| `runner` | `protocol-http` | 9 |
+| `runner` | `contracts` | 162 |
+| `runner` | `document` | 13 |
+| `runner` | `engine` | 11 |
+| `runner` | `evaluation` | 14 |
+| `runner` | `expression` | 8 |
 | `sources` | `contracts` | 42 |
 | `sources` | `document` | 2 |
 

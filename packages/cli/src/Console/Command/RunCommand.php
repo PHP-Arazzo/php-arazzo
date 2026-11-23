@@ -12,7 +12,8 @@ use Alama\Arazzo\Document\Document;
 use Alama\Arazzo\Document\DocumentInterface;
 use Alama\Arazzo\Document\Parser\Exceptions\LoaderException;
 use Alama\Arazzo\Document\Parser\Exceptions\ParserException;
-use Alama\Arazzo\Runner\RunnerFacadeInterface;
+use Alama\Arazzo\Runner\Data\ExecutionResult;
+use Alama\Arazzo\Runner\RunnerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -24,7 +25,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 final class RunCommand extends Command
 {
     public function __construct(
-        private readonly ?RunnerFacadeInterface $runner = null,
+        private readonly ?RunnerInterface $runner = null,
         private readonly ?DocumentInterface $document = null,
     ) {
         parent::__construct();
@@ -87,7 +88,7 @@ final class RunCommand extends Command
 
         /** @var array<string, mixed> $inputs */
         try {
-            $result = $runner->execute($document, (string) $workflow->workflowId, $inputs);
+            $result = $runner->run($document, (string) $workflow->workflowId, $inputs);
         } catch (SchemaValidationException $exception) {
             $this->renderSchemaViolation($output, $exception);
 
@@ -96,7 +97,7 @@ final class RunCommand extends Command
 
         $this->renderOutput($output, $result);
 
-        return $result['status'] === 'succeeded' ? Command::SUCCESS : Command::FAILURE;
+        return $result->isSucceeded() ? Command::SUCCESS : Command::FAILURE;
     }
 
     private function findWorkflow(ArazzoDocument $document, ?string $workflowId): ?Workflow
@@ -139,19 +140,18 @@ final class RunCommand extends Command
         }
     }
 
-    /** @param array{workflowId: string, status: string, steps: array<string, array{success: bool, stepId: string, error?: string|null}>, outputs: array<string, mixed>} $result */
-    private function renderOutput(OutputInterface $output, array $result): void
+    private function renderOutput(OutputInterface $output, ExecutionResult $result): void
     {
-        $output->writeln(sprintf('workflow <info>%s</info>: <comment>%s</comment>', $result['workflowId'], $result['status']));
+        $output->writeln(sprintf('workflow <info>%s</info>: <comment>%s</comment>', $result->workflowId, $result->status->value));
 
-        foreach ($result['steps'] as $stepResult) {
-            $status = $stepResult['success'] ? '<info>✔</info>' : '<error>✘</error>';
-            $output->writeln(sprintf('  %s %s', $status, $stepResult['stepId']));
+        foreach ($result->stepResults as $stepResult) {
+            $status = $stepResult->success ? '<info>✔</info>' : '<error>✘</error>';
+            $output->writeln(sprintf('  %s %s', $status, $stepResult->stepId));
         }
 
-        if ($result['outputs'] !== []) {
+        if ($result->outputs !== []) {
             $output->writeln('outputs:');
-            foreach ($result['outputs'] as $name => $value) {
+            foreach ($result->outputs as $name => $value) {
                 $output->writeln(sprintf('  %s = %s', $name, json_encode($value)));
             }
         }

@@ -20,7 +20,8 @@ arch('expression does not use evaluation classes')
 arch('expression facade seams are entry-point only')
     ->expect('Alama\Arazzo\Expression')
     ->not->toUse('Alama\Arazzo\Sources\Document')
-    ->not->toUse('Alama\Arazzo\Runner\RunnerFacade');
+    ->not->toUse('Alama\Arazzo\Runner\Runner')
+    ->not->toUse('Alama\Arazzo\Runner\AsyncRunner');
 
 arch('ExpressionDependencyProvider and internal SelectorPluginRegistry stay inside packages/expression')
     ->expect('Alama\Arazzo\Document')

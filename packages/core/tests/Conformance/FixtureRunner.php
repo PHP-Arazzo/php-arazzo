@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Tests\Conformance;
 
 use Alama\Arazzo\Protocol\Http\Execution\DefaultOpenApiExecutor;
+use Alama\Arazzo\Protocol\Http\Plugins\OperationExecutor\HttpStepExecutor;
 use Alama\Arazzo\Runner\Sync\StepExecutor;
 use Alama\Arazzo\Runner\Sync\WorkflowEngine;
 use Alama\Arazzo\Runner\Sync\WorkflowExecutor;
@@ -13,13 +14,6 @@ use GuzzleHttp\Psr7\HttpFactory;
 /**
  * Executes a fixture through the SYNCHRONOUS adapter (WorkflowExecutor
  * driving every step in-process).
- *
- * Fixture shape:
- *   name      - fixture label
- *   arazzo    - raw Arazko document (array)
- *   sources   - map of sourceName => inline OpenAPI document (array)
- *   responses - scripted HTTP responses in order ({status, headers, body})
- *   inputs    - workflow inputs
  */
 final class FixtureRunner extends ConformanceHarness
 {
@@ -36,17 +30,19 @@ final class FixtureRunner extends ConformanceHarness
         }
 
         $runtime = $this->runtime($this->sourceRegistry);
-        $documents = $runtime->document;
+        $engine = $this->engine();
+
+        $httpPlugin = new HttpStepExecutor(
+            new DefaultOpenApiExecutor($this->http, new HttpFactory()),
+            $runtime->operations,
+            $engine,
+            $this->outputExtractor($runtime),
+            $this->schemaValidator($runtime),
+        );
 
         $executor = new WorkflowExecutor(
-            new StepExecutor(
-                new DefaultOpenApiExecutor($this->http, new HttpFactory()),
-                $runtime->operations,
-                $this->engine(),
-                $this->outputExtractor($runtime),
-                $this->schemaValidator($runtime),
-            ),
-            new WorkflowEngine($this->engine()),
+            new StepExecutor($engine, localExecutors: [$httpPlugin]),
+            new WorkflowEngine($engine),
             events: $this->events,
         );
 

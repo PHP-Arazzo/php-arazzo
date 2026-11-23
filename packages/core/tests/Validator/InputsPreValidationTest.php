@@ -6,12 +6,11 @@ use Alama\Arazzo\Contracts\Support\Events\Dispatcher\SimpleEventDispatcher;
 use Alama\Arazzo\Document\Document;
 use Alama\Arazzo\Document\DocumentInterface;
 use Alama\Arazzo\Evaluation\EvaluationEngine;
-use Alama\Arazzo\Events\RunStartedEvent;
 use Alama\Arazzo\Expression\ExpressionEngine;
-use Alama\Arazzo\Protocol\Http\Execution\DefaultOpenApiExecutor;
 use Alama\Arazzo\Protocol\Http\Execution\ResponseSchemaValidator;
 use Alama\Arazzo\Protocol\Http\Execution\StepOutputExtractor;
 use Alama\Arazzo\Protocol\Http\Resolver\OpenApiOperationResolver;
+use Alama\Arazzo\Runner\Events\RunStartedEvent;
 use Alama\Arazzo\Runner\Exceptions\PreflightFailureException;
 use Alama\Arazzo\Runner\Preflight\OperationResolvers;
 use Alama\Arazzo\Runner\Preflight\Preflight;
@@ -20,8 +19,6 @@ use Alama\Arazzo\Runner\Sync\WorkflowEngine;
 use Alama\Arazzo\Runner\Sync\WorkflowExecutor;
 use Alama\Arazzo\Sources\Resolver\DefaultSourceResolver;
 use Alama\Arazzo\Sources\Sources;
-use Alama\Arazzo\Tests\Support\FakePsr18Client;
-use GuzzleHttp\Psr7\HttpFactory;
 
 const INPUTS_SCHEMA_DOC = __DIR__.'/../fixtures/inputs-schema/workflow.arazzo.yaml';
 
@@ -71,13 +68,7 @@ it('blocks executor runs on invalid inputs before any event fires', function ():
     $schemaValidator = new ResponseSchemaValidator($operations);
 
     $executor = new WorkflowExecutor(
-        new StepExecutor(
-            new DefaultOpenApiExecutor(new FakePsr18Client(), new HttpFactory()),
-            $operations,
-            $engine,
-            $outputExtractor,
-            $schemaValidator,
-        ),
+        new StepExecutor($engine),
         workflowEngine: new WorkflowEngine($engine),
         events: $events,
         preflight: new Preflight(new OperationResolvers([$operations])),

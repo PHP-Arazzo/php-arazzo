@@ -11,30 +11,33 @@ targets. Regenerated before every commit.
 
 | Module | Files | LOC | Fan-in | Fan-out | Instability | Flag |
 |---|---:|---:|---:|---:|---:|---|
-| `cli:Console` | 12 | 927 | 0 | 19 | 1.00 |  |
+| `cli:Console` | 10 | 793 | 0 | 19 | 1.00 |  |
 | `cli:Generator` | 2 | 139 | 0 | 1 | 1.00 |  |
 | `cli:Renderer` | 1 | 254 | 1 | 1 | 0.50 |  |
 | `contracts:Attributes` | 6 | 100 | 13 | 2 | 0.13 |  |
+| `contracts:Clock` | 1 | 19 | 3 | 0 | 0.00 |  |
 | `contracts:Data` | 2 | 153 | 5 | 1 | 0.17 |  |
 | `contracts:Dependency` | 3 | 333 | 4 | 2 | 0.33 |  |
 | `contracts:Discovery` | 3 | 418 | 4 | 0 | 0.00 |  |
 | `contracts:Exceptions` | 1 | 30 | 7 | 0 | 0.00 |  |
-| `contracts:Interfaces` | 21 | 391 | 33 | 4 | 0.11 |  |
-| `contracts:Spec` | 52 | 1248 | 52 | 1 | 0.02 |  |
-| `contracts:State` | 3 | 974 | 18 | 1 | 0.05 |  |
-| `contracts:Support` | 5 | 180 | 10 | 0 | 0.00 |  |
-| `contracts:Validation` | 9 | 339 | 14 | 2 | 0.13 |  |
+| `contracts:Interfaces` | 21 | 391 | 35 | 4 | 0.10 |  |
+| `contracts:Observability` | 4 | 104 | 6 | 0 | 0.00 |  |
+| `contracts:Policy` | 5 | 263 | 3 | 0 | 0.00 |  |
+| `contracts:Spec` | 52 | 1248 | 54 | 1 | 0.02 |  |
+| `contracts:State` | 3 | 1004 | 17 | 2 | 0.11 |  |
+| `contracts:Support` | 5 | 180 | 8 | 0 | 0.00 |  |
+| `contracts:Validation` | 9 | 339 | 16 | 2 | 0.11 |  |
 | `document:Parser` | 24 | 2217 | 4 | 2 | 0.33 |  |
 | `document:Plugins` | 50 | 3068 | 0 | 7 | 1.00 |  |
 | `document:Registries` | 1 | 96 | 1 | 4 | 0.80 |  |
 | `document:Validator` | 6 | 656 | 2 | 5 | 0.71 |  |
-| `(document root)` | 5 | 229 | 10 | 6 | 0.38 |  |
+| `(document root)` | 5 | 229 | 12 | 6 | 0.33 |  |
 | `engine:Data` | 2 | 72 | 1 | 3 | 0.75 |  |
 | `engine:Enum` | 1 | 16 | 1 | 0 | 0.00 |  |
-| `engine:Exceptions` | 1 | 41 | 9 | 1 | 0.10 |  |
-| `engine:Execution` | 8 | 1023 | 7 | 4 | 0.36 |  |
-| `engine:Runtime` | 19 | 1620 | 5 | 3 | 0.38 |  |
-| `(engine root)` | 2 | 192 | 1 | 3 | 0.75 |  |
+| `engine:Exceptions` | 1 | 41 | 8 | 1 | 0.11 |  |
+| `engine:Execution` | 8 | 1023 | 8 | 4 | 0.33 |  |
+| `engine:Runtime` | 21 | 1755 | 4 | 4 | 0.50 |  |
+| `(engine root)` | 2 | 192 | 0 | 3 | 1.00 |  |
 | `evaluation:Condition` | 17 | 1006 | 1 | 8 | 0.89 |  |
 | `evaluation:Data` | 2 | 84 | 3 | 2 | 0.40 |  |
 | `evaluation:Enum` | 5 | 118 | 3 | 0 | 0.00 |  |
@@ -42,9 +45,9 @@ targets. Regenerated before every commit.
 | `evaluation:Interfaces` | 2 | 42 | 2 | 3 | 0.60 |  |
 | `evaluation:Plugins` | 2 | 123 | 0 | 4 | 1.00 |  |
 | `evaluation:Registries` | 2 | 188 | 1 | 5 | 0.83 |  |
-| `(evaluation root)` | 6 | 820 | 10 | 13 | 0.57 |  |
+| `(evaluation root)` | 6 | 820 | 12 | 13 | 0.52 |  |
 | `expression:Ast` | 15 | 340 | 4 | 2 | 0.33 |  |
-| `expression:Data` | 7 | 217 | 14 | 5 | 0.26 |  |
+| `expression:Data` | 7 | 217 | 15 | 5 | 0.25 |  |
 | `expression:Enum` | 2 | 45 | 6 | 0 | 0.00 |  |
 | `expression:Exceptions` | 2 | 62 | 10 | 1 | 0.09 |  |
 | `expression:Interfaces` | 4 | 210 | 12 | 5 | 0.29 |  |
@@ -54,10 +57,11 @@ targets. Regenerated before every commit.
 | `expression:Registries` | 1 | 112 | 3 | 4 | 0.57 |  |
 | `expression:Support` | 2 | 190 | 2 | 4 | 0.67 |  |
 | `expression:Xpath` | 3 | 170 | 2 | 2 | 0.50 |  |
-| `(expression root)` | 9 | 1332 | 4 | 11 | 0.73 |  |
-| `protocol-http:Execution` | 4 | 532 | 4 | 9 | 0.69 |  |
-| `protocol-http:Plugins` | 2 | 333 | 0 | 10 | 1.00 |  |
-| `protocol-http:Resolver` | 3 | 282 | 6 | 6 | 0.50 |  |
+| `(expression root)` | 9 | 1332 | 6 | 11 | 0.65 |  |
+| `protocol-http:Execution` | 4 | 532 | 2 | 9 | 0.82 |  |
+| `protocol-http:Plugins` | 2 | 333 | 1 | 10 | 0.91 |  |
+| `protocol-http:Resolver` | 3 | 282 | 3 | 6 | 0.67 |  |
+| `(protocol-http root)` | 1 | 96 | 1 | 10 | 0.91 |  |
 | `protocol-rpc:Execution` | 2 | 186 | 1 | 7 | 0.88 |  |
 | `protocol-rpc:Normalizer` | 5 | 533 | 1 | 0 | 0.00 |  |
 | `protocol-rpc:Plugins` | 3 | 335 | 1 | 11 | 0.92 |  |
@@ -69,23 +73,27 @@ targets. Regenerated before every commit.
 | `protocol-soap:Resolver` | 1 | 135 | 0 | 1 | 1.00 |  |
 | `protocol-soap:Transfer` | 2 | 201 | 2 | 1 | 0.33 |  |
 | `protocol-soap:Validation` | 1 | 138 | 0 | 4 | 1.00 |  |
-| `runner:Async` | 7 | 1344 | 2 | 18 | 0.90 |  |
-| `runner:Events` | 11 | 317 | 5 | 1 | 0.17 |  |
-| `runner:Exceptions` | 1 | 19 | 2 | 1 | 0.33 |  |
-| `runner:Execution` | 16 | 368 | 4 | 10 | 0.71 |  |
-| `runner:Interfaces` | 1 | 24 | 0 | 2 | 1.00 |  |
-| `runner:Plugins` | 1 | 94 | 2 | 9 | 0.82 |  |
-| `runner:Preflight` | 2 | 148 | 4 | 3 | 0.43 |  |
-| `runner:Sync` | 5 | 985 | 4 | 21 | 0.84 | ⚠ unstable hub |
-| `(runner root)` | 9 | 577 | 3 | 18 | 0.86 | ⚠ unstable hub |
+| `runner:Async` | 5 | 1430 | 1 | 22 | 0.96 |  |
+| `runner:Data` | 3 | 120 | 4 | 3 | 0.43 |  |
+| `runner:Events` | 9 | 178 | 2 | 0 | 0.00 |  |
+| `runner:Exceptions` | 9 | 125 | 4 | 3 | 0.43 |  |
+| `runner:Execution` | 12 | 667 | 3 | 18 | 0.86 | ⚠ unstable hub |
+| `runner:Plugins` | 1 | 85 | 2 | 9 | 0.82 |  |
+| `runner:Policy` | 2 | 122 | 5 | 2 | 0.29 |  |
+| `runner:Preflight` | 2 | 154 | 4 | 3 | 0.43 |  |
+| `runner:Queue` | 1 | 24 | 2 | 1 | 0.33 |  |
+| `runner:Registries` | 1 | 150 | 2 | 3 | 0.60 |  |
+| `runner:Store` | 2 | 136 | 2 | 3 | 0.60 |  |
+| `runner:Sync` | 5 | 970 | 4 | 21 | 0.84 | ⚠ unstable hub |
+| `(runner root)` | 6 | 573 | 5 | 15 | 0.75 |  |
 | `sources:Exceptions` | 5 | 60 | 2 | 0 | 0.00 |  |
 | `sources:Normalizer` | 5 | 443 | 2 | 1 | 0.33 |  |
 | `sources:Plugins` | 1 | 146 | 0 | 5 | 1.00 |  |
 | `sources:Registries` | 1 | 80 | 1 | 4 | 0.80 |  |
 | `sources:Resolver` | 11 | 467 | 3 | 4 | 0.57 |  |
-| `(sources root)` | 2 | 205 | 2 | 6 | 0.75 |  |
+| `(sources root)` | 2 | 205 | 3 | 6 | 0.67 |  |
 
-Total cross-module edges: **1529**
+Total cross-module edges: **1578**
 
 ## Most entangled module pairs
 
@@ -99,7 +107,7 @@ Total cross-module edges: **1529**
 | `expression:Plugins` → `contracts:Validation` | 32 |
 | `expression:Plugins` → `contracts:Spec` | 28 |
 | `(evaluation root)` → `contracts:Spec` | 26 |
+| `runner:Async` → `contracts:Spec` | 26 |
 | `contracts:Interfaces` → `contracts:Spec` | 24 |
-| `runner:Async` → `contracts:Spec` | 23 |
-| `runner:Sync` → `contracts:Spec` | 21 |
+| `runner:Sync` → `contracts:Spec` | 22 |
 | `(expression root)` → `expression:Ast` | 20 |

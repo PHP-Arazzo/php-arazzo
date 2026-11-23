@@ -3,10 +3,9 @@
 declare(strict_types=1);
 
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
+use Alama\Arazzo\Contracts\Spec\Enum\ExecutionStatus;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
 use Alama\Arazzo\Evaluation\EvaluationEngine;
-use Alama\Arazzo\Events\RunFailedEvent;
-use Alama\Arazzo\Events\StepFailedEvent;
 use Alama\Arazzo\Expression\Exceptions\ExpressionSyntaxException;
 use Alama\Arazzo\Expression\ExpressionEngine;
 use Alama\Arazzo\Expression\Lexer;
@@ -14,6 +13,8 @@ use Alama\Arazzo\Protocol\Http\Execution\DefaultOpenApiExecutor;
 use Alama\Arazzo\Protocol\Http\Execution\ResponseSchemaValidator;
 use Alama\Arazzo\Protocol\Http\Execution\StepOutputExtractor;
 use Alama\Arazzo\Protocol\Http\Plugins\OperationExecutor\HttpStepExecutor;
+use Alama\Arazzo\Runner\Events\RunFailedEvent;
+use Alama\Arazzo\Runner\Events\StepFailedEvent;
 use Alama\Arazzo\Runner\Sync\StepExecutor;
 use Alama\Arazzo\Runner\Sync\WorkflowEngine;
 use Alama\Arazzo\Runner\Sync\WorkflowExecutor;
@@ -162,17 +163,17 @@ it('classifies unmet-criteria failures on step events while keeping execution fa
         $classificationHarness->client()->enqueue(new Response((int) $response['status'], [], json_encode($response['body'] ?? new stdClass())));
     }
 
+    $httpPlugin = new HttpStepExecutor(
+        new DefaultOpenApiExecutor($classificationHarness->client(), new HttpFactory()),
+        $runtime->operations,
+        $engine,
+        $outputExtractor,
+        $schemaValidator,
+        strictValidationDefault: false,
+    );
+
     $executor = new WorkflowExecutor(
-        new StepExecutor(
-            new DefaultOpenApiExecutor($classificationHarness->client(), new HttpFactory()),
-            $runtime->operations,
-            $engine,
-            $outputExtractor,
-            $schemaValidator,
-            strictValidationDefault: false,
-            injector: null,
-            events: null,
-        ),
+        new StepExecutor($engine, localExecutors: [$httpPlugin]),
         new WorkflowEngine($engine),
         events: $classificationHarness->ev(),
     );
@@ -188,7 +189,7 @@ it('classifies unmet-criteria failures on step events while keeping execution fa
 
     // The goto-on-failure fixture recovers, so only a criteria step
     // failure is expected - never a run-level one.
-    expect($result->status)->toBe('succeeded')
+    expect($result->status)->toBe(ExecutionStatus::Succeeded)
         ->and($categories)->toContain([StepFailedEvent::class, 'criteria'])
         ->and($categories)->not->toContain([RunFailedEvent::class, 'criteria'])
         // Defaults stay stable for consumers.

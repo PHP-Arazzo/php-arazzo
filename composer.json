@@ -93,7 +93,6 @@
             "Alama\\Arazzo\\Contracts\\": "packages/contracts/src/",
             "Alama\\Arazzo\\Cli\\": "packages/cli/src/",
             "Alama\\Arazzo\\Runner\\": "packages/runner/src/",
-            "Alama\\Arazzo\\Events\\": "packages/runner/src/Events/",
             "Alama\\Arazzo\\Engine\\": "packages/engine/src/",
             "Alama\\Arazzo\\Runtime\\": "packages/engine/src/Runtime/",
             "Alama\\Arazzo\\Sources\\": "packages/sources/src/",

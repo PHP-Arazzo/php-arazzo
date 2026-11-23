@@ -4,178 +4,278 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Runner\Async;
 
-use Alama\Arazzo\Engine\Exceptions\ExecutionException;
-use Alama\Arazzo\Engine\Execution\IdempotencyKeyInjector;
+use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
+use Alama\Arazzo\Contracts\Spec\Enum\StepStatus;
+use Alama\Arazzo\Contracts\Spec\Workflow;
+use Alama\Arazzo\Contracts\State\WorkflowContext;
+use Alama\Arazzo\Contracts\Validation\ValidationResult;
+use Alama\Arazzo\Document\DocumentInterface;
 use Alama\Arazzo\Evaluation\EvaluationEngineInterface;
-use Alama\Arazzo\Runner\AsyncExecutionGraph;
-use Alama\Arazzo\Runner\AsyncGraphSeams;
+use Alama\Arazzo\Runner\Data\ExecuteStepJob;
+use Alama\Arazzo\Runner\Exceptions\ExecutionError;
+use Alama\Arazzo\Runner\Exceptions\PreflightFailureException;
+use Alama\Arazzo\Runner\Exceptions\UnknownWorkflowException;
+use Alama\Arazzo\Runner\Execution\Data\AsyncConfig;
 use Alama\Arazzo\Runner\Execution\Data\RunControlFlow;
-use Alama\Arazzo\Runner\Execution\Data\RunPersistence;
-use Alama\Arazzo\Runner\Execution\OperationRuntime;
-use Alama\Arazzo\Runner\OperationExecutorRegistry;
+use Alama\Arazzo\Runner\Execution\SourcePolicyResolver;
 use Alama\Arazzo\Runner\Plugins\OperationExecutor\SubWorkflowStepExecutor;
 use Alama\Arazzo\Runner\Preflight\OperationResolvers;
 use Alama\Arazzo\Runner\Preflight\Preflight;
+use Alama\Arazzo\Runner\Registries\OperationExecutorRegistry;
 use Alama\Arazzo\Runner\Sync\StepExecutor;
 use Alama\Arazzo\Runner\Sync\WorkflowEngine;
 use Alama\Arazzo\Runner\Sync\WorkflowExecutor;
 
 /**
- * Assembles the async/queue execution graph. Every node is constructed
- * here — hosts supply ports and config through {@see AsyncGraphSeams}.
+ * Assembles the durable/async worker, correlation resumer, and start/resume
+ * operations from {@see AsyncConfig}.
  *
  * @internal stays out of the advertised contract; not part of the public API surface
  */
 final class AsyncExecutionGraphAssembler
 {
     public function __construct(
+        private readonly DocumentInterface $document,
         private readonly EvaluationEngineInterface $evaluationEngine,
-        private readonly ?OperationRuntime $operations = null,
+        private readonly AsyncConfig $config,
     ) {}
 
-    public function assemble(AsyncGraphSeams $seams): AsyncExecutionGraph
-    {
-        if ($this->operations === null) {
-            throw new ExecutionException('AsyncExecutionGraphAssembler needs an OperationRuntime to build the full graph; worker-only hosts should call buildWorker().');
+    /**
+     * @param  array<string, mixed>  $inputs
+     */
+    public function start(
+        ArazzoDocument $document,
+        string $workflowId,
+        array $inputs = [],
+        ?string $executionId = null,
+        ?string $definitionId = null,
+    ): string {
+        $workflow = $this->findWorkflow($document, $workflowId);
+        (new SourcePolicyResolver())->validate($document, $this->config->options->policy);
+        $inputs = $this->runStartPreflight($document, $workflow, $inputs);
+
+        $executionId ??= bin2hex(random_bytes(8));
+        $resolvedDefinitionId = $this->resolveDefinitionId($document, $definitionId);
+
+        $this->config->ports->store->markStarted($executionId, $resolvedDefinitionId, $workflowId);
+
+        $context = (new WorkflowContext($resolvedDefinitionId, $inputs))
+            ->withExecutionId($executionId)
+            ->withWorkflowId($workflowId);
+
+        $firstStep = $workflow->steps[0] ?? null;
+        if ($firstStep !== null) {
+            $this->config->ports->queueDriver->dispatch(new ExecuteStepJob($firstStep, $context));
         }
 
-        $openApiExecutor = $seams->openApiExecutor
-            ?? throw new ExecutionException('No HTTP/OpenAPI executor configured; register alama/arazzo-protocol-http (Phase F1).');
-        $outputExtractor = $seams->outputExtractor
-            ?? throw new ExecutionException('No output extractor configured; register alama/arazzo-protocol-http (Phase F1).');
-        $schemaValidator = $seams->schemaValidator
-            ?? throw new ExecutionException('No response validator configured; register alama/arazzo-protocol-http (Phase F1).');
-
-        $workflowEngine = new WorkflowEngine(
-            $this->evaluationEngine,
-            maxRetryAttempts: $seams->retryCeiling,
-            retryBackoffMultiplier: $seams->retryBackoffMultiplier,
-        );
-
-        $injector = new IdempotencyKeyInjector(
-            enabledDefault: $seams->idempotencyEnabled,
-            headerDefault: $seams->idempotencyHeader,
-        );
-
-        $stepExecutor = new StepExecutor(
-            $openApiExecutor,
-            $this->operations->resolver,
-            $this->evaluationEngine,
-            $outputExtractor,
-            $schemaValidator,
-            strictValidationDefault: $seams->strictValidation,
-            injector: $injector,
-        );
-
-        $preflight = new Preflight(new OperationResolvers([$this->operations->resolver]));
-
-        $workflowExecutor = new WorkflowExecutor(
-            $stepExecutor,
-            workflowEngine: $workflowEngine,
-            preflight: $preflight,
-            document: $this->operations->document,
-        );
-
-        // Protocol executors are no longer constructed here: the host
-        // registers them (F1.3's registrar for HTTP/AsyncAPI) into the
-        // OperationExecutorRegistry it injects through the seams. The one
-        // graph-scoped plugin this composes is the sub-workflow executor —
-        // it wraps THIS graph's WorkflowExecutor, so it is registered at
-        // assemble time. Seams builders must therefore hand over a fresh
-        // registry (AsyncGraphResolver copies the container's) so repeated
-        // assembly never duplicates it.
-        $registry = $seams->executorRegistry;
-        if ($registry !== null) {
-            $registry->register(new SubWorkflowStepExecutor($workflowExecutor, $this->evaluationEngine));
-            $protocolExecutors = $registry->all();
-        } else {
-            // No registry injected: the worker throws the F1.2-shaped
-            // ExecutionException naming arazzo-protocol-http when a step
-            // actually needs a protocol executor.
-            $protocolExecutors = [];
-        }
-
-        $invoker = new SubWorkflowInvoker($seams->definitionRegistry, $workflowExecutor, $this->evaluationEngine);
-
-        $persistence = new RunPersistence(
-            $seams->stateStore,
-            $seams->eventLedger,
-            $seams->executionRegistry,
-        );
-
-        $controlFlow = new RunControlFlow(
-            workflowEngine: $workflowEngine,
-            queueDriver: $seams->queueDriver,
-            preflight: $preflight,
-        );
-
-        $outcomeHandler = new StepOutcomeHandler(
-            $persistence,
-            $controlFlow,
-            $seams->pendingCorrelationRegistry,
-            $invoker,
-            $this->evaluationEngine,
-            $seams->stateTtlSeconds,
-        );
-
-        $resumer = new CorrelationResumer(
-            $seams->pendingCorrelationRegistry,
-            $seams->stateStore,
-            $seams->definitionRegistry,
-            $outputExtractor,
-            $this->evaluationEngine,
-            $outcomeHandler,
-            $seams->eventLedger,
-            $seams->lockManager,
-        );
-
-        $worker = $this->buildWorker($seams, $preflight);
-
-        return new AsyncExecutionGraph(
-            stepExecutor: $stepExecutor,
-            workflowExecutor: $workflowExecutor,
-            outcomeHandler: $outcomeHandler,
-            resumer: $resumer,
-            worker: $worker,
-            protocolExecutors: $protocolExecutors,
-        );
+        return $executionId;
     }
 
-    /**
-     * Builds just the queue worker node from the seams — the CLI host drains
-     * in-process without the protocol value seams, so this path never touches
-     * them. assemble() passes the operations document as preflight; worker-only
-     * hosts leave it null (skip preflight validation), matching the manual
-     * worker construction CliRunner historically performed.
-     */
-    public function buildWorker(AsyncGraphSeams $seams, ?Preflight $preflight = null): StepExecutionWorker
+    public function resume(ArazzoDocument $document, string $executionId): void
     {
-        $workflowEngine = new WorkflowEngine(
-            $this->evaluationEngine,
-            maxRetryAttempts: $seams->retryCeiling,
-            retryBackoffMultiplier: $seams->retryBackoffMultiplier,
-        );
+        $persisted = $this->config->ports->store->loadState($executionId);
+        if ($persisted === null) {
+            throw new ExecutionError("No persisted state for execution '{$executionId}'.", '', 'runner.state_missing');
+        }
 
-        $persistence = new RunPersistence(
-            $seams->stateStore,
-            $seams->eventLedger,
-            $seams->executionRegistry,
-        );
+        $workflowId = is_string($persisted['workflowId'] ?? null) ? $persisted['workflowId'] : '';
+        $workflow = $this->findWorkflow($document, $workflowId);
+
+        $definitionId = is_string($persisted['definitionId'] ?? null) ? $persisted['definitionId'] : $workflowId;
+        $this->config->ports->store->markStarted($executionId, $definitionId, $workflowId);
+
+        $context = WorkflowContext::fromPersisted($persisted, $executionId);
+
+        foreach ($workflow->steps as $step) {
+            if ($context->getStepStatus($step->stepId) !== StepStatus::Succeeded) {
+                $this->config->ports->queueDriver->dispatch(new ExecuteStepJob($step, $context));
+
+                return;
+            }
+        }
+    }
+
+    public function buildWorker(): StepExecutionWorker
+    {
+        $workflowEngine = $this->workflowEngine();
+        $preflight = $this->preflight();
+        $registry = $this->executorRegistry($workflowEngine, $preflight);
 
         $controlFlow = new RunControlFlow(
             workflowEngine: $workflowEngine,
-            queueDriver: $seams->queueDriver,
+            queueDriver: $this->config->ports->queueDriver,
+            observability: $this->config->options->observability,
+            policy: $this->config->options->policy,
             preflight: $preflight,
         );
 
         return new StepExecutionWorker(
-            $persistence,
-            $seams->lockManager,
-            $seams->definitionRegistry,
+            $this->config->ports,
             $this->evaluationEngine,
-            $seams->executorRegistry,
+            $registry,
             $controlFlow,
-            $seams->stateTtlSeconds,
+        );
+    }
+
+    public function buildResumer(): CorrelationResumer
+    {
+        $workflowEngine = $this->workflowEngine();
+        $preflight = $this->preflight();
+        $workflowExecutor = $this->workflowExecutor($workflowEngine, $preflight);
+
+        $controlFlow = new RunControlFlow(
+            workflowEngine: $workflowEngine,
+            queueDriver: $this->config->ports->queueDriver,
+            observability: $this->config->options->observability,
+            policy: $this->config->options->policy,
+            preflight: $preflight,
+        );
+
+        $invoker = new SubWorkflowInvoker(
+            $this->config->ports->definitions,
+            $workflowExecutor,
+            $this->evaluationEngine,
+        );
+
+        $outcomeHandler = new StepOutcomeHandler(
+            $this->config->ports->store,
+            $controlFlow,
+            $invoker,
+            $this->evaluationEngine,
+        );
+
+        return new CorrelationResumer(
+            $this->config->ports,
+            $this->evaluationEngine,
+            $outcomeHandler,
+            $this->config->options->observability,
+        );
+    }
+
+    /**
+     * @param  array<string, mixed>  $inputs
+     * @return array<string, mixed>
+     */
+    private function runStartPreflight(ArazzoDocument $document, Workflow $workflow, array $inputs): array
+    {
+        if (!$this->config->options->policy->preflight) {
+            return $inputs;
+        }
+
+        $errors = [];
+        $warnings = [];
+
+        $inputsSchema = $workflow->inputs;
+        if (is_array($inputsSchema) && $inputsSchema !== []) {
+            $inputResult = $this->document->validateInputs($document, $workflow->workflowId, $inputs);
+            if ($inputResult->errors !== []) {
+                $errors = [...$errors, ...$inputResult->errors];
+                $warnings = [...$warnings, ...$inputResult->warnings];
+            } elseif ($inputResult->inputs !== []) {
+                $inputs = $inputResult->inputs;
+            }
+        }
+
+        $preflight = $this->preflight();
+        if ($preflight !== null) {
+            $preflightResult = $preflight->validate($document);
+            $errors = [...$errors, ...$preflightResult->errors];
+            $warnings = [...$warnings, ...$preflightResult->warnings];
+        }
+
+        if ($errors !== []) {
+            $result = new ValidationResult($document, $errors, $warnings);
+            throw new PreflightFailureException(
+                'Preflight validation failed with '.count($result->errors).' error(s).',
+                $result,
+            );
+        }
+
+        return $inputs;
+    }
+
+    private function resolveDefinitionId(ArazzoDocument $document, ?string $definitionId): string
+    {
+        if ($definitionId !== null && $this->config->ports->definitions->find($definitionId) !== null) {
+            return $definitionId;
+        }
+
+        return $this->config->ports->definitions->save($document, $definitionId);
+    }
+
+    private function findWorkflow(ArazzoDocument $document, string $workflowId): Workflow
+    {
+        foreach ($document->workflows as $candidate) {
+            if ($candidate->workflowId === $workflowId) {
+                return $candidate;
+            }
+        }
+
+        throw UnknownWorkflowException::forId($workflowId);
+    }
+
+    private function workflowEngine(): WorkflowEngine
+    {
+        return new WorkflowEngine(
+            $this->evaluationEngine,
+            maxRetryAttempts: $this->config->options->policy->retryPolicy,
+        );
+    }
+
+    private function preflight(): ?Preflight
+    {
+        if (!$this->config->options->policy->preflight || $this->config->options->operationResolvers === []) {
+            return null;
+        }
+
+        return new Preflight(new OperationResolvers($this->config->options->operationResolvers));
+    }
+
+    private function executorRegistry(WorkflowEngine $workflowEngine, ?Preflight $preflight): OperationExecutorRegistry
+    {
+        $graphRegistry = OperationExecutorRegistry::create()->snapshot($this->config->options->executors);
+
+        $workflowExecutor = $this->buildWorkflowExecutor($graphRegistry, $workflowEngine, $preflight);
+
+        $graphRegistry->register(new SubWorkflowStepExecutor($workflowExecutor, $this->evaluationEngine));
+        foreach ($this->config->options->executors as $override) {
+            $graphRegistry->register($override);
+        }
+
+        return $graphRegistry;
+    }
+
+    private function workflowExecutor(WorkflowEngine $workflowEngine, ?Preflight $preflight): WorkflowExecutor
+    {
+        $graphRegistry = OperationExecutorRegistry::create()->snapshot($this->config->options->executors);
+        $workflowExecutor = $this->buildWorkflowExecutor($graphRegistry, $workflowEngine, $preflight);
+
+        $graphRegistry->register(new SubWorkflowStepExecutor($workflowExecutor, $this->evaluationEngine));
+        foreach ($this->config->options->executors as $override) {
+            $graphRegistry->register($override);
+        }
+
+        return $workflowExecutor;
+    }
+
+    private function buildWorkflowExecutor(
+        OperationExecutorRegistry $graphRegistry,
+        WorkflowEngine $workflowEngine,
+        ?Preflight $preflight,
+    ): WorkflowExecutor {
+        $stepExecutor = new StepExecutor(
+            evaluationEngine: $this->evaluationEngine,
+            executors: $graphRegistry,
+            outputExtractor: $this->config->ports->outputExtractor,
+            policy: $this->config->options->policy,
+        );
+
+        return new WorkflowExecutor(
+            stepExecutor: $stepExecutor,
+            workflowEngine: $workflowEngine,
+            events: $this->config->options->observability,
+            preflight: $preflight,
+            document: $this->config->options->policy->preflight ? $this->document : null,
         );
     }
 }

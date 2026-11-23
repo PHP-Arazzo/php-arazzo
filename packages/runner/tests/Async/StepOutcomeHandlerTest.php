@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Execution;
 
-use Alama\Arazzo\Contracts\Interfaces\PendingCorrelationRegistryInterface;
 use Alama\Arazzo\Contracts\Spec\Action\FailureAction;
 use Alama\Arazzo\Contracts\Spec\Action\FailureEndAction;
 use Alama\Arazzo\Contracts\Spec\Action\FailureGotoAction;
@@ -34,64 +33,78 @@ use Alama\Arazzo\Evaluation\Data\CriterionResultCollection;
 use Alama\Arazzo\Evaluation\Enum\CriterionOutcome;
 use Alama\Arazzo\Evaluation\Enum\CriterionReason;
 use Alama\Arazzo\Evaluation\EvaluationEngineInterface;
-use Alama\Arazzo\Events\Interfaces\EventLedgerInterface;
 use Alama\Arazzo\Expression\Data\EvaluationContext;
 use Alama\Arazzo\Expression\Interfaces\EvaluationInputInterface;
 use Alama\Arazzo\Runner\Async\StepOutcomeHandler;
 use Alama\Arazzo\Runner\Async\SubWorkflowInvoker;
+use Alama\Arazzo\Runner\Exceptions\ExecutionError;
+use Alama\Arazzo\Runner\Exceptions\GotoTargetNotFoundException;
+use Alama\Arazzo\Runner\Execution\Data\ObservabilityContext;
 use Alama\Arazzo\Runner\Execution\Data\RunControlFlow;
-use Alama\Arazzo\Runner\Execution\Data\RunPersistence;
-use Alama\Arazzo\Runner\Execution\Exceptions\ExecutionError;
-use Alama\Arazzo\Runner\Execution\Exceptions\GotoTargetNotFoundException;
-use Alama\Arazzo\Runner\Execution\SyncQueueDriver;
+use Alama\Arazzo\Runner\ExecutionStoreInterface;
+use Alama\Arazzo\Runner\Queue\SyncQueueDriver;
 use Alama\Arazzo\Runner\Sync\WorkflowEngine;
-use Alama\Arazzo\Runtime\State\Interfaces\ExecutionRegistryInterface;
-use Alama\Arazzo\Runtime\State\Interfaces\StateStoreInterface;
+use Psr\Log\AbstractLogger;
 
-class StepOutcomeMockExecutionRegistry implements ExecutionRegistryInterface
+class StepOutcomeMockStore implements ExecutionStoreInterface
 {
+    /** @var array<string, array<string, mixed>> */
+    public array $saves = [];
+
     /** @var list<array{executionId: string, status: ExecutionStatus}> */
     public array $completed = [];
 
-    public function start(string $executionId, string $definitionId, string $workflowId): void {}
-
-    public function complete(string $executionId, ExecutionStatus $status): void
-    {
-        $this->completed[] = ['executionId' => $executionId, 'status' => $status];
-    }
-}
-
-class StepOutcomeMockEventLedger implements EventLedgerInterface
-{
-    /** @var list<array{executionId: string, eventType: string, payload: array<string, mixed>}> */
-    public array $appended = [];
-
-    public function append(string $executionId, string $eventType, array $payload): void
-    {
-        $this->appended[] = ['executionId' => $executionId, 'eventType' => $eventType, 'payload' => $payload];
-    }
-}
-
-class StepOutcomeMockPendingCorrelationRegistry implements PendingCorrelationRegistryInterface
-{
     /** @var array<string, bool> */
     public array $outstanding = [];
 
-    public function create(string $correlationId, string $executionId, string $stepId, string $channelPath, ?int $timeoutSeconds = null): void
+    public function saveState(string $executionId, array $state, ?int $ttlSeconds = null): void
+    {
+        $this->saves[$executionId] = $state;
+    }
+
+    public function loadState(string $executionId): ?array
+    {
+        return $this->saves[$executionId] ?? null;
+    }
+
+    public function deleteState(string $executionId): void
+    {
+        unset($this->saves[$executionId]);
+    }
+
+    public function markStarted(string $executionId, string $definitionId, string $workflowId): void {}
+
+    public function markCompleted(string $executionId, ExecutionStatus $status): void
+    {
+        $this->completed[] = ['executionId' => $executionId, 'status' => $status];
+    }
+
+    public function saveCorrelation(string $correlationId, string $executionId, string $stepId, string $channelPath, ?int $timeoutSeconds = null): void
     {
         $this->outstanding[$executionId] = true;
     }
 
-    public function findByCorrelationId(string $correlationId): ?PendingCorrelation
+    public function findCorrelation(string $correlationId): ?PendingCorrelation
     {
         return null;
     }
 
-    public function consume(string $correlationId): void {}
+    public function consumeCorrelation(string $correlationId): void {}
 
-    public function existsForExecution(string $executionId): bool
+    public function hasPendingCorrelations(string $executionId): bool
     {
         return $this->outstanding[$executionId] ?? false;
+    }
+}
+
+class StepOutcomeSpyLogger extends AbstractLogger
+{
+    /** @var list<array{level: mixed, message: string, context: array<mixed>}> */
+    public array $records = [];
+
+    public function log($level, \Stringable|string $message, array $context = []): void
+    {
+        $this->records[] = ['level' => $level, 'message' => (string) $message, 'context' => $context];
     }
 }
 
@@ -107,11 +120,6 @@ class StepOutcomeMockExpressionResolver implements EvaluationEngineInterface
         return true;
     }
 
-    /**
-     * Test convention: an empty criteria list always matches (unconditional action); a
-     * non-empty list matches only when its first criterion's condition is the literal
-     * string 'MATCH'. Keeps these tests independent of the real criterion evaluator.
-     */
     public function evaluateCriteria(array $criteria, Step $step, WorkflowContextInterface $context, ?ArazzoDocument $document = null): CriterionResultCollection
     {
         if ($criteria === []) {
@@ -215,53 +223,32 @@ function stepOutcomeDocument(array $workflows, ?Components $components = null): 
     );
 }
 
-class StepOutcomeMockStateStore implements StateStoreInterface
-{
-    public array $saves = [];
-
-    public function save(string $executionId, array $state, ?int $ttlSeconds = null): void
-    {
-        $this->saves[$executionId] = $state;
-    }
-
-    public function load(string $executionId): ?array
-    {
-        return null;
-    }
-
-    public function delete(string $executionId): void {}
-}
-
 /**
- * @return array{0: StepOutcomeHandler, 1: SyncQueueDriver, 2: StepOutcomeMockExecutionRegistry, 3: StepOutcomeMockEventLedger, 4: StepOutcomeMockPendingCorrelationRegistry, 5: StepOutcomeMockStateStore}
+ * @return array{0: StepOutcomeHandler, 1: SyncQueueDriver, 2: StepOutcomeMockStore, 3: StepOutcomeSpyLogger}
  */
 function makeStepOutcomeHandler(int $maxRetryAttempts = 10, bool $pendingCorrelationOutstanding = false, float $retryBackoffMultiplier = 1.0): array
 {
     $queue = new SyncQueueDriver();
-    $store = new StepOutcomeMockStateStore();
-    $executionRegistry = new StepOutcomeMockExecutionRegistry();
-    $eventLedger = new StepOutcomeMockEventLedger();
-    $pendingCorrelations = new StepOutcomeMockPendingCorrelationRegistry();
+    $store = new StepOutcomeMockStore();
+    $logger = new StepOutcomeSpyLogger();
     if ($pendingCorrelationOutstanding) {
-        $pendingCorrelations->outstanding['exec_1'] = true;
+        $store->outstanding['exec_1'] = true;
     }
     $resolver = new StepOutcomeMockExpressionResolver();
 
     $workflowEngine = new WorkflowEngine($resolver, $maxRetryAttempts, $retryBackoffMultiplier);
     $handler = new StepOutcomeHandler(
-        new RunPersistence($store, $eventLedger, $executionRegistry),
-        new RunControlFlow($workflowEngine, $queue),
-        pendingCorrelations: $pendingCorrelations,
+        $store,
+        new RunControlFlow($workflowEngine, $queue, new ObservabilityContext(logger: $logger)),
         invoker: \Mockery::mock(SubWorkflowInvoker::class),
         evaluationEngine: \Mockery::mock(EvaluationEngineInterface::class),
-        stateTtlSeconds: 86400,
     );
 
-    return [$handler, $queue, $executionRegistry, $eventLedger, $pendingCorrelations, $store];
+    return [$handler, $queue, $store, $logger];
 }
 
 it('continues normally and dispatches the next runnable step when criteria met and no actions match', function (): void {
-    [$handler, $queue, , , , $store] = makeStepOutcomeHandler();
+    [$handler, $queue, $store] = makeStepOutcomeHandler();
 
     $stepA = stepOutcomeStep('A');
     $stepB = stepOutcomeStep('B', dependsOn: ['A']);
@@ -278,7 +265,7 @@ it('continues normally and dispatches the next runnable step when criteria met a
 });
 
 it('terminates the execution as failed when criteria not met and no failure action matches', function (): void {
-    [$handler, , $executionRegistry, $eventLedger] = makeStepOutcomeHandler();
+    [$handler, , $store] = makeStepOutcomeHandler();
 
     $step = stepOutcomeStep('A');
     $workflow = stepOutcomeWorkflow('wf_1', [$step]);
@@ -287,9 +274,8 @@ it('terminates the execution as failed when criteria not met and no failure acti
 
     $handler->handle($document, $workflow, $step, $context, 'exec_1', false);
 
-    expect($executionRegistry->completed)->toHaveCount(1);
-    expect($executionRegistry->completed[0]['status'])->toBe(ExecutionStatus::Failed);
-    expect($eventLedger->appended[0]['eventType'])->toBe('execution.failed');
+    expect($store->completed)->toHaveCount(1);
+    expect($store->completed[0]['status'])->toBe(ExecutionStatus::Failed);
 });
 
 it('retries the same step with the configured delay and increments attempts', function (): void {
@@ -312,14 +298,13 @@ it('retries the same step with the configured delay and increments attempts', fu
 });
 
 it('falls through to the next onFailure action once the retry limit is exhausted', function (): void {
-    [$handler, $queue, $executionRegistry, $eventLedger] = makeStepOutcomeHandler();
+    [$handler, $queue, $store, $logger] = makeStepOutcomeHandler();
 
     $retry = new RetryAction('retry-1', retryAfter: 0, retryLimit: 1, stepId: null, workflowId: null, criteria: []);
     $step = stepOutcomeStep('A', onFailure: [$retry]);
     $workflow = stepOutcomeWorkflow('wf_1', [$step]);
     $document = stepOutcomeDocument([$workflow]);
 
-    // Simulate this being the step's 2nd failure -- attempts already at the limit (1).
     $context = (new WorkflowContext('def_1'))
         ->withWorkflowId('wf_1')
         ->withExecutionId('exec_1')
@@ -328,8 +313,8 @@ it('falls through to the next onFailure action once the retry limit is exhausted
     $handler->handle($document, $workflow, $step, $context, 'exec_1', false);
 
     expect($queue->dispatched)->toBeEmpty();
-    expect($eventLedger->appended[0]['eventType'])->toBe('step.retry_exhausted');
-    expect($executionRegistry->completed[0]['status'])->toBe(ExecutionStatus::Failed);
+    expect($logger->records[0]['message'])->toContain('retry limit exhausted');
+    expect($store->completed[0]['status'])->toBe(ExecutionStatus::Failed);
 });
 
 it('honors a config-level retry ceiling even when the document retryLimit is higher', function (): void {
@@ -411,7 +396,7 @@ it('goto jumps to a same-workflow step directly, bypassing DependencyAnalyzer or
     $goto = new FailureGotoAction('goto-c', 'C', null, []);
     $stepA = stepOutcomeStep('A', onFailure: [$goto]);
     $stepB = stepOutcomeStep('B');
-    $stepC = stepOutcomeStep('C', dependsOn: ['B']); // C would not normally be runnable yet
+    $stepC = stepOutcomeStep('C', dependsOn: ['B']);
     $workflow = stepOutcomeWorkflow('wf_1', [$stepA, $stepB, $stepC]);
     $document = stepOutcomeDocument([$workflow]);
     $context = (new WorkflowContext('def_1'))->withWorkflowId('wf_1')->withExecutionId('exec_1');
@@ -426,12 +411,10 @@ it('goto jumps to a same-workflow step directly, bypassing DependencyAnalyzer or
 });
 
 it('goto skips the intermediate step and dispatches no job for it after the target completes', function (): void {
-    [$handler, $queue, , , , $store] = makeStepOutcomeHandler();
+    [$handler, $queue, $store] = makeStepOutcomeHandler();
 
     $goto = new SuccessGotoAction('goto', 'C', null, []);
     $stepA = stepOutcomeStep('A', onSuccess: [$goto]);
-    // 'B' sits between 'A' and 'C' in topological order with no dependency on C,
-    // so a working goto must skip B entirely: no job is ever dispatched for it.
     $stepB = stepOutcomeStep('B');
     $stepC = stepOutcomeStep('C');
     $workflow = stepOutcomeWorkflow('wf_1', [$stepA, $stepB, $stepC]);
@@ -439,13 +422,11 @@ it('goto skips the intermediate step and dispatches no job for it after the targ
 
     $context = (new WorkflowContext('def_1'))->withWorkflowId('wf_1')->withExecutionId('exec_1');
 
-    // A succeeds and jumps to C: only C is dispatched, B is skipped.
     $handler->handle($document, $workflow, $stepA, $context, 'exec_1', true);
 
     expect($queue->dispatched)->toHaveCount(1);
     expect($queue->dispatched[0]['job']->step->stepId)->toBe('C');
 
-    // C completes: the skipped step B must not be dispatched.
     $cJobContext = $queue->dispatched[0]['job']->context;
     $handler->handle($document, $workflow, $stepC, $cJobContext, 'exec_1', true);
 
@@ -538,7 +519,7 @@ it('goto to an unknown stepId in the current workflow throws GotoTargetNotFoundE
 });
 
 it('SuccessEndAction terminates the execution as succeeded', function (): void {
-    [$handler, $queue, $executionRegistry, $eventLedger] = makeStepOutcomeHandler();
+    [$handler, $queue, $store] = makeStepOutcomeHandler();
 
     $end = new SuccessEndAction('end-ok', []);
     $step = stepOutcomeStep('A', onSuccess: [$end]);
@@ -549,12 +530,11 @@ it('SuccessEndAction terminates the execution as succeeded', function (): void {
     $handler->handle($document, $workflow, $step, $context, 'exec_1', true);
 
     expect($queue->dispatched)->toBeEmpty();
-    expect($executionRegistry->completed[0]['status'])->toBe(ExecutionStatus::Succeeded);
-    expect($eventLedger->appended[0]['eventType'])->toBe('execution.succeeded');
+    expect($store->completed[0]['status'])->toBe(ExecutionStatus::Succeeded);
 });
 
 it('FailureEndAction terminates the execution as failed', function (): void {
-    [$handler, , $executionRegistry, $eventLedger] = makeStepOutcomeHandler();
+    [$handler, , $store] = makeStepOutcomeHandler();
 
     $end = new FailureEndAction('end-fail', []);
     $step = stepOutcomeStep('A', onFailure: [$end]);
@@ -564,12 +544,11 @@ it('FailureEndAction terminates the execution as failed', function (): void {
 
     $handler->handle($document, $workflow, $step, $context, 'exec_1', false);
 
-    expect($executionRegistry->completed[0]['status'])->toBe(ExecutionStatus::Failed);
-    expect($eventLedger->appended[0]['eventType'])->toBe('execution.failed');
+    expect($store->completed[0]['status'])->toBe(ExecutionStatus::Failed);
 });
 
 it('auto-completes the execution as succeeded once no steps are runnable and nothing is suspended', function (): void {
-    [$handler, , $executionRegistry] = makeStepOutcomeHandler();
+    [$handler, , $store] = makeStepOutcomeHandler();
 
     $step = stepOutcomeStep('A');
     $workflow = stepOutcomeWorkflow('wf_1', [$step]);
@@ -578,12 +557,12 @@ it('auto-completes the execution as succeeded once no steps are runnable and not
 
     $handler->handle($document, $workflow, $step, $context, 'exec_1', true);
 
-    expect($executionRegistry->completed)->toHaveCount(1);
-    expect($executionRegistry->completed[0]['status'])->toBe(ExecutionStatus::Succeeded);
+    expect($store->completed)->toHaveCount(1);
+    expect($store->completed[0]['status'])->toBe(ExecutionStatus::Succeeded);
 });
 
 it('does not auto-complete while a PendingCorrelation is still outstanding for the execution', function (): void {
-    [$handler, , $executionRegistry] = makeStepOutcomeHandler(pendingCorrelationOutstanding: true);
+    [$handler, , $store] = makeStepOutcomeHandler(pendingCorrelationOutstanding: true);
 
     $step = stepOutcomeStep('A');
     $workflow = stepOutcomeWorkflow('wf_1', [$step]);
@@ -592,11 +571,11 @@ it('does not auto-complete while a PendingCorrelation is still outstanding for t
 
     $handler->handle($document, $workflow, $step, $context, 'exec_1', true);
 
-    expect($executionRegistry->completed)->toBeEmpty();
+    expect($store->completed)->toBeEmpty();
 });
 
 it('does not auto-complete while downstream steps are still runnable', function (): void {
-    [$handler, $queue, $executionRegistry] = makeStepOutcomeHandler();
+    [$handler, $queue, $store] = makeStepOutcomeHandler();
 
     $stepA = stepOutcomeStep('A');
     $stepB = stepOutcomeStep('B', dependsOn: ['A']);
@@ -607,5 +586,5 @@ it('does not auto-complete while downstream steps are still runnable', function 
     $handler->handle($document, $workflow, $stepA, $context, 'exec_1', true);
 
     expect($queue->dispatched)->toHaveCount(1);
-    expect($executionRegistry->completed)->toBeEmpty();
+    expect($store->completed)->toBeEmpty();
 });

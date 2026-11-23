@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 /**
  * Ensures:
- * - cli imports RunnerFacade (public entry point) but not engine internals
- *   (StepStateMachineEngine/WorkflowEngineInterface directly)
- * - @internal classes are not imported outside their own package
+ * - cli imports only the allow-listed public API of runner (Runner, RunnerInterface,
+ *   AsyncRunner, AsyncRunnerInterface, Data\*, Queue\SyncQueueDriver, Registries\*,
+ *   Events\*, Exceptions\*) and never @internal runner classes
  * - core does not require alama/arazzo-cli (breaks shared-services→adapter circular dep)
  * - core/engine are framework-agnostic (no illuminate/* imports)
  */
@@ -25,36 +25,52 @@ function cliSrcFiles(string $repo): array
     return $files;
 }
 
-it('cli imports RunnerFacade but not engine internals', function (): void {
+it('cli imports only public runner API and no runner internals', function (): void {
     $repo = __DIR__.'/../..';
     $cliFiles = cliSrcFiles($repo);
-    $forbidden = [
-        'Alama\\Arazzo\\Runner\\StepStateMachineEngine',
-        'Alama\\Arazzo\\Runner\\WorkflowEngineInterface',
+
+    $allowedRunnerPrefixes = [
+        'Alama\\Arazzo\\Runner\\Runner',
+        'Alama\\Arazzo\\Runner\\RunnerInterface',
+        'Alama\\Arazzo\\Runner\\AsyncRunner',
+        'Alama\\Arazzo\\Runner\\AsyncRunnerInterface',
+        'Alama\\Arazzo\\Runner\\ExecutionStoreInterface',
+        'Alama\\Arazzo\\Runner\\DefinitionStoreInterface',
+        'Alama\\Arazzo\\Runner\\Data\\',
+        'Alama\\Arazzo\\Runner\\Policy\\',
+        'Alama\\Arazzo\\Runner\\Store\\',
+        'Alama\\Arazzo\\Runner\\Queue\\SyncQueueDriver',
+        'Alama\\Arazzo\\Runner\\Registries\\OperationExecutorRegistry',
+        'Alama\\Arazzo\\Runner\\Events\\',
+        'Alama\\Arazzo\\Runner\\Exceptions\\',
     ];
 
+    $hasFacade = false;
     foreach ($cliFiles as $file) {
-        $content = file_get_contents($file);
-        foreach ($forbidden as $forbiddenClass) {
-            expect(str_contains($content, 'use '.$forbiddenClass.';'))
-                ->toBeFalse('cli imports '.$forbiddenClass.' directly in '.$file);
+        $content = (string) file_get_contents($file);
+        if (str_contains($content, 'use Alama\\Arazzo\\Runner\\Runner;') || str_contains($content, 'use Alama\\Arazzo\\Runner\\AsyncRunner;')) {
+            $hasFacade = true;
+        }
+
+        preg_match_all('/^use\s+(Alama\\\\Arazzo\\\\Runner\\\\[^;]+);/m', $content, $matches);
+        foreach ($matches[1] as $imported) {
+            $allowed = false;
+            foreach ($allowedRunnerPrefixes as $prefix) {
+                if ($imported === $prefix || str_starts_with($imported, $prefix)) {
+                    $allowed = true;
+                    break;
+                }
+            }
+            expect($allowed)->toBeTrue("cli imports non-public runner symbol {$imported} in {$file}");
         }
     }
 
-    // RunnerFacade should be importable and used (it is the public entry point)
-    $hasFacade = false;
-    foreach ($cliFiles as $file) {
-        $content = file_get_contents($file);
-        if (str_contains($content, 'use Alama\\Arazzo\\Runner\\RunnerFacade;')) {
-            $hasFacade = true;
-        }
-    }
-    expect($hasFacade)->toBeTrue('cli should import RunnerFacade');
+    expect($hasFacade)->toBeTrue('cli should import Runner or AsyncRunner');
 });
 
 it('core does not require alama/arazzo-cli', function (): void {
     $repo = __DIR__.'/../..';
-    $coreManifest = json_decode(file_get_contents($repo.'/packages/core/composer.json'), true);
+    $coreManifest = json_decode((string) file_get_contents($repo.'/packages/core/composer.json'), true);
     $require = $coreManifest['require'] ?? [];
 
     expect(array_key_exists('alama/arazzo-cli', $require))
@@ -79,7 +95,7 @@ it('core and engine are framework-agnostic (no illuminate imports)', function ()
             }
         }
         foreach ($files as $file) {
-            $content = file_get_contents($file);
+            $content = (string) file_get_contents($file);
             expect(str_contains($content, 'Illuminate\\'))
                 ->toBeFalse('framework-agnostic package '.$file.' imports Illuminate\\');
         }

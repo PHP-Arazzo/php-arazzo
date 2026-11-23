@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Contracts\State;
 
+use Alama\Arazzo\Contracts\Policy\SourcePolicy;
 use Alama\Arazzo\Contracts\Spec\Enum\StepStatus;
 use Alama\Arazzo\Contracts\Spec\Interfaces\WorkflowContextInterface;
 use Alama\Arazzo\Contracts\Spec\Workflow;
@@ -32,6 +33,7 @@ final readonly class WorkflowContext implements WorkflowContextInterface
         /** @var list<string> */
         private array $skippedSteps = [],
         public ?string $parentRunId = null,
+        private ?SourcePolicy $activeSourcePolicy = null,
     ) {
         $this->executionId = $executionId ?? uniqid('run_', true);
     }
@@ -436,6 +438,34 @@ final readonly class WorkflowContext implements WorkflowContextInterface
             workflowCallStack: $this->workflowCallStack,
             parentRunId: $this->parentRunId,
             skippedSteps: $skippedSteps,
+        );
+    }
+
+    /**
+     * Transient per-step source policy resolved by the runner for the active step.
+     * Deliberately excluded from {@see self::toArray()} so source credentials are
+     * never serialized into persisted hot state.
+     */
+    public function getActiveSourcePolicy(): ?SourcePolicy
+    {
+        return $this->activeSourcePolicy;
+    }
+
+    public function withActiveSourcePolicy(?SourcePolicy $policy): self
+    {
+        return new self(
+            $this->definitionId,
+            $this->inputs,
+            $this->steps,
+            $this->components,
+            $this->workflowId,
+            $this->executionId,
+            workflows: $this->workflows,
+            stepsSpent: $this->stepsSpent,
+            workflowCallStack: $this->workflowCallStack,
+            skippedSteps: $this->skippedSteps,
+            parentRunId: $this->parentRunId,
+            activeSourcePolicy: $policy,
         );
     }
 }

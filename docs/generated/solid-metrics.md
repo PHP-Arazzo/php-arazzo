@@ -27,26 +27,29 @@ quadrantChart
     cli/Generator: [1, 0]
     cli/Renderer: [0.5, 0]
     contracts/Attributes: [0.133, 0]
+    contracts/Clock: [0, 0]
     contracts/Data: [0.167, 0]
     contracts/Dependency: [0.333, 0]
     contracts/Discovery: [0, 0]
     contracts/Exceptions: [0, 0]
-    contracts/Interfaces: [0.108, 1]
-    contracts/Spec: [0.019, 0.019]
-    contracts/State: [0.053, 0]
+    contracts/Interfaces: [0.103, 1]
+    contracts/Observability: [0, 0.5]
+    contracts/Policy: [0, 0]
+    contracts/Spec: [0.018, 0.019]
+    contracts/State: [0.105, 0]
     contracts/Support: [0, 0.2]
-    contracts/Validation: [0.125, 0]
+    contracts/Validation: [0.111, 0]
     document/Parser: [0.333, 0.083]
     document/Plugins: [1, 0]
     document/Registries: [0.8, 0]
     document/Validator: [0.714, 0]
-    document/_: [0.375, 0.4]
+    document/_: [0.333, 0.4]
     engine/Data: [0.75, 0]
     engine/Enum: [0, 0]
-    engine/Exceptions: [0.1, 0]
-    engine/Execution: [0.364, 0]
-    engine/Runtime: [0.375, 0.211]
-    engine/_: [0.75, 0.5]
+    engine/Exceptions: [0.111, 0]
+    engine/Execution: [0.333, 0]
+    engine/Runtime: [0.5, 0.19]
+    engine/_: [1, 0.5]
     evaluation/Condition: [0.889, 0.118]
     evaluation/Data: [0.4, 0]
     evaluation/Enum: [0, 0]
@@ -54,9 +57,9 @@ quadrantChart
     evaluation/Interfaces: [0.6, 1]
     evaluation/Plugins: [1, 0]
     evaluation/Registries: [0.833, 0]
-    evaluation/_: [0.565, 0.167]
+    evaluation/_: [0.52, 0.167]
     expression/Ast: [0.333, 0]
-    expression/Data: [0.263, 0]
+    expression/Data: [0.25, 0]
     expression/Enum: [0, 0]
     expression/Exceptions: [0.091, 0]
     expression/Interfaces: [0.294, 1]
@@ -66,10 +69,11 @@ quadrantChart
     expression/Registries: [0.571, 0]
     expression/Support: [0.667, 0]
     expression/Xpath: [0.5, 0.333]
-    expression/_: [0.733, 0]
-    protocol-http/Execution: [0.692, 0.25]
-    protocol-http/Plugins: [1, 0]
-    protocol-http/Resolver: [0.5, 0]
+    expression/_: [0.647, 0]
+    protocol-http/Execution: [0.818, 0.25]
+    protocol-http/Plugins: [0.909, 0]
+    protocol-http/Resolver: [0.667, 0]
+    protocol-http/_: [0.909, 0]
     protocol-rpc/Execution: [0.875, 0]
     protocol-rpc/Normalizer: [0, 0]
     protocol-rpc/Plugins: [0.917, 0]
@@ -81,21 +85,25 @@ quadrantChart
     protocol-soap/Resolver: [1, 0]
     protocol-soap/Transfer: [0.333, 0]
     protocol-soap/Validation: [1, 0]
-    runner/Async: [0.9, 0]
-    runner/Events: [0.167, 0.091]
-    runner/Exceptions: [0.333, 0]
-    runner/Execution: [0.714, 0.063]
-    runner/Interfaces: [1, 1]
+    runner/Async: [0.957, 0]
+    runner/Data: [0.429, 0]
+    runner/Events: [0, 0]
+    runner/Exceptions: [0.429, 0.111]
+    runner/Execution: [0.857, 0]
     runner/Plugins: [0.818, 0]
+    runner/Policy: [0.286, 0]
     runner/Preflight: [0.429, 0]
+    runner/Queue: [0.333, 0]
+    runner/Registries: [0.6, 0]
+    runner/Store: [0.6, 0]
     runner/Sync: [0.84, 0]
-    runner/_: [0.857, 0.222]
+    runner/_: [0.75, 0.667]
     sources/Exceptions: [0, 0.2]
     sources/Normalizer: [0.333, 0.2]
     sources/Plugins: [1, 0]
     sources/Registries: [0.8, 0]
     sources/Resolver: [0.571, 0.273]
-    sources/_: [0.75, 0.5]
+    sources/_: [0.667, 0.5]
 ```
 
 ## God classes (SRP)
@@ -107,13 +115,14 @@ Concrete types over 300 LOC:
 | `Parser` | `document:Parser` | 931 |
 | `ExecutionContext` | `engine:Runtime` | 553 |
 | `Parser` | `expression:_` | 511 |
+| `WorkflowContext` | `contracts:State` | 472 |
 | `Parser` | `expression:JsonPath` | 470 |
 | `ExecutionState` | `contracts:State` | 465 |
-| `StepOutcomeHandler` | `runner:Async` | 455 |
 | `ProtoParser` | `protocol-rpc:Normalizer` | 446 |
 | `WsdlSourceNormalizer` | `protocol-soap:Plugins` | 446 |
-| `WorkflowContext` | `contracts:State` | 442 |
-| `StepExecutionWorker` | `runner:Async` | 414 |
+| `StepOutcomeHandler` | `runner:Async` | 418 |
+| `StepExecutionWorker` | `runner:Async` | 408 |
+| `WorkflowExecutor` | `runner:Sync` | 372 |
 | `WorkflowEngine` | `runner:Sync` | 360 |
 | `SchemaValidator` | `engine:Execution` | 302 |
 
@@ -123,7 +132,10 @@ Contracts declaring more than 7 methods:
 
 | Interface | Methods |
 |---|---:|
+| `AsyncRunnerInterface` <small>runner</small> | 16 |
 | `ExpressionEngineInterface` <small>expression</small> | 14 |
+| `RunnerInterface` <small>runner</small> | 9 |
+| `ExecutionStoreInterface` <small>runner</small> | 9 |
 | `EvaluationEngineInterface` <small>evaluation</small> | 8 |
 
 ## Concrete hubs (DIP)

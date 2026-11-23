@@ -17,16 +17,16 @@ xychart-beta
     bar [52, 39, 29, 21, 19, 18, 17, 16, 15, 13, 10, 10]
 ```
 
-Analyzed 439 total file-touches across 67 modules.
+Analyzed 442 total file-touches across 74 modules.
 
 | Module | Touches | Share | LOC | Touches/KLOC |
 |---|---:|---:|---:|---:|
 | `document:Validator` | 52 | 12% | 662 | 78.5 |
-| `cli:Console` | 39 | 9% | 939 | 41.5 |
-| `runner:Execution` | 29 | 7% | 384 | 75.5 |
-| `runner:Async` | 21 | 5% | 1,351 | 15.5 |
+| `cli:Console` | 39 | 9% | 803 | 48.6 |
+| `runner:Execution` | 29 | 7% | 679 | 42.7 |
+| `runner:Async` | 21 | 5% | 1,435 | 14.6 |
 | `sources:Normalizer` | 19 | 4% | 448 | 42.4 |
-| `runner:Sync` | 18 | 4% | 990 | 18.2 |
+| `runner:Sync` | 18 | 4% | 975 | 18.5 |
 | `expression:Interfaces` | 17 | 4% | 214 | 79.4 |
 | `document:Parser` | 16 | 4% | 2,241 | 7.1 |
 | `contracts:Interfaces` | 15 | 3% | 412 | 36.4 |
@@ -41,23 +41,24 @@ Analyzed 439 total file-touches across 67 modules.
 | `evaluation:Condition` | 6 | 1% | 1,023 | 5.9 |
 | `protocol-rpc:Execution` | 6 | 1% | 188 | 31.9 |
 | `contracts:Attributes` | 5 | 1% | 106 | 47.2 |
-| `contracts:State` | 5 | 1% | 977 | 5.1 |
+| `contracts:State` | 5 | 1% | 1,007 | 5 |
 | `expression:Ast` | 5 | 1% | 355 | 14.1 |
 | `expression:Registries` | 5 | 1% | 113 | 44.2 |
 | `expression:Xpath` | 5 | 1% | 173 | 28.9 |
 | `protocol-http:Execution` | 5 | 1% | 536 | 9.3 |
 | `protocol-rpc:Normalizer` | 5 | 1% | 538 | 9.3 |
-| `runner:Events` | 5 | 1% | 328 | 15.2 |
+| `runner:Events` | 5 | 1% | 187 | 26.7 |
 | `cli:Generator` | 4 | 1% | 141 | 28.4 |
 | `cli:Renderer` | 4 | 1% | 255 | 15.7 |
 | `contracts:Dependency` | 4 | 1% | 336 | 11.9 |
 | `evaluation:Data` | 4 | 1% | 86 | 46.5 |
 | `expression:Enum` | 4 | 1% | 47 | 85.1 |
 | `expression:Internal` | 4 | 1% | 434 | 9.2 |
-| `runner:Preflight` | 4 | 1% | 150 | 26.7 |
+| `runner:Policy` | 4 | 1% | 124 | 32.3 |
+| `runner:Preflight` | 4 | 1% | 156 | 25.6 |
 | `contracts:Support` | 3 | 1% | 185 | 16.2 |
 | `document:Registries` | 3 | 1% | 97 | 30.9 |
-| `engine:Runtime` | 3 | 1% | 1,639 | 1.8 |
+| `engine:Runtime` | 3 | 1% | 1,776 | 1.7 |
 | `evaluation:Interfaces` | 3 | 1% | 44 | 68.2 |
 | `expression:Exceptions` | 3 | 1% | 64 | 46.9 |
 | `protocol-rpc:Protocol` | 3 | 1% | 514 | 5.8 |
@@ -71,7 +72,7 @@ Analyzed 439 total file-touches across 67 modules.
 | `expression:JsonPath` | 2 | 0% | 1,378 | 1.5 |
 | `expression:Support` | 2 | 0% | 192 | 10.4 |
 | `protocol-soap:Validation` | 2 | 0% | 139 | 14.4 |
-| `runner:Exceptions` | 2 | 0% | 20 | 100 |
+| `runner:Exceptions` | 2 | 0% | 134 | 14.9 |
 | `contracts:Data` | 1 | 0% | 155 | 6.5 |
 | `document:Plugins` | 1 | 0% | 3,118 | 0.3 |
 | `engine:Exceptions` | 1 | 0% | 42 | 23.8 |
@@ -84,9 +85,15 @@ Analyzed 439 total file-touches across 67 modules.
 | `protocol-soap:Plugins` | 1 | 0% | 778 | 1.3 |
 | `protocol-soap:Resolver` | 1 | 0% | 136 | 7.4 |
 | `protocol-soap:Transfer` | 1 | 0% | 203 | 4.9 |
-| `runner:Interfaces` | 1 | 0% | 25 | 40 |
-| `runner:Plugins` | 1 | 0% | 95 | 10.5 |
+| `runner:Plugins` | 1 | 0% | 86 | 11.6 |
 | `sources:Exceptions` | 1 | 0% | 65 | 15.4 |
 | `sources:Plugins` | 1 | 0% | 147 | 6.8 |
+| `contracts:Clock` | 0 | 0% | 20 | 0 |
+| `contracts:Observability` | 0 | 0% | 108 | 0 |
+| `contracts:Policy` | 0 | 0% | 268 | 0 |
+| `runner:Data` | 0 | 0% | 123 | 0 |
+| `runner:Queue` | 0 | 0% | 25 | 0 |
+| `runner:Registries` | 0 | 0% | 151 | 0 |
+| `runner:Store` | 0 | 0% | 138 | 0 |
 
 **Hotspots** (highest touches-per-KLOC with meaningful size/churn): `evaluation:Plugins` (80), `expression:Interfaces` (79.4), `document:Validator` (78.5)

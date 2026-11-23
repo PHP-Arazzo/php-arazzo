@@ -12,6 +12,9 @@ use Alama\Arazzo\Contracts\Validation\Error;
 use Alama\Arazzo\Contracts\Validation\Severity;
 use Alama\Arazzo\Contracts\Validation\ValidationResult;
 
+/**
+ * @internal stays out of the advertised contract; not part of the public API surface
+ */
 final readonly class Preflight
 {
     /**

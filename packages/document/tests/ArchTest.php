@@ -13,12 +13,12 @@ arch('document does not leak runner internals')
     ->expect('Alama\Arazzo\Document\Parser')
     ->not->toUse('Alama\Arazzo\Runner\Execution')
     ->not->toUse('Alama\Arazzo\Cli\Console')
-    ->not->toUse('Alama\Arazzo\Events')
+    ->not->toUse('Alama\Arazzo\Runner\Events')
     ->not->toUse('Alama\Arazzo\Runner\Protocol')
     ->expect('Alama\Arazzo\Document\Validator')
     ->not->toUse('Alama\Arazzo\Runner\Execution')
     ->not->toUse('Alama\Arazzo\Cli\Console')
-    ->not->toUse('Alama\Arazzo\Events');
+    ->not->toUse('Alama\Arazzo\Runner\Events');
 
 arch('document does not depend on evaluation package')
     ->expect('Alama\Arazzo\Document')
@@ -31,7 +31,8 @@ arch('document does not depend on expression package')
 arch('document facade seams are entry-point only')
     ->expect('Alama\Arazzo\Document\Parser')
     ->not->toUse('Alama\Arazzo\Sources\Document')
-    ->not->toUse('Alama\Arazzo\Runner\RunnerFacade')
+    ->not->toUse('Alama\Arazzo\Runner\Runner')
+    ->not->toUse('Alama\Arazzo\Runner\AsyncRunner')
     ->not->toUse('Alama\Arazzo\Expression\Expression');
 
 arch('document package never depends on sources')

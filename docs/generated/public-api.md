@@ -12,6 +12,11 @@ this file on a commit is a public API change — review it deliberately.
 
 ## contracts
 
+### `Alama\Arazzo\Contracts\Clock`
+
+#### `SystemClock` class
+- `public function now(): DateTimeImmutable`
+
 ### `Alama\Arazzo\Contracts\Data`
 
 #### `KnownOperations` class
@@ -112,6 +117,63 @@ this file on a commit is a public API change — review it deliberately.
 - `public function delete(string $executionId): void;`
 - `public function load(string $executionId): ?WorkflowContextInterface;`
 - `public function save(string $executionId, WorkflowContextInterface $state): void;`
+
+### `Alama\Arazzo\Contracts\Observability`
+
+#### `NullTracer` class
+- `public function injectContext(array &$carrier): void`
+- `public function startSpan(string $name, array $attributes = []): SpanInterface`
+
+#### `SpanInterface` interface
+- `public function addEvent(string $name, array $attributes = []): void;`
+- `public function end(): void;`
+- `public function recordException(Throwable $exception): void;`
+- `public function setAttribute(string $key, string|int|float|bool $value): void;`
+- `public function setStatus(bool $ok, ?string $description = null): void;`
+
+#### `TracerInterface` interface
+- `public function extractContext(array $carrier): ?array;`
+- `public function injectContext(array &$carrier): void;`
+- `public function startSpan(string $name, array $attributes = []): SpanInterface;`
+
+### `Alama\Arazzo\Contracts\Policy`
+
+#### `Credential` class
+- `public function __debugInfo(): array`
+- `public static function apiKey(#[SensitiveParameter] string $value): self`
+- `public static function basic(string $username, #[SensitiveParameter] string $password): self`
+- `public static function bearer(#[SensitiveParameter] string $token): self`
+- `public static function oauth2(#[SensitiveParameter] string $accessToken, string $tokenType = 'Bearer'): self`
+
+#### `CredentialType` enum
+- Cases: `ApiKey`, `Basic`, `Bearer`, `OAuth2`
+
+#### `ServerTarget` class
+- `public function __construct(public ?string $url = null, public array $variables = [])`
+- `public function withUrl(?string $url): self`
+- `public function withVariables(array $variables): self`
+
+#### `SourcePolicy` class
+- `public function __construct(public ServerTarget $target = new ServerTarget(), public array $credentials = [], public array $headers = [], public SourceTransportPolicy $transport = new SourceTransportPolicy(), public array $extensions = [])`
+- `public function credential(string $schemeName): ?Credential`
+- `public function extension(string $key): mixed`
+- `public function server(): ?string`
+- `public function serverVariables(): array`
+- `public function strictValidation(): ?bool`
+- `public function timeoutSeconds(): ?float`
+- `public function withCredential(string $schemeName, Credential $credential): self`
+- `public function withExtension(string $key, mixed $value): self`
+- `public function withHeader(string $name, string $value): self`
+- `public function withHeaders(array $headers): self`
+- `public function withServer(?string $server): self`
+- `public function withServerVariables(array $variables): self`
+- `public function withStrictValidation(?bool $strictValidation): self`
+- `public function withTimeoutSeconds(?float $timeoutSeconds): self`
+
+#### `SourceTransportPolicy` class
+- `public function __construct(public ?float $timeoutSeconds = null, public ?bool $strictValidation = null)`
+- `public function withStrictValidation(?bool $strictValidation): self`
+- `public function withTimeoutSeconds(?float $timeoutSeconds): self`
 
 ### `Alama\Arazzo\Contracts\Spec`
 
@@ -271,7 +333,8 @@ this file on a commit is a public API change — review it deliberately.
 - `public static function fromContext(WorkflowContext $context, ?int $maxSteps = null, ?int $maxWorkflowDepth = null): self`
 
 #### `WorkflowContext` class
-- `public function __construct(private string $definitionId, private array $inputs = [], private array $steps = [], private array $components = [], private ?string $workflowId = null, ?string $executionId = null, private array $workflows = [], private int $stepsSpent = 0, /** @var list<string> */ private array $workflowCallStack = [], /** @var list<string> */ private array $skippedSteps = [], public ?string $parentRunId = null)`
+- `public function __construct(private string $definitionId, private array $inputs = [], private array $steps = [], private array $components = [], private ?string $workflowId = null, ?string $executionId = null, private array $workflows = [], private int $stepsSpent = 0, /** @var list<string> */ private array $workflowCallStack = [], /** @var list<string> */ private array $skippedSteps = [], public ?string $parentRunId = null, private ?SourcePolicy $activeSourcePolicy = null)`
+- `public function getActiveSourcePolicy(): ?SourcePolicy`
 - `public function getComponents(): array`
 - `public function getDefinitionId(): string`
 - `public function getExecutionId(): string`
@@ -286,6 +349,7 @@ this file on a commit is a public API change — review it deliberately.
 - `public function getWorkflows(): array`
 - `public function rootScope(): array`
 - `public function toArray(): array`
+- `public function withActiveSourcePolicy(?SourcePolicy $policy): self`
 - `public function withBudget(int $stepsSpent, array $workflowCallStack): self`
 - `public function withExecutionId(string $executionId): self`
 - `public function withInput(string $name, mixed $value): self`
@@ -610,7 +674,23 @@ this file on a commit is a public API change — review it deliberately.
 #### `StepTransitionType` enum
 - Cases: `Cancelled`, `Enter`, `GuardFailed`, `Timeout`
 
+### `Alama\Arazzo\Runtime\Telemetry`
+
+#### `OtelTracer` class
+- `public function __construct(private string $instrumentationName = 'alama.arazzo.runner', private TraceContextPropagator $propagator = new TraceContextPropagator())`
+- `public function extractContext(array $carrier): ?array`
+- `public function injectContext(array &$carrier): void`
+
 ## protocol-http
+
+### `Alama\Arazzo\Protocol\Http`
+
+#### `HttpProtocol` class
+- `public function __construct(?ClientInterface $httpClient = null, ?RequestFactoryInterface $requestFactory = null, ?SourcesInterface $sources = null, ?EvaluationEngineInterface $evaluationEngine = null, ?ExpressionEngineInterface $expressionEngine = null)`
+- `public function executor(bool $strictValidation = true, ?IdempotencyKeyInjector $idempotencyInjector = null): OperationExecutorPluginInterface`
+- `public function outputExtractor(): OutputExtractorInterface`
+- `public function resolver(): OperationResolverInterface`
+- `public static function create(?ClientInterface $httpClient = null, ?RequestFactoryInterface $requestFactory = null, ?SourcesInterface $sources = null, ?EvaluationEngineInterface $evaluationEngine = null, ?ExpressionEngineInterface $expressionEngine = null, ): self`
 
 ### `Alama\Arazzo\Protocol\Http\Resolver`
 
@@ -626,28 +706,160 @@ this file on a commit is a public API change — review it deliberately.
 
 ## runner
 
-### `RunnerFacadeInterface` interface
-- `public function execute(ArazzoDocument $document, string $workflowId, array $inputs = []): array;`
-- `public function run(ArazzoDocument $document, string $workflowId, array $inputs = []): array;`
+### `Alama\Arazzo\Runner`
 
-### `RunnerFacade` class
-- `public function __construct(DocumentInterface $documents, OpenApiOperationResolver $operationResolver, EvaluationEngineInterface $evaluationEngine,`
-- `public function execute(ArazzoDocument $document, string $workflowId, array $inputs = []): array`
-- `public function run(ArazzoDocument $document, string $workflowId, array $inputs = []): array`
+#### `AsyncRunner` class
+- `public function __construct(?DocumentInterface $document = null, ?EvaluationEngineInterface $evaluationEngine = null, ?AsyncConfig $config = null)`
+- `public function handleStep(ExecuteStepJob $job): void`
+- `public function resume(ArazzoDocument $document, string $executionId): void`
+- `public function resumeCorrelation(string $correlationId, array $response): void`
+- `public function start(ArazzoDocument $document, string $workflowId, array $inputs = [], ?string $executionId = null, ?string $definitionId = null, ): string`
+- `public function withClock(ClockInterface $clock): static`
+- `public function withDefinitions(DefinitionStoreInterface $definitions): static`
+- `public function withEventDispatcher(EventDispatcherInterface $dispatcher): static`
+- `public function withExecutor(OperationExecutorPluginInterface $executor): static`
+- `public function withLockManager(LockManagerInterface $lockManager): static`
+- `public function withLogger(LoggerInterface $logger): static`
+- `public function withOperationResolver(OperationResolverInterface $resolver): static`
+- `public function withOutputExtractor(OutputExtractorInterface $outputExtractor): static`
+- `public function withPolicy(ExecutionPolicy $policy): static`
+- `public function withQueueDriver(QueueDriverInterface $queueDriver): static`
+- `public function withStore(ExecutionStoreInterface $store): static`
+- `public function withTracer(TracerInterface $tracer): static`
+- `public static function create(): self`
+
+#### `AsyncRunnerInterface` interface
+- `public function handleStep(ExecuteStepJob $job): void;`
+- `public function resume(ArazzoDocument $document, string $executionId): void;`
+- `public function resumeCorrelation(string $correlationId, array $response): void;`
+- `public function start(ArazzoDocument $document, string $workflowId, array $inputs = [], ?string $executionId = null, ?string $definitionId = null, ): string;`
+- `public function withClock(ClockInterface $clock): static;`
+- `public function withDefinitions(DefinitionStoreInterface $definitions): static;`
+- `public function withEventDispatcher(EventDispatcherInterface $dispatcher): static;`
+- `public function withExecutor(OperationExecutorPluginInterface $executor): static;`
+- `public function withLockManager(LockManagerInterface $lockManager): static;`
+- `public function withLogger(LoggerInterface $logger): static;`
+- `public function withOperationResolver(OperationResolverInterface $resolver): static;`
+- `public function withOutputExtractor(OutputExtractorInterface $outputExtractor): static;`
+- `public function withPolicy(ExecutionPolicy $policy): static;`
+- `public function withQueueDriver(QueueDriverInterface $queueDriver): static;`
+- `public function withStore(ExecutionStoreInterface $store): static;`
+- `public function withTracer(TracerInterface $tracer): static;`
+
+#### `DefinitionStoreInterface` interface
+- `public function find(string $definitionId): ?ArazzoDocument;`
+- `public function save(ArazzoDocument $document, ?string $definitionId = null): string;`
+
+#### `ExecutionStoreInterface` interface
+- `public function consumeCorrelation(string $correlationId): void;`
+- `public function deleteState(string $executionId): void;`
+- `public function findCorrelation(string $correlationId): ?PendingCorrelation;`
+- `public function hasPendingCorrelations(string $executionId): bool;`
+- `public function loadState(string $executionId): ?array;`
+- `public function markCompleted(string $executionId, ExecutionStatus $status): void;`
+- `public function markStarted(string $executionId, string $definitionId, string $workflowId): void;`
+- `public function saveCorrelation(string $correlationId, string $executionId, string $stepId, string $channelPath, ?int $timeoutSeconds = null, ): void;`
+- `public function saveState(string $executionId, array $state, ?int $ttlSeconds = null): void;`
+
+#### `Runner` class
+- `public function __construct(?DocumentInterface $document = null, ?EvaluationEngineInterface $evaluationEngine = null, ?RunnerOptions $options = null)`
+- `public function preflight(ArazzoDocument $document, ?string $workflowId = null, array $inputs = []): ValidationResult`
+- `public function run(ArazzoDocument $document, string $workflowId, array $inputs = [], ?ExecutionPolicy $policy = null, ): ExecutionResult`
+- `public function withClock(ClockInterface $clock): static`
+- `public function withEventDispatcher(EventDispatcherInterface $dispatcher): static`
+- `public function withExecutor(OperationExecutorPluginInterface $executor): static`
+- `public function withLogger(LoggerInterface $logger): static`
+- `public function withOperationResolver(OperationResolverInterface $resolver): static`
+- `public function withPolicy(ExecutionPolicy $policy): static`
+- `public function withTracer(TracerInterface $tracer): static`
+- `public static function create(): self`
+
+#### `RunnerInterface` interface
+- `public function preflight(ArazzoDocument $document, ?string $workflowId = null, array $inputs = []): ValidationResult;`
+- `public function run(ArazzoDocument $document, string $workflowId, array $inputs = [], ?ExecutionPolicy $policy = null, ): ExecutionResult;`
+- `public function withClock(ClockInterface $clock): static;`
+- `public function withEventDispatcher(EventDispatcherInterface $dispatcher): static;`
+- `public function withExecutor(OperationExecutorPluginInterface $executor): static;`
+- `public function withLogger(LoggerInterface $logger): static;`
+- `public function withOperationResolver(OperationResolverInterface $resolver): static;`
+- `public function withPolicy(ExecutionPolicy $policy): static;`
+- `public function withTracer(TracerInterface $tracer): static;`
+
+### `Alama\Arazzo\Runner\Data`
+
+#### `ExecutionResult` class
+- `public function __construct(public string $workflowId, public ExecutionStatus $status, public array $outputs = [], public array $stepResults = [], public int $stepsSpent = 0, public array $workflowCallStack = [])`
+- `public function isFailed(): bool`
+- `public function toArray(): array`
+
+#### `StepResult` class
+- `public function __construct(public string $stepId, public bool $success, public array $outputs = [], public ?Throwable $error = null)`
 
 ### `Alama\Arazzo\Runner\Exceptions`
 
+#### `InvalidSourcePolicyException` class
+- `public static function arazzoSourceNotAddressable(string $key): self`
+- `public static function dottedKeyReserved(string $key): self`
+- `public static function duplicateSourceUrl(string $firstKey, string $secondKey, string $url): self`
+- `public static function unknownSource(string $key): self`
+
 #### `PreflightFailureException` class
-- `public function __construct(string $message, public readonly ValidationResult $result, ?\Throwable $previous = null)`
+- `public function __construct(string $message, public readonly ValidationResult $result, ?Throwable $previous = null)`
 
-### `Alama\Arazzo\Runner\Preflight`
+#### `UnknownWorkflowException` class
+- `public static function forId(string $workflowId): self`
 
-#### `OperationResolvers` class
-- `public function __construct(private iterable $resolvers)`
-- `public function supports(Step $step, ArazzoDocument $document): bool`
+### `Alama\Arazzo\Runner\Policy`
 
-#### `Preflight` class
-- `public function __construct(private OperationResolvers $resolvers, private array $supportedXPath = ['xpath-10'])`
+#### `ExecutionBudgets` class
+- `public function __construct(public int $maxSteps = self::DEFAULT_MAX_STEPS, public int $maxWorkflowDepth = self::DEFAULT_MAX_WORKFLOW_DEPTH)`
+- `public function withMaxSteps(int $maxSteps): self`
+- `public function withMaxWorkflowDepth(int $maxWorkflowDepth): self`
+
+#### `ExecutionPolicy` class
+- `public function __construct(public ExecutionBudgets $budgets = new ExecutionBudgets(), public ?RetryPolicy $retryPolicy = null, public bool $preflight = self::DEFAULT_PREFLIGHT, public int $stateTtlSeconds = self::DEFAULT_STATE_TTL_SECONDS, public array $sourcePolicies = [])`
+- `public function maxSteps(): int`
+- `public function maxWorkflowDepth(): int`
+- `public function sourcePolicy(string $sourceName): ?SourcePolicy`
+- `public function withMaxSteps(int $maxSteps): self`
+- `public function withMaxWorkflowDepth(int $maxWorkflowDepth): self`
+- `public function withPreflight(bool $enabled = true): self`
+- `public function withRetryPolicy(RetryPolicy $retryPolicy): self`
+- `public function withSourcePolicy(string $sourceName, SourcePolicy $policy): self`
+- `public function withStateTtlSeconds(int $seconds): self`
+
+### `Alama\Arazzo\Runner\Queue`
+
+#### `SyncQueueDriver` class
+- `public function dispatch(object $job, int $delaySeconds = 0): void`
+
+### `Alama\Arazzo\Runner\Registries`
+
+#### `OperationExecutorRegistry` class
+- `public function all(array $overrides = []): array`
+- `public function register(OperationExecutorPluginInterface $plugin): void`
+- `public function resolve(Step $step, ArazzoDocument $document, array $overrides = []): ?OperationExecutorPluginInterface`
+- `public function snapshot(array $overrides = []): self`
+- `public static function create(): self`
+- `public static function reset(): void`
+
+### `Alama\Arazzo\Runner\Store`
+
+#### `InMemoryDefinitionStore` class
+- `public function find(string $definitionId): ?ArazzoDocument`
+- `public function save(ArazzoDocument $document, ?string $definitionId = null): string`
+
+#### `InMemoryExecutionStore` class
+- `public function __construct(private readonly ClockInterface $clock = new SystemClock())`
+- `public function consumeCorrelation(string $correlationId): void`
+- `public function deleteState(string $executionId): void`
+- `public function findCorrelation(string $correlationId): ?PendingCorrelation`
+- `public function hasPendingCorrelations(string $executionId): bool`
+- `public function loadState(string $executionId): ?array`
+- `public function markCompleted(string $executionId, ExecutionStatus $status): void`
+- `public function markStarted(string $executionId, string $definitionId, string $workflowId): void`
+- `public function saveCorrelation(string $correlationId, string $executionId, string $stepId, string $channelPath, ?int $timeoutSeconds = null, ): void`
+- `public function statusOf(string $executionId): ?ExecutionStatus`
 
 ## cli
 
@@ -659,5 +871,5 @@ this file on a commit is a public API change — review it deliberately.
 ### `Alama\Arazzo\Cli\Console\Command`
 
 #### `RunCommand` class
-- `public function __construct(private readonly ?RunnerFacadeInterface $runner = null, private readonly ?DocumentInterface $document = null)`
+- `public function __construct(private readonly ?RunnerInterface $runner = null, private readonly ?DocumentInterface $document = null)`
 

@@ -6,6 +6,7 @@ namespace Alama\Arazzo\Tests\Conformance;
 
 use Alama\Arazzo\Document\Parser\Decoders\SymfonyYamlDecoder;
 use Alama\Arazzo\Protocol\Http\Execution\DefaultOpenApiExecutor;
+use Alama\Arazzo\Protocol\Http\Plugins\OperationExecutor\HttpStepExecutor;
 use Alama\Arazzo\Runner\Sync\StepExecutor;
 use Alama\Arazzo\Runner\Sync\WorkflowEngine;
 use Alama\Arazzo\Runner\Sync\WorkflowExecutor;
@@ -28,7 +29,6 @@ final class OaiFixtureRunner extends ConformanceHarness
         $decoder = new SymfonyYamlDecoder();
         $decoded = $decoder->decode((string) file_get_contents($path));
 
-        // Synthesize the harness fixture shape with vendored companions.
         $sources = [];
 
         foreach (OaiCorpusRunner::localSources($path) as $name => $sourceDocument) {
@@ -58,20 +58,22 @@ final class OaiFixtureRunner extends ConformanceHarness
         }
 
         $runtime = $this->runtime($this->sourceRegistry);
-        $documents = $runtime->document;
+        $engine = $this->engine();
+
+        $httpPlugin = new HttpStepExecutor(
+            new FakerOpenApiExecutor(
+                new DefaultOpenApiExecutor($this->http, new HttpFactory()),
+                FakerOpenApiExecutor::referencedBodyFields((string) file_get_contents($path)),
+            ),
+            $runtime->operations,
+            $engine,
+            $this->outputExtractor($runtime),
+            $this->schemaValidator($runtime),
+        );
 
         $executor = new WorkflowExecutor(
-            new StepExecutor(
-                new FakerOpenApiExecutor(
-                    new DefaultOpenApiExecutor($this->http, new HttpFactory()),
-                    FakerOpenApiExecutor::referencedBodyFields((string) file_get_contents($path)),
-                ),
-                $runtime->operations,
-                $this->engine(),
-                $this->outputExtractor($runtime),
-                $this->schemaValidator($runtime),
-            ),
-            new WorkflowEngine($this->engine()),
+            new StepExecutor($engine, localExecutors: [$httpPlugin]),
+            new WorkflowEngine($engine),
             events: $this->events,
         );
 
