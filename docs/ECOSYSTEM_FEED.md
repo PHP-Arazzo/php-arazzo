@@ -1,6 +1,6 @@
 # Ecosystem Feed — Digest
 
-> **Generated:** 2026-11-22T14:30:44+00:00 by `php scripts/ecosystem/poll.php` · **Internal · Daily · Repo-local** via `gh`
+> **Generated:** 2026-11-23T18:01:21+00:00 by `php scripts/ecosystem/poll.php` · **Internal · Daily · Repo-local** via `gh`
 > **Sources:** `config/ecosystem/sources.json` + `config/ecosystem/sources.oai.json` · **Watchlist:** `config/ecosystem/watchlist.json`
 > **Legend:** **Act** = worth a decision · **Watch** = context, collapsed · **Noise** = counted only
 
@@ -23,21 +23,45 @@ _No Act events since the last digest._
 
 ## Peer releases
 
-_No peer releases in this window._
+<details>
+<summary><code>speakeasy-api/openapi</code> — 3</summary>
+
+- `2026-11-18` [v1.28.0](https://github.com/speakeasy-api/openapi/releases/tag/v1.28.0) — version → `1.28.0`
+- `2026-11-17` [v1.27.0](https://github.com/speakeasy-api/openapi/releases/tag/v1.27.0) — version → `1.27.0`
+- `2026-11-17` [v1.26.5](https://github.com/speakeasy-api/openapi/releases/tag/v1.26.5) — version → `1.26.5`
+
+</details>
+
+<details>
+<summary><code>speclynx/apidom</code> — 1</summary>
+
+- `2026-11-19` [v7.1.0](https://github.com/speclynx/apidom/releases/tag/v7.1.0) — version → `7.1.0`
+
+</details>
 
 ## Meeting agenda
 
 _No scheduled meeting items._
 
-## Watch — 3 collapsed
+## Watch — 13 collapsed
 
 <details>
-<summary>3 topic-matched items — click to expand</summary>
+<summary>13 topic-matched items — click to expand</summary>
 
-- `2026-11-21` [Step Object: criteria checked before the step runs](https://github.com/OAI/Arazzo-Specification/issues/641) — `OAI/Arazzo-Specification` · `entity.created` · state → `open` · topics `loop` → `plan:phase-e-runner-oms`
-- `2026-11-21` [Ship .d.cts declarations for CommonJS consumers](https://github.com/usearazzo/arazzo-toolkit/issues/373) — `usearazzo/arazzo-toolkit` · `entity.created` · state → `open`
-- `2026-11-22` [OAI org diff: +1 -0](https://github.com/orgs/OAI/repositories) — `OAI/org` · `entity.created` · entity.created
+- `2026-11-18` [v1.28.0](https://github.com/speakeasy-api/openapi/releases/tag/v1.28.0) — `speakeasy-api/openapi` · `release.published` · version → `1.28.0` · topics `security` → `plan:php-arazzo-spec-suite-plan-index`
+- `2026-11-17` [v1.26.5](https://github.com/speakeasy-api/openapi/releases/tag/v1.26.5) — `speakeasy-api/openapi` · `release.published` · version → `1.26.5` · topics `json-schema` → `plan:php-arazzo-spec-suite-plan-index`
+- `2026-11-19` [v7.1.0](https://github.com/speclynx/apidom/releases/tag/v7.1.0) — `speclynx/apidom` · `release.published` · version → `7.1.0`
+- `2026-11-20` [feat: Add The Arazzo Specification Explained section](https://github.com/OAI/learn.openapis.org/pull/225) — `OAI/learn.openapis.org` · `entity.created` · state → `merged`
+- `2026-11-19` [Update Speakeasy OpenAPI description for Arazzo 1.1 support](https://github.com/workflows-guru/awesome-arazzo/pull/3) — `workflows-guru/awesome-arazzo` · `entity.created` · state → `merged`
+- `2026-11-16` [feat: Retire site — banner page and active project export](https://github.com/OAI/tools.openapis.org/pull/296) — `OAI/tools.openapis.org` · `entity.created` · state → `merged`
+- `2026-11-17` [v1.27.0](https://github.com/speakeasy-api/openapi/releases/tag/v1.27.0) — `speakeasy-api/openapi` · `release.published` · version → `1.27.0`
+- `2026-11-16` [refactor: Migrate Gulp build to GitHub Actions](https://github.com/OAI/tools.openapis.org/issues/289) — `OAI/tools.openapis.org` · `issue.state_changed` · state `open` → `closed` · topics `runner` → `plan:phase-e-runner-oms`
+- `2026-11-16` [feat: Retire site](https://github.com/OAI/tools.openapis.org/issues/295) — `OAI/tools.openapis.org` · `entity.created` · state → `closed`
+- `2026-11-23` [openapi.tools checksum 3328bd9368f8](https://openapi.tools/collections/arazzo) — `openapi.tools` · `entity.created` · entity.created
+- `2026-11-23` [OAI org diff: +1 -0](https://github.com/orgs/OAI/repositories) — `OAI/org` · `entity.created` · entity.created
+- `2026-11-19` [Merge pull request #3 from TristanSpeakEasy/speakeasy-openapi-arazzo-11](https://github.com/workflows-guru/awesome-arazzo/commit/4a8cf3cf575ba7b0d7e2a45c864d831d5439d044) — `workflows-guru/awesome-arazzo` · `entity.created` · entity.created
+- `2026-11-18` [Update Speakeasy OpenAPI description for Arazzo 1.1 support](https://github.com/workflows-guru/awesome-arazzo/commit/c12400b6c6c1f2c059e9b2c2ca753f7126aa79f6) — `workflows-guru/awesome-arazzo` · `entity.created` · entity.created
 
 </details>
 
-suppressed: none
+suppressed: 17 bot PRs, 1 dependency/CI noise
