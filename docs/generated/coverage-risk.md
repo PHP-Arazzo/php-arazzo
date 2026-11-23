@@ -36,7 +36,7 @@ quadrantChart
     contracts/State: [0.105, 1]
     contracts/Support: [0, 1]
     contracts/Validation: [0.111, 1]
-    document/Parser: [0.333, 1]
+    document/Parser: [0.286, 1]
     document/Plugins: [1, 1]
     document/Registries: [0.8, 1]
     document/Validator: [0.714, 1]
@@ -93,8 +93,9 @@ quadrantChart
     sources/Exceptions: [0, 1]
     sources/Normalizer: [0.333, 1]
     sources/Plugins: [1, 1]
+    sources/Policy: [0, 1]
     sources/Registries: [0.8, 1]
-    sources/Resolver: [0.571, 1]
+    sources/Resolver: [0.667, 1]
 ```
 
 | Module | Instability | Test files | Src files | Density |
@@ -109,13 +110,13 @@ quadrantChart
 | `contracts/Discovery` | 0.00 | 3 | 3 | 100% |
 | `contracts/Exceptions` | 0.00 | 5 | 1 | 100% |
 | `contracts/Interfaces` | 0.10 | 46 | 21 | 100% |
-| `contracts/Observability` | 0.00 | 4 | 4 | 100% |
+| `contracts/Observability` | 0.00 | 6 | 4 | 100% |
 | `contracts/Policy` | 0.00 | 3 | 5 | 60% |
 | `contracts/Spec` | 0.02 | 285 | 52 | 100% |
 | `contracts/State` | 0.10 | 83 | 3 | 100% |
 | `contracts/Support` | 0.00 | 12 | 5 | 100% |
 | `contracts/Validation` | 0.11 | 91 | 9 | 100% |
-| `document/Parser` | 0.33 | 60 | 24 | 100% |
+| `document/Parser` | 0.29 | 61 | 24 | 100% |
 | `document/Plugins` | 1.00 | 52 | 50 | 100% |
 | `document/Registries` | 0.80 | 3 | 1 | 100% |
 | `document/Validator` | 0.71 | 25 | 6 | 100% |
@@ -172,5 +173,6 @@ quadrantChart
 | `sources/Exceptions` | 0.00 | 8 | 5 | 100% |
 | `sources/Normalizer` | 0.33 | 6 | 5 | 100% |
 | `sources/Plugins` | 1.00 | 2 | 1 | 100% |
+| `sources/Policy` | 0.00 | 3 | 1 | 100% |
 | `sources/Registries` | 0.80 | 5 | 1 | 100% |
-| `sources/Resolver` | 0.57 | 25 | 11 | 100% |
+| `sources/Resolver` | 0.67 | 25 | 12 | 100% |

@@ -88,6 +88,7 @@ flowchart LR
     sources_Exceptions["Alama\Arazzo\Sources\Exceptions"]:::coreNode
     sources_Normalizer["Alama\Arazzo\Sources\Normalizer"]:::coreNode
     sources_Plugins["Alama\Arazzo\Sources\Plugins\SourceNormalizer"]:::coreNode
+    sources_Policy["Alama\Arazzo\Sources\Policy"]:::coreNode
     sources_Registries["Alama\Arazzo\Sources\Registries"]:::coreNode
     sources_Resolver["Alama\Arazzo\Sources\Resolver\Exceptions"]:::coreNode
     sources__["(sources package root)"]:::coreNode
@@ -232,16 +233,21 @@ flowchart LR
     sources_Registries --> contracts_Discovery
     sources_Registries --> contracts_Interfaces
     sources_Registries --> contracts_Spec
+    sources_Resolver --> contracts_Observability
+    sources_Resolver --> sources_Policy
     sources_Resolver --> contracts_Interfaces
     sources_Resolver --> contracts_Spec
     sources_Resolver --> document_Parser
     sources_Resolver --> sources_Exceptions
     sources__ --> contracts_Data
     sources__ --> contracts_Interfaces
+    sources__ --> contracts_Observability
     sources__ --> contracts_Spec
+    sources__ --> document_Parser
+    sources__ --> sources_Exceptions
+    sources__ --> sources_Policy
     sources__ --> sources_Registries
     sources__ --> sources_Resolver
-    sources__ --> sources_Exceptions
     engine_Data --> contracts_Spec
     engine_Data --> engine_Enum
     engine_Data --> contracts_State

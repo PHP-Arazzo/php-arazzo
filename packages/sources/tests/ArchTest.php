@@ -34,6 +34,16 @@ arch('sources facade is final and readonly')
     ->toBeFinal()
     ->toBeReadonly();
 
+arch('sources policy DTOs are final and readonly')
+    ->expect('Alama\Arazzo\Sources\Policy')
+    ->toBeFinal()
+    ->toBeReadonly();
+
+arch('sources stays vendor-agnostic on observability (ADR-010 Tier 2)')
+    ->expect('Alama\Arazzo\Sources')
+    ->not->toUse('OpenTelemetry')
+    ->not->toUse('Psr\EventDispatcher');
+
 it('keeps protocol namespaces out of the sources package', function (): void {
     $needle = 'Alama\\Arazzo\\Protocol\\';
     $violations = [];

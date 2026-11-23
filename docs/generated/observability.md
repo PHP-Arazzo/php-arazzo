@@ -93,8 +93,10 @@ _No catalog found (LedgerAppendingListener not found)._
 | `StepExecutionWorker` <small>core</small> | `info` · `error` | 5 |
 | `StepOutcomeHandler` <small>core</small> | `warning` · `info` | 2 |
 | `WorkflowExecutor` <small>core</small> | `warning` · `info` · `error` | 4 |
+| `HttpFetcher` <small>core</small> | `debug` · `warning` | 4 |
+| `Sources` <small>core</small> | `warning` | 2 |
 
-127 logging calls total. PSR-14 events are dispatched independently (see events.md).
+133 logging calls total. PSR-14 events are dispatched independently (see events.md).
 
 ## Persistence adapters
 

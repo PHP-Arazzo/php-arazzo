@@ -39,7 +39,7 @@ quadrantChart
     contracts/State: [0.105, 0]
     contracts/Support: [0, 0.2]
     contracts/Validation: [0.111, 0]
-    document/Parser: [0.333, 0.083]
+    document/Parser: [0.286, 0.083]
     document/Plugins: [1, 0]
     document/Registries: [0.8, 0]
     document/Validator: [0.714, 0]
@@ -102,9 +102,10 @@ quadrantChart
     sources/Exceptions: [0, 0.2]
     sources/Normalizer: [0.333, 0.2]
     sources/Plugins: [1, 0]
+    sources/Policy: [0, 0]
     sources/Registries: [0.8, 0]
-    sources/Resolver: [0.571, 0.273]
-    sources/_: [0.667, 0.5]
+    sources/Resolver: [0.667, 0.25]
+    sources/_: [0.75, 0.5]
 ```
 
 ## God classes (SRP)
@@ -135,6 +136,7 @@ Contracts declaring more than 7 methods:
 |---|---:|
 | `AsyncRunnerInterface` <small>runner</small> | 16 |
 | `ExpressionEngineInterface` <small>expression</small> | 14 |
+| `SourcesInterface` <small>sources</small> | 10 |
 | `RunnerInterface` <small>runner</small> | 9 |
 | `ExecutionStoreInterface` <small>runner</small> | 9 |
 | `EvaluationEngineInterface` <small>evaluation</small> | 8 |

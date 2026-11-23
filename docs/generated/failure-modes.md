@@ -23,7 +23,7 @@ Regenerated before every commit.
 | **ExecutionException** | `RpcRequestBuilder` <small>protocol-rpc:Execution</small>, `RpcOperationExecutor` <small>protocol-rpc:Plugins</small>, `SoapRequestBuilder` <small>protocol-soap:Execution</small>, `SoapOperationExecutor` <small>protocol-soap:Plugins</small>, `StepExecutionWorker` <small>runner:Async</small>, `StepExecutor` <small>runner:Sync</small> |
 | **ExpressionSyntaxException** | `EmbeddedExpressionSplitter` <small>expression:Internal</small>, `Interpolator` <small>(expression root)</small>, `Lexer` <small>(expression root)</small>, `Parser` <small>(expression root)</small> |
 | **GotoTargetNotFoundException** | `WorkflowEngine` <small>runner:Sync</small> |
-| **InvalidArgumentException** | `SpecVersion` <small>contracts:Spec</small>, `StepTarget` <small>contracts:Spec</small>, `TypeCaster` <small>engine:Execution</small>, `CriterionEvaluatorRegistry` <small>evaluation:Registries</small>, `ExpressionEvaluatorRegistry` <small>evaluation:Registries</small>, `SelectorPluginRegistry` <small>expression:Registries</small>, `ProtoParser` <small>protocol-rpc:Normalizer</small>, `WsdlSourceNormalizer` <small>protocol-soap:Plugins</small>, `OpenApi30Normalizer` <small>sources:Normalizer</small>, `OpenApiVersionDetector` <small>sources:Normalizer</small>, `OpenApiSourceNormalizer` <small>sources:Plugins</small> |
+| **InvalidArgumentException** | `SpecVersion` <small>contracts:Spec</small>, `StepTarget` <small>contracts:Spec</small>, `TypeCaster` <small>engine:Execution</small>, `CriterionEvaluatorRegistry` <small>evaluation:Registries</small>, `ExpressionEvaluatorRegistry` <small>evaluation:Registries</small>, `SelectorPluginRegistry` <small>expression:Registries</small>, `ProtoParser` <small>protocol-rpc:Normalizer</small>, `WsdlSourceNormalizer` <small>protocol-soap:Plugins</small>, `OpenApi30Normalizer` <small>sources:Normalizer</small>, `OpenApiVersionDetector` <small>sources:Normalizer</small>, `OpenApiSourceNormalizer` <small>sources:Plugins</small>, `FetchPolicy` <small>sources:Policy</small> |
 | **LogicException** | `AsyncApiStepExecutor` <small>protocol-http:Plugins</small>, `StepExecutionWorker` <small>runner:Async</small>, `WorkflowExecutor` <small>runner:Sync</small> |
 | **MaxAliasesExceededException** | `YamlSecurityScanner` <small>document:Parser</small> |
 | **MaxBytesExceededException** | `NativeJsonDecoder` <small>document:Parser</small>, `SymfonyYamlDecoder` <small>document:Parser</small> |
@@ -34,7 +34,7 @@ Regenerated before every commit.
 | **RuntimeException** | `CliRunner` <small>cli:Console</small>, `OpenAiClient` <small>cli:Generator</small>, `PluginInstantiator` <small>contracts:Discovery</small>, `Reusable` <small>contracts:Spec</small>, `ReusableParameterResolver` <small>engine:Execution</small>, `BuiltInCriterionEvaluator` <small>(evaluation root)</small>, `CriteriaEvaluator` <small>(evaluation root)</small>, `Parser` <small>expression:JsonPath</small>, `OpenApiOperationResolver` <small>protocol-http:Resolver</small>, `ProtobufOperationResolver` <small>protocol-rpc:Protocol</small>, `RpcMessageCodec` <small>protocol-rpc:Protocol</small>, `SoapEnvelope` <small>protocol-soap:Execution</small>, `WsdlOperationResolver` <small>protocol-soap:Execution</small>, `OperationResolvers` <small>runner:Preflight</small>, `FileLockStrategy` <small>engine:Runtime</small>, `FileStateStore` <small>engine:Runtime</small>, `OtelSetup` <small>engine:Runtime</small>, `SourceReferenceParser` <small>sources:Normalizer</small> |
 | **SchemaValidationException** | `ResponseSchemaValidator` <small>protocol-http:Execution</small>, `XsdResponseValidator` <small>protocol-soap:Validation</small> |
 | **SelectorEvaluationException** | `ExpressionEngine` <small>(expression root)</small>, `SelectorEvaluator` <small>(expression root)</small> |
-| **SourceFetchException** | `DefaultSourceResolver` <small>sources:Resolver</small>, `HttpFetcher` <small>sources:Resolver</small>, `LocalFetcher` <small>sources:Resolver</small> |
+| **SourceFetchException** | `DefaultSourceResolver` <small>sources:Resolver</small>, `HttpFetcher` <small>sources:Resolver</small>, `LocalFetcher` <small>sources:Resolver</small>, `Sources` <small>(sources root)</small> |
 | **SourceParseException** | `DefaultSourceResolver` <small>sources:Resolver</small> |
 | **StepBudgetExceededException** | `WorkflowEngine` <small>runner:Sync</small> |
 | **UnresolvableReferenceException** | `DefaultSourceResolver` <small>sources:Resolver</small> |
@@ -85,6 +85,7 @@ Regenerated before every commit.
 | `Throwable` | `Preflight` |  |
 | `Throwable` | `WorkflowExecutor` |  |
 | `Throwable` | `DefaultSourceResolver` |  |
+| `Throwable` | `Sources` |  |
 
 ## Safety interlocks
 
@@ -102,6 +103,4 @@ Regenerated before every commit.
 | prop max | `ConditionCache` | `256` |
 | prop max | `AstCache` | `256` |
 | prop stateTtlSeconds | `StoredWorkflowStateRepository` | `86400` |
-| const HTTP_CONNECT_TIMEOUT | `DefaultSourceResolver` | `2.0` |
-| const HTTP_REQUEST_TIMEOUT | `DefaultSourceResolver` | `5.0` |
 | prop ttlSeconds | `CachedFetcher` | `3600` |

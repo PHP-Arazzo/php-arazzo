@@ -9,12 +9,15 @@ use Alama\Arazzo\Contracts\Data\ResolvedOperationCollection;
 use Alama\Arazzo\Contracts\Interfaces\SourceFetcherInterface;
 use Alama\Arazzo\Contracts\Interfaces\SourceNormalizerInterface;
 use Alama\Arazzo\Contracts\Interfaces\SourceResolverInterface;
+use Alama\Arazzo\Contracts\Observability\TracerInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Spec\SourceDocument;
 use Alama\Arazzo\Sources\Exceptions\SourceResolutionException;
+use Alama\Arazzo\Sources\Policy\FetchPolicy;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
+use Psr\Log\LoggerInterface;
 
 interface SourcesInterface extends SourceResolverInterface
 {
@@ -39,6 +42,21 @@ interface SourcesInterface extends SourceResolverInterface
      * @throws SourceResolutionException
      */
     public function knownOperations(ArazzoDocument $document, string $basePath = ''): KnownOperations;
+
+    /**
+     * Immutably configure the fetch policy (timeouts, byte limits, allowed schemes, strict reachability).
+     */
+    public function withPolicy(FetchPolicy $policy): static;
+
+    /**
+     * Immutably attach a PSR-3 logger for structured source resolution diagnostics.
+     */
+    public function withLogger(LoggerInterface $logger): static;
+
+    /**
+     * Immutably attach a vendor-agnostic tracer for source fetch spans and W3C context injection.
+     */
+    public function withTracer(TracerInterface $tracer): static;
 
     /**
      * Immutably rebind the HTTP client used for remote fetching.

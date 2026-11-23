@@ -20,7 +20,7 @@ when a boundary consciously moves.
 | `GuzzleHttp` | 9 | 0 | **forbidden** ⚠ |
 | `JsonSchema` | 7 | 0 | _unclassified_ ⚠ |
 | `OpenTelemetry` | 26 | 0 | _unclassified_ ⚠ |
-| `Psr` | 85 | 0 | allowed |
+| `Psr` | 93 | 0 | allowed |
 | `Symfony` | 32 | 0 | **forbidden** ⚠ |
 | `cebe` | 16 | 0 | **forbidden** ⚠ |
 
@@ -62,9 +62,9 @@ when a boundary consciously moves.
 | runner | `runner:Sync` | `Psr` | 3 |
 | runner | `runner:_` | `Psr` | 12 |
 | sources | `sources:Resolver` | `GuzzleHttp` | 2 |
-| sources | `sources:Resolver` | `Psr` | 4 |
+| sources | `sources:Resolver` | `Psr` | 10 |
 | sources | `sources:_` | `GuzzleHttp` | 1 |
-| sources | `sources:_` | `Psr` | 4 |
+| sources | `sources:_` | `Psr` | 6 |
 
 **14 library boundary violation(s):**
 - `cli:Console` imports `GuzzleHttp\*` (2 refs)
@@ -169,8 +169,9 @@ Grouped cross-package uses of concrete internals (AST nodes, evaluators, resolve
 | `runner` | `SystemClock` | `contracts` | 2 | `ObservabilityContext` |
 | `runner` | `ValidationResult` | `contracts` | 6 | `AsyncExecutionGraphAssembler` |
 | `sources` | `AsSourceNormalizerPlugin` | `contracts` | 2 | `OpenApiSourceNormalizer` |
-| `sources` | `DecodePolicy` | `document` | 1 | `DefaultSourceResolver` |
+| `sources` | `DecodePolicy` | `document` | 2 | `DefaultSourceResolver` |
 | `sources` | `Decoders` | `document` | 1 | `DefaultSourceResolver` |
 | `sources` | `KnownOperations` | `contracts` | 2 | `Sources` |
+| `sources` | `NullTracer` | `contracts` | 2 | `HttpFetcher` |
 | `sources` | `PluginDiscovery` | `contracts` | 1 | `SourceNormalizerRegistry` |
 | `sources` | `ResolvedOperationCollection` | `contracts` | 2 | `Sources` |

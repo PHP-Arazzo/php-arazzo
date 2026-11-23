@@ -21,13 +21,13 @@ targets. Regenerated before every commit.
 | `contracts:Discovery` | 3 | 418 | 4 | 0 | 0.00 |  |
 | `contracts:Exceptions` | 1 | 30 | 7 | 0 | 0.00 |  |
 | `contracts:Interfaces` | 21 | 391 | 35 | 4 | 0.10 |  |
-| `contracts:Observability` | 4 | 104 | 6 | 0 | 0.00 |  |
+| `contracts:Observability` | 4 | 104 | 8 | 0 | 0.00 |  |
 | `contracts:Policy` | 5 | 263 | 3 | 0 | 0.00 |  |
 | `contracts:Spec` | 52 | 1248 | 54 | 1 | 0.02 |  |
 | `contracts:State` | 3 | 1004 | 17 | 2 | 0.11 |  |
 | `contracts:Support` | 5 | 180 | 8 | 0 | 0.00 |  |
 | `contracts:Validation` | 9 | 339 | 16 | 2 | 0.11 |  |
-| `document:Parser` | 24 | 2217 | 4 | 2 | 0.33 |  |
+| `document:Parser` | 24 | 2217 | 5 | 2 | 0.29 |  |
 | `document:Plugins` | 50 | 3068 | 0 | 7 | 1.00 |  |
 | `document:Registries` | 1 | 96 | 1 | 4 | 0.80 |  |
 | `document:Validator` | 6 | 656 | 2 | 5 | 0.71 |  |
@@ -90,11 +90,12 @@ targets. Regenerated before every commit.
 | `sources:Exceptions` | 5 | 60 | 2 | 0 | 0.00 |  |
 | `sources:Normalizer` | 5 | 443 | 2 | 1 | 0.33 |  |
 | `sources:Plugins` | 1 | 146 | 0 | 5 | 1.00 |  |
+| `sources:Policy` | 1 | 124 | 2 | 0 | 0.00 |  |
 | `sources:Registries` | 1 | 80 | 1 | 4 | 0.80 |  |
-| `sources:Resolver` | 11 | 467 | 3 | 4 | 0.57 |  |
-| `(sources root)` | 2 | 205 | 3 | 6 | 0.67 |  |
+| `sources:Resolver` | 12 | 617 | 3 | 6 | 0.67 |  |
+| `(sources root)` | 2 | 339 | 3 | 9 | 0.75 |  |
 
-Total cross-module edges: **1578**
+Total cross-module edges: **1591**
 
 ## Most entangled module pairs
 

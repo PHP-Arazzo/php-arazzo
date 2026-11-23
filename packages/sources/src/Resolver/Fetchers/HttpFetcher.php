@@ -4,12 +4,17 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Sources\Resolver\Fetchers;
 
+use Alama\Arazzo\Contracts\Observability\NullTracer;
+use Alama\Arazzo\Contracts\Observability\TracerInterface;
+use Alama\Arazzo\Sources\Policy\FetchPolicy;
 use Alama\Arazzo\Sources\Resolver\Exceptions\SourceFetchException;
 use Alama\Arazzo\Sources\Resolver\Interfaces\SourceFetcher;
 use GuzzleHttp\Psr7\HttpFactory;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 /**
  * @internal stays out of the advertised contract; not part of the public API surface
@@ -18,31 +23,92 @@ final class HttpFetcher implements SourceFetcher
 {
     private readonly RequestFactoryInterface $requestFactory;
 
+    private readonly FetchPolicy $policy;
+
+    private readonly LoggerInterface $logger;
+
+    private readonly TracerInterface $tracer;
+
     public function __construct(
         private readonly ClientInterface $client,
         ?RequestFactoryInterface $requestFactory = null,
+        ?FetchPolicy $policy = null,
+        ?LoggerInterface $logger = null,
+        ?TracerInterface $tracer = null,
     ) {
         $this->requestFactory = $requestFactory ?? new HttpFactory();
+        $this->policy = $policy ?? FetchPolicy::default();
+        $this->logger = $logger ?? new NullLogger();
+        $this->tracer = $tracer ?? new NullTracer();
     }
 
     public function fetch(string $urlOrPath, string $basePath): string
     {
         $url = self::resolveUrl($urlOrPath, $basePath);
+        $span = $this->tracer->startSpan('arazzo.source.fetch', ['url.full' => $url]);
 
         try {
             $request = $this->requestFactory->createRequest('GET', $url);
-            $response = $this->client->sendRequest($request);
-        } catch (ClientExceptionInterface $e) {
-            throw new SourceFetchException("HTTP connection failed for {$url}: {$e->getMessage()}", 0, $e);
-        }
+            $carrier = [];
+            $this->tracer->injectContext($carrier);
+            foreach ($carrier as $header => $value) {
+                $request = $request->withHeader($header, $value);
+            }
 
-        if ($response->getStatusCode() < 200 || $response->getStatusCode() >= 300) {
-            throw new SourceFetchException(
-                "HTTP request failed for {$url}: ".$response->getStatusCode(),
-            );
-        }
+            try {
+                $response = $this->client->sendRequest($request);
+            } catch (ClientExceptionInterface $e) {
+                $span->recordException($e);
+                $span->setStatus(false, $e->getMessage());
+                $this->logger->warning('HTTP connection failed while fetching source.', [
+                    'url' => $url,
+                    'error' => $e->getMessage(),
+                ]);
 
-        return (string) $response->getBody();
+                throw new SourceFetchException("HTTP connection failed for {$url}: {$e->getMessage()}", 0, $e);
+            }
+
+            $statusCode = $response->getStatusCode();
+            $span->setAttribute('http.response.status_code', $statusCode);
+
+            if ($statusCode < 200 || $statusCode >= 300) {
+                $message = "HTTP request failed for {$url}: {$statusCode}";
+                $span->setStatus(false, $message);
+                $this->logger->warning('HTTP request failed while fetching source.', [
+                    'url' => $url,
+                    'status' => $statusCode,
+                ]);
+
+                throw new SourceFetchException($message);
+            }
+
+            $body = (string) $response->getBody();
+            $byteLength = strlen($body);
+            $span->setAttribute('http.response.body.size', $byteLength);
+
+            if ($byteLength > $this->policy->maxBytes) {
+                $message = "HTTP response for {$url} exceeded maximum size of {$this->policy->maxBytes} bytes.";
+                $span->setStatus(false, $message);
+                $this->logger->warning('HTTP source response exceeded FetchPolicy::maxBytes.', [
+                    'url' => $url,
+                    'bytes' => $byteLength,
+                    'max_bytes' => $this->policy->maxBytes,
+                ]);
+
+                throw new SourceFetchException($message);
+            }
+
+            $span->setStatus(true);
+            $this->logger->debug('Fetched remote source.', [
+                'url' => $url,
+                'status' => $statusCode,
+                'bytes' => $byteLength,
+            ]);
+
+            return $body;
+        } finally {
+            $span->end();
+        }
     }
 
     private static function resolveUrl(string $urlOrPath, string $basePath): string

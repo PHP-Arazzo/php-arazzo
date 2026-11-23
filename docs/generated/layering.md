@@ -77,6 +77,7 @@ flowchart TB
         M_sources_Exceptions["sources:Exceptions"]:::node
         M_sources_Normalizer["sources:Normalizer"]:::node
         M_sources_Plugins["sources:Plugins"]:::node
+        M_sources_Policy["sources:Policy"]:::node
         M_sources_Registries["sources:Registries"]:::node
         M_sources_Resolver["sources:Resolver"]:::node
         M_sources__["(sources package root)"]:::node
@@ -491,13 +492,18 @@ flowchart TB
     M_sources_Registries --> M_contracts_Interfaces
     M_sources_Registries --> M_contracts_Spec
     M_sources_Resolver --> M_contracts_Interfaces
+    M_sources_Resolver --> M_contracts_Observability
     M_sources_Resolver --> M_contracts_Spec
     M_sources_Resolver --> M_document_Parser
     M_sources_Resolver --> M_sources_Exceptions
+    M_sources_Resolver --> M_sources_Policy
     M_sources__ --> M_contracts_Data
     M_sources__ --> M_contracts_Interfaces
+    M_sources__ --> M_contracts_Observability
     M_sources__ --> M_contracts_Spec
+    M_sources__ --> M_document_Parser
     M_sources__ --> M_sources_Exceptions
+    M_sources__ --> M_sources_Policy
     M_sources__ --> M_sources_Registries
     M_sources__ --> M_sources_Resolver
     classDef node fill:#e8f0fe,stroke:#4285f4,color:#1a1a1a;
@@ -552,8 +558,8 @@ flowchart TB
 | `runner` | `engine` | 11 |
 | `runner` | `evaluation` | 14 |
 | `runner` | `expression` | 8 |
-| `sources` | `contracts` | 42 |
-| `sources` | `document` | 2 |
+| `sources` | `contracts` | 48 |
+| `sources` | `document` | 3 |
 
 ## Module-level detail
 

@@ -555,14 +555,17 @@ this file on a commit is a public API change — review it deliberately.
 ### `Alama\Arazzo\Sources`
 
 #### `Sources` class
-- `public function __construct(?SourceResolverInterface $resolver = null, array $normalizers = [], array $documents = [])`
+- `public function __construct(?SourceResolverInterface $resolver = null, array $normalizers = [], array $documents = [], ?FetchPolicy $policy = null, ?SourcesRuntimeConfig $runtime = null)`
 - `public function knownOperations(ArazzoDocument $document, string $basePath = ''): KnownOperations`
 - `public function normalizeSources(ArazzoDocument $document, string $basePath = ''): ResolvedOperationCollection`
 - `public function resolve(SourceDescription $source, string $basePath = ''): SourceDocument`
 - `public function withDocument(SourceDocument $document): static`
 - `public function withFetcher(string $scheme, SourceFetcherInterface $fetcher): static`
 - `public function withHttpClient(ClientInterface $client, ?RequestFactoryInterface $requestFactory = null): static`
+- `public function withLogger(LoggerInterface $logger): static`
 - `public function withNormalizer(SourceNormalizerInterface $normalizer): static`
+- `public function withPolicy(FetchPolicy $policy): static`
+- `public function withTracer(TracerInterface $tracer): static`
 - `public static function create(): self`
 
 #### `SourcesInterface` interface
@@ -572,7 +575,10 @@ this file on a commit is a public API change — review it deliberately.
 - `public function withDocument(SourceDocument $document): static;`
 - `public function withFetcher(string $scheme, SourceFetcherInterface $fetcher): static;`
 - `public function withHttpClient(ClientInterface $client, ?RequestFactoryInterface $requestFactory = null): static;`
+- `public function withLogger(LoggerInterface $logger): static;`
 - `public function withNormalizer(SourceNormalizerInterface $normalizer): static;`
+- `public function withPolicy(FetchPolicy $policy): static;`
+- `public function withTracer(TracerInterface $tracer): static;`
 
 ### `Alama\Arazzo\Sources\Exceptions`
 
@@ -581,6 +587,18 @@ this file on a commit is a public API change — review it deliberately.
 
 #### `UnsupportedSourceVersionException` class
 - `public static function forVersion(string $version, string $sourceName): self`
+
+### `Alama\Arazzo\Sources\Policy`
+
+#### `FetchPolicy` class
+- `public function __construct(public float $connectTimeout = self::DEFAULT_CONNECT_TIMEOUT, public float $timeout = self::DEFAULT_TIMEOUT, public int $maxBytes = self::DEFAULT_MAX_BYTES, array $allowedSchemes = self::DEFAULT_ALLOWED_SCHEMES, public bool $strictReachability = self::DEFAULT_STRICT_REACHABILITY)`
+- `public function allowsScheme(string $scheme): bool`
+- `public function withAllowedSchemes(array $schemes): self`
+- `public function withConnectTimeout(float $seconds): self`
+- `public function withMaxBytes(int $maxBytes): self`
+- `public function withStrictReachability(bool $strict = true): self`
+- `public function withTimeout(float $seconds): self`
+- `public static function default(): self`
 
 ### `Alama\Arazzo\Sources\Registries`
 

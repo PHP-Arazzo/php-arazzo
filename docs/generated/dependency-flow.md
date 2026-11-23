@@ -371,15 +371,20 @@ sources-Registries,contracts-Discovery,1
 sources-Registries,contracts-Interfaces,1
 sources-Registries,contracts-Spec,1
 sources-Resolver,contracts-Interfaces,3
+sources-Resolver,contracts-Observability,4
 sources-Resolver,contracts-Spec,5
 sources-Resolver,document-Parser,2
 sources-Resolver,sources-Exceptions,8
+sources-Resolver,sources-Policy,1
 sources-root,contracts-Data,4
 sources-root,contracts-Interfaces,6
+sources-root,contracts-Observability,2
 sources-root,contracts-Spec,8
-sources-root,sources-Exceptions,1
+sources-root,document-Parser,1
+sources-root,sources-Exceptions,3
+sources-root,sources-Policy,2
 sources-root,sources-Registries,1
-sources-root,sources-Resolver,2
+sources-root,sources-Resolver,3
 ```
 
 ## Folded flows
