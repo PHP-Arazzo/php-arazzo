@@ -74,7 +74,7 @@ flowchart LR
         S_protocol_http_Plugins["protocol-http:Plugins<br/><small>340 LOC</small>"]:::unknownDomain
         S_protocol_http_Policy["protocol-http:Policy<br/><small>43 LOC</small>"]:::unknownDomain
         S_protocol_rpc_Execution["protocol-rpc:Execution<br/><small>188 LOC</small>"]:::unknownDomain
-        S_protocol_rpc_Normalizer["protocol-rpc:Normalizer<br/><small>538 LOC</small>"]:::unknownDomain
+        S_protocol_rpc_Normalizer["protocol-rpc:Normalizer<br/><small>578 LOC</small>"]:::unknownDomain
         S_protocol_rpc_Plugins["protocol-rpc:Plugins<br/><small>422 LOC</small>"]:::unknownDomain
         S_protocol_rpc_Protocol["protocol-rpc:Protocol<br/><small>514 LOC</small>"]:::unknownDomain
         S_protocol_rpc_Transfer["protocol-rpc:Transfer<br/><small>219 LOC</small>"]:::unknownDomain
@@ -110,7 +110,7 @@ flowchart LR
 | Core domain | 1 | 1,300 | 0 | 4% |
 | Supporting | 8 | 5,377 | 0 | 16% |
 | Generic subdomain | 6 | 1,678 | 0 | 5% |
-| Unclassified | 62 | 25,071 | 0 | 75% |
+| Unclassified | 62 | 25,111 | 0 | 75% |
 
 **Unclassified modules** — classify them in `SUBDOMAINS` or delete them:
 - `contracts:Attributes`

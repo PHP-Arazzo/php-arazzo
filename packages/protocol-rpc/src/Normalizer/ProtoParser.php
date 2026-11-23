@@ -22,60 +22,49 @@ use InvalidArgumentException;
  */
 final class ProtoParser
 {
-    /**
-     * @var list<array{0: 'ident'|'string'|'sym'|'number', 1: string|int}>
-     */
-    private array $tokens = [];
-
-    private int $offset = 0;
-
     public function parse(string $content): ProtoDocument
     {
-        $this->tokens = $this->tokenize($content);
-        $this->offset = 0;
+        $cursor = new ProtoTokenCursor(ProtoTokenizer::tokenize($content));
 
-        $header = $this->expectWord('syntax');
+        $header = $cursor->expectWord('syntax');
         if ($header !== 'syntax') {
             throw new InvalidArgumentException('Source content is not a proto3 document.');
         }
-        $this->expectSymbol('=');
-        $version = $this->expectString();
+        $cursor->expectSymbol('=');
+        $version = $cursor->expectString();
         if ($version !== 'proto3') {
             throw new InvalidArgumentException("Source content announces unsupported syntax '{$version}'; only proto3 is supported.");
         }
-        $this->expectSymbol(';');
+        $cursor->expectSymbol(';');
 
         $package = '';
         $services = [];
         $messages = [];
 
-        $tokenCount = count($this->tokens);
-        while ($this->offset < $tokenCount) {
-            $token = $this->tokens[$this->offset];
+        while ($cursor->hasMore()) {
+            $token = $cursor->peek();
 
             if ($token[0] === 'sym') {
-                $this->offset++;
+                $cursor->consume();
 
                 continue;
             }
 
             $keyword = $token[1];
             if (!in_array($keyword, ['package', 'import', 'option', 'enum', 'message', 'service', 'extend', 'oneof'], true)) {
-                $this->skipDeclaration();
+                $this->skipDeclaration($cursor);
 
                 continue;
             }
-            $this->offset++;
+            $cursor->consume();
 
             match ($keyword) {
-                'package' => $package = $this->qualifiedName(),
-                'import' => $this->skipToTerminator(';'),
-                'option' => $this->skipToTerminator(';'),
-                'enum' => $this->skipBlock(),
-                'message' => $this->parseMessage($messages),
-                'service' => $services[] = $this->parseService(),
-                'extend' => $this->skipDeclaration(),
-                'oneof' => $this->skipDeclaration(),
+                'package' => $package = $this->qualifiedName($cursor),
+                'import', 'option' => $this->skipToTerminator($cursor, ';'),
+                'enum' => $this->skipBlock($cursor),
+                'message' => $this->parseMessage($cursor, $messages),
+                'service' => $services[] = $this->parseService($cursor),
+                'extend', 'oneof' => $this->skipDeclaration($cursor),
             };
         }
 
@@ -85,123 +74,120 @@ final class ProtoParser
     /**
      * @param  array<string, list<ProtoField>>  $messages
      */
-    private function parseMessage(array &$messages): void
+    private function parseMessage(ProtoTokenCursor $cursor, array &$messages): void
     {
-        $name = $this->expectWord('message-name');
-        $this->expectSymbol('{');
+        $name = $cursor->expectWord('message-name');
+        $cursor->expectSymbol('{');
 
         $fields = [];
-        $tokenCount = count($this->tokens);
-        while (!$this->atSymbol('}') && $this->offset < $tokenCount) {
-            $token = $this->peek();
+        while (!$cursor->atSymbol('}') && $cursor->hasMore()) {
+            $token = $cursor->peek();
 
             if ($token[0] === 'sym') {
-                $this->offset++;
+                $cursor->consume();
 
                 continue;
             }
 
             $keyword = $token[1];
             if (!in_array($keyword, ['repeated', 'map', 'message', 'oneof', 'group', 'extensions', 'reserved', 'option', 'extend'], true)) {
-                $fields[] = $this->parseField(repeated: false);
+                $fields[] = $this->parseField($cursor, repeated: false);
 
                 continue;
             }
-            $this->offset++;
+            $cursor->consume();
 
             match ($keyword) {
-                'repeated' => $fields[] = $this->parseField(repeated: true),
-                'map' => $this->skipToTerminator(';'),
-                'message', 'oneof', 'group', 'extensions' => $this->skipBlock(),
-                'reserved', 'option', 'extend' => $this->skipToTerminator(';'),
+                'repeated' => $fields[] = $this->parseField($cursor, repeated: true),
+                'map', 'reserved', 'option', 'extend' => $this->skipToTerminator($cursor, ';'),
+                'message', 'oneof', 'group', 'extensions' => $this->skipBlock($cursor),
             };
         }
-        $this->expectSymbol('}');
+        $cursor->expectSymbol('}');
 
         $messages[$name] = $fields;
     }
 
-    private function parseField(bool $repeated): ProtoField
+    private function parseField(ProtoTokenCursor $cursor, bool $repeated): ProtoField
     {
-        $type = $this->qualifiedName();
-        $name = $this->expectWord('field-name');
-        $this->expectSymbol('=');
-        $number = $this->expectNumber();
+        $type = $this->qualifiedName($cursor);
+        $name = $cursor->expectWord('field-name');
+        $cursor->expectSymbol('=');
+        $number = $cursor->expectNumber();
 
-        if ($this->atSymbol('[')) {
-            $this->offset++;
-            $this->skipToTerminator(']');
+        if ($cursor->atSymbol('[')) {
+            $cursor->consume();
+            $this->skipToTerminator($cursor, ']');
         }
-        $this->expectSymbol(';');
+        $cursor->expectSymbol(';');
 
         return new ProtoField($name, $type, $number, $repeated);
     }
 
-    private function parseService(): ProtoService
+    private function parseService(ProtoTokenCursor $cursor): ProtoService
     {
-        $name = $this->expectWord('service-name');
-        $this->expectSymbol('{');
+        $name = $cursor->expectWord('service-name');
+        $cursor->expectSymbol('{');
 
         $methods = [];
-        $tokenCount = count($this->tokens);
-        while (!$this->atSymbol('}') && $this->offset < $tokenCount) {
-            $token = $this->peek();
+        while (!$cursor->atSymbol('}') && $cursor->hasMore()) {
+            $token = $cursor->peek();
 
             if ($token[0] === 'sym') {
-                $this->offset++;
+                $cursor->consume();
 
                 continue;
             }
 
             $keyword = $token[1];
-            $this->offset++;
+            $cursor->consume();
 
             if ($keyword === 'rpc') {
-                $methods[] = $this->parseMethod();
+                $methods[] = $this->parseMethod($cursor);
             } else {
-                $this->skipToTerminator(';');
+                $this->skipToTerminator($cursor, ';');
             }
         }
-        $this->expectSymbol('}');
+        $cursor->expectSymbol('}');
 
         return new ProtoService($name, $methods);
     }
 
-    private function parseMethod(): ProtoMethod
+    private function parseMethod(ProtoTokenCursor $cursor): ProtoMethod
     {
-        $name = $this->expectWord('method-name');
+        $name = $cursor->expectWord('method-name');
 
-        $this->expectSymbol('(');
-        $requestStreaming = $this->peekWord() === 'stream';
+        $cursor->expectSymbol('(');
+        $requestStreaming = $cursor->peekWord() === 'stream';
         if ($requestStreaming) {
-            $this->offset++;
+            $cursor->consume();
         }
-        $requestType = $this->qualifiedName();
-        $this->expectSymbol(')');
+        $requestType = $this->qualifiedName($cursor);
+        $cursor->expectSymbol(')');
 
-        $this->expectWord('returns');
-        $this->expectSymbol('(');
-        $responseStreaming = $this->peekWord() === 'stream';
+        $cursor->expectWord('returns');
+        $cursor->expectSymbol('(');
+        $responseStreaming = $cursor->peekWord() === 'stream';
         if ($responseStreaming) {
-            $this->offset++;
+            $cursor->consume();
         }
-        $responseType = $this->qualifiedName();
-        $this->expectSymbol(')');
+        $responseType = $this->qualifiedName($cursor);
+        $cursor->expectSymbol(')');
 
-        if ($this->atSymbol('{')) {
-            $this->skipBlock();
+        if ($cursor->atSymbol('{')) {
+            $this->skipBlock($cursor);
         }
-        $this->expectSymbol(';');
+        $cursor->expectSymbol(';');
 
         return new ProtoMethod($name, $requestType, $responseType, $requestStreaming, $responseStreaming);
     }
 
-    private function qualifiedName(): string
+    private function qualifiedName(ProtoTokenCursor $cursor): string
     {
-        $name = $this->expectWord('name');
-        while ($this->atSymbol('.')) {
-            $this->offset++;
-            $name .= '.'.$this->expectWord('name-segment');
+        $name = $cursor->expectWord('name');
+        while ($cursor->atSymbol('.')) {
+            $cursor->consume();
+            $name .= '.'.$cursor->expectWord('name-segment');
         }
 
         return $name;
@@ -210,17 +196,16 @@ final class ProtoParser
     /**
      * Consumes a balanced `{ ... }` block including an optional leading name.
      */
-    private function skipBlock(): void
+    private function skipBlock(ProtoTokenCursor $cursor): void
     {
-        if ($this->peekWord() !== null && !$this->atSymbol('{')) {
-            $this->offset++;
+        if ($cursor->peekWord() !== null && !$cursor->atSymbol('{')) {
+            $cursor->consume();
         }
-        $this->expectSymbol('{');
+        $cursor->expectSymbol('{');
 
         $depth = 1;
-        $tokenCount = count($this->tokens);
-        while ($this->offset < $tokenCount && $depth > 0) {
-            $token = $this->tokens[$this->offset++];
+        while ($cursor->hasMore() && $depth > 0) {
+            $token = $cursor->consume();
             if ($token[0] === 'sym') {
                 if ($token[1] === '{') {
                     $depth++;
@@ -234,26 +219,25 @@ final class ProtoParser
     /**
      * Skips a declaration that may be a `;` statement or a `{ ... }` block.
      */
-    private function skipDeclaration(): void
+    private function skipDeclaration(ProtoTokenCursor $cursor): void
     {
-        if ($this->atSymbol('{')) {
-            $this->skipBlock();
+        if ($cursor->atSymbol('{')) {
+            $this->skipBlock($cursor);
 
             return;
         }
 
-        $this->skipToTerminator(';');
+        $this->skipToTerminator($cursor, ';');
     }
 
     /**
      * Advances to the first `$terminal` symbol at brace depth zero.
      */
-    private function skipToTerminator(string $terminal): void
+    private function skipToTerminator(ProtoTokenCursor $cursor, string $terminal): void
     {
         $depth = 0;
-        $tokenCount = count($this->tokens);
-        while ($this->offset < $tokenCount) {
-            $token = $this->tokens[$this->offset++];
+        while ($cursor->hasMore()) {
+            $token = $cursor->consume();
             if ($token[0] !== 'sym') {
                 continue;
             }
@@ -265,181 +249,5 @@ final class ProtoParser
                 return;
             }
         }
-    }
-
-    /**
-     * @return array{0: 'ident'|'string'|'sym'|'number', 1: string|int}
-     */
-    private function peek(): array
-    {
-        return $this->tokens[$this->offset];
-    }
-
-    private function peekWord(): ?string
-    {
-        $token = $this->tokens[$this->offset] ?? null;
-        if ($token === null || $token[0] !== 'ident') {
-            return null;
-        }
-
-        return (string) $token[1];
-    }
-
-    private function atSymbol(string $symbol): bool
-    {
-        $token = $this->tokens[$this->offset] ?? null;
-
-        return $token !== null && $token[0] === 'sym' && $token[1] === $symbol;
-    }
-
-    private function expectWord(string $what): string
-    {
-        $word = $this->peekWord();
-        if ($word === null) {
-            throw new InvalidArgumentException("Expected {$what} in .proto source.");
-        }
-        $this->offset++;
-
-        return $word;
-    }
-
-    private function expectSymbol(string $symbol): void
-    {
-        if (!$this->atSymbol($symbol)) {
-            throw new InvalidArgumentException("Expected '{$symbol}' in .proto source.");
-        }
-        $this->offset++;
-    }
-
-    private function expectString(): string
-    {
-        $token = $this->tokens[$this->offset] ?? null;
-        if ($token === null || $token[0] !== 'string') {
-            throw new InvalidArgumentException('Expected a string literal in .proto source.');
-        }
-        $this->offset++;
-
-        return (string) $token[1];
-    }
-
-    private function expectNumber(): int
-    {
-        $token = $this->tokens[$this->offset] ?? null;
-        if ($token === null || $token[0] !== 'number') {
-            throw new InvalidArgumentException('Expected a field number in .proto source.');
-        }
-        $this->offset++;
-
-        return (int) $token[1];
-    }
-
-    /**
-     * @return list<array{0: 'ident'|'string'|'sym'|'number', 1: string|int}>
-     */
-    private function tokenize(string $content): array
-    {
-        $tokens = [];
-        $length = strlen($content);
-        $i = 0;
-
-        while ($i < $length) {
-            $char = $content[$i];
-
-            if (ctype_space($char)) {
-                $i++;
-
-                continue;
-            }
-
-            if ($char === '/') {
-                $afterComment = self::skipComment($content, $i);
-                if ($afterComment !== null) {
-                    $i = $afterComment;
-
-                    continue;
-                }
-            }
-
-            if ($char === '"' || $char === "'") {
-                $quoted = self::scanQuoted($content, $i);
-                $tokens[] = $quoted[0];
-                $i = $quoted[1];
-
-                continue;
-            }
-
-            if (ctype_alpha($char) || $char === '_') {
-                [$word, $i] = self::scanWord($content, $i);
-                $tokens[] = ['ident', $word];
-
-                continue;
-            }
-
-            if (ctype_digit($char)) {
-                [$digits, $i] = self::scanWord($content, $i);
-                $tokens[] = ['number', (int) $digits];
-
-                continue;
-            }
-
-            $tokens[] = ['sym', $char];
-            $i++;
-        }
-
-        return $tokens;
-    }
-
-    /**
-     * Advances past a line (`//`) or block comment starting at $i, or returns
-     * null when the slash-plus-asterisk pair is not a comment opener.
-     */
-    private static function skipComment(string $content, int $i): ?int
-    {
-        $next = $content[$i + 1] ?? '';
-
-        if ($next === '/') {
-            $break = strpos($content, "\n", $i + 2);
-
-            return $break === false ? strlen($content) : $break + 1;
-        }
-
-        if ($next === '*') {
-            $break = strpos($content, '*/', $i + 2);
-
-            return $break === false ? strlen($content) : $break + 2;
-        }
-
-        return null;
-    }
-
-    /**
-     * @return array{0: array{0: 'string', 1: string}, 1: int}
-     */
-    private static function scanQuoted(string $content, int $i): array
-    {
-        $quote = $content[$i];
-        $start = ++$i;
-        $length = strlen($content);
-
-        while ($i < $length && $content[$i] !== $quote) {
-            $i++;
-        }
-
-        return [['string', substr($content, $start, $i - $start)], min($i + 1, $length)];
-    }
-
-    /**
-     * @return array{0: string, 1: int}
-     */
-    private static function scanWord(string $content, int $i): array
-    {
-        $start = $i;
-        $length = strlen($content);
-
-        while ($i < $length && (ctype_alnum($content[$i]) || $content[$i] === '_')) {
-            $i++;
-        }
-
-        return [substr($content, $start, $i - $start), $i];
     }
 }

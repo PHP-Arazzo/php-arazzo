@@ -34,7 +34,6 @@
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/protocol-http/src/Plugins/OperationExecutor/AsyncApiStepExecutor.php"/>
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/protocol-http/src/Resolver/OpenApiOperationResolver.php"/>
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/protocol-rpc/src/Execution/RpcRequestBuilder.php"/>
-  <violation rule="PHPMD\Rule\Design\ExcessiveClassComplexity" file="packages/protocol-rpc/src/Normalizer/ProtoParser.php"/>
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/protocol-rpc/src/Plugins/OperationExecutor/RpcOperationExecutor.php"/>
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/protocol-soap/src/Execution/SoapRequestBuilder.php"/>
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/protocol-soap/src/Plugins/OperationExecutor/SoapOperationExecutor.php"/>

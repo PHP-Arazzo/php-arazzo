@@ -69,7 +69,7 @@ quadrantChart
     protocol-http/Policy: [0.333, 1]
     protocol-http/Resolver: [0.667, 1]
     protocol-rpc/Execution: [0.875, 1]
-    protocol-rpc/Normalizer: [0, 0.2]
+    protocol-rpc/Normalizer: [0, 0.143]
     protocol-rpc/Plugins: [0.929, 1]
     protocol-rpc/Protocol: [0.571, 1]
     protocol-rpc/Transfer: [0.6, 1]
@@ -150,7 +150,7 @@ quadrantChart
 | `protocol-http/Policy` | 0.33 | 2 | 1 | 100% |
 | `protocol-http/Resolver` | 0.67 | 19 | 3 | 100% |
 | `protocol-rpc/Execution` | 0.88 | 3 | 2 | 100% |
-| `protocol-rpc/Normalizer` | 0.00 | 1 | 5 | 20% |
+| `protocol-rpc/Normalizer` | 0.00 | 1 | 7 | 14% |
 | `protocol-rpc/Plugins` | 0.93 | 6 | 3 | 100% |
 | `protocol-rpc/Protocol` | 0.57 | 6 | 4 | 100% |
 | `protocol-rpc/Transfer` | 0.60 | 3 | 2 | 100% |

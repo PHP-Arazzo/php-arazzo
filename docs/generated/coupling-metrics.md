@@ -65,7 +65,7 @@ targets. Regenerated before every commit.
 | `protocol-http:Resolver` | 3 | 314 | 3 | 6 | 0.67 |  |
 | `(protocol-http root)` | 1 | 128 | 1 | 12 | 0.92 |  |
 | `protocol-rpc:Execution` | 2 | 186 | 1 | 7 | 0.88 |  |
-| `protocol-rpc:Normalizer` | 5 | 533 | 1 | 0 | 0.00 |  |
+| `protocol-rpc:Normalizer` | 7 | 571 | 1 | 0 | 0.00 |  |
 | `protocol-rpc:Plugins` | 3 | 419 | 1 | 13 | 0.93 |  |
 | `protocol-rpc:Protocol` | 4 | 510 | 3 | 4 | 0.57 |  |
 | `protocol-rpc:Transfer` | 2 | 217 | 2 | 3 | 0.60 |  |

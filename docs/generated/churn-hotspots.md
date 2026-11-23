@@ -17,7 +17,7 @@ xychart-beta
     bar [52, 40, 30, 22, 20, 19, 18, 17, 16, 13, 11, 11]
 ```
 
-Analyzed 484 total file-touches across 77 modules.
+Analyzed 485 total file-touches across 77 modules.
 
 | Module | Touches | Share | LOC | Touches/KLOC |
 |---|---:|---:|---:|---:|
@@ -50,7 +50,7 @@ Analyzed 484 total file-touches across 77 modules.
 | `expression:Internal` | 5 | 1% | 921 | 5.4 |
 | `expression:Registries` | 5 | 1% | 113 | 44.2 |
 | `expression:Xpath` | 5 | 1% | 173 | 28.9 |
-| `protocol-rpc:Normalizer` | 5 | 1% | 538 | 9.3 |
+| `protocol-rpc:Normalizer` | 5 | 1% | 578 | 8.7 |
 | `runner:Policy` | 5 | 1% | 124 | 40.3 |
 | `runner:Preflight` | 5 | 1% | 156 | 32.1 |
 | `cli:Generator` | 4 | 1% | 141 | 28.4 |
@@ -64,6 +64,7 @@ Analyzed 484 total file-touches across 77 modules.
 | `expression:Exceptions` | 3 | 1% | 64 | 46.9 |
 | `expression:JsonPath` | 3 | 1% | 1,470 | 2 |
 | `protocol-rpc:Protocol` | 3 | 1% | 514 | 5.8 |
+| `protocol-soap:Plugins` | 3 | 1% | 899 | 3.3 |
 | `runner:Exceptions` | 3 | 1% | 134 | 22.4 |
 | `sources:Registries` | 3 | 1% | 81 | 37 |
 | `contracts:Discovery` | 2 | 0% | 421 | 4.8 |
@@ -75,7 +76,6 @@ Analyzed 484 total file-touches across 77 modules.
 | `expression:Support` | 2 | 0% | 192 | 10.4 |
 | `protocol-http:Resolver` | 2 | 0% | 317 | 6.3 |
 | `protocol-rpc:Plugins` | 2 | 0% | 422 | 4.7 |
-| `protocol-soap:Plugins` | 2 | 0% | 899 | 2.2 |
 | `protocol-soap:Validation` | 2 | 0% | 139 | 14.4 |
 | `runner:Plugins` | 2 | 0% | 86 | 23.3 |
 | `contracts:Clock` | 1 | 0% | 20 | 50 |

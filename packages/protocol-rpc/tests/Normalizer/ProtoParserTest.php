@@ -73,3 +73,49 @@ it('throws when the content is not a proto3 document', function (): void {
 it('throws for a proto2 syntax header', function (): void {
     (new ProtoParser())->parse("syntax = \"proto2\";\npackage stale;\nservice Old { rpc Run (In) returns (Out); }\nmessage In { string x = 1; }\nmessage Out { string y = 1; }");
 })->throws(InvalidArgumentException::class, 'proto3');
+
+it('handles comments, repeated fields, field options, nested blocks, service options, and unknown declarations', function (): void {
+    $proto = <<<'PROTO'
+    /* leading block comment */
+    syntax = 'proto3';
+    ;
+    package demo.v1;
+    import "google/protobuf/empty.proto";
+    option (custom) = { nested: "v" / 2 };
+    enum Kind { KIND_UNSPECIFIED = 0; }
+    unknown_decl foo = 1;
+    extend { body { inner } }
+    service Echo {
+      ;
+      option (svc_opt) = true;
+      rpc Send (demo.v1.Req) returns (demo.v1.Resp) { option (opt) = { a: 1 }; };
+    }
+    message Req {
+      ;
+      repeated string tags = 1 [deprecated = true];
+      map<string, int32> labels = 2;
+      reserved 10;
+      message Nested { string inner = 1; { nested } }
+      oneof choice { string a = 3; }
+    }
+    // trailing comment without newline
+    PROTO;
+
+    $doc = (new ProtoParser())->parse($proto);
+
+    expect($doc->package)->toBe('demo.v1')
+        ->and($doc->services)->toHaveCount(1)
+        ->and($doc->services[0]->methods[0]->name)->toBe('Send')
+        ->and($doc->messages['Req'])->toHaveCount(1)
+        ->and($doc->messages['Req'][0]->name)->toBe('tags')
+        ->and($doc->messages['Req'][0]->repeated)->toBeTrue();
+});
+
+it('rejects malformed tokens for expected word, symbol, string, and field number', function (): void {
+    $parser = new ProtoParser();
+
+    expect(fn () => $parser->parse('123'))->toThrow(InvalidArgumentException::class, 'Expected syntax')
+        ->and(fn () => $parser->parse('syntax "proto3";'))->toThrow(InvalidArgumentException::class, "Expected '='")
+        ->and(fn () => $parser->parse('syntax = 123;'))->toThrow(InvalidArgumentException::class, 'Expected a string literal')
+        ->and(fn () => $parser->parse('syntax = "proto3"; message M { string x = nope; }'))->toThrow(InvalidArgumentException::class, 'Expected a field number');
+});
