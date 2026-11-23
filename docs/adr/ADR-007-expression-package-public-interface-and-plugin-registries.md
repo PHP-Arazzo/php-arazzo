@@ -43,7 +43,7 @@ The method `selectorPlugins()` is **removed** from `ExpressionEngineInterface` a
 - Default plugin implementations (`JsonPathSelectorPlugin`, `JsonPointerSelectorPlugin`, `XpathSelectorPlugin`) remain `@internal`.
 
 ### 5. Declarative Enum-Typed Plugin Attributes & `src/Plugins/<Name>` Directory Convention
-All 6 plugin attributes in `packages/contracts/src/Attributes/` carry the uniform `As<Name>Plugin` suffix and typed PHP 8.4 Enums instead of numeric priorities (with last-registered-wins override semantics in registries). Every package places its concrete plugins under `src/Plugins/<Name>/` matching the attribute name and declares those subdirectories in `composer.json` `extra.arazzo.plugins`:
+See [ADR-008](./ADR-008-plugin-attribute-naming-and-directory-convention.md) for the full specification and rationale. All 6 plugin attributes in `packages/contracts/src/Attributes/` carry the uniform `As<Name>Plugin` suffix and typed PHP 8.4 Enums instead of numeric priorities (with last-registered-wins override semantics in registries). Every package places its concrete plugins under `src/Plugins/<Name>/` matching the attribute name and declares those subdirectories in `composer.json` `extra.arazzo.plugins`:
 - `#[AsSelectorPlugin(ExpressionType $type)]` → `src/Plugins/Selector`
 - `#[AsSourceNormalizerPlugin(SourceType $type)]` → `src/Plugins/SourceNormalizer`
 - `#[AsExpressionPlugin(ExpressionType $type)]` → `src/Plugins/Expression`
