@@ -38,7 +38,7 @@ final class HttpStepExecutor implements OperationExecutorPluginInterface
         private EvaluationEngineInterface $evaluationEngine,
         private OutputExtractorInterface $outputExtractor,
         private ResponseValidatorInterface $schemaValidator,
-        private bool $strictValidationDefault = true,
+        private bool $strictDefault = true,
         private ?IdempotencyKeyInjector $injector = null,
     ) {}
 
@@ -128,10 +128,10 @@ final class HttpStepExecutor implements OperationExecutorPluginInterface
         );
     }
 
-    private function shouldValidateSchema(Step $step, ?bool $sourceStrictValidation = null): bool
+    private function shouldValidateSchema(Step $step, ?bool $sourceStrict = null): bool
     {
         return $step->flow->strictValidation
-            ?? $sourceStrictValidation
-            ?? $this->strictValidationDefault;
+            ?? $sourceStrict
+            ?? $this->strictDefault;
     }
 }

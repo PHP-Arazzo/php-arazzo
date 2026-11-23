@@ -203,7 +203,7 @@ protocol-http-Plugins,protocol-http-Execution,1
 protocol-http-Plugins,protocol-http-Resolver,1
 protocol-http-Policy,engine-Execution,1
 protocol-http-Resolver,contracts-Interfaces,2
-protocol-http-Resolver,contracts-Spec,5
+protocol-http-Resolver,contracts-Spec,6
 protocol-http-Resolver,document-root,1
 protocol-http-Resolver,sources-Normalizer,4
 protocol-http-Resolver,sources-Resolver,1

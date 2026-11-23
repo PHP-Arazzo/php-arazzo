@@ -193,7 +193,7 @@ it('skips response schema validation when configured off globally and locally on
     });
 
     $engine = new EvaluationEngine(expression: new ExpressionEngine());
-    $httpPlugin = new HttpStepExecutor($openApiExecutor, createMockDocumentResolver(), $engine, $outputExtractor, $validator, strictValidationDefault: false);
+    $httpPlugin = new HttpStepExecutor($openApiExecutor, createMockDocumentResolver(), $engine, $outputExtractor, $validator, strictDefault: false);
     $executor = new StepExecutor($engine, localExecutors: [$httpPlugin]);
     $step = StepFactory::http('test-step', null, new StepFlow(), new StepIo(), 'op');
 
@@ -223,7 +223,7 @@ it('injects the Idempotency-Key header through HttpStepExecutor when enabled', f
         evaluationEngine: $engine,
         outputExtractor: $outputExtractor,
         schemaValidator: Mockery::mock(ResponseValidatorInterface::class),
-        strictValidationDefault: false,
+        strictDefault: false,
         injector: new IdempotencyKeyInjector(enabledDefault: true, headerDefault: 'Idempotency-Key'),
     );
     $executor = new StepExecutor($engine, localExecutors: [$httpPlugin]);

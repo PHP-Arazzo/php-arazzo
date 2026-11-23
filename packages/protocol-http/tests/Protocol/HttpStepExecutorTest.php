@@ -217,7 +217,7 @@ it('executes the request and returns a resolved outcome with statusCode/outputs/
         new HttpStepExecutorMockEngine(),
         $outputExtractor,
         Mockery::mock(ResponseValidatorInterface::class),
-        strictValidationDefault: false,
+        strictDefault: false,
     );
 
     $step = new Step('s1', null, new StepTarget(), new StepFlow(), new StepIo());
@@ -247,7 +247,7 @@ it('stores the response on the context before calling extractOutputs, fixing the
         new HttpStepExecutorMockEngine(),
         $outputExtractor,
         Mockery::mock(ResponseValidatorInterface::class),
-        strictValidationDefault: false,
+        strictDefault: false,
     );
 
     $step = new Step('s1', null, new StepTarget(), new StepFlow(), new StepIo());
@@ -368,7 +368,7 @@ it('forwards active SourcePolicy timeout and strictValidation override to execut
         new HttpStepExecutorMockEngine(),
         $outputExtractor,
         $validator,
-        strictValidationDefault: true,
+        strictDefault: true,
     );
 
     $sourcePolicy = SourcePolicy::default()
@@ -393,7 +393,7 @@ it('forwards active SourcePolicy timeout and strictValidation override to execut
         new HttpStepExecutorMockEngine(),
         $outputExtractor,
         $validator,
-        strictValidationDefault: false,
+        strictDefault: false,
         injector: new IdempotencyKeyInjector(true, 'Idempotency-Key'),
     );
     $stepWithTimeout = StepFactory::http('t-step', null, new StepFlow(timeout: 2500), new StepIo(), operationId: 'op');

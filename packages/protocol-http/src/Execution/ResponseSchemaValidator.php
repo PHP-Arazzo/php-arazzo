@@ -42,29 +42,29 @@ class ResponseSchemaValidator implements ResponseValidatorInterface
     protected function findResponseSchema(Step $step, int $statusCode, string $contentType, ?ArazzoDocument $document = null): ?Schema
     {
         $operation = $this->findOperation($step, $document);
-        if ($operation === null || $operation->responses === null) {
+        $response = $operation !== null ? $this->resolveResponse($operation, $statusCode) : null;
+
+        return $response !== null ? $this->extractMediaSchema($response, $contentType) : null;
+    }
+
+    private function resolveResponse(Operation $operation, int $statusCode): ?Response
+    {
+        if ($operation->responses === null) {
             return null;
         }
 
-        $response = $operation->responses->getResponse((string) $statusCode);
-        if ($response === null) {
-            // Fallback to "default" response if specific status code isn't defined
-            $response = $operation->responses->getResponse('default');
-            if ($response === null) {
-                return null;
-            }
-        }
+        $response = $operation->responses->getResponse((string) $statusCode)
+            ?? $operation->responses->getResponse('default');
 
         if ($response instanceof Reference) {
             $response = $response->resolve();
         }
 
-        // `content` never comes back null from cebe: an unset array attribute
-        // defaults to `[]`, and the lookup below handles the empty map.
-        if (!$response instanceof Response) {
-            return null;
-        }
+        return $response instanceof Response ? $response : null;
+    }
 
+    private function extractMediaSchema(Response $response, string $contentType): ?Schema
+    {
         // OpenAPI content types often have charsets, e.g. "application/json; charset=utf-8"
         // We match strictly the base media type for simplicity here.
         $baseContentType = explode(';', $contentType)[0];

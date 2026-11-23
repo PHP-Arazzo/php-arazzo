@@ -169,7 +169,7 @@ it('classifies unmet-criteria failures on step events while keeping execution fa
         $engine,
         $outputExtractor,
         $schemaValidator,
-        strictValidationDefault: false,
+        strictDefault: false,
     );
 
     $executor = new WorkflowExecutor(

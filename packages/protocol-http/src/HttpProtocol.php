@@ -107,7 +107,7 @@ final readonly class HttpProtocol
             evaluationEngine: $this->runtime->evaluationEngine,
             outputExtractor: $this->outputExtractor(),
             schemaValidator: new ResponseSchemaValidator($this->operationResolver),
-            strictValidationDefault: $strictValidation ?? $this->runtime->policy->strictValidation,
+            strictDefault: $strictValidation ?? $this->runtime->policy->strictValidation,
             injector: $idempotencyInjector ?? $this->runtime->policy->idempotencyInjector,
         );
     }

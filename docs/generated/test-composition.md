@@ -133,17 +133,17 @@ pie showData
 
 ```mermaid
 pie showData
-    title Protocol-http — 10 test files
-    "Module-scoped": 8
+    title Protocol-http — 11 test files
+    "Module-scoped": 9
     "Architecture": 1
     "Root": 1
 ```
 
 | Suite | Files | Share |
 |---|---:|---:|
-| Module-scoped | 8 | 80% |
-| Architecture | 1 | 10% |
-| Root | 1 | 10% |
+| Module-scoped | 9 | 82% |
+| Architecture | 1 | 9% |
+| Root | 1 | 9% |
 
 ## Protocol-rpc package
 

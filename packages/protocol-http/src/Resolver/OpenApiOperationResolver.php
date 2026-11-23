@@ -7,6 +7,7 @@ namespace Alama\Arazzo\Protocol\Http\Resolver;
 use Alama\Arazzo\Contracts\Interfaces\SourceResolverInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\ResolvedOperation;
+use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Document\OperationResolverInterface;
 use Alama\Arazzo\Sources\Normalizer\OpenApi30Normalizer;
@@ -15,6 +16,7 @@ use Alama\Arazzo\Sources\Normalizer\OpenApiVersionDetector;
 use Alama\Arazzo\Sources\Normalizer\SourceReferenceParser;
 use Alama\Arazzo\Sources\Resolver\Exceptions\UnsupportedSourceVersionException;
 use Alama\Arazzo\Sources\Sources;
+use cebe\openapi\spec\OpenApi;
 use cebe\openapi\spec\Operation;
 use RuntimeException;
 
@@ -71,101 +73,22 @@ class OpenApiOperationResolver implements OperationResolverInterface
         $target = SourceReferenceParser::parseTarget($step, $document);
         $sourceName = $target['sourceName'];
         $operationReference = $target['operationReference'];
-        $isPath = $target['isPath'];
 
-        $targetSource = null;
-        foreach ($document->sourceDescriptions as $source) {
-            if ($source->name === $sourceName) {
-                $targetSource = $source;
-                break;
-            }
-        }
+        $targetSource = $this->findSource($document, $sourceName, $step->stepId);
+        $openApi = $this->loadOpenApi($targetSource, $sourceName);
+        $rawDocument = $this->serializeOpenApi($openApi);
+        $normalizer = $this->selectNormalizer($rawDocument, $sourceName);
 
-        if (!$targetSource) {
-            throw new RuntimeException("Source '{$sourceName}' not found in document for step '{$step->stepId}'.");
-        }
+        $located = $target['isPath']
+            ? $this->findOperationByPath($openApi, $operationReference)
+            : $this->findOperationById($openApi, $operationReference);
 
-        $openApi = $this->loader->load($targetSource, getcwd() ?: '');
-        if (!$openApi) {
-            throw new RuntimeException("Could not load or parse OpenAPI document for source '{$sourceName}'.");
-        }
-
-        $encoded = json_encode($openApi->getSerializableData());
-        if ($encoded === false) {
-            throw new RuntimeException('Failed to encode OpenAPI document');
-        }
-        $rawDocument = json_decode($encoded, true);
-        if (!is_array($rawDocument)) {
-            throw new RuntimeException('Failed to decode OpenAPI document into an array');
-        }
-        /** @var array<string, mixed> $rawDocument */
-
-        // Fail fast on unsupported source versions before any operation lookup.
-        $detected = $this->versionDetector->detect($rawDocument);
-        if (!in_array($detected, ['3.0', '3.1'], true)) {
-            throw UnsupportedSourceVersionException::forVersion($detected, (string) $sourceName);
-        }
-
-        $normalizer = $detected === '3.0' ? $this->normalizer30 : $this->normalizer31;
-
-        /** @var string|null $foundPath */
-        $foundPath = null;
-        /** @var string|null $foundMethod */
-        $foundMethod = null;
-        /** @var Operation|null $cebeOperation */
-        $cebeOperation = null;
-
-        if ($isPath) {
-            // JSON Pointer segments are split BEFORE unescaping so multi-
-            // segment paths like /pet/findByStatus (~1pet~1findByStatus)
-            // stay a single PATH token.
-            $refParts = explode('/', ltrim($operationReference, '/'));
-            $unescaped = array_map(
-                fn (string $segment): string => str_replace(['~1', '~0'], ['/', '~'], $segment),
-                $refParts,
-            );
-
-            if (count($unescaped) < 3 || $unescaped[0] !== 'paths') {
-                throw new RuntimeException("Invalid operationPath reference '{$operationReference}'. Expected /paths/PATH/METHOD.");
-            }
-
-            $foundMethod = strtolower((string) array_pop($unescaped));
-            array_shift($unescaped);
-            $foundPath = implode('/', $unescaped);
-
-            $pathItem = $openApi->paths->getPath($foundPath);
-            if ($pathItem && isset($pathItem->{$foundMethod})) {
-                $op = $pathItem->{$foundMethod};
-                if ($op instanceof Operation) {
-                    $cebeOperation = $op;
-                }
-            }
-        } else {
-            foreach ($openApi->paths as $path => $pathItem) {
-                foreach (['get', 'put', 'post', 'delete', 'options', 'head', 'patch', 'trace'] as $method) {
-                    if (isset($pathItem->{$method})) {
-                        $op = $pathItem->{$method};
-                        /** @phpstan-ignore-next-line */
-                        if ($op instanceof Operation && $op->operationId === $operationReference) {
-                            if (is_string($path)) {
-                                $foundPath = $path;
-                            } elseif (is_scalar($path)) {
-                                $foundPath = (string) $path;
-                            }
-                            $foundMethod = $method;
-                            $cebeOperation = $op;
-                            break 2;
-                        }
-                    }
-                }
-            }
-        }
-
-        if (!$foundPath || !$foundMethod || !$cebeOperation) {
+        if ($located === null) {
             throw new RuntimeException("Operation '{$operationReference}' not found in source '{$sourceName}'.");
         }
 
-        $normalized = $normalizer->normalize($rawDocument, (string) $foundPath, (string) $foundMethod);
+        [$foundPath, $foundMethod, $cebeOperation] = $located;
+        $normalized = $normalizer->normalize($rawDocument, $foundPath, $foundMethod);
 
         return new OpenApiOperationHandle(
             new ResolvedOperation(
@@ -180,5 +103,114 @@ class OpenApiOperationResolver implements OperationResolverInterface
             $openApi,
             $cebeOperation,
         );
+    }
+
+    private function findSource(ArazzoDocument $document, string $sourceName, string $stepId): SourceDescription
+    {
+        foreach ($document->sourceDescriptions as $source) {
+            if ($source->name === $sourceName) {
+                return $source;
+            }
+        }
+
+        throw new RuntimeException("Source '{$sourceName}' not found in document for step '{$stepId}'.");
+    }
+
+    private function loadOpenApi(SourceDescription $source, string $sourceName): OpenApi
+    {
+        $openApi = $this->loader->load($source, getcwd() ?: '');
+        if (!$openApi instanceof OpenApi) {
+            throw new RuntimeException("Could not load or parse OpenAPI document for source '{$sourceName}'.");
+        }
+
+        return $openApi;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function serializeOpenApi(OpenApi $openApi): array
+    {
+        $encoded = json_encode($openApi->getSerializableData(), JSON_THROW_ON_ERROR);
+        $rawDocument = json_decode($encoded, true, 512, JSON_THROW_ON_ERROR);
+        assert(is_array($rawDocument));
+
+        /** @var array<string, mixed> $rawDocument */
+        return $rawDocument;
+    }
+
+    /**
+     * @param  array<string, mixed>  $rawDocument
+     */
+    private function selectNormalizer(array $rawDocument, string $sourceName): OpenApi30Normalizer|OpenApi31Normalizer
+    {
+        // Fail fast on unsupported source versions before any operation lookup.
+        $detected = $this->versionDetector->detect($rawDocument);
+
+        return match ($detected) {
+            '3.0' => $this->normalizer30,
+            '3.1' => $this->normalizer31,
+            default => throw UnsupportedSourceVersionException::forVersion($detected, $sourceName),
+        };
+    }
+
+    /**
+     * @return array{0: string, 1: string, 2: Operation}|null
+     */
+    private function findOperationByPath(OpenApi $openApi, string $operationReference): ?array
+    {
+        // JSON Pointer segments are split BEFORE unescaping so multi-
+        // segment paths like /pet/findByStatus (~1pet~1findByStatus)
+        // stay a single PATH token.
+        $refParts = explode('/', ltrim($operationReference, '/'));
+        $unescaped = array_map(
+            static fn (string $segment): string => str_replace(['~1', '~0'], ['/', '~'], $segment),
+            $refParts,
+        );
+
+        if (count($unescaped) < 3 || $unescaped[0] !== 'paths') {
+            throw new RuntimeException("Invalid operationPath reference '{$operationReference}'. Expected /paths/PATH/METHOD.");
+        }
+
+        $method = strtolower((string) array_pop($unescaped));
+        array_shift($unescaped);
+        $path = implode('/', $unescaped);
+
+        $pathItem = $openApi->paths->getPath($path);
+        $op = $pathItem !== null && isset($pathItem->{$method}) ? $pathItem->{$method} : null;
+
+        return $op instanceof Operation ? [$path, $method, $op] : null;
+    }
+
+    /**
+     * @return array{0: string, 1: string, 2: Operation}|null
+     */
+    private function findOperationById(OpenApi $openApi, string $operationReference): ?array
+    {
+        foreach ($openApi->paths as $path => $pathItem) {
+            $match = $this->matchOperationInPathItem($pathItem, $operationReference);
+            if ($match !== null) {
+                $pathString = is_scalar($path) ? (string) $path : '';
+
+                return [$pathString, $match[0], $match[1]];
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return array{0: string, 1: Operation}|null
+     */
+    private function matchOperationInPathItem(object $pathItem, string $operationReference): ?array
+    {
+        foreach (['get', 'put', 'post', 'delete', 'options', 'head', 'patch', 'trace'] as $method) {
+            $op = isset($pathItem->{$method}) ? $pathItem->{$method} : null;
+            if ($op instanceof Operation && $op->operationId === $operationReference) {
+                return [$method, $op];
+            }
+        }
+
+        return null;
     }
 }

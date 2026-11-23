@@ -23,7 +23,7 @@ flowchart LR
         S_cli_Renderer["cli:Renderer<br/><small>255 LOC</small>"]:::supportingDomain
         S_document_Parser["document:Parser<br/><small>2434 LOC</small>"]:::supportingDomain
         S_document_Validator["document:Validator<br/><small>662 LOC</small>"]:::supportingDomain
-        S_protocol_http_Resolver["protocol-http:Resolver<br/><small>285 LOC</small>"]:::supportingDomain
+        S_protocol_http_Resolver["protocol-http:Resolver<br/><small>317 LOC</small>"]:::supportingDomain
         S_protocol_soap_Resolver["protocol-soap:Resolver<br/><small>136 LOC</small>"]:::supportingDomain
         S_sources_Resolver["sources:Resolver<br/><small>629 LOC</small>"]:::supportingDomain
     end
@@ -70,7 +70,7 @@ flowchart LR
         S_expression_Policy["expression:Policy<br/><small>37 LOC</small>"]:::unknownDomain
         S_expression_Registries["expression:Registries<br/><small>113 LOC</small>"]:::unknownDomain
         S_expression_Xpath["expression:Xpath<br/><small>173 LOC</small>"]:::unknownDomain
-        S_protocol_http_Execution["protocol-http:Execution<br/><small>927 LOC</small>"]:::unknownDomain
+        S_protocol_http_Execution["protocol-http:Execution<br/><small>946 LOC</small>"]:::unknownDomain
         S_protocol_http_Plugins["protocol-http:Plugins<br/><small>340 LOC</small>"]:::unknownDomain
         S_protocol_http_Policy["protocol-http:Policy<br/><small>43 LOC</small>"]:::unknownDomain
         S_protocol_rpc_Execution["protocol-rpc:Execution<br/><small>188 LOC</small>"]:::unknownDomain
@@ -108,9 +108,9 @@ flowchart LR
 | Subdomain | Modules | Core pkg LOC | Laravel pkg LOC | Share |
 |---|---:|---:|---:|---:|
 | Core domain | 1 | 1,300 | 0 | 4% |
-| Supporting | 8 | 5,345 | 0 | 16% |
+| Supporting | 8 | 5,377 | 0 | 16% |
 | Generic subdomain | 6 | 1,678 | 0 | 5% |
-| Unclassified | 62 | 25,012 | 0 | 75% |
+| Unclassified | 62 | 25,031 | 0 | 75% |
 
 **Unclassified modules** — classify them in `SUBDOMAINS` or delete them:
 - `contracts:Attributes`

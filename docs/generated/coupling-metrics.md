@@ -59,10 +59,10 @@ targets. Regenerated before every commit.
 | `expression:Support` | 2 | 190 | 2 | 4 | 0.67 |  |
 | `expression:Xpath` | 3 | 170 | 2 | 2 | 0.50 |  |
 | `(expression root)` | 9 | 918 | 6 | 12 | 0.67 |  |
-| `protocol-http:Execution` | 6 | 921 | 2 | 12 | 0.86 |  |
+| `protocol-http:Execution` | 6 | 940 | 2 | 12 | 0.86 |  |
 | `protocol-http:Plugins` | 2 | 338 | 1 | 10 | 0.91 |  |
 | `protocol-http:Policy` | 1 | 42 | 2 | 1 | 0.33 |  |
-| `protocol-http:Resolver` | 3 | 282 | 3 | 6 | 0.67 |  |
+| `protocol-http:Resolver` | 3 | 314 | 3 | 6 | 0.67 |  |
 | `(protocol-http root)` | 1 | 128 | 1 | 12 | 0.92 |  |
 | `protocol-rpc:Execution` | 2 | 186 | 1 | 7 | 0.88 |  |
 | `protocol-rpc:Normalizer` | 5 | 533 | 1 | 0 | 0.00 |  |
@@ -96,7 +96,7 @@ targets. Regenerated before every commit.
 | `sources:Resolver` | 12 | 617 | 3 | 6 | 0.67 |  |
 | `(sources root)` | 2 | 339 | 3 | 9 | 0.75 |  |
 
-Total cross-module edges: **1642**
+Total cross-module edges: **1643**
 
 ## Most entangled module pairs
 

@@ -22,7 +22,7 @@ when a boundary consciously moves.
 | `OpenTelemetry` | 26 | 0 | _unclassified_ ⚠ |
 | `Psr` | 105 | 0 | allowed |
 | `Symfony` | 32 | 0 | **forbidden** ⚠ |
-| `cebe` | 21 | 0 | **forbidden** ⚠ |
+| `cebe` | 22 | 0 | **forbidden** ⚠ |
 
 ## Module detail
 
@@ -48,7 +48,7 @@ when a boundary consciously moves.
 | protocol-http | `protocol-http:Execution` | `Psr` | 12 |
 | protocol-http | `protocol-http:Execution` | `cebe` | 11 |
 | protocol-http | `protocol-http:Plugins` | `Psr` | 6 |
-| protocol-http | `protocol-http:Resolver` | `cebe` | 6 |
+| protocol-http | `protocol-http:Resolver` | `cebe` | 7 |
 | protocol-http | `protocol-http:_` | `GuzzleHttp` | 2 |
 | protocol-http | `protocol-http:_` | `Psr` | 3 |
 | protocol-rpc | `protocol-rpc:Execution` | `Psr` | 3 |
@@ -78,7 +78,7 @@ when a boundary consciously moves.
 - `engine:Runtime` imports `OpenTelemetry\*` (26 refs)
 - `protocol-http:Execution` imports `GuzzleHttp\*` (2 refs)
 - `protocol-http:Execution` imports `cebe\*` (11 refs)
-- `protocol-http:Resolver` imports `cebe\*` (6 refs)
+- `protocol-http:Resolver` imports `cebe\*` (7 refs)
 - `protocol-http:_` imports `GuzzleHttp\*` (2 refs)
 - `sources:Resolver` imports `GuzzleHttp\*` (2 refs)
 - `sources:_` imports `GuzzleHttp\*` (1 refs)

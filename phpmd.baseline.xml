@@ -29,17 +29,10 @@
   <violation rule="PHPMD\Rule\UnusedFormalParameter" file="packages/expression/src/JsonPath/JsonPathFunctions.php"/>
   <violation rule="PHPMD\Rule\UnusedFormalParameter" file="packages/expression/src/JsonPath/Tokenizer.php"/>
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/protocol-http/src/Execution/DefaultOpenApiExecutor.php"/>
-  <violation rule="PHPMD\Rule\Design\NPathComplexity" file="packages/protocol-http/src/Execution/ResponseSchemaValidator.php" method="findResponseSchema"/>
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/protocol-http/src/Execution/StepOutputExtractor.php"/>
-  <violation rule="PHPMD\Rule\CyclomaticComplexity" file="packages/protocol-http/src/Execution/StepOutputExtractor.php" method="castOutputAgainstResponseSchema"/>
-  <violation rule="PHPMD\Rule\Design\NPathComplexity" file="packages/protocol-http/src/Execution/StepOutputExtractor.php" method="castOutputAgainstResponseSchema"/>
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/protocol-http/src/HttpProtocol.php"/>
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/protocol-http/src/Plugins/OperationExecutor/AsyncApiStepExecutor.php"/>
-  <violation rule="PHPMD\Rule\Naming\LongVariable" file="packages/protocol-http/src/Plugins/OperationExecutor/HttpStepExecutor.php"/>
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/protocol-http/src/Resolver/OpenApiOperationResolver.php"/>
-  <violation rule="PHPMD\Rule\CyclomaticComplexity" file="packages/protocol-http/src/Resolver/OpenApiOperationResolver.php" method="resolve"/>
-  <violation rule="PHPMD\Rule\Design\NPathComplexity" file="packages/protocol-http/src/Resolver/OpenApiOperationResolver.php" method="resolve"/>
-  <violation rule="PHPMD\Rule\Design\ExcessiveMethodLength" file="packages/protocol-http/src/Resolver/OpenApiOperationResolver.php" method="resolve"/>
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/protocol-rpc/src/Execution/RpcRequestBuilder.php"/>
   <violation rule="PHPMD\Rule\Design\ExcessiveClassComplexity" file="packages/protocol-rpc/src/Normalizer/ProtoParser.php"/>
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/protocol-rpc/src/Plugins/OperationExecutor/RpcOperationExecutor.php"/>

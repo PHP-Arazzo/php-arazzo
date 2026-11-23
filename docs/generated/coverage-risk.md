@@ -109,11 +109,11 @@ quadrantChart
 | `contracts/Data` | 0.17 | 5 | 2 | 100% |
 | `contracts/Dependency` | 0.33 | 6 | 3 | 100% |
 | `contracts/Discovery` | 0.00 | 3 | 3 | 100% |
-| `contracts/Exceptions` | 0.00 | 5 | 1 | 100% |
-| `contracts/Interfaces` | 0.10 | 47 | 20 | 100% |
+| `contracts/Exceptions` | 0.00 | 6 | 1 | 100% |
+| `contracts/Interfaces` | 0.10 | 48 | 20 | 100% |
 | `contracts/Observability` | 0.00 | 9 | 4 | 100% |
 | `contracts/Policy` | 0.00 | 12 | 5 | 100% |
-| `contracts/Spec` | 0.02 | 289 | 52 | 100% |
+| `contracts/Spec` | 0.02 | 290 | 52 | 100% |
 | `contracts/State` | 0.10 | 84 | 4 | 100% |
 | `contracts/Support` | 0.00 | 12 | 5 | 100% |
 | `contracts/Validation` | 0.11 | 91 | 9 | 100% |
@@ -145,10 +145,10 @@ quadrantChart
 | `expression/Registries` | 0.57 | 4 | 1 | 100% |
 | `expression/Support` | 0.67 | 5 | 2 | 100% |
 | `expression/Xpath` | 0.50 | 2 | 3 | 67% |
-| `protocol-http/Execution` | 0.86 | 25 | 6 | 100% |
+| `protocol-http/Execution` | 0.86 | 26 | 6 | 100% |
 | `protocol-http/Plugins` | 0.91 | 17 | 2 | 100% |
 | `protocol-http/Policy` | 0.33 | 2 | 1 | 100% |
-| `protocol-http/Resolver` | 0.67 | 18 | 3 | 100% |
+| `protocol-http/Resolver` | 0.67 | 19 | 3 | 100% |
 | `protocol-rpc/Execution` | 0.88 | 3 | 2 | 100% |
 | `protocol-rpc/Normalizer` | 0.00 | 1 | 5 | 20% |
 | `protocol-rpc/Plugins` | 0.93 | 6 | 3 | 100% |
