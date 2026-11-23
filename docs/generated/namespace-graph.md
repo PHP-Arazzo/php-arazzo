@@ -261,6 +261,7 @@ flowchart LR
     engine_Runtime --> contracts_Spec
     engine_Runtime --> contracts_State
     engine_Runtime --> contracts_Observability
+    engine_Runtime --> contracts_Clock
     engine__ --> contracts_Spec
     engine__ --> contracts_State
     engine__ --> engine_Data

@@ -15,12 +15,12 @@ targets. Regenerated before every commit.
 | `cli:Generator` | 2 | 139 | 0 | 1 | 1.00 |  |
 | `cli:Renderer` | 1 | 254 | 1 | 1 | 0.50 |  |
 | `contracts:Attributes` | 6 | 100 | 13 | 2 | 0.13 |  |
-| `contracts:Clock` | 1 | 19 | 3 | 0 | 0.00 |  |
+| `contracts:Clock` | 1 | 19 | 4 | 0 | 0.00 |  |
 | `contracts:Data` | 2 | 153 | 5 | 1 | 0.17 |  |
 | `contracts:Dependency` | 3 | 333 | 4 | 2 | 0.33 |  |
 | `contracts:Discovery` | 3 | 418 | 4 | 0 | 0.00 |  |
 | `contracts:Exceptions` | 1 | 30 | 7 | 0 | 0.00 |  |
-| `contracts:Interfaces` | 21 | 391 | 35 | 4 | 0.10 |  |
+| `contracts:Interfaces` | 20 | 367 | 35 | 4 | 0.10 |  |
 | `contracts:Observability` | 4 | 104 | 12 | 0 | 0.00 |  |
 | `contracts:Policy` | 5 | 263 | 6 | 0 | 0.00 |  |
 | `contracts:Spec` | 52 | 1248 | 54 | 1 | 0.02 |  |
@@ -36,7 +36,7 @@ targets. Regenerated before every commit.
 | `engine:Enum` | 1 | 16 | 1 | 0 | 0.00 |  |
 | `engine:Exceptions` | 1 | 41 | 8 | 1 | 0.11 |  |
 | `engine:Execution` | 8 | 1023 | 9 | 4 | 0.31 |  |
-| `engine:Runtime` | 21 | 1755 | 4 | 4 | 0.50 |  |
+| `engine:Runtime` | 21 | 1823 | 4 | 5 | 0.56 |  |
 | `(engine root)` | 2 | 192 | 0 | 3 | 1.00 |  |
 | `evaluation:Condition` | 17 | 1006 | 1 | 8 | 0.89 |  |
 | `evaluation:Data` | 2 | 84 | 3 | 2 | 0.40 |  |
@@ -60,7 +60,7 @@ targets. Regenerated before every commit.
 | `expression:Xpath` | 3 | 170 | 2 | 2 | 0.50 |  |
 | `(expression root)` | 9 | 1332 | 6 | 12 | 0.67 |  |
 | `protocol-http:Execution` | 6 | 921 | 2 | 12 | 0.86 |  |
-| `protocol-http:Plugins` | 2 | 340 | 1 | 10 | 0.91 |  |
+| `protocol-http:Plugins` | 2 | 338 | 1 | 10 | 0.91 |  |
 | `protocol-http:Policy` | 1 | 42 | 2 | 1 | 0.33 |  |
 | `protocol-http:Resolver` | 3 | 282 | 3 | 6 | 0.67 |  |
 | `(protocol-http root)` | 1 | 128 | 1 | 12 | 0.92 |  |
@@ -96,7 +96,7 @@ targets. Regenerated before every commit.
 | `sources:Resolver` | 12 | 617 | 3 | 6 | 0.67 |  |
 | `(sources root)` | 2 | 339 | 3 | 9 | 0.75 |  |
 
-Total cross-module edges: **1615**
+Total cross-module edges: **1610**
 
 ## Most entangled module pairs
 
@@ -111,6 +111,6 @@ Total cross-module edges: **1615**
 | `expression:Plugins` → `contracts:Spec` | 28 |
 | `(evaluation root)` → `contracts:Spec` | 26 |
 | `runner:Async` → `contracts:Spec` | 26 |
-| `contracts:Interfaces` → `contracts:Spec` | 24 |
 | `runner:Sync` → `contracts:Spec` | 22 |
+| `contracts:Interfaces` → `contracts:Spec` | 21 |
 | `(expression root)` → `expression:Ast` | 20 |

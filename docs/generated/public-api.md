@@ -105,10 +105,6 @@ this file on a commit is a public API change — review it deliberately.
 #### `SourceResolverInterface` interface
 - `public function resolve(SourceDescription $source, string $basePath): SourceDocument;`
 
-#### `StepProtocolExecutorInterface` interface
-- `public function execute(Step $step, WorkflowContext $context, ArazzoDocument $document, string $executionId): StepExecutionOutcome;`
-- `public function supports(Step $step, ArazzoDocument $document): bool;`
-
 #### `ValidationRuleInterface` interface
 - `public function check(ArazzoDocument $doc, SymbolTable $symbols, ErrorCollector $errors, ): void;`
 - `public function code(): string;`
@@ -695,6 +691,18 @@ this file on a commit is a public API change — review it deliberately.
 
 #### `StepTransitionType` enum
 - Cases: `Cancelled`, `Enter`, `GuardFailed`, `Timeout`
+
+### `Alama\Arazzo\Runtime\Policy`
+
+#### `RetryPolicy` class
+- `public function __construct(public int $maxAttempts = self::DEFAULT_MAX_ATTEMPTS, public float $backoffMultiplier = self::DEFAULT_BACKOFF_MULTIPLIER, ?BackoffCalculatorInterface $calculator = null, ?ClockInterface $clock = null)`
+- `public function calculateDelay(RetryAction $action, Step $step, WorkflowContext $context, int $upcomingAttempt): int`
+- `public function isExhausted(int $attemptsSoFar, ?int $limit): bool`
+- `public function withBackoffMultiplier(float $multiplier): self`
+- `public function withCalculator(BackoffCalculatorInterface $calculator): self`
+- `public function withClock(ClockInterface $clock): self`
+- `public function withMaxAttempts(int $maxAttempts): self`
+- `public static function default(): self`
 
 ### `Alama\Arazzo\Runtime\Telemetry`
 

@@ -68,4 +68,4 @@ Replace `RunnerFacade` / `RunnerFacadeInterface`, `RunnerGraphBuilder` / `Runner
 ### Negative / Trade-offs
 - Breaking change for callers referencing retired pre-1.0 facades, `Alama\Arazzo\Events\*`, `EventLedgerInterface`, or old per-port setters.
 - Standalone `Runner::create()` requires registering an executor plugin (e.g. `HttpProtocol::create()->executor()`) to execute HTTP steps.
-- Consuming `SourcePolicy` inside `protocol-http` and aligning `*Policy` / observability across sibling packages (`expression`, `sources`, `protocol-*`, `engine`) are tracked as dedicated follow-up package PRs per ADR-010.
+- Durable event sourcing (`ExecutionHistoryInterface`, `persist-68`) and verified snapshots (`ExecutionSnapshot`, `persist-70`) remain separate follow-up persistence milestones.

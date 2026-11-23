@@ -1433,13 +1433,13 @@
             "dist": {
                 "type": "path",
                 "url": "packages/engine",
-                "reference": "c586086e1218083aa420d5e01cc6c5b089b3ebb7"
+                "reference": "afd67a3c07132cfe4d6e7c9ba81000be6af13f6e"
             },
             "require": {
                 "open-telemetry/api": "^1.1",
                 "php": "^8.4",
                 "php-arazzo/arazzo-contracts": "@dev",
-                "psr/log": "^3.0"
+                "psr/clock": "^1.0"
             },
             "require-dev": {
                 "pestphp/pest": "^5.0",

@@ -42,7 +42,7 @@ flowchart LR
         S_contracts_Dependency["contracts:Dependency<br/><small>336 LOC</small>"]:::unknownDomain
         S_contracts_Discovery["contracts:Discovery<br/><small>421 LOC</small>"]:::unknownDomain
         S_contracts_Exceptions["contracts:Exceptions<br/><small>31 LOC</small>"]:::unknownDomain
-        S_contracts_Interfaces["contracts:Interfaces<br/><small>412 LOC</small>"]:::unknownDomain
+        S_contracts_Interfaces["contracts:Interfaces<br/><small>387 LOC</small>"]:::unknownDomain
         S_contracts_Observability["contracts:Observability<br/><small>108 LOC</small>"]:::unknownDomain
         S_contracts_Policy["contracts:Policy<br/><small>268 LOC</small>"]:::unknownDomain
         S_contracts_Validation["contracts:Validation<br/><small>348 LOC</small>"]:::unknownDomain
@@ -52,7 +52,7 @@ flowchart LR
         S_engine_Enum["engine:Enum<br/><small>17 LOC</small>"]:::unknownDomain
         S_engine_Exceptions["engine:Exceptions<br/><small>42 LOC</small>"]:::unknownDomain
         S_engine_Execution["engine:Execution<br/><small>1031 LOC</small>"]:::unknownDomain
-        S_engine_Runtime["engine:Runtime<br/><small>1776 LOC</small>"]:::unknownDomain
+        S_engine_Runtime["engine:Runtime<br/><small>1844 LOC</small>"]:::unknownDomain
         S_evaluation_Condition["evaluation:Condition<br/><small>1023 LOC</small>"]:::unknownDomain
         S_evaluation_Data["evaluation:Data<br/><small>86 LOC</small>"]:::unknownDomain
         S_evaluation_Enum["evaluation:Enum<br/><small>123 LOC</small>"]:::unknownDomain
@@ -71,7 +71,7 @@ flowchart LR
         S_expression_Registries["expression:Registries<br/><small>113 LOC</small>"]:::unknownDomain
         S_expression_Xpath["expression:Xpath<br/><small>173 LOC</small>"]:::unknownDomain
         S_protocol_http_Execution["protocol-http:Execution<br/><small>927 LOC</small>"]:::unknownDomain
-        S_protocol_http_Plugins["protocol-http:Plugins<br/><small>342 LOC</small>"]:::unknownDomain
+        S_protocol_http_Plugins["protocol-http:Plugins<br/><small>340 LOC</small>"]:::unknownDomain
         S_protocol_http_Policy["protocol-http:Policy<br/><small>43 LOC</small>"]:::unknownDomain
         S_protocol_rpc_Execution["protocol-rpc:Execution<br/><small>188 LOC</small>"]:::unknownDomain
         S_protocol_rpc_Normalizer["protocol-rpc:Normalizer<br/><small>538 LOC</small>"]:::unknownDomain
@@ -110,7 +110,7 @@ flowchart LR
 | Core domain | 1 | 1,300 | 0 | 4% |
 | Supporting | 8 | 5,152 | 0 | 16% |
 | Generic subdomain | 6 | 1,623 | 0 | 5% |
-| Unclassified | 62 | 24,097 | 0 | 75% |
+| Unclassified | 62 | 24,138 | 0 | 75% |
 
 **Unclassified modules** — classify them in `SUBDOMAINS` or delete them:
 - `contracts:Attributes`

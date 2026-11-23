@@ -191,6 +191,7 @@ flowchart TB
     M_engine_Execution --> M_contracts_State
     M_engine_Execution --> M_document_Parser
     M_engine_Execution -.->|violation| M_evaluation__
+    M_engine_Runtime --> M_contracts_Clock
     M_engine_Runtime --> M_contracts_Interfaces
     M_engine_Runtime --> M_contracts_Observability
     M_engine_Runtime --> M_contracts_Spec
@@ -543,13 +544,13 @@ flowchart TB
 | `cli` | `runner` | 13 |
 | `cli` | `sources` | 3 |
 | `document` | `contracts` | 379 |
-| `engine` | `contracts` | 50 |
+| `engine` | `contracts` | 51 |
 | `engine` | `document` | 1 |
 | `engine` | `evaluation` | 1 |
 | `evaluation` | `contracts` | 62 |
 | `evaluation` | `expression` | 20 |
 | `expression` | `contracts` | 127 |
-| `protocol-http` | `contracts` | 55 |
+| `protocol-http` | `contracts` | 53 |
 | `protocol-http` | `document` | 2 |
 | `protocol-http` | `engine` | 10 |
 | `protocol-http` | `evaluation` | 6 |

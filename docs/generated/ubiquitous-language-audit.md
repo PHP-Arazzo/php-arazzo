@@ -16,7 +16,7 @@ Evans' first question: does the code speak one language?
 ### run vs execute vs invoke
 
 - **Execute**: `ExecuteStepJob`, `StepExecutedEvent` (2 types)
-- **Executor**: `AsOperationExecutorPlugin`, `AsyncApiStepExecutor`, `DefaultOpenApiExecutor`, `HttpStepExecutor` + 9 more (13 types)
+- **Executor**: `AsOperationExecutorPlugin`, `AsyncApiStepExecutor`, `DefaultOpenApiExecutor`, `HttpStepExecutor` + 8 more (12 types)
 - **Invoke**: `SubWorkflowInvokeTargetResolvesRule`, `SubWorkflowInvoker` (2 types)
 - **Run**: `AsyncRunner`, `AsyncRunnerInterface`, `CliRunResult`, `CliRunner` + 13 more (17 types)
 - **Runner**: `AsyncRunner`, `AsyncRunnerInterface`, `CliRunner`, `Runner` + 4 more (8 types)

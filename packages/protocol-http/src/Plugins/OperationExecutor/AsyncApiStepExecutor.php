@@ -8,7 +8,6 @@ use Alama\Arazzo\Contracts\Attributes\AsOperationExecutorPlugin;
 use Alama\Arazzo\Contracts\Interfaces\HttpClientInterface;
 use Alama\Arazzo\Contracts\Interfaces\OperationExecutorPluginInterface;
 use Alama\Arazzo\Contracts\Interfaces\PendingCorrelationRegistryInterface;
-use Alama\Arazzo\Contracts\Interfaces\StepProtocolExecutorInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Enum\OperationProtocol;
 use Alama\Arazzo\Contracts\Spec\Enum\SpecVersion;
@@ -33,7 +32,7 @@ use Psr\Http\Message\UriInterface;
  * @internal stays out of the advertised contract; not part of the public API surface
  */
 #[AsOperationExecutorPlugin(OperationProtocol::AsyncApi)]
-final class AsyncApiStepExecutor implements OperationExecutorPluginInterface, StepProtocolExecutorInterface
+final class AsyncApiStepExecutor implements OperationExecutorPluginInterface
 {
     /**
      * Registry ordering (ascending, first supports() wins). AsyncAPI actions

@@ -20,7 +20,7 @@ when a boundary consciously moves.
 | `GuzzleHttp` | 9 | 0 | **forbidden** ⚠ |
 | `JsonSchema` | 7 | 0 | _unclassified_ ⚠ |
 | `OpenTelemetry` | 26 | 0 | _unclassified_ ⚠ |
-| `Psr` | 104 | 0 | allowed |
+| `Psr` | 105 | 0 | allowed |
 | `Symfony` | 32 | 0 | **forbidden** ⚠ |
 | `cebe` | 19 | 0 | **forbidden** ⚠ |
 
@@ -42,6 +42,7 @@ when a boundary consciously moves.
 | engine | `engine:Execution` | `Psr` | 4 |
 | engine | `engine:Execution` | `cebe` | 2 |
 | engine | `engine:Runtime` | `OpenTelemetry` | 26 |
+| engine | `engine:Runtime` | `Psr` | 1 |
 | evaluation | `evaluation:_` | `Psr` | 2 |
 | protocol-http | `protocol-http:Execution` | `GuzzleHttp` | 2 |
 | protocol-http | `protocol-http:Execution` | `Psr` | 12 |
@@ -116,6 +117,7 @@ Grouped cross-package uses of concrete internals (AST nodes, evaluators, resolve
 | `document` | `SymbolTable` | `contracts` | 53 | `StepParameterDuplicateRule` |
 | `document` | `ValidationResult` | `contracts` | 3 | `Validator` |
 | `document` | `WorkflowSymbols` | `contracts` | 1 | `ActionGotoTargetResolvesRule` |
+| `engine` | `SystemClock` | `contracts` | 1 | `RetryPolicy` |
 | `evaluation` | `AsCriterionPlugin` | `contracts` | 2 | `JsonPathCriterionPlugin` |
 | `evaluation` | `AsExpressionPlugin` | `contracts` | 2 | `JsonPathExpressionPlugin` |
 | `evaluation` | `EvaluationContext` | `expression` | 5 | `ConditionEvaluator` |

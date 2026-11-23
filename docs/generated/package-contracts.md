@@ -27,9 +27,7 @@ public contract between packages.
 
 - `AiClientInterface` (`interface`)
   - `public function generate(string $systemPrompt, string $userPrompt): string;`
-- `StepProtocolExecutorInterface` (`interface`)
-  - `public function supports(Step $step, ArazzoDocument $document): bool;`
-  - `public function execute(Step $step, WorkflowContext $context, ArazzoDocument $document, string $executionId): StepExecutionOutcome;`
+- `StepProtocolExecutorInterface` — _not found in scan_
 - `QueueDriverInterface` (`interface`)
   - `public function dispatch(object $job, int $delaySeconds = 0): void;`
 - `LockManagerInterface` (`interface`)

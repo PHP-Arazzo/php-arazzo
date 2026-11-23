@@ -51,7 +51,6 @@ flowchart LR
     I_SourcesInterface["SourcesInterface<br/><small>(sources root)</small>"]:::contract
     I_SpanInterface["SpanInterface<br/><small>contracts:Observability</small>"]:::contract
     I_StateStoreInterface["StateStoreInterface<br/><small>engine:Runtime</small>"]:::contract
-    I_StepProtocolExecutorInterface["StepProtocolExecutorInterface<br/><small>contracts:Interfaces</small>"]:::contract
     I_TracerInterface["TracerInterface<br/><small>contracts:Observability</small>"]:::contract
     I_ValidationRuleInterface["ValidationRuleInterface<br/><small>contracts:Interfaces</small>"]:::contract
     I_WorkflowContextInterface["WorkflowContextInterface<br/><small>contracts:Spec</small>"]:::contract
@@ -311,10 +310,6 @@ flowchart LR
     C_protocol_soap_protocol_soap_Plugins_SoapOperationExecutor -.->|implements| I_OperationExecutorPluginInterface
     C_runner_runner_Plugins_SubWorkflowStepExecutor["SubWorkflowStepExecutor<br/><small>runner:Plugins</small>"]:::implCore
     C_runner_runner_Plugins_SubWorkflowStepExecutor -.->|implements| I_OperationExecutorPluginInterface
-    C_protocol_http_protocol_http_Plugins_AsyncApiStepExecutor["AsyncApiStepExecutor<br/><small>protocol-http:Plugins</small>"]:::implCore
-    C_protocol_http_protocol_http_Plugins_AsyncApiStepExecutor -.->|implements| I_StepProtocolExecutorInterface
-    C_protocol_http_protocol_http_Plugins_HttpStepExecutor["HttpStepExecutor<br/><small>protocol-http:Plugins</small>"]:::implCore
-    C_protocol_http_protocol_http_Plugins_HttpStepExecutor -.->|implements| I_StepProtocolExecutorInterface
     C_protocol_http_protocol_http_Resolver_OpenApiOperationResolver["OpenApiOperationResolver<br/><small>protocol-http:Resolver</small>"]:::implCore
     C_protocol_http_protocol_http_Resolver_OpenApiOperationResolver -.->|implements| I_OperationResolverInterface
     C_protocol_rpc_protocol_rpc_Protocol_ProtobufOperationResolver["ProtobufOperationResolver<br/><small>protocol-rpc:Protocol</small>"]:::implCore

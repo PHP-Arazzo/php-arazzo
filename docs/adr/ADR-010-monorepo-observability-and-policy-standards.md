@@ -45,14 +45,15 @@ Every package in `php-arazzo` belongs to exactly one observability tier:
   - Avoid `*Options`, `*Settings`, or `*Config` suffixes on public APIs.
 - **Strict secret handling**: Credentials carried inside policies (e.g. `Alama\Arazzo\Contracts\Policy\Credential` inside `SourcePolicy`) MUST use `#[SensitiveParameter]` on constructors/factories, redact secrets in `__debugInfo()`, and remain excluded from serialized execution state (`toArray()`).
 
-### 4. Incremental Rollout Plan
-- **Implemented with this ADR**: `packages/contracts` (`Observability\*`, `Clock\SystemClock`, `Policy\{SourcePolicy, Credential, ServerTarget, SourceTransportPolicy}`), `packages/engine` (`OtelTracer`, `OtelSpan`), `packages/runner` (`ExecutionPolicy`, `ExecutionBudgets`, full PSR-3/PSR-14/PSR-20/`TracerInterface` wiring, removal of `open-telemetry/api`), and `packages/cli` (`OtelTracer` wiring).
-- **Follow-up package PRs**:
-  - `packages/expression`: strip unused `psr/log` & `psr/event-dispatcher`; rename `InterpolationOptions` → `InterpolationPolicy`.
-  - `packages/evaluation`: strip unused `psr/log`.
-  - `packages/sources`: introduce `FetchPolicy` and optional `LoggerInterface` / `TracerInterface`.
-  - `packages/protocol-http`, `protocol-soap`, `protocol-rpc`: consume `WorkflowContext::getActiveSourcePolicy()` (`SourcePolicy`), introduce protocol `*Policy` DTOs, and wire optional `LoggerInterface` / `TracerInterface` with W3C header injection.
-  - `packages/engine`: align `RetryPolicy` to `final readonly` + `::default()` + immutable `with*()` and eventually extract OpenTelemetry adapters into a dedicated package.
+### 4. Incremental Rollout Status
+- **Completed**:
+  - `packages/contracts`: `Observability\{TracerInterface, SpanInterface, NullTracer, NullSpan}`, `Clock\SystemClock`, `Policy\{SourcePolicy, Credential, CredentialType, ServerTarget, SourceTransportPolicy}`, retired `EventLedgerInterface` and `StepProtocolExecutorInterface`.
+  - `packages/engine`: `OtelTracer` / `OtelSpan` quarantine, `RetryPolicy` aligned to `final readonly` + `::default()` + immutable `with*()` + PSR-20 `ClockInterface`, stripped unused `psr/log`.
+  - `packages/runner` & `packages/cli`: `ExecutionPolicy`, `ExecutionBudgets`, full PSR-3/PSR-14/PSR-20/`TracerInterface` wiring, removed `open-telemetry/api` from `runner`, wired `OtelTracer` in `cli`.
+  - `packages/expression` & `packages/evaluation`: stripped unused `psr/log` & `psr/event-dispatcher`, renamed `InterpolationOptions` → `InterpolationPolicy`, enforced Tier-1 `ArchTest` guards.
+  - `packages/sources`: added `FetchPolicy` and Tier-2 `LoggerInterface` / `TracerInterface` with W3C `traceparent` injection.
+  - `packages/protocol-http`, `packages/protocol-soap`, `packages/protocol-rpc`: added `HttpPolicy`, consumed `WorkflowContext::getActiveSourcePolicy()` (`SourcePolicy`), and wired Tier-2 `LoggerInterface` / `TracerInterface` with W3C `traceparent` injection.
+- **Future**: extract OpenTelemetry adapters (`OtelTracer` / `OtelSetup`) from `packages/engine` into a dedicated telemetry adapter package when standalone telemetry packaging is prioritized.
 
 ## Consequences
 

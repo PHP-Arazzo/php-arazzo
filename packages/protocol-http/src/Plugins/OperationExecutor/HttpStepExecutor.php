@@ -8,7 +8,6 @@ use Alama\Arazzo\Contracts\Attributes\AsOperationExecutorPlugin;
 use Alama\Arazzo\Contracts\Interfaces\OperationExecutorPluginInterface;
 use Alama\Arazzo\Contracts\Interfaces\OutputExtractorInterface;
 use Alama\Arazzo\Contracts\Interfaces\ResponseValidatorInterface;
-use Alama\Arazzo\Contracts\Interfaces\StepProtocolExecutorInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Enum\OperationProtocol;
 use Alama\Arazzo\Contracts\Spec\Step;
@@ -25,7 +24,7 @@ use Psr\Http\Message\RequestInterface as Psr7Request;
  * @internal stays out of the advertised contract; not part of the public API surface
  */
 #[AsOperationExecutorPlugin(OperationProtocol::Http)]
-final class HttpStepExecutor implements OperationExecutorPluginInterface, StepProtocolExecutorInterface
+final class HttpStepExecutor implements OperationExecutorPluginInterface
 {
     /**
      * Registry ordering (ascending, first supports() wins). HTTP steps and

@@ -41,8 +41,8 @@ contracts-Data,contracts-Spec,1
 contracts-Dependency,contracts-Spec,6
 contracts-Dependency,contracts-State,1
 contracts-Interfaces,contracts-Exceptions,1
-contracts-Interfaces,contracts-Spec,24
-contracts-Interfaces,contracts-State,2
+contracts-Interfaces,contracts-Spec,21
+contracts-Interfaces,contracts-State,1
 contracts-Interfaces,contracts-Validation,2
 contracts-State,contracts-Policy,1
 contracts-State,contracts-Spec,3
@@ -80,6 +80,7 @@ engine-Execution,contracts-Spec,13
 engine-Execution,contracts-State,2
 engine-Execution,document-Parser,1
 engine-Execution,evaluation-root,1
+engine-Runtime,contracts-Clock,1
 engine-Runtime,contracts-Interfaces,7
 engine-Runtime,contracts-Observability,3
 engine-Runtime,contracts-Spec,8
@@ -190,7 +191,7 @@ protocol-http-Execution,expression-Interfaces,2
 protocol-http-Execution,protocol-http-Policy,1
 protocol-http-Execution,protocol-http-Resolver,6
 protocol-http-Plugins,contracts-Attributes,2
-protocol-http-Plugins,contracts-Interfaces,8
+protocol-http-Plugins,contracts-Interfaces,6
 protocol-http-Plugins,contracts-Spec,11
 protocol-http-Plugins,contracts-State,2
 protocol-http-Plugins,engine-Exceptions,1
