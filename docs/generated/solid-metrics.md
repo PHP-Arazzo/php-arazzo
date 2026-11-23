@@ -63,8 +63,8 @@ quadrantChart
     expression/Enum: [0, 0]
     expression/Exceptions: [0.091, 0]
     expression/Interfaces: [0.333, 1]
-    expression/Internal: [0.75, 0]
-    expression/JsonPath: [0.667, 0.143]
+    expression/Internal: [0.778, 0]
+    expression/JsonPath: [0.667, 0.111]
     expression/Plugins: [1, 0]
     expression/Policy: [0, 0]
     expression/Registries: [0.571, 0]
@@ -117,8 +117,6 @@ Concrete types over 300 LOC:
 |---|---|---:|
 | `Parser` | `document:Parser` | 931 |
 | `ExecutionContext` | `engine:Runtime` | 553 |
-| `Parser` | `expression:_` | 511 |
-| `Parser` | `expression:JsonPath` | 470 |
 | `ExecutionState` | `contracts:State` | 465 |
 | `ProtoParser` | `protocol-rpc:Normalizer` | 446 |
 | `WsdlSourceNormalizer` | `protocol-soap:Plugins` | 446 |

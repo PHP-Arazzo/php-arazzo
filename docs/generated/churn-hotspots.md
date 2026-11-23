@@ -17,7 +17,7 @@ xychart-beta
     bar [52, 40, 30, 22, 19, 19, 18, 16, 16, 13, 11, 11]
 ```
 
-Analyzed 473 total file-touches across 77 modules.
+Analyzed 475 total file-touches across 77 modules.
 
 | Module | Touches | Share | LOC | Touches/KLOC |
 |---|---:|---:|---:|---:|
@@ -37,13 +37,14 @@ Analyzed 473 total file-touches across 77 modules.
 | `evaluation:Registries` | 9 | 2% | 190 | 47.4 |
 | `protocol-soap:Execution` | 9 | 2% | 484 | 18.6 |
 | `engine:Execution` | 8 | 2% | 1,031 | 7.8 |
+| `contracts:State` | 7 | 1% | 1,062 | 6.6 |
 | `expression:Plugins` | 7 | 1% | 1,371 | 5.1 |
-| `contracts:State` | 6 | 1% | 1,062 | 5.6 |
 | `evaluation:Condition` | 6 | 1% | 1,023 | 5.9 |
 | `protocol-http:Execution` | 6 | 1% | 927 | 6.5 |
 | `protocol-rpc:Execution` | 6 | 1% | 188 | 31.9 |
 | `runner:Events` | 6 | 1% | 187 | 32.1 |
 | `contracts:Attributes` | 5 | 1% | 106 | 47.2 |
+| `contracts:Dependency` | 5 | 1% | 375 | 13.3 |
 | `engine:Runtime` | 5 | 1% | 1,844 | 2.7 |
 | `expression:Ast` | 5 | 1% | 355 | 14.1 |
 | `expression:Registries` | 5 | 1% | 113 | 44.2 |
@@ -53,10 +54,9 @@ Analyzed 473 total file-touches across 77 modules.
 | `runner:Preflight` | 5 | 1% | 156 | 32.1 |
 | `cli:Generator` | 4 | 1% | 141 | 28.4 |
 | `cli:Renderer` | 4 | 1% | 255 | 15.7 |
-| `contracts:Dependency` | 4 | 1% | 375 | 10.7 |
 | `evaluation:Data` | 4 | 1% | 86 | 46.5 |
 | `expression:Enum` | 4 | 1% | 47 | 85.1 |
-| `expression:Internal` | 4 | 1% | 434 | 9.2 |
+| `expression:Internal` | 4 | 1% | 921 | 4.3 |
 | `contracts:Support` | 3 | 1% | 185 | 16.2 |
 | `document:Registries` | 3 | 1% | 97 | 30.9 |
 | `evaluation:Interfaces` | 3 | 1% | 44 | 68.2 |
@@ -71,7 +71,7 @@ Analyzed 473 total file-touches across 77 modules.
 | `engine:Data` | 2 | 0% | 74 | 27 |
 | `engine:Enum` | 2 | 0% | 17 | 117.6 |
 | `evaluation:Enum` | 2 | 0% | 123 | 16.3 |
-| `expression:JsonPath` | 2 | 0% | 1,378 | 1.5 |
+| `expression:JsonPath` | 2 | 0% | 1,470 | 1.4 |
 | `expression:Support` | 2 | 0% | 192 | 10.4 |
 | `protocol-rpc:Plugins` | 2 | 0% | 422 | 4.7 |
 | `protocol-soap:Plugins` | 2 | 0% | 859 | 2.3 |

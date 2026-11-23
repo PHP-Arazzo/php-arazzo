@@ -40,12 +40,7 @@
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/expression/src/ExpressionEngine.php"/>
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/expression/src/ExpressionEvaluator.php"/>
   <violation rule="PHPMD\Rule\UnusedFormalParameter" file="packages/expression/src/JsonPath/JsonPathFunctions.php"/>
-  <violation rule="PHPMD\Rule\Design\ExcessiveClassComplexity" file="packages/expression/src/JsonPath/Parser.php"/>
-  <violation rule="PHPMD\Rule\CyclomaticComplexity" file="packages/expression/src/JsonPath/Parser.php" method="parsePrimary"/>
-  <violation rule="PHPMD\Rule\Design\NPathComplexity" file="packages/expression/src/JsonPath/Parser.php" method="parsePrimary"/>
   <violation rule="PHPMD\Rule\UnusedFormalParameter" file="packages/expression/src/JsonPath/Tokenizer.php"/>
-  <violation rule="PHPMD\Rule\Design\ExcessiveClassComplexity" file="packages/expression/src/Parser.php"/>
-  <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/expression/src/Parser.php"/>
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/protocol-http/src/Execution/DefaultOpenApiExecutor.php"/>
   <violation rule="PHPMD\Rule\Design\NPathComplexity" file="packages/protocol-http/src/Execution/ResponseSchemaValidator.php" method="findResponseSchema"/>
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/protocol-http/src/Execution/StepOutputExtractor.php"/>

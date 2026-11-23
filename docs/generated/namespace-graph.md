@@ -121,12 +121,13 @@ flowchart LR
     expression_Interfaces --> expression_Data
     expression_Interfaces --> expression_Exceptions
     expression_Interfaces --> expression_Policy
-    expression_Internal --> contracts_Spec
+    expression_Internal --> expression_Ast
     expression_Internal --> expression_Data
+    expression_Internal --> expression_Enum
     expression_Internal --> expression_Exceptions
+    expression_Internal --> contracts_Spec
     expression_Internal --> expression_Interfaces
     expression_Internal --> expression__
-    expression_Internal --> expression_Ast
     expression_JsonPath --> expression_Data
     expression_JsonPath --> expression_Exceptions
     expression_Plugins --> contracts_Attributes

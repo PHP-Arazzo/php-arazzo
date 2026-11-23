@@ -52,12 +52,12 @@ quadrantChart
     evaluation/Interfaces: [0.6, 0.5]
     evaluation/Plugins: [1, 1]
     evaluation/Registries: [0.833, 1]
-    expression/Ast: [0.333, 0.733]
+    expression/Ast: [0.333, 0.8]
     expression/Data: [0.25, 1]
     expression/Enum: [0, 1]
     expression/Exceptions: [0.091, 1]
     expression/Interfaces: [0.333, 1]
-    expression/Internal: [0.75, 0.333]
+    expression/Internal: [0.778, 0.167]
     expression/JsonPath: [0.667, 1]
     expression/Plugins: [1, 1]
     expression/Policy: [0, 1]
@@ -113,11 +113,11 @@ quadrantChart
 | `contracts/Interfaces` | 0.10 | 47 | 20 | 100% |
 | `contracts/Observability` | 0.00 | 9 | 4 | 100% |
 | `contracts/Policy` | 0.00 | 12 | 5 | 100% |
-| `contracts/Spec` | 0.02 | 287 | 52 | 100% |
+| `contracts/Spec` | 0.02 | 288 | 52 | 100% |
 | `contracts/State` | 0.10 | 84 | 4 | 100% |
 | `contracts/Support` | 0.00 | 12 | 5 | 100% |
 | `contracts/Validation` | 0.11 | 91 | 9 | 100% |
-| `document/Parser` | 0.29 | 61 | 24 | 100% |
+| `document/Parser` | 0.29 | 62 | 24 | 100% |
 | `document/Plugins` | 1.00 | 52 | 50 | 100% |
 | `document/Registries` | 0.80 | 3 | 1 | 100% |
 | `document/Validator` | 0.71 | 25 | 6 | 100% |
@@ -126,20 +126,20 @@ quadrantChart
 | `engine/Exceptions` | 0.11 | 8 | 1 | 100% |
 | `engine/Execution` | 0.31 | 14 | 8 | 100% |
 | `engine/Runtime` | 0.56 | 23 | 21 | 100% |
-| `evaluation/Condition` | 0.89 | 77 | 17 | 100% |
+| `evaluation/Condition` | 0.89 | 78 | 17 | 100% |
 | `evaluation/Data` | 0.40 | 13 | 2 | 100% |
 | `evaluation/Enum` | 0.00 | 6 | 5 | 100% |
 | `evaluation/Events` | 0.33 | 1 | 1 | 100% |
 | `evaluation/Interfaces` | 0.60 | 1 | 2 | 50% |
 | `evaluation/Plugins` | 1.00 | 4 | 2 | 100% |
 | `evaluation/Registries` | 0.83 | 6 | 2 | 100% |
-| `expression/Ast` | 0.33 | 11 | 15 | 73% |
+| `expression/Ast` | 0.33 | 12 | 15 | 80% |
 | `expression/Data` | 0.25 | 25 | 6 | 100% |
 | `expression/Enum` | 0.00 | 8 | 2 | 100% |
-| `expression/Exceptions` | 0.09 | 17 | 2 | 100% |
+| `expression/Exceptions` | 0.09 | 18 | 2 | 100% |
 | `expression/Interfaces` | 0.33 | 22 | 4 | 100% |
-| `expression/Internal` | 0.75 | 1 | 3 | 33% |
-| `expression/JsonPath` | 0.67 | 61 | 7 | 100% |
+| `expression/Internal` | 0.78 | 1 | 6 | 17% |
+| `expression/JsonPath` | 0.67 | 62 | 9 | 100% |
 | `expression/Plugins` | 1.00 | 22 | 17 | 100% |
 | `expression/Policy` | 0.00 | 3 | 1 | 100% |
 | `expression/Registries` | 0.57 | 4 | 1 | 100% |
@@ -178,3 +178,5 @@ quadrantChart
 | `sources/Policy` | 0.00 | 3 | 1 | 100% |
 | `sources/Registries` | 0.80 | 5 | 1 | 100% |
 | `sources/Resolver` | 0.67 | 25 | 12 | 100% |
+
+**Refactor-now list** (untested churn): `expression/Internal`
