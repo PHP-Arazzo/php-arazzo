@@ -7,7 +7,7 @@ namespace Alama\Arazzo\Tests\Resolution;
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Spec\SourceDocument;
-use Alama\Arazzo\Sources\Resolver\Exceptions\UnresolvableReferenceException;
+use Alama\Arazzo\Sources\Exceptions\UnresolvableReferenceException;
 use Alama\Arazzo\Sources\Resolver\Interfaces\SourceResolver;
 use Alama\Arazzo\Sources\Resolver\SourceRegistry;
 

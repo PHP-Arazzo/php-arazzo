@@ -10,10 +10,10 @@ use Alama\Arazzo\Protocol\Soap\Execution\SoapFaultMapper;
 use Alama\Arazzo\Protocol\Soap\Execution\SoapOperationExecutor;
 use Alama\Arazzo\Protocol\Soap\Execution\SoapRequestBuilder;
 use Alama\Arazzo\Protocol\Soap\Execution\WsdlOperationResolver;
+use Alama\Arazzo\Protocol\Soap\Normalizer\WsdlSourceNormalizer;
 use Alama\Arazzo\Protocol\Soap\Resolver\XPathReplacementTargetResolver;
 use Alama\Arazzo\Protocol\Soap\Transfer\SoapResponseTransferMapper;
 use Alama\Arazzo\Protocol\Soap\Validation\XsdResponseValidator;
-use Alama\Arazzo\Sources\Normalizer\WsdlSourceNormalizer;
 
 /**
  * Framework-agnostic registration of the SOAP vertical slice into the core

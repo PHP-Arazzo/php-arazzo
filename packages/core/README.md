@@ -37,66 +37,54 @@ composer require guzzlehttp/guzzle
 
 require 'vendor/autoload.php';
 
-use Alama\Arazzo\Execution\StepOutputExtractor;use Alama\Arazzo\Execution\ResponseSchemaValidator;use Alama\Arazzo\Execution\DefaultOpenApiExecutor;use Alama\Arazzo\Execution\IdempotencyKeyInjector;use Alama\Arazzo\Execution\StepExecutor;use Alama\Arazzo\Execution\WorkflowExecutor;use Alama\Arazzo\Normalizer\OpenApiDocumentLoader;use Alama\Arazzo\Parser\Decoders\NativeJsonDecoder;use Alama\Arazzo\Parser\Decoders\SymfonyYamlDecoder;use Alama\Arazzo\Parser\Loader;use Alama\Arazzo\Parser\Parser;use Alama\Arazzo\Resolver\DefaultSourceResolver;use Alama\Arazzo\Resolver\Fetchers\HttpFetcher;use Alama\Arazzo\Resolver\Fetchers\LocalFetcher;use Alama\Arazzo\Resolver\SourceRegistry;use Alama\Arazzo\Runner\Evaluation\ArazzoCriteriaEvaluator;use Alama\Arazzo\Runner\Evaluation\ArazzoExpressionResolver;use Alama\Arazzo\Runner\Evaluation\ExpressionEvaluator;use Alama\Arazzo\Runner\Evaluation\Xpath\DomXpathEvaluator;use Alama\Arazzo\Runner\Normalizer\OpenApi30Normalizer;use Alama\Arazzo\Runner\Normalizer\OpenApi31Normalizer;use Alama\Arazzo\Runner\Normalizer\OpenApiVersionDetector;use Alama\Arazzo\Runner\Resolver\OpenApiOperationResolver;use Alama\Arazzo\Validator\PreflightValidator;use GuzzleHttp\Client;use GuzzleHttp\Psr7\HttpFactory;
+use Alama\Arazzo\Document\Document;
+use Alama\Arazzo\Evaluation\EvaluationEngine;
+use Alama\Arazzo\Expression\ExpressionEngine;
+use Alama\Arazzo\Protocol\Http\Execution\DefaultOpenApiExecutor;
+use Alama\Arazzo\Protocol\Http\Execution\ResponseSchemaValidator;
+use Alama\Arazzo\Protocol\Http\Execution\StepOutputExtractor;
+use Alama\Arazzo\Protocol\Http\Resolver\OpenApiOperationResolver;
+use Alama\Arazzo\Runner\RunnerFacade;
+use Alama\Arazzo\Sources\Sources;
+use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\HttpFactory;
 
-// 1. Parse the Arazzo document.
-$loader = new Loader(new SymfonyYamlDecoder(), new NativeJsonDecoder());
-$parser = new Parser();
-$document = $parser->parse($loader->load(__DIR__ . '/workflow.arazzo.yaml'));
-
-// 2. Wire up PSR HTTP + source resolution (fetches the OpenAPI docs the workflow references).
 $httpClient = new Client();
 $httpFactory = new HttpFactory();
 
-$sourceResolver = new SourceRegistry(new DefaultSourceResolver([
-    'http' => new HttpFetcher($httpClient, $httpFactory),
-    'https' => new HttpFetcher($httpClient, $httpFactory),
-    'file' => new LocalFetcher(),
-]));
+// 1. Parse and validate the Arazzo document
+$documentFacade = Document::create();
+$document = $documentFacade->load(__DIR__ . '/workflow.arazzo.yaml');
 
-// 3. Wire up the execution pipeline.
-$evaluator = new ExpressionEvaluator();
-$documentLoader = new OpenApiDocumentLoader($sourceResolver);
-$versionDetector = new OpenApiVersionDetector();
-$operationResolver = new OpenApiOperationResolver(
-    $documentLoader,
-    $versionDetector,
-    new OpenApi30Normalizer(),
-    new OpenApi31Normalizer(),
+// 2. Wire up source resolution & operation resolver
+$sources = Sources::create()->withHttpClient($httpClient, $httpFactory);
+$operationResolver = OpenApiOperationResolver::create($sources);
+
+// Optional: semantic validation checking step operations against real sources
+$validation = $documentFacade->validate($document, $sources->knownOperations($document));
+if (!$validation->isValid()) {
+    throw new RuntimeException('Document validation failed');
+}
+
+// 3. Assemble the runner facade
+$expressionEngine = new ExpressionEngine();
+$evaluationEngine = new EvaluationEngine(expression: $expressionEngine);
+
+$runner = new RunnerFacade(
+    document: $documentFacade,
+    operationResolver: $operationResolver,
+    evaluationEngine: $evaluationEngine,
+    inspector: null,
+    openApiExecutor: new DefaultOpenApiExecutor($httpClient, $httpFactory),
+    outputExtractor: new StepOutputExtractor($operationResolver, $evaluationEngine, $expressionEngine),
+    schemaValidator: new ResponseSchemaValidator($operationResolver),
 );
 
-$expressionResolver = new ArazzoExpressionResolver(
-    $evaluator,
-    new StepOutputExtractor($operationResolver, $evaluator, new \Alama\Arazzo\Expression\ExpressionEngine()),
-    new ArazzoCriteriaEvaluator($evaluator),
-    new ResponseSchemaValidator($operationResolver),
-);
-
-$stepExecutor = new StepExecutor(
-    new DefaultOpenApiExecutor($httpClient, $httpFactory),
-    $expressionResolver,
-    $operationResolver,
-    // Responses are validated against their OpenAPI schema by default; a
-    // step can opt out with `x-strict-validation: false`.
-    strictValidationDefault: true,
-    injector: new IdempotencyKeyInjector(enabledDefault: false, headerDefault: 'Idempotency-Key'),
-);
-
-// Optional: execution preflight (resolves sources/operations/versions
-// with zero side effects before the run starts).
-$preflight = new PreflightValidator(
-    $sourceResolver,
-    $operationResolver,
-);
-
-// The canonical engine makes every control-flow decision; adapters apply
-// its transitions. It is required.
-$engine = new WorkflowEngine($expressionResolver, maxRetryAttempts: 10);
-
-$executor = new WorkflowExecutor(
-    $stepExecutor,
-    workflowEngine: $engine,
-    preflight: $preflight, // optional but recommended
+// 4. Execute workflow
+$result = $runner->execute(
+    $document,
+    'myWorkflow',
+    ['inputs' => ['query' => 'php']]
 );
 
 // 4. Run it.

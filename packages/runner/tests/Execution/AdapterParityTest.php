@@ -24,6 +24,7 @@ use Alama\Arazzo\Expression\ExpressionEngine;
 use Alama\Arazzo\Protocol\Http\Execution\DefaultOpenApiExecutor;
 use Alama\Arazzo\Protocol\Http\Execution\ResponseSchemaValidator;
 use Alama\Arazzo\Protocol\Http\Execution\StepOutputExtractor;
+use Alama\Arazzo\Protocol\Http\Resolver\OpenApiOperationResolver;
 use Alama\Arazzo\Runner\Execution\InMemoryDefinitionRegistry;
 use Alama\Arazzo\Runner\Sync\StepExecutor;
 use Alama\Arazzo\Runner\Sync\WorkflowEngine;
@@ -31,7 +32,7 @@ use Alama\Arazzo\Runner\Sync\WorkflowExecutor;
 use Alama\Arazzo\Runtime\State\FileStateStore;
 use Alama\Arazzo\Sources\Resolver\Interfaces\SourceResolver;
 use Alama\Arazzo\Sources\Resolver\SourceRegistry;
-use Alama\Arazzo\Sources\SourceGraph;
+use Alama\Arazzo\Sources\Sources;
 use Alama\Arazzo\Tests\Expression\Support\TestEvaluationEngine;
 use Alama\Arazzo\Tests\Support\FakePsr18Client;
 use GuzzleHttp\Psr7\HttpFactory;
@@ -67,7 +68,7 @@ function parityFixtures(): array
     $httpClient->enqueue(new Response(201, [], json_encode(['rideId' => 99])));
     $httpClient->enqueue(new Response(201, [], json_encode(['rideId' => 100])));
     $engine = new EvaluationEngine(expression: new ExpressionEngine());
-    $runtime = SourceGraph::runtime(new SourceRegistry(new class() implements SourceResolver
+    $sources = new Sources(new SourceRegistry(new class() implements SourceResolver
     {
         public function resolve(SourceDescription $description, string $basePath): SourceDocument
         {
@@ -79,11 +80,12 @@ function parityFixtures(): array
             );
         }
     }));
-    $outputExtractor = new StepOutputExtractor($runtime->operations, $engine, new ExpressionEngine());
-    $schemaValidator = new ResponseSchemaValidator($runtime->operations);
+    $operations = OpenApiOperationResolver::create($sources);
+    $outputExtractor = new StepOutputExtractor($operations, $engine, new ExpressionEngine());
+    $schemaValidator = new ResponseSchemaValidator($operations);
     $stepExecutor = new StepExecutor(
         new DefaultOpenApiExecutor($httpClient, new HttpFactory()),
-        $runtime->operations,
+        $operations,
         $engine,
         $outputExtractor,
         $schemaValidator,

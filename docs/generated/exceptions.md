@@ -10,6 +10,7 @@ source. Use this to decide which exception to throw or catch.
 classDiagram
     direction TB
     class E_RuntimeException["RuntimeException"]:::builtin
+    class E_BaseException["BaseException"]:::builtin
     class E_ArazzoException["ArazzoException<br/><small>contracts:Support</small>"]:::domain
     class E_ConditionSyntaxException["ConditionSyntaxException<br/><small>evaluation:Condition</small>"]:::domain
     class E_CustomTagsForbiddenException["CustomTagsForbiddenException<br/><small>document:Parser</small>"]:::domain
@@ -36,7 +37,7 @@ classDiagram
     class E_StepBudgetExceededException["StepBudgetExceededException<br/><small>runner:Execution</small>"]:::domain
     class E_UnresolvableReferenceException["UnresolvableReferenceException<br/><small>sources:Resolver</small>"]:::domain
     class E_UnsupportedSerializationStyleException["UnsupportedSerializationStyleException<br/><small>document:Parser</small>"]:::domain
-    class E_UnsupportedSourceVersionException["UnsupportedSourceVersionException<br/><small>sources:Resolver</small>"]:::domain
+    class E_UnsupportedSourceVersionException["UnsupportedSourceVersionException<br/><small>protocol-soap:Exceptions</small>"]:::domain
     class E_WorkflowCycleException["WorkflowCycleException<br/><small>runner:Execution</small>"]:::domain
     class E_WorkflowDepthExceededException["WorkflowDepthExceededException<br/><small>runner:Execution</small>"]:::domain
     E_RuntimeException <|-- E_ArazzoException
@@ -59,11 +60,11 @@ classDiagram
     E_RuntimeException <|-- E_PreflightFailureException
     E_RuntimeException <|-- E_SchemaValidationException
     E_ArazzoException <|-- E_SelectorEvaluationException
-    E_SourceResolutionException <|-- E_SourceFetchException
-    E_SourceResolutionException <|-- E_SourceParseException
+    E_BaseException <|-- E_SourceFetchException
+    E_BaseException <|-- E_SourceParseException
     E_RuntimeException <|-- E_SourceResolutionException
     E_ArazzoException <|-- E_StepBudgetExceededException
-    E_SourceResolutionException <|-- E_UnresolvableReferenceException
+    E_BaseException <|-- E_UnresolvableReferenceException
     E_RuntimeException <|-- E_UnsupportedSerializationStyleException
     E_RuntimeException <|-- E_UnsupportedSourceVersionException
     E_ArazzoException <|-- E_WorkflowCycleException
@@ -94,12 +95,12 @@ classDiagram
 | `PreflightFailureException` | `RuntimeException` | runner:Exceptions |
 | `SchemaValidationException` | `RuntimeException` | contracts:Exceptions |
 | `SelectorEvaluationException` | `ArazzoException` | expression:Exceptions |
-| `SourceFetchException` | `SourceResolutionException` | sources:Resolver |
-| `SourceParseException` | `SourceResolutionException` | sources:Resolver |
+| `SourceFetchException` | `BaseException` | sources:Resolver |
+| `SourceParseException` | `BaseException` | sources:Resolver |
 | `SourceResolutionException` | `RuntimeException` | sources:Resolver |
 | `StepBudgetExceededException` | `ArazzoException` | runner:Execution |
-| `UnresolvableReferenceException` | `SourceResolutionException` | sources:Resolver |
+| `UnresolvableReferenceException` | `BaseException` | sources:Resolver |
 | `UnsupportedSerializationStyleException` | `RuntimeException` | document:Parser |
-| `UnsupportedSourceVersionException` | `RuntimeException` | sources:Resolver |
+| `UnsupportedSourceVersionException` | `RuntimeException` | protocol-soap:Exceptions |
 | `WorkflowCycleException` | `ArazzoException` | runner:Execution |
 | `WorkflowDepthExceededException` | `ArazzoException` | runner:Execution |

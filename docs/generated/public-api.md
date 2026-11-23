@@ -12,6 +12,28 @@ this file on a commit is a public API change — review it deliberately.
 
 ## contracts
 
+### `Alama\Arazzo\Contracts\Data`
+
+#### `KnownOperations` class
+- `public function __construct(private array $operations = [])`
+- `public function covers(string $source): bool`
+- `public function has(string $source, string $operationId): bool`
+- `public function toArray(): array`
+- `public function withOperation(string $source, string $operationId): self`
+- `public function withSource(string $source, array $operationIds): self`
+
+#### `ResolvedOperationCollection` class
+- `public function __construct(private array $operations = [])`
+- `public function all(): array`
+- `public function count(): int`
+- `public function forSource(string $sourceName): self`
+- `public function get(string $reference): ?ResolvedOperation`
+- `public function getIterator(): Traversable`
+- `public function has(string $reference): bool`
+- `public function isEmpty(): bool`
+- `public function toKnownOperations(): KnownOperations`
+- `public static function fromArray(array $operations): self`
+
 ### `Alama\Arazzo\Contracts\Interfaces`
 
 #### `AiClientInterface` interface
@@ -59,6 +81,9 @@ this file on a commit is a public API change — review it deliberately.
 #### `ResponseValidatorInterface` interface
 - `public function validateResponseSchema(Step $step, int $statusCode, string $contentType, mixed $decodedBody, ?ArazzoDocument $document = null): void;`
 
+#### `SourceFetcherInterface` interface
+- `public function fetch(string $urlOrPath, string $basePath): string;`
+
 #### `SourceNormalizerInterface` interface
 - `public function normalize(SourceDescription $source, string $rawContent, ?ArazzoDocument $document = null): array;`
 - `public function supports(SourceType $type): bool;`
@@ -66,6 +91,9 @@ this file on a commit is a public API change — review it deliberately.
 #### `SourceNormalizerRegistryInterface` interface
 - `public function get(SourceType $type): ?SourceNormalizerInterface;`
 - `public function register(SourceNormalizerInterface $normalizer): void;`
+
+#### `SourceResolverInterface` interface
+- `public function resolve(SourceDescription $source, string $basePath): SourceDocument;`
 
 #### `StepProtocolExecutorInterface` interface
 - `public function execute(Step $step, WorkflowContext $context, ArazzoDocument $document, string $executionId): StepExecutionOutcome;`
@@ -83,6 +111,10 @@ this file on a commit is a public API change — review it deliberately.
 
 #### `GraphQlOperation` class
 - `public function __construct(public string $schema, public string $operation, /** @param array<string,mixed>|null $extensions */ ?iterable $extensions = null, public ?Selector $extensionsSelector = null)`
+
+#### `ResolvedOperation` class
+- `public function __construct(public SourceDescription $source, public NormalizedOpenApiOperation $normalized, public ?RpcProtocol $rpcProtocol = null, public ?string $operationName = null, public ?string $rpcMethod = null, public ?GraphQlOperation $graphqlOperation = null, public ?Interaction $interaction = null)`
+- `public function binding(): string`
 
 #### `ResponseTransfer` class
 - `public function __construct(private mixed $status, private array $headers, private mixed $rawBody, private array $views = [], private array $meta = [])`
@@ -403,26 +435,33 @@ this file on a commit is a public API change — review it deliberately.
 
 ## sources
 
-### `SourceGraph` class
-- `public static function createRegistry(?ClientInterface $httpClient = null, ?RequestFactoryInterface $httpFactory = null, ): SourceRegistry`
-- `public static function document(): DocumentInterface`
-- `public static function loader(?SourceRegistry $registry = null): SourceLoader`
-- `public static function operations(?SourceRegistry $registry = null): OpenApiOperationResolver`
-- `public static function runtime(?SourceRegistry $registry = null, ?OpenApiOperationResolver $operations = null, ): SourceRuntime`
-- `public static function using(): DocumentInterface`
-
 ### `Alama\Arazzo\Sources`
 
-#### `SourceLoader` class
-- `public function __construct(private readonly SourceRegistry $sources, private readonly OpenApiVersionDetector $versionDetector, private readonly SourceNormalizerRegistryInterface $normalizers)`
-- `public function detectOpenApiVersion(array $document): string`
+#### `Sources` class
+- `public function __construct(?SourceResolverInterface $resolver = null, array $normalizers = [])`
 - `public function knownOperations(ArazzoDocument $document, string $basePath = ''): KnownOperations`
-- `public function normalizeSources(ArazzoDocument $document, string $basePath = ''): array`
+- `public function normalizeSources(ArazzoDocument $document, string $basePath = ''): ResolvedOperationCollection`
+- `public function resolve(SourceDescription $source, string $basePath = ''): SourceDocument`
+- `public function withFetcher(string $scheme, SourceFetcherInterface $fetcher): static`
+- `public function withHttpClient(ClientInterface $client, ?RequestFactoryInterface $requestFactory = null): static`
+- `public function withNormalizer(SourceNormalizerInterface $normalizer): static`
+- `public static function create(): self`
 
-### `Alama\Arazzo\Sources\Normalizer`
+#### `SourcesInterface` interface
+- `public function knownOperations(ArazzoDocument $document, string $basePath = ''): KnownOperations;`
+- `public function normalizeSources(ArazzoDocument $document, string $basePath = ''): ResolvedOperationCollection;`
+- `public function resolve(SourceDescription $source, string $basePath = ''): SourceDocument;`
+- `public function withFetcher(string $scheme, SourceFetcherInterface $fetcher): static;`
+- `public function withHttpClient(ClientInterface $client, ?RequestFactoryInterface $requestFactory = null): static;`
+- `public function withNormalizer(SourceNormalizerInterface $normalizer): static;`
 
-#### `OpenApiOperationHandle` class
-- `public function __construct(ResolvedOperation $operation, public readonly OpenApi $openApi, public readonly Operation $cebeOperation)`
+### `Alama\Arazzo\Sources\Exceptions`
+
+#### `UnresolvableReferenceException` class
+- `public function __construct(string $message, public readonly string $sourceName = '', public readonly string $reference = '', ?Throwable $previous = null)`
+
+#### `UnsupportedSourceVersionException` class
+- `public static function forVersion(string $version, string $sourceName): self`
 
 ## document
 
@@ -436,29 +475,19 @@ this file on a commit is a public API change — review it deliberately.
 ### `Alama\Arazzo\Document`
 
 #### `Document` class
+- `public function __construct(?ExpressionEngineInterface $expressionEngine = null, ?DecodePolicy $decodePolicy = null, ?Loader $loader = null, ?Parser $parser = null, ?Validator $validator = null)`
 - `public function load(string $path): ArazzoDocument`
 - `public function loadFromJson(string $content, string $virtualPath = 'inline.json'): ArazzoDocument`
 - `public function loadFromYaml(string $content, string $virtualPath = 'inline.yaml'): ArazzoDocument`
 - `public function validate(ArazzoDocument $document, ?KnownOperations $operations = null): ValidationResult`
 - `public function validateInputs(ArazzoDocument $document, string $workflowId, array $inputs): ValidationResult`
 - `public function withDecodePolicy(DecodePolicy $policy): self`
+- `public function withExpressionEngine(ExpressionEngineInterface $engine): self`
 - `public static function create(): self`
-
-#### `KnownOperations` class
-- `public function __construct(private array $operations = [])`
-- `public function covers(string $source): bool`
-- `public function has(string $source, string $operationId): bool`
-- `public function toArray(): array`
-- `public function withOperation(string $source, string $operationId): self`
-- `public function withSource(string $source, array $operationIds): self`
 
 #### `OperationResolverInterface` interface
 - `public function resolve(Step $step, ArazzoDocument $document): ResolvedOperation;`
 - `public function supportsStep(Step $step, ArazzoDocument $document): bool;`
-
-#### `ResolvedOperation` class
-- `public function __construct(public readonly SourceDescription $source, public readonly NormalizedOpenApiOperation $normalized, public readonly ?RpcProtocol $rpcProtocol = null, public readonly ?string $operationName = null, public readonly ?string $rpcMethod = null, public readonly ?GraphQlOperation $graphqlOperation = null, public readonly ?Interaction $interaction = null)`
-- `public function binding(): string`
 
 ### `Alama\Arazzo\Document\Parser`
 
@@ -527,6 +556,20 @@ this file on a commit is a public API change — review it deliberately.
 #### `StepTransitionType` enum
 - Cases: `Cancelled`, `Enter`, `GuardFailed`, `Timeout`
 
+## protocol-http
+
+### `Alama\Arazzo\Protocol\Http\Resolver`
+
+#### `OpenApiOperationHandle` class
+- `public function __construct(ResolvedOperation $operation, public readonly OpenApi $openApi, public readonly Operation $cebeOperation)`
+
+## protocol-soap
+
+### `Alama\Arazzo\Protocol\Soap\Exceptions`
+
+#### `UnsupportedSourceVersionException` class
+- `public static function forVersion(string $version, string $sourceName): self`
+
 ## runner
 
 ### `RunnerFacadeInterface` interface
@@ -562,5 +605,5 @@ this file on a commit is a public API change — review it deliberately.
 ### `Alama\Arazzo\Cli\Console\Command`
 
 #### `RunCommand` class
-- `public function __construct(private readonly ?ClientInterface $httpClient = null, private readonly ?RequestFactoryInterface $httpFactory = null, private readonly ?SourceRegistry $registry = null)`
+- `public function __construct(private readonly ?RunnerFacadeInterface $runner = null, private readonly ?DocumentInterface $document = null)`
 

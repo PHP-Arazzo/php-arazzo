@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Sources\Resolver;
 
+use Alama\Arazzo\Contracts\Interfaces\SourceFetcherInterface;
 use Alama\Arazzo\Contracts\Spec\Enum\Format;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Spec\SourceDocument;
 use Alama\Arazzo\Document\Parser\DecodePolicy;
 use Alama\Arazzo\Document\Parser\Decoders;
-use Alama\Arazzo\Sources\Resolver\Exceptions\SourceFetchException;
-use Alama\Arazzo\Sources\Resolver\Exceptions\SourceParseException;
+use Alama\Arazzo\Sources\Exceptions\SourceFetchException;
+use Alama\Arazzo\Sources\Exceptions\SourceParseException;
 use Alama\Arazzo\Sources\Resolver\Fetchers\HttpFetcher;
 use Alama\Arazzo\Sources\Resolver\Fetchers\LocalFetcher;
 use Alama\Arazzo\Sources\Resolver\Interfaces\SourceFetcher;
@@ -33,10 +34,18 @@ final readonly class DefaultSourceResolver implements SourceResolver
     private const HTTP_REQUEST_TIMEOUT = 5.0;
 
     public function __construct(
-        /** @var array<string, SourceFetcher> */
+        /** @var array<string, SourceFetcherInterface> */
         private array $fetchers,
         private ?DecodePolicy $decodePolicy = null,
     ) {}
+
+    public function withFetcher(string $scheme, SourceFetcherInterface $fetcher): self
+    {
+        $fetchers = $this->fetchers;
+        $fetchers[$scheme] = $fetcher;
+
+        return new self($fetchers, $this->decodePolicy);
+    }
 
     /**
      * The Guzzle client every default source fetch goes through.

@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Alama\Arazzo\Sources\Normalizer;
+namespace Alama\Arazzo\Protocol\Soap\Normalizer;
 
 use Alama\Arazzo\Contracts\Interfaces\SourceNormalizerInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
+use Alama\Arazzo\Contracts\Spec\NormalizedOpenApiOperation;
+use Alama\Arazzo\Contracts\Spec\ResolvedOperation;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
-use Alama\Arazzo\Document\NormalizedOpenApiOperation;
-use Alama\Arazzo\Document\ResolvedOperation;
-use Alama\Arazzo\Sources\Resolver\Exceptions\UnsupportedSourceVersionException;
+use Alama\Arazzo\Protocol\Soap\Exceptions\UnsupportedSourceVersionException;
 use DOMDocument;
 use DOMElement;
 use DOMNode;
@@ -18,31 +18,11 @@ use DOMXPath;
 use InvalidArgumentException;
 
 /**
- * Port (D2): the SOAP sibling of OpenApiSourceNormalizer — turns a described
- * WSDL 1.1 source + raw content into a ResolvedOperation index for the core
- * registry. Ships in arazzo-sources (DF8/R2): spec reading is sources' domain,
- * so a WSDL parse never requires installing a protocol package; protocol-soap
- * only registers this class (F4.6).
+ * Turns a described WSDL 1.1 source + raw content into a ResolvedOperation index.
  *
  * Index keys mirror OpenApiOperationResolver's accepted references:
  *   - plain operation name ("Add")
  *   - "$sourceDescriptions.<name>.<operationName>"
- *
- * The `NormalizedOpenApiOperation` carries the SOAP seams the protocol-soap
- * executor/validator consume (best-effort, DOM-only — no vendor):
- *   - resolvedServerUrl = <port location>, method = POST
- *   - headerParameters: Content-Type (+ SOAPAction per operation)
- *   - requestBodies['application/xml'] = { xsdElement, schema, portType, soapVersion, namespace }
- *   - responses['application/xml']   = { xsdElement, schema }
- * `schema` is the document's inline `<xsd:schema>` serialized for
- * `DOMDocument::schemaValidateSource`, or null when unresolvable.
- * `namespace` is the <definitions> targetNamespace the envelope/body elements
- * live in (consumed by protocol-soap's envelope builder).
- *
- * WSDL 2.0 (`<description>` root) is detected and rejected with an explicit
- * version exception rather than silently misparsed — the extraction vocabulary
- * in Phase F (service/port/binding/portType, soap:address, soap:operation) is
- * deliberately WSDL 1.1.
  *
  * @internal stays out of the advertised contract; not part of the public API surface
  */
@@ -309,13 +289,6 @@ final class WsdlSourceNormalizer implements SourceNormalizerInterface
         return $this->serializeSchema($dom, $schema);
     }
 
-    /**
-     * saveXML($node) does not inline namespace declarations inherited from
-     * ancestors — WSDLs declare `xmlns:xsd` on `<definitions>` — so a bare
-     * serialized `<xsd:schema>` would be invalid for
-     * `DOMDocument::schemaValidateSource`. Clone the schema into a standalone
-     * document and re-declare its in-scope namespaces on the clone root.
-     */
     private function serializeSchema(DOMDocument $dom, DOMElement $schema): ?string
     {
         $container = new DOMDocument('1.0', 'UTF-8');
@@ -419,9 +392,6 @@ final class WsdlSourceNormalizer implements SourceNormalizerInterface
     }
 
     /**
-     * Direct child elements of $parent whose local name matches, regardless
-     * of namespace prefix.
-     *
      * @return list<DOMElement>
      */
     private function children(DOMNode $parent, string $localName): array

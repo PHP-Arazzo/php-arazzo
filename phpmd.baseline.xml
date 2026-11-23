@@ -2,7 +2,6 @@
 <phpmd-baseline>
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/cli/src/Console/Cli/CliRunner.php"/>
   <violation rule="PHPMD\Rule\Design\ExcessiveParameterList" file="packages/cli/src/Console/Cli/CliRunner.php" method="__construct"/>
-  <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/cli/src/Console/Command/RunCommand.php"/>
   <violation rule="PHPMD\Rule\CyclomaticComplexity" file="packages/cli/src/Renderer/Renderer.php" method="toMarkdown"/>
   <violation rule="PHPMD\Rule\Design\NPathComplexity" file="packages/cli/src/Renderer/Renderer.php" method="toMarkdown"/>
   <violation rule="PHPMD\Rule\Naming\ShortMethodName" file="packages/cli/src/Renderer/Renderer.php" method="id"/>
@@ -71,11 +70,16 @@
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/protocol-http/src/Registrar/ProtocolHttpRegistrar.php"/>
   <violation rule="PHPMD\Rule\Design\ExcessiveParameterList" file="packages/protocol-http/src/Registrar/ProtocolHttpRegistrar.php" method="__construct"/>
   <violation rule="PHPMD\Rule\Naming\LongVariable" file="packages/protocol-http/src/Registrar/ProtocolHttpRegistrar.php"/>
+  <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/protocol-http/src/Resolver/OpenApiOperationResolver.php"/>
+  <violation rule="PHPMD\Rule\CyclomaticComplexity" file="packages/protocol-http/src/Resolver/OpenApiOperationResolver.php" method="resolve"/>
+  <violation rule="PHPMD\Rule\Design\NPathComplexity" file="packages/protocol-http/src/Resolver/OpenApiOperationResolver.php" method="resolve"/>
+  <violation rule="PHPMD\Rule\Design\ExcessiveMethodLength" file="packages/protocol-http/src/Resolver/OpenApiOperationResolver.php" method="resolve"/>
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/protocol-rpc/src/Execution/RpcOperationExecutor.php"/>
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/protocol-rpc/src/Execution/RpcRequestBuilder.php"/>
   <violation rule="PHPMD\Rule\Design\ExcessiveClassComplexity" file="packages/protocol-rpc/src/Normalizer/ProtoParser.php"/>
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/protocol-soap/src/Execution/SoapOperationExecutor.php"/>
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/protocol-soap/src/Execution/SoapRequestBuilder.php"/>
+  <violation rule="PHPMD\Rule\Design\ExcessiveClassComplexity" file="packages/protocol-soap/src/Normalizer/WsdlSourceNormalizer.php"/>
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/runner/src/Async/AsyncExecutionGraphAssembler.php"/>
   <violation rule="PHPMD\Rule\Design\ExcessiveMethodLength" file="packages/runner/src/Async/AsyncExecutionGraphAssembler.php" method="assemble"/>
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/runner/src/Async/CorrelationResumer.php"/>
@@ -108,9 +112,5 @@
   <violation rule="PHPMD\Rule\Design\NPathComplexity" file="packages/sources/src/Normalizer/OpenApi30Normalizer.php" method="resolveServerUrl"/>
   <violation rule="PHPMD\Rule\CyclomaticComplexity" file="packages/sources/src/Normalizer/OpenApi30Normalizer.php" method="resolveParameters"/>
   <violation rule="PHPMD\Rule\Design\NPathComplexity" file="packages/sources/src/Normalizer/OpenApi30Normalizer.php" method="resolveParameters"/>
-  <violation rule="PHPMD\Rule\CyclomaticComplexity" file="packages/sources/src/Normalizer/OpenApiOperationResolver.php" method="resolve"/>
-  <violation rule="PHPMD\Rule\Design\NPathComplexity" file="packages/sources/src/Normalizer/OpenApiOperationResolver.php" method="resolve"/>
-  <violation rule="PHPMD\Rule\Design\ExcessiveMethodLength" file="packages/sources/src/Normalizer/OpenApiOperationResolver.php" method="resolve"/>
-  <violation rule="PHPMD\Rule\Design\ExcessiveClassComplexity" file="packages/sources/src/Normalizer/WsdlSourceNormalizer.php"/>
-  <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/sources/src/SourceGraph.php"/>
+  <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/sources/src/Sources.php"/>
 </phpmd-baseline>

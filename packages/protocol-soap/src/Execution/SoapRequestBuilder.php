@@ -6,11 +6,11 @@ namespace Alama\Arazzo\Protocol\Soap\Execution;
 
 use Alama\Arazzo\Contracts\Interfaces\ReplacementTargetResolverInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
+use Alama\Arazzo\Contracts\Spec\NormalizedOpenApiOperation;
 use Alama\Arazzo\Contracts\Spec\PayloadReplacement;
+use Alama\Arazzo\Contracts\Spec\ResolvedOperation;
 use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
-use Alama\Arazzo\Document\NormalizedOpenApiOperation;
-use Alama\Arazzo\Document\ResolvedOperation;
 use Alama\Arazzo\Engine\Exceptions\ExecutionException;
 use Alama\Arazzo\Engine\Execution\RequestCompiler;
 use Alama\Arazzo\Evaluation\EvaluationEngineInterface;

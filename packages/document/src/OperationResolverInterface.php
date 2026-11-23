@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Document;
 
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
+use Alama\Arazzo\Contracts\Spec\ResolvedOperation;
 use Alama\Arazzo\Contracts\Spec\Step;
 
 /**

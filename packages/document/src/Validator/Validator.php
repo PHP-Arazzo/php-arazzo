@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Document\Validator;
 
+use Alama\Arazzo\Contracts\Data\KnownOperations;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
-use Alama\Arazzo\Document\KnownOperations;
 use Alama\Arazzo\Document\Validator\Data\Error;
 use Alama\Arazzo\Document\Validator\Data\SymbolTable;
 use Alama\Arazzo\Document\Validator\Data\ValidationResult;

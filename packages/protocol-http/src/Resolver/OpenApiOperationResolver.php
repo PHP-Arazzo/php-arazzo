@@ -2,13 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Alama\Arazzo\Sources\Normalizer;
+namespace Alama\Arazzo\Protocol\Http\Resolver;
 
+use Alama\Arazzo\Contracts\Interfaces\SourceResolverInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
+use Alama\Arazzo\Contracts\Spec\ResolvedOperation;
 use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Document\OperationResolverInterface;
-use Alama\Arazzo\Document\ResolvedOperation;
+use Alama\Arazzo\Sources\Normalizer\OpenApi30Normalizer;
+use Alama\Arazzo\Sources\Normalizer\OpenApi31Normalizer;
+use Alama\Arazzo\Sources\Normalizer\OpenApiVersionDetector;
+use Alama\Arazzo\Sources\Normalizer\SourceReferenceParser;
 use Alama\Arazzo\Sources\Resolver\Exceptions\UnsupportedSourceVersionException;
+use Alama\Arazzo\Sources\Sources;
 use cebe\openapi\spec\Operation;
 use RuntimeException;
 
@@ -17,12 +23,29 @@ use RuntimeException;
  */
 class OpenApiOperationResolver implements OperationResolverInterface
 {
+    private OpenApiVersionDetector $versionDetector;
+
+    private OpenApi30Normalizer $normalizer30;
+
+    private OpenApi31Normalizer $normalizer31;
+
     public function __construct(
         private OpenApiDocumentLoader $loader,
-        private OpenApiVersionDetector $versionDetector,
-        private OpenApi30Normalizer $normalizer30,
-        private OpenApi31Normalizer $normalizer31,
-    ) {}
+        ?OpenApiVersionDetector $versionDetector = null,
+        ?OpenApi30Normalizer $normalizer30 = null,
+        ?OpenApi31Normalizer $normalizer31 = null,
+    ) {
+        $this->versionDetector = $versionDetector ?? new OpenApiVersionDetector();
+        $this->normalizer30 = $normalizer30 ?? new OpenApi30Normalizer();
+        $this->normalizer31 = $normalizer31 ?? new OpenApi31Normalizer();
+    }
+
+    public static function create(?SourceResolverInterface $sourceResolver = null): self
+    {
+        $sources = $sourceResolver ?? Sources::create();
+
+        return new self(new OpenApiDocumentLoader($sources));
+    }
 
     /**
      * The detector this resolver was built with, so a caller wiring both

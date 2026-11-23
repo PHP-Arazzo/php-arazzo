@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Alama\Arazzo\Sources\Normalizer;
+namespace Alama\Arazzo\Protocol\Http\Resolver;
 
+use Alama\Arazzo\Contracts\Interfaces\SourceResolverInterface;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
-use Alama\Arazzo\Sources\Resolver\Interfaces\SourceResolver;
 use cebe\openapi\Reader;
 use cebe\openapi\ReferenceContext;
 use cebe\openapi\spec\OpenApi;
@@ -19,7 +19,7 @@ final class OpenApiDocumentLoader
     /** @var array<string, OpenApi> */
     private array $cache = [];
 
-    public function __construct(private readonly SourceResolver $sourceResolver) {}
+    public function __construct(private readonly SourceResolverInterface $sourceResolver) {}
 
     public function load(SourceDescription $sourceDesc, string $basePath): ?OpenApi
     {

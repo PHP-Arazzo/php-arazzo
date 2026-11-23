@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Tests\Validator;
 
-use Alama\Arazzo\Document\KnownOperations;
+use Alama\Arazzo\Contracts\Data\KnownOperations;
 
 it('starts empty with none()', function (): void {
     $ops = KnownOperations::none();

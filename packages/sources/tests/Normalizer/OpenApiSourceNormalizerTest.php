@@ -5,23 +5,17 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Tests\Normalizer;
 
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
+use Alama\Arazzo\Contracts\Spec\ResolvedOperation;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
-use Alama\Arazzo\Document\ResolvedOperation;
+use Alama\Arazzo\Sources\Exceptions\UnsupportedSourceVersionException;
 use Alama\Arazzo\Sources\Normalizer\OpenApi30Normalizer;
 use Alama\Arazzo\Sources\Normalizer\OpenApi31Normalizer;
-use Alama\Arazzo\Sources\Normalizer\OpenApiDocumentLoader;
 use Alama\Arazzo\Sources\Normalizer\OpenApiSourceNormalizer;
 use Alama\Arazzo\Sources\Normalizer\OpenApiVersionDetector;
-use Alama\Arazzo\Sources\Resolver\DefaultSourceResolver;
-use Alama\Arazzo\Sources\Resolver\Exceptions\UnsupportedSourceVersionException;
-use Alama\Arazzo\Sources\Resolver\Fetchers\LocalFetcher;
 
 function makeOpenApiSourceNormalizer(): OpenApiSourceNormalizer
 {
-    $resolver = new DefaultSourceResolver(fetchers: ['file' => new LocalFetcher()]);
-
     return new OpenApiSourceNormalizer(
-        new OpenApiDocumentLoader($resolver),
         new OpenApiVersionDetector(),
         new OpenApi30Normalizer(),
         new OpenApi31Normalizer(),

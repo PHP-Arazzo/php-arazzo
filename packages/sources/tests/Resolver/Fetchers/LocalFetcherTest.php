@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Tests\Resolution\Fetchers;
 
-use Alama\Arazzo\Sources\Resolver\Exceptions\SourceFetchException;
+use Alama\Arazzo\Sources\Exceptions\SourceFetchException;
 use Alama\Arazzo\Sources\Resolver\Fetchers\LocalFetcher;
 
 $tempDir = null;
