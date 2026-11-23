@@ -94,7 +94,7 @@ flowchart LR
         S_runner_Store["runner:Store<br/><small>138 LOC</small>"]:::unknownDomain
         S_runner_Sync["runner:Sync<br/><small>975 LOC</small>"]:::unknownDomain
         S_sources_Exceptions["sources:Exceptions<br/><small>65 LOC</small>"]:::unknownDomain
-        S_sources_Normalizer["sources:Normalizer<br/><small>448 LOC</small>"]:::unknownDomain
+        S_sources_Normalizer["sources:Normalizer<br/><small>503 LOC</small>"]:::unknownDomain
         S_sources_Plugins["sources:Plugins<br/><small>147 LOC</small>"]:::unknownDomain
         S_sources_Policy["sources:Policy<br/><small>125 LOC</small>"]:::unknownDomain
         S_sources_Registries["sources:Registries<br/><small>81 LOC</small>"]:::unknownDomain
@@ -110,7 +110,7 @@ flowchart LR
 | Core domain | 1 | 1,300 | 0 | 4% |
 | Supporting | 8 | 5,345 | 0 | 16% |
 | Generic subdomain | 6 | 1,678 | 0 | 5% |
-| Unclassified | 62 | 24,787 | 0 | 75% |
+| Unclassified | 62 | 24,842 | 0 | 75% |
 
 **Unclassified modules** — classify them in `SUBDOMAINS` or delete them:
 - `contracts:Attributes`

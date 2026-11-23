@@ -71,10 +71,5 @@
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/runner/src/Sync/WorkflowExecutor.php"/>
   <violation rule="PHPMD\Rule\CyclomaticComplexity" file="packages/runner/src/Sync/WorkflowExecutor.php" method="executeCanonically"/>
   <violation rule="PHPMD\Rule\Design\NPathComplexity" file="packages/runner/src/Sync/WorkflowExecutor.php" method="executeCanonically"/>
-  <violation rule="PHPMD\Rule\Design\ExcessiveClassComplexity" file="packages/sources/src/Normalizer/OpenApi30Normalizer.php"/>
-  <violation rule="PHPMD\Rule\CyclomaticComplexity" file="packages/sources/src/Normalizer/OpenApi30Normalizer.php" method="resolveServerUrl"/>
-  <violation rule="PHPMD\Rule\Design\NPathComplexity" file="packages/sources/src/Normalizer/OpenApi30Normalizer.php" method="resolveServerUrl"/>
-  <violation rule="PHPMD\Rule\CyclomaticComplexity" file="packages/sources/src/Normalizer/OpenApi30Normalizer.php" method="resolveParameters"/>
-  <violation rule="PHPMD\Rule\Design\NPathComplexity" file="packages/sources/src/Normalizer/OpenApi30Normalizer.php" method="resolveParameters"/>
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/sources/src/Sources.php"/>
 </phpmd-baseline>

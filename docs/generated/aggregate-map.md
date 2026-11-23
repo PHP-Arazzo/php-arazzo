@@ -19,7 +19,7 @@ Where mutable state lives, and which of it crosses process boundaries:
 | contracts | 60 | 15 | 80% |
 | expression | 28 | 41 | 41% |
 | evaluation | 14 | 13 | 52% |
-| sources | 3 | 20 | 13% |
+| sources | 3 | 21 | 12% |
 | document | 9 | 81 | 10% |
 | engine | 10 | 19 | 34% |
 | protocol-http | 5 | 7 | 42% |

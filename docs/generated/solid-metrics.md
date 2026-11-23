@@ -101,7 +101,7 @@ quadrantChart
     runner/Sync: [0.84, 0]
     runner/_: [0.75, 0.667]
     sources/Exceptions: [0, 0.2]
-    sources/Normalizer: [0.333, 0.2]
+    sources/Normalizer: [0.333, 0.167]
     sources/Plugins: [1, 0]
     sources/Policy: [0, 0]
     sources/Registries: [0.8, 0]

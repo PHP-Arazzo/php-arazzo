@@ -89,7 +89,7 @@ targets. Regenerated before every commit.
 | `runner:Sync` | 5 | 970 | 4 | 21 | 0.84 | ⚠ unstable hub |
 | `(runner root)` | 6 | 573 | 5 | 15 | 0.75 |  |
 | `sources:Exceptions` | 5 | 60 | 2 | 0 | 0.00 |  |
-| `sources:Normalizer` | 5 | 443 | 2 | 1 | 0.33 |  |
+| `sources:Normalizer` | 6 | 497 | 2 | 1 | 0.33 |  |
 | `sources:Plugins` | 1 | 146 | 0 | 5 | 1.00 |  |
 | `sources:Policy` | 1 | 124 | 2 | 0 | 0.00 |  |
 | `sources:Registries` | 1 | 80 | 1 | 4 | 0.80 |  |

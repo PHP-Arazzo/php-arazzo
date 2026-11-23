@@ -173,7 +173,7 @@ quadrantChart
 | `runner/Store` | 0.60 | 17 | 2 | 100% |
 | `runner/Sync` | 0.84 | 37 | 5 | 100% |
 | `sources/Exceptions` | 0.00 | 8 | 5 | 100% |
-| `sources/Normalizer` | 0.33 | 6 | 5 | 100% |
+| `sources/Normalizer` | 0.33 | 6 | 6 | 100% |
 | `sources/Plugins` | 1.00 | 2 | 1 | 100% |
 | `sources/Policy` | 0.00 | 3 | 1 | 100% |
 | `sources/Registries` | 0.80 | 5 | 1 | 100% |
