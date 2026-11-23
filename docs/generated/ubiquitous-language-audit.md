@@ -64,7 +64,6 @@ Evans' first question: does the code speak one language?
 
 | Name | Locations | Packages |
 |---|---|---|
-| `KnownOperations` | `Contracts\Data\KnownOperations`<br/>`Document\KnownOperations` | contracts, document |
 | `Lexer` | `Expression\Lexer`<br/>`Evaluation\Condition\Lexer` | expression, evaluation |
 | `NormalizedOpenApiOperation` | `Contracts\Spec\NormalizedOpenApiOperation`<br/>`Document\NormalizedOpenApiOperation` | contracts, document |
 | `OpenApiExecutorInterface` | `Protocol\Http\Execution\Interfaces\OpenApiExecutorInterface`<br/>`Runner\Execution\Interfaces\OpenApiExecutorInterface` | protocol-http, runner |

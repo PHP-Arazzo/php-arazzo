@@ -35,7 +35,7 @@ quadrantChart
     contracts/Support: [0, 0.2]
     document/Parser: [0.333, 0.083]
     document/Validator: [0.667, 0.012]
-    document/_: [0.4, 0.333]
+    document/_: [0.4, 0.4]
     engine/Data: [0.75, 0]
     engine/Enum: [0, 0]
     engine/Exceptions: [0.143, 0]

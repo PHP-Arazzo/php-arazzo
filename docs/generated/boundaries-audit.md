@@ -97,7 +97,7 @@ Grouped cross-package uses of concrete internals (AST nodes, evaluators, resolve
 |---|---|---|---:|---|
 | `document` | `ExpressionReference` | `expression` | 2 | `ExpressionUnresolvedStepRefRule` |
 | `document` | `ImplicitDependencies` | `contracts` | 1 | `StepDependsOnNoCycleRule` |
-| `document` | `KnownOperations` | `contracts` | 5 | `Validator` |
+| `document` | `KnownOperations` | `contracts` | 4 | `Validator` |
 | `evaluation` | `EvaluationContext` | `expression` | 5 | `ConditionEvaluator` |
 | `evaluation` | `Parser` | `expression` | 1 | `AccessorParser` |
 | `protocol-http` | `EvaluationContext` | `expression` | 2 | `StepOutputExtractor` |

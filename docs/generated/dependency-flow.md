@@ -52,7 +52,7 @@ document-Validator,expression-Data,2
 document-Validator,expression-Enum,11
 document-Validator,expression-Exceptions,2
 document-Validator,expression-Interfaces,15
-document-root,contracts-Data,3
+document-root,contracts-Data,2
 document-root,contracts-Spec,7
 document-root,document-Parser,5
 document-root,document-Validator,4
