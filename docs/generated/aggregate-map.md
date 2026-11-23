@@ -21,7 +21,7 @@ Where mutable state lives, and which of it crosses process boundaries:
 | evaluation | 14 | 13 | 52% |
 | sources | 3 | 21 | 12% |
 | document | 9 | 81 | 10% |
-| engine | 10 | 19 | 34% |
+| engine | 10 | 21 | 32% |
 | protocol-http | 5 | 7 | 42% |
 | protocol-rpc | 5 | 10 | 33% |
 | protocol-soap | 1 | 11 | 8% |

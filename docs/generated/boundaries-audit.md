@@ -22,7 +22,7 @@ when a boundary consciously moves.
 | `OpenTelemetry` | 26 | 0 | _unclassified_ ⚠ |
 | `Psr` | 105 | 0 | allowed |
 | `Symfony` | 32 | 0 | **forbidden** ⚠ |
-| `cebe` | 19 | 0 | **forbidden** ⚠ |
+| `cebe` | 21 | 0 | **forbidden** ⚠ |
 
 ## Module detail
 
@@ -40,7 +40,7 @@ when a boundary consciously moves.
 | document | `document:Plugins` | `JsonSchema` | 4 |
 | document | `document:Validator` | `JsonSchema` | 3 |
 | engine | `engine:Execution` | `Psr` | 4 |
-| engine | `engine:Execution` | `cebe` | 2 |
+| engine | `engine:Execution` | `cebe` | 4 |
 | engine | `engine:Runtime` | `OpenTelemetry` | 26 |
 | engine | `engine:Runtime` | `Psr` | 1 |
 | evaluation | `evaluation:_` | `Psr` | 2 |
@@ -74,7 +74,7 @@ when a boundary consciously moves.
 - `document:Parser` imports `Symfony\*` (2 refs)
 - `document:Plugins` imports `JsonSchema\*` (4 refs)
 - `document:Validator` imports `JsonSchema\*` (3 refs)
-- `engine:Execution` imports `cebe\*` (2 refs)
+- `engine:Execution` imports `cebe\*` (4 refs)
 - `engine:Runtime` imports `OpenTelemetry\*` (26 refs)
 - `protocol-http:Execution` imports `GuzzleHttp\*` (2 refs)
 - `protocol-http:Execution` imports `cebe\*` (11 refs)

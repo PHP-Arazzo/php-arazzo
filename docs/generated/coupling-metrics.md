@@ -35,7 +35,7 @@ targets. Regenerated before every commit.
 | `engine:Data` | 2 | 72 | 1 | 3 | 0.75 |  |
 | `engine:Enum` | 1 | 16 | 1 | 0 | 0.00 |  |
 | `engine:Exceptions` | 1 | 41 | 8 | 1 | 0.11 |  |
-| `engine:Execution` | 8 | 1023 | 9 | 4 | 0.31 |  |
+| `engine:Execution` | 10 | 1191 | 9 | 4 | 0.31 |  |
 | `engine:Runtime` | 21 | 1823 | 4 | 5 | 0.56 |  |
 | `(engine root)` | 2 | 192 | 0 | 3 | 1.00 |  |
 | `evaluation:Condition` | 17 | 1037 | 1 | 8 | 0.89 |  |

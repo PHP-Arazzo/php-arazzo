@@ -14,13 +14,6 @@
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/document/src/Parser/Parser.php"/>
   <violation rule="PHPMD\Rule\UnusedLocalVariable" file="packages/document/src/Plugins/ValidationRule/DocUnknownFieldRule.php"/>
   <violation rule="PHPMD\Rule\UnusedLocalVariable" file="packages/document/src/Plugins/ValidationRule/ExtensionsXPrefixRule.php"/>
-  <violation rule="PHPMD\Rule\Design\ExcessiveClassComplexity" file="packages/engine/src/Execution/SchemaValidator.php"/>
-  <violation rule="PHPMD\Rule\CyclomaticComplexity" file="packages/engine/src/Execution/SchemaValidator.php" method="validate"/>
-  <violation rule="PHPMD\Rule\Design\NPathComplexity" file="packages/engine/src/Execution/SchemaValidator.php" method="validate"/>
-  <violation rule="PHPMD\Rule\CyclomaticComplexity" file="packages/engine/src/Execution/SchemaValidator.php" method="validateObject"/>
-  <violation rule="PHPMD\Rule\Design\NPathComplexity" file="packages/engine/src/Execution/SchemaValidator.php" method="validateObject"/>
-  <violation rule="PHPMD\Rule\CyclomaticComplexity" file="packages/engine/src/Execution/SchemaValidator.php" method="validateNumber"/>
-  <violation rule="PHPMD\Rule\Design\NPathComplexity" file="packages/engine/src/Execution/SchemaValidator.php" method="validateNumber"/>
   <violation rule="PHPMD\Rule\Design\TooManyPublicMethods" file="packages/engine/src/Runtime/State/Data/ExecutionContext.php"/>
   <violation rule="PHPMD\Rule\Design\ExcessiveParameterList" file="packages/engine/src/Runtime/State/Data/ExecutionContext.php" method="__construct"/>
   <violation rule="PHPMD\Rule\Design\ExcessiveParameterList" file="packages/engine/src/Runtime/State/Data/StepResult.php" method="__construct"/>

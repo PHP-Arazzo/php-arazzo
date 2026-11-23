@@ -125,7 +125,6 @@ Concrete types over 300 LOC:
 | `WorkflowExecutor` | `runner:Sync` | 372 |
 | `WorkflowEngine` | `runner:Sync` | 360 |
 | `DefaultOpenApiExecutor` | `protocol-http:Execution` | 306 |
-| `SchemaValidator` | `engine:Execution` | 302 |
 
 ## Fat interfaces (ISP)
 
