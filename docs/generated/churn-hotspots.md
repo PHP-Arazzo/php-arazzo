@@ -17,7 +17,7 @@ xychart-beta
     bar [52, 40, 30, 22, 19, 19, 18, 16, 16, 13, 11, 11]
 ```
 
-Analyzed 475 total file-touches across 77 modules.
+Analyzed 477 total file-touches across 77 modules.
 
 | Module | Touches | Share | LOC | Touches/KLOC |
 |---|---:|---:|---:|---:|
@@ -39,7 +39,7 @@ Analyzed 475 total file-touches across 77 modules.
 | `engine:Execution` | 8 | 2% | 1,031 | 7.8 |
 | `contracts:State` | 7 | 1% | 1,062 | 6.6 |
 | `expression:Plugins` | 7 | 1% | 1,371 | 5.1 |
-| `evaluation:Condition` | 6 | 1% | 1,023 | 5.9 |
+| `evaluation:Condition` | 6 | 1% | 1,054 | 5.7 |
 | `protocol-http:Execution` | 6 | 1% | 927 | 6.5 |
 | `protocol-rpc:Execution` | 6 | 1% | 188 | 31.9 |
 | `runner:Events` | 6 | 1% | 187 | 32.1 |
@@ -47,6 +47,7 @@ Analyzed 475 total file-touches across 77 modules.
 | `contracts:Dependency` | 5 | 1% | 375 | 13.3 |
 | `engine:Runtime` | 5 | 1% | 1,844 | 2.7 |
 | `expression:Ast` | 5 | 1% | 355 | 14.1 |
+| `expression:Internal` | 5 | 1% | 921 | 5.4 |
 | `expression:Registries` | 5 | 1% | 113 | 44.2 |
 | `expression:Xpath` | 5 | 1% | 173 | 28.9 |
 | `protocol-rpc:Normalizer` | 5 | 1% | 538 | 9.3 |
@@ -56,11 +57,11 @@ Analyzed 475 total file-touches across 77 modules.
 | `cli:Renderer` | 4 | 1% | 255 | 15.7 |
 | `evaluation:Data` | 4 | 1% | 86 | 46.5 |
 | `expression:Enum` | 4 | 1% | 47 | 85.1 |
-| `expression:Internal` | 4 | 1% | 921 | 4.3 |
 | `contracts:Support` | 3 | 1% | 185 | 16.2 |
 | `document:Registries` | 3 | 1% | 97 | 30.9 |
 | `evaluation:Interfaces` | 3 | 1% | 44 | 68.2 |
 | `expression:Exceptions` | 3 | 1% | 64 | 46.9 |
+| `expression:JsonPath` | 3 | 1% | 1,470 | 2 |
 | `protocol-http:Plugins` | 3 | 1% | 340 | 8.8 |
 | `protocol-rpc:Protocol` | 3 | 1% | 514 | 5.8 |
 | `runner:Exceptions` | 3 | 1% | 134 | 22.4 |
@@ -71,7 +72,6 @@ Analyzed 475 total file-touches across 77 modules.
 | `engine:Data` | 2 | 0% | 74 | 27 |
 | `engine:Enum` | 2 | 0% | 17 | 117.6 |
 | `evaluation:Enum` | 2 | 0% | 123 | 16.3 |
-| `expression:JsonPath` | 2 | 0% | 1,470 | 1.4 |
 | `expression:Support` | 2 | 0% | 192 | 10.4 |
 | `protocol-rpc:Plugins` | 2 | 0% | 422 | 4.7 |
 | `protocol-soap:Plugins` | 2 | 0% | 859 | 2.3 |

@@ -49,7 +49,7 @@ quadrantChart
     evaluation/Data: [0.4, 1]
     evaluation/Enum: [0, 1]
     evaluation/Events: [0.333, 1]
-    evaluation/Interfaces: [0.6, 0.5]
+    evaluation/Interfaces: [0.6, 1]
     evaluation/Plugins: [1, 1]
     evaluation/Registries: [0.833, 1]
     expression/Ast: [0.333, 0.8]
@@ -130,14 +130,14 @@ quadrantChart
 | `evaluation/Data` | 0.40 | 13 | 2 | 100% |
 | `evaluation/Enum` | 0.00 | 6 | 5 | 100% |
 | `evaluation/Events` | 0.33 | 1 | 1 | 100% |
-| `evaluation/Interfaces` | 0.60 | 1 | 2 | 50% |
+| `evaluation/Interfaces` | 0.60 | 2 | 2 | 100% |
 | `evaluation/Plugins` | 1.00 | 4 | 2 | 100% |
 | `evaluation/Registries` | 0.83 | 6 | 2 | 100% |
 | `expression/Ast` | 0.33 | 12 | 15 | 80% |
 | `expression/Data` | 0.25 | 25 | 6 | 100% |
 | `expression/Enum` | 0.00 | 8 | 2 | 100% |
 | `expression/Exceptions` | 0.09 | 18 | 2 | 100% |
-| `expression/Interfaces` | 0.33 | 22 | 4 | 100% |
+| `expression/Interfaces` | 0.33 | 23 | 4 | 100% |
 | `expression/Internal` | 0.78 | 1 | 6 | 17% |
 | `expression/JsonPath` | 0.67 | 62 | 9 | 100% |
 | `expression/Plugins` | 1.00 | 22 | 17 | 100% |
