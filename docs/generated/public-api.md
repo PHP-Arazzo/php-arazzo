@@ -708,11 +708,20 @@ this file on a commit is a public API change — review it deliberately.
 ### `Alama\Arazzo\Protocol\Http`
 
 #### `HttpProtocol` class
-- `public function __construct(?ClientInterface $httpClient = null, ?RequestFactoryInterface $requestFactory = null, ?SourcesInterface $sources = null, ?EvaluationEngineInterface $evaluationEngine = null, ?ExpressionEngineInterface $expressionEngine = null)`
-- `public function executor(bool $strictValidation = true, ?IdempotencyKeyInjector $idempotencyInjector = null): OperationExecutorPluginInterface`
+- `public function executor(?bool $strictValidation = null, ?IdempotencyKeyInjector $idempotencyInjector = null, ): OperationExecutorPluginInterface`
 - `public function outputExtractor(): OutputExtractorInterface`
 - `public function resolver(): OperationResolverInterface`
+- `public function withLogger(LoggerInterface $logger): self`
+- `public function withPolicy(HttpPolicy $policy): self`
+- `public function withTracer(TracerInterface $tracer): self`
 - `public static function create(?ClientInterface $httpClient = null, ?RequestFactoryInterface $requestFactory = null, ?SourcesInterface $sources = null, ?EvaluationEngineInterface $evaluationEngine = null, ?ExpressionEngineInterface $expressionEngine = null, ): self`
+
+### `Alama\Arazzo\Protocol\Http\Policy`
+
+#### `HttpPolicy` class
+- `public function __construct(public bool $strictValidation = self::DEFAULT_STRICT_VALIDATION, public ?IdempotencyKeyInjector $idempotencyInjector = null)`
+- `public function withIdempotencyInjector(?IdempotencyKeyInjector $injector): self`
+- `public function withStrictValidation(bool $strictValidation = true): self`
 
 ### `Alama\Arazzo\Protocol\Http\Resolver`
 

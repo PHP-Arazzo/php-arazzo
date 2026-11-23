@@ -70,16 +70,17 @@ flowchart LR
         S_expression_Policy["expression:Policy<br/><small>37 LOC</small>"]:::unknownDomain
         S_expression_Registries["expression:Registries<br/><small>113 LOC</small>"]:::unknownDomain
         S_expression_Xpath["expression:Xpath<br/><small>173 LOC</small>"]:::unknownDomain
-        S_protocol_http_Execution["protocol-http:Execution<br/><small>536 LOC</small>"]:::unknownDomain
-        S_protocol_http_Plugins["protocol-http:Plugins<br/><small>335 LOC</small>"]:::unknownDomain
+        S_protocol_http_Execution["protocol-http:Execution<br/><small>927 LOC</small>"]:::unknownDomain
+        S_protocol_http_Plugins["protocol-http:Plugins<br/><small>342 LOC</small>"]:::unknownDomain
+        S_protocol_http_Policy["protocol-http:Policy<br/><small>43 LOC</small>"]:::unknownDomain
         S_protocol_rpc_Execution["protocol-rpc:Execution<br/><small>188 LOC</small>"]:::unknownDomain
         S_protocol_rpc_Normalizer["protocol-rpc:Normalizer<br/><small>538 LOC</small>"]:::unknownDomain
-        S_protocol_rpc_Plugins["protocol-rpc:Plugins<br/><small>338 LOC</small>"]:::unknownDomain
+        S_protocol_rpc_Plugins["protocol-rpc:Plugins<br/><small>422 LOC</small>"]:::unknownDomain
         S_protocol_rpc_Protocol["protocol-rpc:Protocol<br/><small>514 LOC</small>"]:::unknownDomain
         S_protocol_rpc_Transfer["protocol-rpc:Transfer<br/><small>219 LOC</small>"]:::unknownDomain
         S_protocol_soap_Exceptions["protocol-soap:Exceptions<br/><small>16 LOC</small>"]:::unknownDomain
         S_protocol_soap_Execution["protocol-soap:Execution<br/><small>484 LOC</small>"]:::unknownDomain
-        S_protocol_soap_Plugins["protocol-soap:Plugins<br/><small>778 LOC</small>"]:::unknownDomain
+        S_protocol_soap_Plugins["protocol-soap:Plugins<br/><small>859 LOC</small>"]:::unknownDomain
         S_protocol_soap_Transfer["protocol-soap:Transfer<br/><small>203 LOC</small>"]:::unknownDomain
         S_protocol_soap_Validation["protocol-soap:Validation<br/><small>139 LOC</small>"]:::unknownDomain
         S_runner_Async["runner:Async<br/><small>1435 LOC</small>"]:::unknownDomain
@@ -109,7 +110,7 @@ flowchart LR
 | Core domain | 1 | 1,300 | 0 | 4% |
 | Supporting | 8 | 5,152 | 0 | 16% |
 | Generic subdomain | 6 | 1,623 | 0 | 5% |
-| Unclassified | 61 | 23,491 | 0 | 74% |
+| Unclassified | 62 | 24,097 | 0 | 75% |
 
 **Unclassified modules** — classify them in `SUBDOMAINS` or delete them:
 - `contracts:Attributes`
@@ -148,6 +149,7 @@ flowchart LR
 - `expression:Xpath`
 - `protocol-http:Execution`
 - `protocol-http:Plugins`
+- `protocol-http:Policy`
 - `protocol-rpc:Execution`
 - `protocol-rpc:Normalizer`
 - `protocol-rpc:Plugins`

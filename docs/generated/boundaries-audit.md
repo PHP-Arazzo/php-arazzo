@@ -20,9 +20,9 @@ when a boundary consciously moves.
 | `GuzzleHttp` | 9 | 0 | **forbidden** ⚠ |
 | `JsonSchema` | 7 | 0 | _unclassified_ ⚠ |
 | `OpenTelemetry` | 26 | 0 | _unclassified_ ⚠ |
-| `Psr` | 93 | 0 | allowed |
+| `Psr` | 104 | 0 | allowed |
 | `Symfony` | 32 | 0 | **forbidden** ⚠ |
-| `cebe` | 16 | 0 | **forbidden** ⚠ |
+| `cebe` | 19 | 0 | **forbidden** ⚠ |
 
 ## Module detail
 
@@ -44,17 +44,17 @@ when a boundary consciously moves.
 | engine | `engine:Runtime` | `OpenTelemetry` | 26 |
 | evaluation | `evaluation:_` | `Psr` | 2 |
 | protocol-http | `protocol-http:Execution` | `GuzzleHttp` | 2 |
-| protocol-http | `protocol-http:Execution` | `Psr` | 8 |
-| protocol-http | `protocol-http:Execution` | `cebe` | 8 |
+| protocol-http | `protocol-http:Execution` | `Psr` | 12 |
+| protocol-http | `protocol-http:Execution` | `cebe` | 11 |
 | protocol-http | `protocol-http:Plugins` | `Psr` | 6 |
 | protocol-http | `protocol-http:Resolver` | `cebe` | 6 |
 | protocol-http | `protocol-http:_` | `GuzzleHttp` | 2 |
-| protocol-http | `protocol-http:_` | `Psr` | 2 |
+| protocol-http | `protocol-http:_` | `Psr` | 3 |
 | protocol-rpc | `protocol-rpc:Execution` | `Psr` | 3 |
-| protocol-rpc | `protocol-rpc:Plugins` | `Psr` | 1 |
+| protocol-rpc | `protocol-rpc:Plugins` | `Psr` | 4 |
 | protocol-rpc | `protocol-rpc:Transfer` | `Psr` | 1 |
 | protocol-soap | `protocol-soap:Execution` | `Psr` | 3 |
-| protocol-soap | `protocol-soap:Plugins` | `Psr` | 1 |
+| protocol-soap | `protocol-soap:Plugins` | `Psr` | 4 |
 | protocol-soap | `protocol-soap:Transfer` | `Psr` | 1 |
 | runner | `runner:Async` | `Psr` | 9 |
 | runner | `runner:Execution` | `Psr` | 7 |
@@ -76,7 +76,7 @@ when a boundary consciously moves.
 - `engine:Execution` imports `cebe\*` (2 refs)
 - `engine:Runtime` imports `OpenTelemetry\*` (26 refs)
 - `protocol-http:Execution` imports `GuzzleHttp\*` (2 refs)
-- `protocol-http:Execution` imports `cebe\*` (8 refs)
+- `protocol-http:Execution` imports `cebe\*` (11 refs)
 - `protocol-http:Resolver` imports `cebe\*` (6 refs)
 - `protocol-http:_` imports `GuzzleHttp\*` (2 refs)
 - `sources:Resolver` imports `GuzzleHttp\*` (2 refs)
@@ -129,9 +129,11 @@ Grouped cross-package uses of concrete internals (AST nodes, evaluators, resolve
 | `expression` | `SymbolTable` | `contracts` | 15 | `ExpressionUnresolvedStepRefRule` |
 | `expression` | `WorkflowSymbols` | `contracts` | 4 | `ExpressionSite` |
 | `protocol-http` | `AsOperationExecutorPlugin` | `contracts` | 2 | `HttpStepExecutor` |
+| `protocol-http` | `Credential` | `contracts` | 1 | `SourcePolicyApplicator` |
 | `protocol-http` | `EvaluationContext` | `expression` | 2 | `StepOutputExtractor` |
 | `protocol-http` | `EvaluationEngine` | `evaluation` | 1 | `HttpProtocol` |
-| `protocol-http` | `IdempotencyKeyInjector` | `engine` | 2 | `HttpStepExecutor` |
+| `protocol-http` | `IdempotencyKeyInjector` | `engine` | 3 | `HttpStepExecutor` |
+| `protocol-http` | `NullTracer` | `contracts` | 2 | `HttpRuntimeContext` |
 | `protocol-http` | `OpenApi30Normalizer` | `sources` | 1 | `OpenApiOperationResolver` |
 | `protocol-http` | `OpenApi31Normalizer` | `sources` | 1 | `OpenApiOperationResolver` |
 | `protocol-http` | `OpenApiVersionDetector` | `sources` | 1 | `OpenApiOperationResolver` |
@@ -139,6 +141,7 @@ Grouped cross-package uses of concrete internals (AST nodes, evaluators, resolve
 | `protocol-http` | `RequestCompiler` | `engine` | 1 | `HttpStepExecutor` |
 | `protocol-http` | `ReusableParameterResolver` | `engine` | 1 | `AsyncApiStepExecutor` |
 | `protocol-http` | `SchemaValidator` | `engine` | 1 | `ResponseSchemaValidator` |
+| `protocol-http` | `SourcePolicy` | `contracts` | 3 | `SourcePolicyApplicator` |
 | `protocol-http` | `SourceReferenceParser` | `sources` | 1 | `OpenApiOperationResolver` |
 | `protocol-http` | `Sources` | `sources` | 2 | `OpenApiOperationResolver` |
 | `protocol-http` | `TypeCaster` | `engine` | 2 | `StepOutputExtractor` |
@@ -146,14 +149,18 @@ Grouped cross-package uses of concrete internals (AST nodes, evaluators, resolve
 | `protocol-rpc` | `AsSourceNormalizerPlugin` | `contracts` | 1 | `ProtoSourceNormalizer` |
 | `protocol-rpc` | `AsValidationRulePlugin` | `contracts` | 1 | `RpcStepRule` |
 | `protocol-rpc` | `ErrorCollector` | `contracts` | 1 | `RpcStepRule` |
+| `protocol-rpc` | `NullTracer` | `contracts` | 1 | `RpcOperationExecutor` |
 | `protocol-rpc` | `RequestCompiler` | `engine` | 1 | `RpcRequestBuilder` |
 | `protocol-rpc` | `ReusableParameterResolver` | `engine` | 1 | `RpcRequestBuilder` |
+| `protocol-rpc` | `SourcePolicy` | `contracts` | 1 | `RpcOperationExecutor` |
 | `protocol-rpc` | `SymbolTable` | `contracts` | 1 | `RpcStepRule` |
 | `protocol-soap` | `AsOperationExecutorPlugin` | `contracts` | 1 | `SoapOperationExecutor` |
 | `protocol-soap` | `AsSourceNormalizerPlugin` | `contracts` | 1 | `WsdlSourceNormalizer` |
 | `protocol-soap` | `AsValidationRulePlugin` | `contracts` | 1 | `WsdlStepRule` |
 | `protocol-soap` | `ErrorCollector` | `contracts` | 1 | `WsdlStepRule` |
+| `protocol-soap` | `NullTracer` | `contracts` | 1 | `SoapOperationExecutor` |
 | `protocol-soap` | `RequestCompiler` | `engine` | 1 | `SoapRequestBuilder` |
+| `protocol-soap` | `SourcePolicy` | `contracts` | 1 | `SoapOperationExecutor` |
 | `protocol-soap` | `SymbolTable` | `contracts` | 1 | `WsdlStepRule` |
 | `runner` | `AsOperationExecutorPlugin` | `contracts` | 2 | `SubWorkflowStepExecutor` |
 | `runner` | `DependencyAnalyzer` | `contracts` | 1 | `StepOutcomeHandler` |

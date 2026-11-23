@@ -31,7 +31,7 @@ quadrantChart
     contracts/Exceptions: [0, 1]
     contracts/Interfaces: [0.103, 1]
     contracts/Observability: [0, 1]
-    contracts/Policy: [0, 0.6]
+    contracts/Policy: [0, 1]
     contracts/Spec: [0.018, 1]
     contracts/State: [0.105, 1]
     contracts/Support: [0, 1]
@@ -43,7 +43,7 @@ quadrantChart
     engine/Data: [0.75, 0.5]
     engine/Enum: [0, 1]
     engine/Exceptions: [0.111, 1]
-    engine/Execution: [0.333, 1]
+    engine/Execution: [0.308, 1]
     engine/Runtime: [0.5, 1]
     evaluation/Condition: [0.889, 1]
     evaluation/Data: [0.4, 1]
@@ -64,17 +64,18 @@ quadrantChart
     expression/Registries: [0.571, 1]
     expression/Support: [0.667, 1]
     expression/Xpath: [0.5, 0.667]
-    protocol-http/Execution: [0.818, 1]
+    protocol-http/Execution: [0.857, 1]
     protocol-http/Plugins: [0.909, 1]
+    protocol-http/Policy: [0.333, 1]
     protocol-http/Resolver: [0.667, 1]
     protocol-rpc/Execution: [0.875, 1]
     protocol-rpc/Normalizer: [0, 0.2]
-    protocol-rpc/Plugins: [0.917, 1]
+    protocol-rpc/Plugins: [0.929, 1]
     protocol-rpc/Protocol: [0.571, 1]
     protocol-rpc/Transfer: [0.6, 1]
     protocol-soap/Exceptions: [0, 1]
     protocol-soap/Execution: [0.818, 1]
-    protocol-soap/Plugins: [0.929, 1]
+    protocol-soap/Plugins: [0.938, 1]
     protocol-soap/Resolver: [1, 1]
     protocol-soap/Transfer: [0.333, 1]
     protocol-soap/Validation: [1, 1]
@@ -110,10 +111,10 @@ quadrantChart
 | `contracts/Discovery` | 0.00 | 3 | 3 | 100% |
 | `contracts/Exceptions` | 0.00 | 5 | 1 | 100% |
 | `contracts/Interfaces` | 0.10 | 46 | 21 | 100% |
-| `contracts/Observability` | 0.00 | 6 | 4 | 100% |
-| `contracts/Policy` | 0.00 | 3 | 5 | 60% |
-| `contracts/Spec` | 0.02 | 285 | 52 | 100% |
-| `contracts/State` | 0.10 | 83 | 3 | 100% |
+| `contracts/Observability` | 0.00 | 9 | 4 | 100% |
+| `contracts/Policy` | 0.00 | 12 | 5 | 100% |
+| `contracts/Spec` | 0.02 | 287 | 52 | 100% |
+| `contracts/State` | 0.10 | 84 | 3 | 100% |
 | `contracts/Support` | 0.00 | 12 | 5 | 100% |
 | `contracts/Validation` | 0.11 | 91 | 9 | 100% |
 | `document/Parser` | 0.29 | 61 | 24 | 100% |
@@ -122,8 +123,8 @@ quadrantChart
 | `document/Validator` | 0.71 | 25 | 6 | 100% |
 | `engine/Data` | 0.75 | 1 | 2 | 50% |
 | `engine/Enum` | 0.00 | 1 | 1 | 100% |
-| `engine/Exceptions` | 0.11 | 6 | 1 | 100% |
-| `engine/Execution` | 0.33 | 12 | 8 | 100% |
+| `engine/Exceptions` | 0.11 | 8 | 1 | 100% |
+| `engine/Execution` | 0.31 | 14 | 8 | 100% |
 | `engine/Runtime` | 0.50 | 22 | 21 | 100% |
 | `evaluation/Condition` | 0.89 | 77 | 17 | 100% |
 | `evaluation/Data` | 0.40 | 13 | 2 | 100% |
@@ -144,17 +145,18 @@ quadrantChart
 | `expression/Registries` | 0.57 | 4 | 1 | 100% |
 | `expression/Support` | 0.67 | 5 | 2 | 100% |
 | `expression/Xpath` | 0.50 | 2 | 3 | 67% |
-| `protocol-http/Execution` | 0.82 | 24 | 4 | 100% |
+| `protocol-http/Execution` | 0.86 | 25 | 6 | 100% |
 | `protocol-http/Plugins` | 0.91 | 17 | 2 | 100% |
-| `protocol-http/Resolver` | 0.67 | 17 | 3 | 100% |
+| `protocol-http/Policy` | 0.33 | 2 | 1 | 100% |
+| `protocol-http/Resolver` | 0.67 | 18 | 3 | 100% |
 | `protocol-rpc/Execution` | 0.88 | 3 | 2 | 100% |
 | `protocol-rpc/Normalizer` | 0.00 | 1 | 5 | 20% |
-| `protocol-rpc/Plugins` | 0.92 | 6 | 3 | 100% |
+| `protocol-rpc/Plugins` | 0.93 | 6 | 3 | 100% |
 | `protocol-rpc/Protocol` | 0.57 | 6 | 4 | 100% |
 | `protocol-rpc/Transfer` | 0.60 | 3 | 2 | 100% |
 | `protocol-soap/Exceptions` | 0.00 | 3 | 1 | 100% |
 | `protocol-soap/Execution` | 0.82 | 5 | 4 | 100% |
-| `protocol-soap/Plugins` | 0.93 | 7 | 3 | 100% |
+| `protocol-soap/Plugins` | 0.94 | 7 | 3 | 100% |
 | `protocol-soap/Resolver` | 1.00 | 1 | 1 | 100% |
 | `protocol-soap/Transfer` | 0.33 | 5 | 2 | 100% |
 | `protocol-soap/Validation` | 1.00 | 1 | 1 | 100% |

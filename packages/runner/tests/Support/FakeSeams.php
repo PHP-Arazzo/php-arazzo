@@ -6,6 +6,7 @@ namespace Alama\Arazzo\Tests\Support;
 
 use Alama\Arazzo\Contracts\Interfaces\OutputExtractorInterface;
 use Alama\Arazzo\Contracts\Interfaces\ResponseValidatorInterface;
+use Alama\Arazzo\Contracts\Policy\SourcePolicy;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Interfaces\WorkflowContextInterface;
 use Alama\Arazzo\Contracts\Spec\OpenApiPayload;
@@ -30,6 +31,7 @@ if (!class_exists('Alama\Arazzo\Tests\Support\FakeOpenApiExecutor')) {
             OpenApiPayload $payload,
             ?callable $requestInterceptor = null,
             ?float $timeoutSeconds = null,
+            ?SourcePolicy $sourcePolicy = null,
         ): ResponseInterface {
             if ($this->requestInterceptor !== null) {
                 $interceptor = $requestInterceptor ?? $this->requestInterceptor ?? static fn ($r) => $r;

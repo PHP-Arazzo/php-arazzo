@@ -47,7 +47,7 @@ quadrantChart
     engine/Data: [0.75, 0]
     engine/Enum: [0, 0]
     engine/Exceptions: [0.111, 0]
-    engine/Execution: [0.333, 0]
+    engine/Execution: [0.308, 0]
     engine/Runtime: [0.5, 0.19]
     engine/_: [1, 0.5]
     evaluation/Condition: [0.889, 0.118]
@@ -71,18 +71,19 @@ quadrantChart
     expression/Support: [0.667, 0]
     expression/Xpath: [0.5, 0.333]
     expression/_: [0.667, 0]
-    protocol-http/Execution: [0.818, 0.25]
+    protocol-http/Execution: [0.857, 0.167]
     protocol-http/Plugins: [0.909, 0]
+    protocol-http/Policy: [0.333, 0]
     protocol-http/Resolver: [0.667, 0]
-    protocol-http/_: [0.909, 0]
+    protocol-http/_: [0.923, 0]
     protocol-rpc/Execution: [0.875, 0]
     protocol-rpc/Normalizer: [0, 0]
-    protocol-rpc/Plugins: [0.917, 0]
+    protocol-rpc/Plugins: [0.929, 0]
     protocol-rpc/Protocol: [0.571, 0]
     protocol-rpc/Transfer: [0.6, 0]
     protocol-soap/Exceptions: [0, 0]
     protocol-soap/Execution: [0.818, 0]
-    protocol-soap/Plugins: [0.929, 0]
+    protocol-soap/Plugins: [0.938, 0]
     protocol-soap/Resolver: [1, 0]
     protocol-soap/Transfer: [0.333, 0]
     protocol-soap/Validation: [1, 0]
@@ -126,6 +127,7 @@ Concrete types over 300 LOC:
 | `StepExecutionWorker` | `runner:Async` | 408 |
 | `WorkflowExecutor` | `runner:Sync` | 372 |
 | `WorkflowEngine` | `runner:Sync` | 360 |
+| `DefaultOpenApiExecutor` | `protocol-http:Execution` | 306 |
 | `SchemaValidator` | `engine:Execution` | 302 |
 
 ## Fat interfaces (ISP)

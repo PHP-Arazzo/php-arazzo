@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Tests\Runner\Sync;
 
+use Alama\Arazzo\Contracts\Policy\SourcePolicy;
 use Alama\Arazzo\Contracts\Spec\Action\FailureGotoAction;
 use Alama\Arazzo\Contracts\Spec\Action\RetryAction;
 use Alama\Arazzo\Contracts\Spec\Action\SuccessEndAction;
@@ -136,7 +137,7 @@ final class SequenceOpenApiExecutor implements OpenApiExecutorInterface
         $this->queue = $queue;
     }
 
-    public function execute($operation, $payload, ?callable $requestInterceptor = null, ?float $timeoutSeconds = null): ResponseInterface
+    public function execute($operation, $payload, ?callable $requestInterceptor = null, ?float $timeoutSeconds = null, ?SourcePolicy $sourcePolicy = null): ResponseInterface
     {
         $this->calls++;
         $this->payloads[] = $payload;

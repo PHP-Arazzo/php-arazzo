@@ -1634,7 +1634,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/protocol-rpc",
-                "reference": "3aa6be0797d3fef0d2f6f222158f95bf4b9c9fb3"
+                "reference": "9b5579a5bf99c6df9b07f071de9ccb1cee70a835"
             },
             "require": {
                 "php": "^8.4",
@@ -1646,7 +1646,8 @@
                 "php-arazzo/arazzo-sources": "@dev",
                 "psr/http-client": "^1.0",
                 "psr/http-factory": "^1.1",
-                "psr/http-message": "^2.0"
+                "psr/http-message": "^2.0",
+                "psr/log": "^3.0"
             },
             "require-dev": {
                 "pestphp/pest": "^5.0",
@@ -1697,7 +1698,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/protocol-soap",
-                "reference": "083849f33ad0a93b1b52462f1092b53121d9d7b5"
+                "reference": "f2fc9e0acd30244a263c3af1dcda581bda9f429b"
             },
             "require": {
                 "ext-dom": "*",
@@ -1711,7 +1712,8 @@
                 "php-arazzo/arazzo-sources": "@dev",
                 "psr/http-client": "^1.0",
                 "psr/http-factory": "^1.1",
-                "psr/http-message": "^2.0"
+                "psr/http-message": "^2.0",
+                "psr/log": "^3.0"
             },
             "require-dev": {
                 "pestphp/pest": "^5.0",

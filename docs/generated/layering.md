@@ -100,6 +100,7 @@ flowchart TB
     subgraph PKG_M_protocol_http["protocol-http"]
         M_protocol_http_Execution["protocol-http:Execution"]:::node
         M_protocol_http_Plugins["protocol-http:Plugins"]:::node
+        M_protocol_http_Policy["protocol-http:Policy"]:::node
         M_protocol_http_Resolver["protocol-http:Resolver"]:::node
         M_protocol_http__["(protocol-http package root)"]:::node
     end
@@ -292,12 +293,15 @@ flowchart TB
     M_expression__ --> M_expression_Xpath
     M_protocol_http_Execution --> M_contracts_Exceptions
     M_protocol_http_Execution --> M_contracts_Interfaces
+    M_protocol_http_Execution --> M_contracts_Observability
+    M_protocol_http_Execution --> M_contracts_Policy
     M_protocol_http_Execution --> M_contracts_Spec
     M_protocol_http_Execution --> M_engine_Execution
     M_protocol_http_Execution --> M_evaluation__
     M_protocol_http_Execution --> M_expression_Data
     M_protocol_http_Execution --> M_expression_Enum
     M_protocol_http_Execution --> M_expression_Interfaces
+    M_protocol_http_Execution --> M_protocol_http_Policy
     M_protocol_http_Execution --> M_protocol_http_Resolver
     M_protocol_http_Plugins --> M_contracts_Attributes
     M_protocol_http_Plugins --> M_contracts_Interfaces
@@ -309,6 +313,7 @@ flowchart TB
     M_protocol_http_Plugins --> M_expression_Data
     M_protocol_http_Plugins --> M_protocol_http_Execution
     M_protocol_http_Plugins --> M_protocol_http_Resolver
+    M_protocol_http_Policy --> M_engine_Execution
     M_protocol_http_Resolver --> M_contracts_Interfaces
     M_protocol_http_Resolver --> M_contracts_Spec
     M_protocol_http_Resolver --> M_document__
@@ -316,6 +321,7 @@ flowchart TB
     M_protocol_http_Resolver --> M_sources_Resolver
     M_protocol_http_Resolver --> M_sources__
     M_protocol_http__ --> M_contracts_Interfaces
+    M_protocol_http__ --> M_contracts_Observability
     M_protocol_http__ --> M_document__
     M_protocol_http__ --> M_engine_Execution
     M_protocol_http__ --> M_evaluation__
@@ -323,6 +329,7 @@ flowchart TB
     M_protocol_http__ --> M_expression__
     M_protocol_http__ --> M_protocol_http_Execution
     M_protocol_http__ --> M_protocol_http_Plugins
+    M_protocol_http__ --> M_protocol_http_Policy
     M_protocol_http__ --> M_protocol_http_Resolver
     M_protocol_http__ --> M_sources__
     M_protocol_rpc_Execution --> M_contracts_Spec
@@ -334,6 +341,8 @@ flowchart TB
     M_protocol_rpc_Execution --> M_protocol_rpc_Transfer
     M_protocol_rpc_Plugins --> M_contracts_Attributes
     M_protocol_rpc_Plugins --> M_contracts_Interfaces
+    M_protocol_rpc_Plugins --> M_contracts_Observability
+    M_protocol_rpc_Plugins --> M_contracts_Policy
     M_protocol_rpc_Plugins --> M_contracts_Spec
     M_protocol_rpc_Plugins --> M_contracts_State
     M_protocol_rpc_Plugins --> M_contracts_Validation
@@ -361,6 +370,8 @@ flowchart TB
     M_protocol_soap_Execution --> M_protocol_soap_Transfer
     M_protocol_soap_Plugins --> M_contracts_Attributes
     M_protocol_soap_Plugins --> M_contracts_Interfaces
+    M_protocol_soap_Plugins --> M_contracts_Observability
+    M_protocol_soap_Plugins --> M_contracts_Policy
     M_protocol_soap_Plugins --> M_contracts_Spec
     M_protocol_soap_Plugins --> M_contracts_State
     M_protocol_soap_Plugins --> M_contracts_Validation
@@ -538,17 +549,17 @@ flowchart TB
 | `evaluation` | `contracts` | 62 |
 | `evaluation` | `expression` | 20 |
 | `expression` | `contracts` | 127 |
-| `protocol-http` | `contracts` | 44 |
+| `protocol-http` | `contracts` | 55 |
 | `protocol-http` | `document` | 2 |
-| `protocol-http` | `engine` | 9 |
-| `protocol-http` | `evaluation` | 5 |
-| `protocol-http` | `expression` | 6 |
+| `protocol-http` | `engine` | 10 |
+| `protocol-http` | `evaluation` | 6 |
+| `protocol-http` | `expression` | 7 |
 | `protocol-http` | `sources` | 8 |
-| `protocol-rpc` | `contracts` | 37 |
+| `protocol-rpc` | `contracts` | 40 |
 | `protocol-rpc` | `document` | 2 |
 | `protocol-rpc` | `engine` | 4 |
 | `protocol-rpc` | `evaluation` | 1 |
-| `protocol-soap` | `contracts` | 47 |
+| `protocol-soap` | `contracts` | 50 |
 | `protocol-soap` | `document` | 2 |
 | `protocol-soap` | `engine` | 3 |
 | `protocol-soap` | `evaluation` | 1 |

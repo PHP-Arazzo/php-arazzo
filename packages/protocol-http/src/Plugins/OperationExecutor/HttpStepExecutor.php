@@ -64,6 +64,10 @@ final class HttpStepExecutor implements OperationExecutorPluginInterface, StepPr
         ['payload' => $payload, 'resolvedInputs' => $resolvedInputs] = $compiler->compile($step, $document, $context);
 
         $resolved = $this->operationResolver->resolve($step, $document);
+        $sourcePolicy = $context->getActiveSourcePolicy();
+        $timeoutSeconds = $step->flow->timeout !== null
+            ? $step->flow->timeout / 1000
+            : $sourcePolicy?->timeoutSeconds();
 
         $capturedRequest = null;
         try {
@@ -79,7 +83,8 @@ final class HttpStepExecutor implements OperationExecutorPluginInterface, StepPr
 
                     return $request;
                 },
-                $step->flow->timeout !== null ? $step->flow->timeout / 1000 : null,
+                $timeoutSeconds,
+                $sourcePolicy,
             );
         } catch (\Throwable $e) {
             // Transport-level failures become a synthetic 500 response so
@@ -90,7 +95,7 @@ final class HttpStepExecutor implements OperationExecutorPluginInterface, StepPr
 
         $decoded = $compiler->decodeResponse($response);
 
-        if ($this->shouldValidateSchema($step)) {
+        if ($this->shouldValidateSchema($step, $sourcePolicy?->strictValidation())) {
             $this->schemaValidator->validateResponseSchema(
                 $step,
                 $decoded['statusCode'],
@@ -124,8 +129,10 @@ final class HttpStepExecutor implements OperationExecutorPluginInterface, StepPr
         );
     }
 
-    private function shouldValidateSchema(Step $step): bool
+    private function shouldValidateSchema(Step $step, ?bool $sourceStrictValidation = null): bool
     {
-        return $step->flow->strictValidation ?? $this->strictValidationDefault;
+        return $step->flow->strictValidation
+            ?? $sourceStrictValidation
+            ?? $this->strictValidationDefault;
     }
 }

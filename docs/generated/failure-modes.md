@@ -79,6 +79,7 @@ Regenerated before every commit.
 | `SelectorEvaluationException` | `SelectorEvaluator` |  |
 | `Throwable` | `ValidateCommand` |  |
 | `Throwable` | `CriteriaEvaluator` |  |
+| `Throwable` | `DefaultOpenApiExecutor` |  |
 | `Throwable` | `HttpStepExecutor` |  |
 | `Throwable` | `CorrelationResumer` |  |
 | `Throwable` | `StepExecutionWorker` |  |

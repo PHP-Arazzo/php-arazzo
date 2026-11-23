@@ -12,12 +12,12 @@ same corner every week" signal that static structure graphs cannot show.
 ```mermaid
 xychart-beta
     title "Edit churn per module (git touches)"
-    x-axis ["document:Validator", "cli:Console", "runner:Execution", "runner:Async", "runner:Sync", "sources:Normalizer", "expression:Interfaces", "document:Parser", "contracts:Interfaces", "contracts:Spec", "expression:Data", "evaluation:Plugins"]
+    x-axis ["document:Validator", "cli:Console", "runner:Execution", "runner:Async", "runner:Sync", "sources:Normalizer", "expression:Interfaces", "document:Parser", "contracts:Interfaces", "contracts:Spec", "expression:Data", "sources:Resolver"]
     y-axis "Touches" 0 --> 60
-    bar [52, 40, 30, 22, 19, 19, 18, 16, 15, 13, 11, 10]
+    bar [52, 40, 30, 22, 19, 19, 18, 16, 15, 13, 11, 11]
 ```
 
-Analyzed 463 total file-touches across 76 modules.
+Analyzed 465 total file-touches across 77 modules.
 
 | Module | Touches | Share | LOC | Touches/KLOC |
 |---|---:|---:|---:|---:|
@@ -32,8 +32,8 @@ Analyzed 463 total file-touches across 76 modules.
 | `contracts:Interfaces` | 15 | 3% | 412 | 36.4 |
 | `contracts:Spec` | 13 | 3% | 1,300 | 10 |
 | `expression:Data` | 11 | 2% | 199 | 55.3 |
+| `sources:Resolver` | 11 | 2% | 629 | 17.5 |
 | `evaluation:Plugins` | 10 | 2% | 125 | 80 |
-| `sources:Resolver` | 10 | 2% | 629 | 15.9 |
 | `evaluation:Registries` | 9 | 2% | 190 | 47.4 |
 | `protocol-soap:Execution` | 9 | 2% | 484 | 18.6 |
 | `engine:Execution` | 8 | 2% | 1,031 | 7.8 |
@@ -46,7 +46,7 @@ Analyzed 463 total file-touches across 76 modules.
 | `expression:Ast` | 5 | 1% | 355 | 14.1 |
 | `expression:Registries` | 5 | 1% | 113 | 44.2 |
 | `expression:Xpath` | 5 | 1% | 173 | 28.9 |
-| `protocol-http:Execution` | 5 | 1% | 536 | 9.3 |
+| `protocol-http:Execution` | 5 | 1% | 927 | 5.4 |
 | `protocol-rpc:Normalizer` | 5 | 1% | 538 | 9.3 |
 | `runner:Policy` | 5 | 1% | 124 | 40.3 |
 | `runner:Preflight` | 5 | 1% | 156 | 32.1 |
@@ -82,12 +82,12 @@ Analyzed 463 total file-touches across 76 modules.
 | `engine:Exceptions` | 1 | 0% | 42 | 23.8 |
 | `evaluation:Events` | 1 | 0% | 27 | 37 |
 | `expression:Policy` | 1 | 0% | 37 | 27 |
-| `protocol-http:Plugins` | 1 | 0% | 335 | 3 |
+| `protocol-http:Plugins` | 1 | 0% | 342 | 2.9 |
 | `protocol-http:Resolver` | 1 | 0% | 285 | 3.5 |
-| `protocol-rpc:Plugins` | 1 | 0% | 338 | 3 |
+| `protocol-rpc:Plugins` | 1 | 0% | 422 | 2.4 |
 | `protocol-rpc:Transfer` | 1 | 0% | 219 | 4.6 |
 | `protocol-soap:Exceptions` | 1 | 0% | 16 | 62.5 |
-| `protocol-soap:Plugins` | 1 | 0% | 778 | 1.3 |
+| `protocol-soap:Plugins` | 1 | 0% | 859 | 1.2 |
 | `protocol-soap:Resolver` | 1 | 0% | 136 | 7.4 |
 | `protocol-soap:Transfer` | 1 | 0% | 203 | 4.9 |
 | `runner:Data` | 1 | 0% | 123 | 8.1 |
@@ -96,6 +96,7 @@ Analyzed 463 total file-touches across 76 modules.
 | `runner:Store` | 1 | 0% | 138 | 7.2 |
 | `sources:Exceptions` | 1 | 0% | 65 | 15.4 |
 | `sources:Plugins` | 1 | 0% | 147 | 6.8 |
-| `sources:Policy` | 0 | 0% | 125 | 0 |
+| `sources:Policy` | 1 | 0% | 125 | 8 |
+| `protocol-http:Policy` | 0 | 0% | 43 | 0 |
 
 **Hotspots** (highest touches-per-KLOC with meaningful size/churn): `expression:Interfaces` (84.1), `evaluation:Plugins` (80), `document:Validator` (78.5)

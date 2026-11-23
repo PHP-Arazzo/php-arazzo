@@ -85,9 +85,11 @@ _No catalog found (LedgerAppendingListener not found)._
 | `SelectorTypeSupportedRule` <small>core</small> | `error` | 2 |
 | `StepOperationPathSyntaxRule` <small>core</small> | `error` | 4 |
 | `SuccessCriteriaVersionSupportedRule` <small>core</small> | `error` | 2 |
-| `DefaultOpenApiExecutor` <small>core</small> | `warning` | 1 |
+| `DefaultOpenApiExecutor` <small>core</small> | `debug` · `warning` | 3 |
 | `StepOutputExtractor` <small>core</small> | `warning` | 1 |
+| `RpcOperationExecutor` <small>core</small> | `debug` · `warning` | 3 |
 | `RpcStepRule` <small>core</small> | `error` | 4 |
+| `SoapOperationExecutor` <small>core</small> | `debug` · `warning` | 3 |
 | `WsdlStepRule` <small>core</small> | `error` | 3 |
 | `CorrelationResumer` <small>core</small> | `info` · `warning` | 6 |
 | `StepExecutionWorker` <small>core</small> | `info` · `error` | 5 |
@@ -96,7 +98,7 @@ _No catalog found (LedgerAppendingListener not found)._
 | `HttpFetcher` <small>core</small> | `debug` · `warning` | 4 |
 | `Sources` <small>core</small> | `warning` | 2 |
 
-133 logging calls total. PSR-14 events are dispatched independently (see events.md).
+141 logging calls total. PSR-14 events are dispatched independently (see events.md).
 
 ## Persistence adapters
 

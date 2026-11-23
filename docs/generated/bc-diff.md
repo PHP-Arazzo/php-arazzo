@@ -31,7 +31,7 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 | removed method | `DocumentInterface` | `preflightInputs` | `public function preflightInputs(ArazzoDocument $document, string $workflowId, array $inputs): ValidationResult` |
 | removed method | `DocumentInterface` | `resolveOperation` | `public function resolveOperation(Step $step, ArazzoDocument $document): ResolvedOperation` |
 
-**Additions (non-breaking):** 72
+**Additions (non-breaking):** 74
 
 | Kind | Class | Member |
 |---|---|---|
@@ -87,6 +87,7 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 | added method | `DocumentInterface` | `withDefinitions` |
 | added method | `DocumentInterface` | `withEventDispatcher` |
 | added method | `DocumentInterface` | `withExecutor` |
+| added method | `DocumentInterface` | `withIdempotencyInjector` |
 | added method | `DocumentInterface` | `withLockManager` |
 | added method | `DocumentInterface` | `withLogger` |
 | added method | `DocumentInterface` | `withMaxAliases` |
@@ -105,5 +106,6 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 | added method | `DocumentInterface` | `withSourcePolicy` |
 | added method | `DocumentInterface` | `withStateTtlSeconds` |
 | added method | `DocumentInterface` | `withStore` |
+| added method | `DocumentInterface` | `withStrictValidation` |
 | added method | `DocumentInterface` | `withTracer` |
 | added method | `DocumentInterface` | `withYamlPolicy` |
