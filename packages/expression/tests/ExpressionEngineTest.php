@@ -8,11 +8,11 @@ use Alama\Arazzo\Contracts\Spec\Selector;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
 use Alama\Arazzo\Expression\Data\EvaluationContext;
 use Alama\Arazzo\Expression\Data\ExpressionReference;
-use Alama\Arazzo\Expression\Data\InterpolationOptions;
 use Alama\Arazzo\Expression\Enum\ReferenceKind;
 use Alama\Arazzo\Expression\Exceptions\ExpressionSyntaxException;
 use Alama\Arazzo\Expression\ExpressionEngine;
 use Alama\Arazzo\Expression\Interfaces\ExpressionEngineInterface;
+use Alama\Arazzo\Expression\Policy\InterpolationPolicy;
 
 it('implements ExpressionEngineInterface', function () {
     $engine = new ExpressionEngine();
@@ -93,10 +93,14 @@ it('evaluates raw selectors through the public face', function () {
     expect($engine->evaluateRawSelector(ExpressionType::JsonPath, '$.name', ['name' => 'Ada']))->toBe('Ada');
 });
 
-it('promotes InterpolationOptions to public', function () {
-    $options = new InterpolationOptions();
+it('exposes immutable InterpolationPolicy following the *Policy standard', function () {
+    $default = InterpolationPolicy::default();
+    $custom = $default->withStringify(fn (mixed $v): string => strtoupper((string) $v));
 
-    expect($options)->toBeInstanceOf(InterpolationOptions::class);
+    expect($default)->toBeInstanceOf(InterpolationPolicy::class)
+        ->and($default->getStringify())->toBeNull()
+        ->and($custom)->not->toBe($default)
+        ->and($custom->getStringify())->not->toBeNull();
 });
 
 it('evaluates selectors through the public face', function () {

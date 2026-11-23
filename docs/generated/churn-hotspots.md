@@ -17,7 +17,7 @@ xychart-beta
     bar [52, 40, 30, 22, 19, 19, 17, 16, 15, 13, 10, 10]
 ```
 
-Analyzed 460 total file-touches across 74 modules.
+Analyzed 460 total file-touches across 75 modules.
 
 | Module | Touches | Share | LOC | Touches/KLOC |
 |---|---:|---:|---:|---:|
@@ -32,7 +32,7 @@ Analyzed 460 total file-touches across 74 modules.
 | `contracts:Interfaces` | 15 | 3% | 412 | 36.4 |
 | `contracts:Spec` | 13 | 3% | 1,300 | 10 |
 | `evaluation:Plugins` | 10 | 2% | 125 | 80 |
-| `expression:Data` | 10 | 2% | 224 | 44.6 |
+| `expression:Data` | 10 | 2% | 199 | 50.3 |
 | `sources:Resolver` | 10 | 2% | 478 | 20.9 |
 | `evaluation:Registries` | 9 | 2% | 190 | 47.4 |
 | `protocol-soap:Execution` | 9 | 2% | 484 | 18.6 |
@@ -95,5 +95,6 @@ Analyzed 460 total file-touches across 74 modules.
 | `runner:Store` | 1 | 0% | 138 | 7.2 |
 | `sources:Exceptions` | 1 | 0% | 65 | 15.4 |
 | `sources:Plugins` | 1 | 0% | 147 | 6.8 |
+| `expression:Policy` | 0 | 0% | 37 | 0 |
 
 **Hotspots** (highest touches-per-KLOC with meaningful size/churn): `evaluation:Plugins` (80), `expression:Interfaces` (79.4), `document:Validator` (78.5)

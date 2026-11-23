@@ -56,10 +56,11 @@ quadrantChart
     expression/Data: [0.25, 1]
     expression/Enum: [0, 1]
     expression/Exceptions: [0.091, 1]
-    expression/Interfaces: [0.294, 1]
+    expression/Interfaces: [0.333, 1]
     expression/Internal: [0.75, 0.333]
     expression/JsonPath: [0.667, 1]
     expression/Plugins: [1, 1]
+    expression/Policy: [0, 1]
     expression/Registries: [0.571, 1]
     expression/Support: [0.667, 1]
     expression/Xpath: [0.5, 0.667]
@@ -131,13 +132,14 @@ quadrantChart
 | `evaluation/Plugins` | 1.00 | 4 | 2 | 100% |
 | `evaluation/Registries` | 0.83 | 6 | 2 | 100% |
 | `expression/Ast` | 0.33 | 11 | 15 | 73% |
-| `expression/Data` | 0.25 | 26 | 7 | 100% |
+| `expression/Data` | 0.25 | 25 | 6 | 100% |
 | `expression/Enum` | 0.00 | 8 | 2 | 100% |
 | `expression/Exceptions` | 0.09 | 17 | 2 | 100% |
-| `expression/Interfaces` | 0.29 | 22 | 4 | 100% |
+| `expression/Interfaces` | 0.33 | 22 | 4 | 100% |
 | `expression/Internal` | 0.75 | 1 | 3 | 33% |
 | `expression/JsonPath` | 0.67 | 61 | 7 | 100% |
 | `expression/Plugins` | 1.00 | 22 | 17 | 100% |
+| `expression/Policy` | 0.00 | 3 | 1 | 100% |
 | `expression/Registries` | 0.57 | 4 | 1 | 100% |
 | `expression/Support` | 0.67 | 5 | 2 | 100% |
 | `expression/Xpath` | 0.50 | 2 | 3 | 67% |

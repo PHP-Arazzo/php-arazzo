@@ -409,7 +409,7 @@ this file on a commit is a public API change — review it deliberately.
 - `public function expressionReferences(string $raw): ?ExpressionReference`
 - `public function extract(string $template): array`
 - `public function interpolate(string $template, callable $resolver, array $options = []): string`
-- `public function interpolateWithOptions(string $template, callable $resolver, ?InterpolationOptions $options = null): string`
+- `public function interpolateWithPolicy(string $template, callable $resolver, ?InterpolationPolicy $policy = null): string`
 - `public function jsonPath(string $expression, array|object $data): mixed`
 - `public function jsonPointer(array $data, ?string $pointer): mixed`
 - `public function parseEmbedded(string $raw, SpecVersion $version = SpecVersion::V1_0): array`
@@ -435,10 +435,6 @@ this file on a commit is a public API change — review it deliberately.
 - `public function __construct(public WorkflowContextInterface $workflowContext, public ?string $currentStepId = null, public ?ArazzoDocument $document = null)`
 - `public function getCurrentStepId(): ?string`
 - `public function getDocument(): ?ArazzoDocument`
-
-#### `InterpolationOptions` class
-- `public function __construct(?callable $stringify = null)`
-- `public function getStringify(): ?callable`
 
 ### `Alama\Arazzo\Expression\Enum`
 
@@ -469,7 +465,7 @@ this file on a commit is a public API change — review it deliberately.
 - `public function expressionReferences(string $raw): ?ExpressionReference;`
 - `public function extract(string $template): array;`
 - `public function interpolate(string $template, callable $resolver, array $options = []): string;`
-- `public function interpolateWithOptions(string $template, callable $resolver, ?InterpolationOptions $options = null): string;`
+- `public function interpolateWithPolicy(string $template, callable $resolver, ?InterpolationPolicy $policy = null): string;`
 - `public function jsonPath(string $expression, array|object $data): mixed;`
 - `public function jsonPointer(array $data, ?string $pointer): mixed;`
 - `public function parseEmbedded(string $raw, SpecVersion $version = SpecVersion::V1_0): array;`
@@ -482,6 +478,14 @@ this file on a commit is a public API change — review it deliberately.
 
 #### `SelectorContext` interface
 - `public function select(array $ast, array $nodes, string $path, int &$visited, int $depth = 0): array;`
+
+### `Alama\Arazzo\Expression\Policy`
+
+#### `InterpolationPolicy` class
+- `public function __construct(?callable $stringify = null)`
+- `public function getStringify(): ?Closure`
+- `public function withStringify(?callable $stringify): self`
+- `public static function default(): self`
 
 ### `Alama\Arazzo\Expression\Xpath`
 

@@ -90,7 +90,7 @@ public contract between packages.
   - `public function extract(string $template): array;`
   - `public function parseEmbedded(string $raw, SpecVersion $version = SpecVersion::V1_0): array;`
   - `public function interpolate(string $template, callable $resolver, array $options = []): string;`
-  - `public function interpolateWithOptions(string $template, callable $resolver, ?InterpolationOptions $options = null): string;`
+  - `public function interpolateWithPolicy(string $template, callable $resolver, ?InterpolationPolicy $policy = null): string;`
   - `public function test(string $raw): bool;`
   - `public function evaluate(Expression $expression, EvaluationInputInterface $context): mixed;`
   - `public function evaluateSelector(Selector $selector, WorkflowContextInterface $context, string $stepId): mixed;`

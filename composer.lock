@@ -1472,14 +1472,13 @@
             "dist": {
                 "type": "path",
                 "url": "packages/evaluation",
-                "reference": "e64a52ee0f03643a12a312096c5226aa26d604a5"
+                "reference": "22ed56ab266c12d62939adc3f8582931ebb30432"
             },
             "require": {
                 "php": "^8.4",
                 "php-arazzo/arazzo-contracts": "@dev",
                 "php-arazzo/arazzo-expression": "@dev",
-                "psr/event-dispatcher": "^1.0",
-                "psr/log": "^3.0"
+                "psr/event-dispatcher": "^1.0"
             },
             "require-dev": {
                 "larastan/larastan": "^3.0",
@@ -1524,13 +1523,11 @@
             "dist": {
                 "type": "path",
                 "url": "packages/expression",
-                "reference": "bf987df0800ed099ea28246f9cfc70238c116f43"
+                "reference": "8e7f69936ef8bf105b5ea8d20e6a44fbd416c0a4"
             },
             "require": {
                 "php": "^8.4",
                 "php-arazzo/arazzo-contracts": "@dev",
-                "psr/event-dispatcher": "^1.0",
-                "psr/log": "^3.0",
                 "softcreatr/jsonpath": "^0.10.0"
             },
             "require-dev": {

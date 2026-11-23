@@ -11,9 +11,9 @@ use Alama\Arazzo\Contracts\Spec\Interfaces\WorkflowContextInterface;
 use Alama\Arazzo\Contracts\Spec\Selector;
 use Alama\Arazzo\Expression\Data\EmbeddedSegment;
 use Alama\Arazzo\Expression\Data\ExpressionReference;
-use Alama\Arazzo\Expression\Data\InterpolationOptions;
 use Alama\Arazzo\Expression\Exceptions\ExpressionSyntaxException;
 use Alama\Arazzo\Expression\Exceptions\SelectorEvaluationException;
+use Alama\Arazzo\Expression\Policy\InterpolationPolicy;
 
 /**
  * Entry-point seam for Arazzo expression parsing, analysis, and evaluation.
@@ -65,7 +65,7 @@ interface ExpressionEngineInterface
     /**
      * Interpolate a template string by replacing embedded expressions with resolved values.
      */
-    public function interpolateWithOptions(string $template, callable $resolver, ?InterpolationOptions $options = null): string;
+    public function interpolateWithPolicy(string $template, callable $resolver, ?InterpolationPolicy $policy = null): string;
 
     /**
      * Test if a string is a valid runtime expression.

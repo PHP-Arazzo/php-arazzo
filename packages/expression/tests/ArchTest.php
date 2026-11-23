@@ -44,8 +44,19 @@ arch('expression public API contracts')
     ->expect('Alama\Arazzo\Expression\ExpressionEngine')
     ->toBeFinal()
     ->toBeReadonly()
+    ->and('Alama\Arazzo\Expression\Policy\InterpolationPolicy')
+    ->toBeFinal()
+    ->toBeReadonly()
     ->and('Alama\Arazzo\Expression\Registries\SelectorPluginRegistry')
     ->toBeFinal();
+
+arch('expression stays Tier-1 pure CPU with zero observability dependencies (ADR-010)')
+    ->expect('Alama\Arazzo\Expression')
+    ->not->toUse([
+        'Psr\Log',
+        'Psr\EventDispatcher',
+        'OpenTelemetry',
+    ]);
 
 arch('expression has zero dependencies on document/runner/sources/evaluation')
     ->expect('Alama\Arazzo\Expression')

@@ -52,6 +52,7 @@ flowchart LR
     expression_Internal["Alama\Arazzo\Expression\Internal"]:::coreNode
     expression_JsonPath["Alama\Arazzo\Expression\JsonPath"]:::coreNode
     expression_Plugins["Alama\Arazzo\Expression\Plugins\ValidationRule"]:::coreNode
+    expression_Policy["Alama\Arazzo\Expression\Policy"]:::coreNode
     expression_Registries["Alama\Arazzo\Expression\Registries"]:::coreNode
     expression_Support["Alama\Arazzo\Expression\Support"]:::coreNode
     expression_Xpath["Alama\Arazzo\Expression\Xpath"]:::coreNode
@@ -117,6 +118,7 @@ flowchart LR
     expression_Interfaces --> expression_Ast
     expression_Interfaces --> expression_Data
     expression_Interfaces --> expression_Exceptions
+    expression_Interfaces --> expression_Policy
     expression_Internal --> contracts_Spec
     expression_Internal --> expression_Data
     expression_Internal --> expression_Exceptions
@@ -152,6 +154,7 @@ flowchart LR
     expression__ --> expression_Data
     expression__ --> expression_Exceptions
     expression__ --> expression_Interfaces
+    expression__ --> expression_Policy
     expression__ --> expression_Registries
     expression__ --> expression_Internal
     expression__ --> expression_Support
