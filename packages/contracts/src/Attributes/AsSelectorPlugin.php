@@ -12,6 +12,5 @@ final readonly class AsSelectorPlugin
 {
     public function __construct(
         public ExpressionType $type,
-        public int $priority = 0,
     ) {}
 }

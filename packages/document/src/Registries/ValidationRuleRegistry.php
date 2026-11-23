@@ -7,25 +7,23 @@ namespace Alama\Arazzo\Document\Registries;
 use Alama\Arazzo\Contracts\Attributes\AsValidationRule;
 use Alama\Arazzo\Contracts\Discovery\PluginDiscovery;
 use Alama\Arazzo\Contracts\Interfaces\ValidationRuleInterface;
+use Alama\Arazzo\Contracts\Validation\ValidationPhase;
 use ReflectionClass;
 
 /**
  * Concrete singleton registry of Arazzo document validation rules.
  *
  * Auto-discovers all `#[AsValidationRule]` classes declared across installed
- * packages' `composer.json` `extra.arazzo.plugins` manifests (structural rules
- * from `arazzo-document`, expression rules from `arazzo-expression`, protocol
- * rules from `arazzo-protocol-soap` / `arazzo-protocol-rpc`, and custom user
- * rules).
+ * packages' `composer.json` `extra.arazzo.plugins` directories.
  *
- * Rules are keyed by {@see ValidationRuleInterface::code()} and ordered by
- * priority (higher runs earlier; registration order breaks ties).
+ * Rules are keyed by {@see ValidationRuleInterface::code()} (last-registered
+ * wins) and grouped by {@see ValidationPhase} (`Schema` runs before `Semantic`).
  */
 final class ValidationRuleRegistry
 {
     private static ?self $instance = null;
 
-    /** @var array<string, array{rule: ValidationRuleInterface, priority: int}> */
+    /** @var array<string, array{rule: ValidationRuleInterface, phase: ValidationPhase}> */
     private array $rules = [];
 
     private function __construct()
@@ -47,20 +45,21 @@ final class ValidationRuleRegistry
         self::$instance = null;
     }
 
-    public function register(ValidationRuleInterface $rule, ?int $priority = null): void
+    public function register(ValidationRuleInterface $rule, ?ValidationPhase $phase = null): void
     {
-        if ($priority === null) {
+        if ($phase === null) {
             $attrs = (new ReflectionClass($rule))->getAttributes(AsValidationRule::class);
             if ($attrs !== []) {
                 /** @var AsValidationRule $attr */
                 $attr = $attrs[0]->newInstance();
-                $priority = $attr->priority;
+                $phase = $attr->phase;
             }
         }
 
+        // Last-registered wins for a given rule code.
         $this->rules[$rule->code()] = [
             'rule' => $rule,
-            'priority' => $priority ?? 0,
+            'phase' => $phase ?? ValidationPhase::Semantic,
         ];
     }
 
@@ -75,19 +74,23 @@ final class ValidationRuleRegistry
     }
 
     /**
+     * Schema-phase rules run before Semantic-phase rules.
+     *
      * @return list<ValidationRuleInterface>
      */
     public function all(): array
     {
-        $entries = array_values($this->rules);
-        usort(
-            $entries,
-            static fn (array $a, array $b): int => $b['priority'] <=> $a['priority'],
-        );
+        $schema = [];
+        $semantic = [];
 
-        return array_map(
-            static fn (array $entry): ValidationRuleInterface => $entry['rule'],
-            $entries,
-        );
+        foreach ($this->rules as $entry) {
+            if ($entry['phase'] === ValidationPhase::Schema) {
+                $schema[] = $entry['rule'];
+            } else {
+                $semantic[] = $entry['rule'];
+            }
+        }
+
+        return [...$schema, ...$semantic];
     }
 }

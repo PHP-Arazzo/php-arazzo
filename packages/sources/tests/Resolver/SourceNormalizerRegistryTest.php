@@ -17,7 +17,6 @@ final class FakeNormalizer implements SourceNormalizerInterface
     /** @param list<SourceType> $types */
     public function __construct(
         private readonly string $fakeName,
-        private readonly int $fakePriority,
         private readonly array $types,
     ) {}
 
@@ -28,7 +27,7 @@ final class FakeNormalizer implements SourceNormalizerInterface
 
     public function priority(): int
     {
-        return $this->fakePriority;
+        return 0;
     }
 
     public function supports(SourceType $type): bool
@@ -42,7 +41,7 @@ final class FakeNormalizer implements SourceNormalizerInterface
     }
 }
 
-#[AsSourceNormalizer(SourceType::Wsdl, priority: 80)]
+#[AsSourceNormalizer(SourceType::Wsdl)]
 final class AttributedFakeNormalizer implements SourceNormalizerInterface
 {
     public function name(): string
@@ -74,7 +73,7 @@ afterEach(function (): void {
     SourceNormalizerRegistry::reset();
 });
 
-it('operates as a singleton with create() and reset() and auto-seeds OpenApiSourceNormalizer', function (): void {
+it('operates as a singleton with create() and reset() and auto-discovers OpenApiSourceNormalizer', function (): void {
     $a = SourceNormalizerRegistry::create();
     $b = SourceNormalizerRegistry::create();
 
@@ -97,8 +96,8 @@ it('returns null when no normalizer supports the requested source type', functio
 
 it('returns the registered normalizer that supports the requested type', function (): void {
     $registry = SourceNormalizerRegistry::create();
-    $openapi = new FakeNormalizer('openapi', 0, [SourceType::Openapi]);
-    $asyncapi = new FakeNormalizer('asyncapi', 0, [SourceType::Asyncapi]);
+    $openapi = new FakeNormalizer('openapi', [SourceType::Openapi]);
+    $asyncapi = new FakeNormalizer('asyncapi', [SourceType::Asyncapi]);
     $registry->register($openapi);
     $registry->register($asyncapi);
 
@@ -106,26 +105,17 @@ it('returns the registered normalizer that supports the requested type', functio
     expect($registry->get(SourceType::Asyncapi))->toBe($asyncapi);
 });
 
-it('prefers the highest-priority normalizer, then registration order for ties', function (): void {
+it('resolves last-registered normalizer first when multiple normalizers support the same type', function (): void {
     $registry = SourceNormalizerRegistry::create();
-    $lenient = new FakeNormalizer('openapi-lenient', 10, [SourceType::Openapi]);
-    $strict = new FakeNormalizer('openapi-strict', 100, [SourceType::Openapi]);
-    $registry->register($lenient);
-    $registry->register($strict);
+    $first = new FakeNormalizer('first', [SourceType::Openapi]);
+    $second = new FakeNormalizer('second', [SourceType::Openapi]);
+    $registry->register($first);
+    $registry->register($second);
 
-    expect($registry->get(SourceType::Openapi))->toBe($strict);
-
-    SourceNormalizerRegistry::reset();
-    $registry2 = SourceNormalizerRegistry::create();
-    $first = new FakeNormalizer('first', 10, [SourceType::Openapi]);
-    $second = new FakeNormalizer('second', 10, [SourceType::Openapi]);
-    $registry2->register($first);
-    $registry2->register($second);
-
-    expect($registry2->get(SourceType::Openapi))->toBe($first);
+    expect($registry->get(SourceType::Openapi))->toBe($second);
 });
 
-it('auto-discovers type and priority from #[AsSourceNormalizer] attribute', function (): void {
+it('replaces existing normalizer for the SourceType declared via #[AsSourceNormalizer] attribute', function (): void {
     $registry = SourceNormalizerRegistry::create();
     $attributed = new AttributedFakeNormalizer();
     $registry->register($attributed);

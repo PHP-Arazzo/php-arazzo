@@ -9,6 +9,7 @@ use Alama\Arazzo\Contracts\Attributes\AsExpressionPlugin;
 use Alama\Arazzo\Contracts\Interfaces\CriterionEvaluatorPluginInterface;
 use Alama\Arazzo\Contracts\Interfaces\ExpressionEvaluatorPluginInterface;
 use Alama\Arazzo\Contracts\Spec\Enum\CriterionType;
+use Alama\Arazzo\Contracts\Spec\Enum\ExpressionType;
 use Alama\Arazzo\Contracts\Spec\Expression;
 use Alama\Arazzo\Contracts\Spec\Interfaces\WorkflowContextInterface;
 use Alama\Arazzo\Contracts\Spec\Step;
@@ -19,7 +20,7 @@ use Alama\Arazzo\Evaluation\Registries\CriterionEvaluatorRegistry;
 use Alama\Arazzo\Evaluation\Registries\ExpressionEvaluatorRegistry;
 use Alama\Arazzo\Expression\ExpressionEngine;
 
-#[AsExpressionPlugin(priority: 50)]
+#[AsExpressionPlugin(ExpressionType::JsonPath)]
 class FakeAttributedExpressionPlugin implements ExpressionEvaluatorPluginInterface
 {
     public function name(): string
@@ -43,7 +44,7 @@ class FakeAttributedExpressionPlugin implements ExpressionEvaluatorPluginInterfa
     }
 }
 
-#[AsCriterionPlugin('custom', priority: 50)]
+#[AsCriterionPlugin(CriterionType::JsonPath)]
 class FakeAttributedCriterionPlugin implements CriterionEvaluatorPluginInterface
 {
     public function name(): string
@@ -59,10 +60,10 @@ class FakeAttributedCriterionPlugin implements CriterionEvaluatorPluginInterface
     public function supports(CriterionType|SuccessCriterion $criterion): bool
     {
         if ($criterion instanceof SuccessCriterion) {
-            return $criterion->type === CriterionType::Simple && $criterion->condition === 'custom';
+            return $criterion->type === CriterionType::JsonPath;
         }
 
-        return false;
+        return $criterion === CriterionType::JsonPath;
     }
 
     public function evaluate(SuccessCriterion $criterion, mixed $context, Step $step, WorkflowContextInterface $workflowContext): bool
@@ -89,7 +90,7 @@ it('operates ExpressionEvaluatorRegistry as a singleton with create() and reset(
     expect($c)->not->toBe($a);
 });
 
-it('auto-registers default JsonPathExpressionPlugin in ExpressionEvaluatorRegistry', function (): void {
+it('auto-discovers default JsonPathExpressionPlugin in ExpressionEvaluatorRegistry', function (): void {
     $registry = ExpressionEvaluatorRegistry::create(new ExpressionEngine());
     $plugins = $registry->all();
 
@@ -97,13 +98,14 @@ it('auto-registers default JsonPathExpressionPlugin in ExpressionEvaluatorRegist
         ->and($plugins[0])->toBeInstanceOf(JsonPathExpressionPlugin::class);
 });
 
-it('discovers priority from #[AsExpressionPlugin] attribute', function (): void {
+it('replaces plugin for the ExpressionType declared via #[AsExpressionPlugin] (last-registered wins)', function (): void {
     $registry = ExpressionEvaluatorRegistry::create(new ExpressionEngine());
     $custom = new FakeAttributedExpressionPlugin();
     $registry->register($custom);
 
     $plugins = $registry->all();
-    expect($plugins[0])->toBe($custom); // priority 50 > default 0
+    expect($plugins)->toHaveCount(1)
+        ->and($plugins[0])->toBe($custom);
 });
 
 it('operates CriterionEvaluatorRegistry as a singleton with create() and reset()', function (): void {
@@ -119,7 +121,7 @@ it('operates CriterionEvaluatorRegistry as a singleton with create() and reset()
     expect($c)->not->toBe($a);
 });
 
-it('auto-registers default JsonPathCriterionPlugin in CriterionEvaluatorRegistry', function (): void {
+it('auto-discovers default JsonPathCriterionPlugin in CriterionEvaluatorRegistry', function (): void {
     $registry = CriterionEvaluatorRegistry::create(new ExpressionEngine());
     $plugins = $registry->all();
 
@@ -127,11 +129,12 @@ it('auto-registers default JsonPathCriterionPlugin in CriterionEvaluatorRegistry
         ->and($plugins[0])->toBeInstanceOf(JsonPathCriterionPlugin::class);
 });
 
-it('discovers priority from #[AsCriterionPlugin] attribute', function (): void {
+it('replaces plugin for the CriterionType declared via #[AsCriterionPlugin] (last-registered wins)', function (): void {
     $registry = CriterionEvaluatorRegistry::create(new ExpressionEngine());
     $custom = new FakeAttributedCriterionPlugin();
     $registry->register($custom);
 
     $plugins = $registry->all();
-    expect($plugins[0])->toBe($custom); // priority 50 > default 0
+    expect($plugins)->toHaveCount(1)
+        ->and($plugins[0])->toBe($custom);
 });

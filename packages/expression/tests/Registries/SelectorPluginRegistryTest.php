@@ -36,7 +36,7 @@ it('resets singleton state via reset()', function (): void {
     expect($instance1)->not->toBe($instance2);
 });
 
-it('registers custom plugins with priority and explicit type', function (): void {
+it('registers custom plugins with explicit ExpressionType (last-registered wins)', function (): void {
     $registry = SelectorPluginRegistry::create();
     $customPlugin = new class() implements SelectorPluginInterface
     {
@@ -56,15 +56,15 @@ it('registers custom plugins with priority and explicit type', function (): void
         }
     };
 
-    $registry->register(ExpressionType::JsonPath, $customPlugin, priority: 100);
+    $registry->register(ExpressionType::JsonPath, $customPlugin);
 
     expect($registry->get(ExpressionType::JsonPath))->toBe($customPlugin);
 });
 
-it('registers plugins via #[AsSelectorPlugin] attribute', function (): void {
+it('registers plugins via #[AsSelectorPlugin] attribute (last-registered wins)', function (): void {
     $registry = SelectorPluginRegistry::create();
 
-    $attributedPlugin = new #[AsSelectorPlugin(ExpressionType::JsonPath, priority: 200)] class() implements SelectorPluginInterface
+    $attributedPlugin = new #[AsSelectorPlugin(ExpressionType::JsonPath)] class() implements SelectorPluginInterface
     {
         public function supports(ExpressionType $type): bool
         {

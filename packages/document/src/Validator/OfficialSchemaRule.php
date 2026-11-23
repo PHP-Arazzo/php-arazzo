@@ -9,6 +9,7 @@ use Alama\Arazzo\Contracts\Interfaces\ValidationRuleInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Validation\ErrorCollector;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
+use Alama\Arazzo\Contracts\Validation\ValidationPhase;
 use Alama\Arazzo\Document\Validator\Schema\DefectRepairs;
 use Alama\Arazzo\Document\Validator\Schema\RefHoister;
 use JsonSchema\Constraints\Constraint;
@@ -26,7 +27,7 @@ use JsonSchema\Validator as JsonSchemaValidator;
  *
  * @internal stays out of the advertised contract; not part of the public API surface
  */
-#[AsValidationRule(priority: 100)]
+#[AsValidationRule(ValidationPhase::Schema)]
 final class OfficialSchemaRule implements ValidationRuleInterface
 {
     private const SCHEMA_FILES = [

@@ -28,6 +28,7 @@ classDiagram
     class InteractionMode
     class NormalizedOpenApiOperation
     class OpenApiPayload
+    class OperationProtocol
     class Parameter
     class ParameterIn
     class PayloadReplacement
@@ -141,6 +142,7 @@ classDiagram
 - **ExpressionType** — `jsonpath` &middot; `xpath` &middot; `jsonpointer`
 - **Format** — `yaml` &middot; `json`
 - **InteractionMode** — `form` &middot; `redirect` &middot; `acknowledge`
+- **OperationProtocol** — `sub-workflow` &middot; `soap` &middot; `rpc` &middot; `asyncapi` &middot; `http`
 - **ParameterIn** — `path` &middot; `query` &middot; `header` &middot; `cookie` &middot; `body` &middot; `querystring` &middot; `metadata` &middot; `variable`
 - **RpcProtocol** — `grpc` &middot; `grpc-web` &middot; `twirp` &middot; `connect`
 - **SourceType** — `openapi` &middot; `arazzo` &middot; `asyncapi` &middot; `wsdl` &middot; `protobuf` &middot; `graphql`

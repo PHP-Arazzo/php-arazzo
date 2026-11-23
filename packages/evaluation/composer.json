@@ -43,8 +43,7 @@
     "extra": {
         "arazzo": {
             "plugins": [
-                "Alama\\Arazzo\\Evaluation\\Plugins\\JsonPathCriterionPlugin",
-                "Alama\\Arazzo\\Evaluation\\Plugins\\JsonPathExpressionPlugin"
+                "src/Plugins"
             ]
         }
     }

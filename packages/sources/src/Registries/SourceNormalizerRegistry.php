@@ -13,15 +13,16 @@ use ReflectionClass;
 /**
  * Public singleton registry of source normalizers.
  *
- * SPI registry holding stateless normalizer implementations keyed by name and
- * resolved by SourceType and priority. Auto-discovers `#[AsSourceNormalizer]`
- * classes declared in installed packages' `composer.json` `extra.arazzo.plugins`.
+ * Keyed by {@see SourceType} (via `#[AsSourceNormalizer]`) or registration slot;
+ * last-registered wins when overriding a source type. Auto-discovers
+ * `#[AsSourceNormalizer]` classes declared in installed packages'
+ * `composer.json` `extra.arazzo.plugins` directories.
  */
 final class SourceNormalizerRegistry
 {
     private static ?self $instance = null;
 
-    /** @var array<string, array{normalizer: SourceNormalizerInterface, priority: int, type: ?SourceType}> */
+    /** @var array<string, array{normalizer: SourceNormalizerInterface, type: ?SourceType}> */
     private array $normalizers = [];
 
     private function __construct()
@@ -43,30 +44,28 @@ final class SourceNormalizerRegistry
         self::$instance = null;
     }
 
-    public function register(SourceNormalizerInterface $normalizer, ?int $priority = null): void
+    public function register(SourceNormalizerInterface $normalizer): void
     {
         $type = null;
-        $ref = new ReflectionClass($normalizer);
-        $attrs = $ref->getAttributes(AsSourceNormalizer::class);
-        if (!empty($attrs)) {
+        $attrs = (new ReflectionClass($normalizer))->getAttributes(AsSourceNormalizer::class);
+        if ($attrs !== []) {
             /** @var AsSourceNormalizer $attr */
             $attr = $attrs[0]->newInstance();
-            $priority ??= $attr->priority;
             $type = $attr->type;
         }
 
-        $priority ??= $normalizer->priority();
-
-        $this->normalizers[$normalizer->name()] = [
+        $key = $type !== null ? 'type:'.$type->value : 'name:'.$normalizer->name();
+        // Move to end so last-registered wins on resolution.
+        unset($this->normalizers[$key]);
+        $this->normalizers[$key] = [
             'normalizer' => $normalizer,
-            'priority' => $priority,
             'type' => $type,
         ];
     }
 
     public function get(SourceType $type): ?SourceNormalizerInterface
     {
-        foreach ($this->ordered() as $entry) {
+        foreach (array_reverse($this->normalizers) as $entry) {
             if ($entry['type'] !== null) {
                 if ($entry['type'] === $type) {
                     return $entry['normalizer'];
@@ -77,21 +76,5 @@ final class SourceNormalizerRegistry
         }
 
         return null;
-    }
-
-    /**
-     * Highest priority first; stable so registration order breaks ties.
-     *
-     * @return list<array{normalizer: SourceNormalizerInterface, priority: int, type: ?SourceType}>
-     */
-    private function ordered(): array
-    {
-        $normalizers = array_values($this->normalizers);
-        usort(
-            $normalizers,
-            static fn (array $a, array $b): int => $b['priority'] <=> $a['priority'],
-        );
-
-        return $normalizers;
     }
 }

@@ -18,9 +18,9 @@ use Alama\Arazzo\Expression\Interfaces\ExpressionEngineInterface;
  * {@see CriteriaEvaluator} can classify them into a
  * {@see CriterionResult}.
  *
- * Selector evaluation (JSONPath, XPath, JSON Pointer) is delegated to plugins
- * registered in the {@see SelectorPluginRegistry}. The engine is type-agnostic;
- * new expression types can be added by registering additional plugins.
+ * Selector evaluation (JSONPath, XPath, JSON Pointer) is delegated through
+ * {@see ExpressionEngineInterface}. The engine is type-agnostic; new expression
+ * types can be added via `#[AsSelectorPlugin]` implementations.
  *
  * @internal stays out of the advertised contract; not part of the public API surface
  */

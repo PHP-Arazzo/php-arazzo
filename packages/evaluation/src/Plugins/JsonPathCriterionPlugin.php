@@ -12,7 +12,7 @@ use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Contracts\Spec\SuccessCriterion;
 use Alama\Arazzo\Expression\Interfaces\ExpressionEngineInterface;
 
-#[AsCriterionPlugin('jsonpath', priority: 0)]
+#[AsCriterionPlugin(CriterionType::JsonPath)]
 final readonly class JsonPathCriterionPlugin implements CriterionEvaluatorPluginInterface
 {
     public function __construct(

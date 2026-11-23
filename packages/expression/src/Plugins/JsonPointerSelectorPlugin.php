@@ -14,7 +14,7 @@ use Alama\Arazzo\Expression\JsonPointer;
  *
  * @internal stays out of the advertised contract; not part of the public API surface.
  */
-#[AsSelectorPlugin(ExpressionType::JsonPointer, 0)]
+#[AsSelectorPlugin(ExpressionType::JsonPointer)]
 final class JsonPointerSelectorPlugin implements SelectorPluginInterface
 {
     public function supports(ExpressionType $type): bool

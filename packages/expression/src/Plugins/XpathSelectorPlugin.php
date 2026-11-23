@@ -20,7 +20,7 @@ use Alama\Arazzo\Expression\Xpath\XpathEvaluator;
  *
  * @internal stays out of the advertised contract; not part of the public API surface.
  */
-#[AsSelectorPlugin(ExpressionType::XPath, 0)]
+#[AsSelectorPlugin(ExpressionType::XPath)]
 final class XpathSelectorPlugin implements SelectorPluginInterface
 {
     public function __construct(private XpathEvaluator $evaluator = new Xpath31Evaluator()) {}

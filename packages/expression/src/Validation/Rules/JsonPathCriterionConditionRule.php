@@ -21,7 +21,7 @@ use Alama\Arazzo\Expression\Interfaces\ExpressionEngineInterface;
  *
  * @internal stays out of the advertised contract; not part of the public API surface
  */
-#[AsValidationRule(priority: 90)]
+#[AsValidationRule]
 final class JsonPathCriterionConditionRule implements ValidationRuleInterface
 {
     private readonly ExpressionEngineInterface $engine;

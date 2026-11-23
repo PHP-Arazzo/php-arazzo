@@ -49,7 +49,7 @@
     "extra": {
         "arazzo": {
             "plugins": [
-                "Alama\\Arazzo\\Sources\\Normalizer\\OpenApiSourceNormalizer"
+                "src/Normalizer"
             ]
         }
     }

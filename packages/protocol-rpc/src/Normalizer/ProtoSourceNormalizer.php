@@ -30,7 +30,7 @@ use Alama\Arazzo\Contracts\Spec\SourceDescription;
  *
  * @internal stays out of the advertised contract; not part of the public API surface
  */
-#[AsSourceNormalizer(SourceType::Protobuf, priority: 0)]
+#[AsSourceNormalizer(SourceType::Protobuf)]
 final class ProtoSourceNormalizer implements SourceNormalizerInterface
 {
     public function name(): string

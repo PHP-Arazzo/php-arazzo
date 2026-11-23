@@ -14,7 +14,7 @@ use Alama\Arazzo\Expression\JsonPathEvaluator;
  *
  * @internal stays out of the advertised contract; not part of the public API surface.
  */
-#[AsSelectorPlugin(ExpressionType::JsonPath, 0)]
+#[AsSelectorPlugin(ExpressionType::JsonPath)]
 final class JsonPathSelectorPlugin implements SelectorPluginInterface
 {
     public function __construct(private JsonPathEvaluator $evaluator = new JsonPathEvaluator()) {}

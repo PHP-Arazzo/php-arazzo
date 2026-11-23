@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Contracts\Attributes;
 
+use Alama\Arazzo\Contracts\Validation\ValidationPhase;
 use Attribute;
 
 /**
@@ -14,6 +15,6 @@ use Attribute;
 final readonly class AsValidationRule
 {
     public function __construct(
-        public int $priority = 0,
+        public ValidationPhase $phase = ValidationPhase::Semantic,
     ) {}
 }

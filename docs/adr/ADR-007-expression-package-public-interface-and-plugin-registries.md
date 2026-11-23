@@ -38,13 +38,18 @@ The method `selectorPlugins()` is **removed** from `ExpressionEngineInterface` a
 ### 3. Deletion of `SelectorPluginRegistryInterface`
 `SelectorPluginRegistryInterface` is completely deleted. No package inside or outside `packages/expression` references it. Internal expression collaborators (`SelectorEvaluator`, `ExpressionDependencyProvider`) type-hint `SelectorPluginRegistry` directly.
 
-### 4. Public Extension Point with `@internal` Implementations
-- `SelectorPluginRegistry` and `SelectorPluginInterface` are public APIs of `alama/arazzo-expression` so external integrators can register custom selector evaluators.
+### 4. Internal `SelectorPluginRegistry` & Enum-Typed Attributes
+- `SelectorPluginRegistry` stays `@internal` to `packages/expression` as an internal strategy registry (other packages never import it). External extension happens via `SelectorPluginInterface` + `#[AsSelectorPlugin]` + Composer `extra.arazzo.plugins` directories.
 - Default plugin implementations (`JsonPathSelectorPlugin`, `JsonPointerSelectorPlugin`, `XpathSelectorPlugin`) remain `@internal`.
 
-### 5. Declarative Plugin Metadata via PHP 8 Attributes
-Introduce `#[AsSelectorPlugin(ExpressionType $type, int $priority = 0)]` attribute in `packages/contracts/src/Attributes/`.
-`SelectorPluginRegistry::register()` supports attribute-driven discovery where `$type` and `$priority` are read from the plugin instance via reflection if not explicitly supplied.
+### 5. Declarative Enum-Typed Plugin Attributes (No Numeric Priorities)
+All 6 plugin attributes in `packages/contracts/src/Attributes/` carry typed PHP 8.4 Enums instead of numeric priorities (with last-registered-wins override semantics in registries):
+- `#[AsSelectorPlugin(ExpressionType $type)]`
+- `#[AsSourceNormalizer(SourceType $type)]`
+- `#[AsExpressionPlugin(ExpressionType $type)]`
+- `#[AsCriterionPlugin(CriterionType $type)]`
+- `#[AsValidationRule(ValidationPhase $phase = ValidationPhase::Semantic)]`
+- `#[AsOperationExecutor(OperationProtocol $protocol)]`
 
 ### 6. Decouple Downstream Packages (`document` and `evaluation`)
 - **`packages/document`**: `RuleSet::default(ExpressionEngineInterface $engine, ...)` drops `$selectorRegistry` and queries `$engine->supportedSelectorVersions(ExpressionType::JsonPath)` directly. Test stubs in `document` remove all dummy `selectorPlugins()` methods.

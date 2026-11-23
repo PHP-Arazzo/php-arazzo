@@ -133,6 +133,7 @@ flowchart TB
     M_cli_Generator --> M_contracts_Interfaces
     M_cli_Renderer --> M_contracts_Spec
     M_contracts_Attributes --> M_contracts_Spec
+    M_contracts_Attributes --> M_contracts_Validation
     M_contracts_Data --> M_contracts_Spec
     M_contracts_Dependency --> M_contracts_Spec
     M_contracts_Dependency --> M_contracts_State
@@ -149,6 +150,7 @@ flowchart TB
     M_document_Registries --> M_contracts_Attributes
     M_document_Registries --> M_contracts_Discovery
     M_document_Registries --> M_contracts_Interfaces
+    M_document_Registries --> M_contracts_Validation
     M_document_Validator --> M_contracts_Attributes
     M_document_Validator --> M_contracts_Data
     M_document_Validator --> M_contracts_Dependency
@@ -424,7 +426,6 @@ flowchart TB
     M_sources_Resolver --> M_contracts_Spec
     M_sources_Resolver --> M_document_Parser
     M_sources_Resolver --> M_sources_Exceptions
-    M_sources__ --> M_contracts_Attributes
     M_sources__ --> M_contracts_Data
     M_sources__ --> M_contracts_Interfaces
     M_sources__ --> M_contracts_Spec
@@ -456,35 +457,35 @@ flowchart TB
 | `cli` | `protocol-http` | 4 |
 | `cli` | `runner` | 11 |
 | `cli` | `sources` | 3 |
-| `document` | `contracts` | 377 |
+| `document` | `contracts` | 379 |
 | `engine` | `contracts` | 47 |
 | `engine` | `document` | 1 |
 | `engine` | `evaluation` | 1 |
-| `evaluation` | `contracts` | 60 |
+| `evaluation` | `contracts` | 62 |
 | `evaluation` | `expression` | 20 |
 | `expression` | `contracts` | 128 |
-| `protocol-http` | `contracts` | 40 |
+| `protocol-http` | `contracts` | 42 |
 | `protocol-http` | `document` | 1 |
 | `protocol-http` | `engine` | 8 |
 | `protocol-http` | `evaluation` | 3 |
 | `protocol-http` | `expression` | 4 |
 | `protocol-http` | `sources` | 6 |
-| `protocol-rpc` | `contracts` | 36 |
+| `protocol-rpc` | `contracts` | 37 |
 | `protocol-rpc` | `document` | 2 |
 | `protocol-rpc` | `engine` | 4 |
 | `protocol-rpc` | `evaluation` | 1 |
-| `protocol-soap` | `contracts` | 46 |
+| `protocol-soap` | `contracts` | 47 |
 | `protocol-soap` | `document` | 2 |
 | `protocol-soap` | `engine` | 3 |
 | `protocol-soap` | `evaluation` | 1 |
 | `protocol-soap` | `expression` | 3 |
-| `runner` | `contracts` | 141 |
+| `runner` | `contracts` | 143 |
 | `runner` | `document` | 5 |
 | `runner` | `engine` | 34 |
 | `runner` | `evaluation` | 11 |
 | `runner` | `expression` | 6 |
 | `runner` | `protocol-http` | 9 |
-| `sources` | `contracts` | 43 |
+| `sources` | `contracts` | 42 |
 | `sources` | `document` | 2 |
 
 ## Module-level detail

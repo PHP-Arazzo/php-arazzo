@@ -1382,7 +1382,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/document",
-                "reference": "bf14a06694c79cd6ed510fef3df9576ce6d6d30f"
+                "reference": "28d559f54abffb4870ed0b42b688037f9ac720f6"
             },
             "require": {
                 "justinrainbow/json-schema": "^6.0",
@@ -1404,56 +1404,7 @@
             "extra": {
                 "arazzo": {
                     "plugins": [
-                        "Alama\\Arazzo\\Document\\Validator\\OfficialSchemaRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\ActionDuplicateRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\ActionGotoTargetResolvesRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\ActionParameterInForbiddenRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\ActionRetryLimitsRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\ActionReusableRefResolvesRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\ActionTargetExclusivityRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\ActionTypeValidRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\AsyncApiFieldsRequire11Rule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\ComponentsUniqueNamesRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\DocUnknownFieldRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\DocumentArazzoVersionRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\DocumentInfoRequiredRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\DocumentSourceDescriptionsPresentRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\ExtensionsXPrefixRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\GraphQlStepRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\InteractionStepRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\ParameterQuerystringOperationShapeRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\ParameterReusableRefResolvesRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\ReceiveStepSuccessCriteriaRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\SelfUriSyntaxRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\SourceTypeMatchesRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\SourceUniqueNameRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\SourceUrlSyntaxRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\StepAtLeastOneRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\StepCriteriaTypeContextRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\StepDependsOnNoCycleRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\StepIdPatternRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\StepNestedWorkflowExistsRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\StepNestedWorkflowNoCycleRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\StepOperationIdResolvesRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\StepOperationIdSourceScopedRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\StepOperationTargetPresentRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\StepOutputsUniqueRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\StepParameterDuplicateRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\StepParameterInValidRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\StepParameterRequiresInRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\StepParametersHaveNameRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\StepRequestBodyReplacementsTargetRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\StepRequestBodyWorkflowRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\StepSuccessCriteriaConditionRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\StepTimeoutRequires11Rule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\StepUniqueIdRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\SubWorkflowInvokeTargetResolvesRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\WorkflowAtLeastOneRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\WorkflowDependsOnExistsRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\WorkflowDependsOnNoCycleRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\WorkflowIdPatternRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\WorkflowInputsValidSchemaRule",
-                        "Alama\\Arazzo\\Document\\Validator\\Rules\\WorkflowUniqueIdRule"
+                        "src/Validator"
                     ]
                 }
             },
@@ -1520,7 +1471,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/evaluation",
-                "reference": "5e01cece36b9ab2f66781cd2342ccb13f8280b37"
+                "reference": "122f31b31e1d47b240e08ccec8d33dd36478f819"
             },
             "require": {
                 "php": "^8.4",
@@ -1543,8 +1494,7 @@
             "extra": {
                 "arazzo": {
                     "plugins": [
-                        "Alama\\Arazzo\\Evaluation\\Plugins\\JsonPathCriterionPlugin",
-                        "Alama\\Arazzo\\Evaluation\\Plugins\\JsonPathExpressionPlugin"
+                        "src/Plugins"
                     ]
                 }
             },
@@ -1572,7 +1522,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/expression",
-                "reference": "5f46ec854eb8b5d1f476fccbb08517d1113a6587"
+                "reference": "04bd822e1091fc1b3030c566e2e5ebf3ab5e5a5a"
             },
             "require": {
                 "php": "^8.4",
@@ -1595,23 +1545,8 @@
             "extra": {
                 "arazzo": {
                     "plugins": [
-                        "Alama\\Arazzo\\Expression\\Plugins\\JsonPathSelectorPlugin",
-                        "Alama\\Arazzo\\Expression\\Plugins\\JsonPointerSelectorPlugin",
-                        "Alama\\Arazzo\\Expression\\Plugins\\XpathSelectorPlugin",
-                        "Alama\\Arazzo\\Expression\\Validation\\Rules\\ActionOutputTargetExclusivityRule",
-                        "Alama\\Arazzo\\Expression\\Validation\\Rules\\ExpressionContextMisuseRule",
-                        "Alama\\Arazzo\\Expression\\Validation\\Rules\\ExpressionJsonPointerSyntaxRule",
-                        "Alama\\Arazzo\\Expression\\Validation\\Rules\\ExpressionSyntaxRule",
-                        "Alama\\Arazzo\\Expression\\Validation\\Rules\\ExpressionUnresolvedComponentRefRule",
-                        "Alama\\Arazzo\\Expression\\Validation\\Rules\\ExpressionUnresolvedInputRefRule",
-                        "Alama\\Arazzo\\Expression\\Validation\\Rules\\ExpressionUnresolvedSourceRefRule",
-                        "Alama\\Arazzo\\Expression\\Validation\\Rules\\ExpressionUnresolvedStepRefRule",
-                        "Alama\\Arazzo\\Expression\\Validation\\Rules\\ExpressionUnresolvedWorkflowRefRule",
-                        "Alama\\Arazzo\\Expression\\Validation\\Rules\\JsonPathCriterionConditionRule",
-                        "Alama\\Arazzo\\Expression\\Validation\\Rules\\MessageRefRequiresReceiveRule",
-                        "Alama\\Arazzo\\Expression\\Validation\\Rules\\SelectorTypeSupportedRule",
-                        "Alama\\Arazzo\\Expression\\Validation\\Rules\\StepOperationPathSyntaxRule",
-                        "Alama\\Arazzo\\Expression\\Validation\\Rules\\SuccessCriteriaVersionSupportedRule"
+                        "src/Plugins",
+                        "src/Validation"
                     ]
                 }
             },
@@ -1639,7 +1574,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/protocol-http",
-                "reference": "b2be2d7184330b2e2ba18698cbb4b549d1ca3c58"
+                "reference": "1e03b9ab94f304d1b9b0b92013e63e80d8db3bc4"
             },
             "require": {
                 "cebe/php-openapi": "^1.7",
@@ -1664,8 +1599,7 @@
             "extra": {
                 "arazzo": {
                     "plugins": [
-                        "Alama\\Arazzo\\Protocol\\Http\\Protocol\\AsyncApiStepExecutor",
-                        "Alama\\Arazzo\\Protocol\\Http\\Protocol\\HttpStepExecutor"
+                        "src/Protocol"
                     ]
                 }
             },
@@ -1701,7 +1635,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/protocol-rpc",
-                "reference": "c38530abf67abafeb39ce0067667e8fa94a351ce"
+                "reference": "e31b445a4b56c1cf1a5442736c1420fe1b27fb19"
             },
             "require": {
                 "php": "^8.4",
@@ -1723,9 +1657,9 @@
             "extra": {
                 "arazzo": {
                     "plugins": [
-                        "Alama\\Arazzo\\Protocol\\Rpc\\Execution\\RpcOperationExecutor",
-                        "Alama\\Arazzo\\Protocol\\Rpc\\Normalizer\\ProtoSourceNormalizer",
-                        "Alama\\Arazzo\\Protocol\\Rpc\\Validation\\RpcStepRule"
+                        "src/Normalizer",
+                        "src/Validation",
+                        "src/Execution"
                     ]
                 }
             },
@@ -1764,7 +1698,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/protocol-soap",
-                "reference": "72a988b9a0dadff1be49ce68c6e0c788dfa3466e"
+                "reference": "bf1dd0e6fa36ccaf48d0097bfdf2475407c2911e"
             },
             "require": {
                 "ext-dom": "*",
@@ -1788,9 +1722,9 @@
             "extra": {
                 "arazzo": {
                     "plugins": [
-                        "Alama\\Arazzo\\Protocol\\Soap\\Execution\\SoapOperationExecutor",
-                        "Alama\\Arazzo\\Protocol\\Soap\\Normalizer\\WsdlSourceNormalizer",
-                        "Alama\\Arazzo\\Protocol\\Soap\\Validation\\WsdlStepRule"
+                        "src/Normalizer",
+                        "src/Validation",
+                        "src/Execution"
                     ]
                 }
             },
@@ -1826,7 +1760,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/runner",
-                "reference": "1ff75fa24de2c603f359afc7826de99bb2feaf41"
+                "reference": "834f4c5c7466059547f2c4c2a931f7a4f93044ae"
             },
             "require": {
                 "guzzlehttp/guzzle": "^7.9",
@@ -1856,7 +1790,7 @@
             "extra": {
                 "arazzo": {
                     "plugins": [
-                        "Alama\\Arazzo\\Runner\\Sync\\SubWorkflowStepExecutor"
+                        "src/Sync"
                     ]
                 }
             },
@@ -1886,7 +1820,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/sources",
-                "reference": "013534f3d41f8bd97d0d2f9daa966e1d29d28bdb"
+                "reference": "3b9071a0adb9c38819233fceb8b342a9373682e5"
             },
             "require": {
                 "ext-dom": "*",
@@ -1915,7 +1849,7 @@
             "extra": {
                 "arazzo": {
                     "plugins": [
-                        "Alama\\Arazzo\\Sources\\Normalizer\\OpenApiSourceNormalizer"
+                        "src/Normalizer"
                     ]
                 }
             },

@@ -14,19 +14,19 @@ targets. Regenerated before every commit.
 | `cli:Console` | 12 | 927 | 0 | 19 | 1.00 |  |
 | `cli:Generator` | 2 | 139 | 0 | 1 | 1.00 |  |
 | `cli:Renderer` | 1 | 254 | 1 | 1 | 0.50 |  |
-| `contracts:Attributes` | 6 | 99 | 19 | 1 | 0.05 |  |
+| `contracts:Attributes` | 6 | 100 | 18 | 2 | 0.10 |  |
 | `contracts:Data` | 2 | 153 | 5 | 1 | 0.17 |  |
 | `contracts:Dependency` | 3 | 333 | 4 | 2 | 0.33 |  |
-| `contracts:Discovery` | 1 | 293 | 4 | 0 | 0.00 |  |
+| `contracts:Discovery` | 3 | 418 | 4 | 0 | 0.00 |  |
 | `contracts:Exceptions` | 1 | 30 | 7 | 0 | 0.00 |  |
 | `contracts:Interfaces` | 21 | 391 | 33 | 4 | 0.11 |  |
-| `contracts:Spec` | 51 | 1228 | 50 | 1 | 0.02 |  |
+| `contracts:Spec` | 52 | 1248 | 50 | 1 | 0.02 |  |
 | `contracts:State` | 3 | 974 | 15 | 1 | 0.06 |  |
 | `contracts:Support` | 5 | 180 | 10 | 0 | 0.00 |  |
-| `contracts:Validation` | 8 | 323 | 9 | 2 | 0.18 |  |
+| `contracts:Validation` | 9 | 339 | 11 | 2 | 0.15 |  |
 | `document:Parser` | 24 | 2217 | 4 | 2 | 0.33 |  |
-| `document:Registries` | 1 | 93 | 1 | 3 | 0.75 |  |
-| `document:Validator` | 56 | 3723 | 1 | 8 | 0.89 |  |
+| `document:Registries` | 1 | 96 | 1 | 4 | 0.80 |  |
+| `document:Validator` | 56 | 3724 | 1 | 8 | 0.89 |  |
 | `(document root)` | 5 | 229 | 9 | 6 | 0.40 |  |
 | `engine:Data` | 2 | 72 | 1 | 3 | 0.75 |  |
 | `engine:Enum` | 1 | 16 | 1 | 0 | 0.00 |  |
@@ -39,8 +39,8 @@ targets. Regenerated before every commit.
 | `evaluation:Enum` | 5 | 118 | 3 | 0 | 0.00 |  |
 | `evaluation:Events` | 1 | 26 | 2 | 1 | 0.33 |  |
 | `evaluation:Interfaces` | 2 | 42 | 2 | 3 | 0.60 |  |
-| `evaluation:Plugins` | 2 | 122 | 0 | 4 | 1.00 |  |
-| `evaluation:Registries` | 2 | 217 | 1 | 5 | 0.83 |  |
+| `evaluation:Plugins` | 2 | 123 | 0 | 4 | 1.00 |  |
+| `evaluation:Registries` | 2 | 188 | 1 | 5 | 0.83 |  |
 | `(evaluation root)` | 6 | 820 | 9 | 13 | 0.59 |  |
 | `expression:Ast` | 15 | 340 | 4 | 2 | 0.33 |  |
 | `expression:Data` | 6 | 192 | 12 | 4 | 0.25 |  |
@@ -50,21 +50,21 @@ targets. Regenerated before every commit.
 | `expression:Internal` | 3 | 430 | 1 | 6 | 0.86 |  |
 | `expression:JsonPath` | 7 | 1371 | 1 | 2 | 0.67 |  |
 | `expression:Plugins` | 3 | 131 | 0 | 5 | 1.00 |  |
-| `expression:Registries` | 1 | 129 | 2 | 4 | 0.67 |  |
+| `expression:Registries` | 1 | 112 | 2 | 4 | 0.67 |  |
 | `expression:Support` | 1 | 58 | 1 | 1 | 0.50 |  |
 | `expression:Validation` | 16 | 1396 | 0 | 9 | 1.00 |  |
 | `expression:Xpath` | 3 | 170 | 2 | 2 | 0.50 |  |
 | `(expression root)` | 9 | 1326 | 5 | 11 | 0.69 |  |
 | `protocol-http:Execution` | 4 | 532 | 4 | 9 | 0.69 |  |
-| `protocol-http:Protocol` | 2 | 331 | 0 | 10 | 1.00 |  |
+| `protocol-http:Protocol` | 2 | 333 | 0 | 10 | 1.00 |  |
 | `protocol-http:Resolver` | 3 | 282 | 6 | 6 | 0.50 |  |
-| `protocol-rpc:Execution` | 3 | 312 | 0 | 10 | 1.00 |  |
+| `protocol-rpc:Execution` | 3 | 313 | 0 | 10 | 1.00 |  |
 | `protocol-rpc:Normalizer` | 6 | 657 | 1 | 3 | 0.75 |  |
 | `protocol-rpc:Protocol` | 4 | 510 | 2 | 4 | 0.67 |  |
 | `protocol-rpc:Transfer` | 2 | 217 | 1 | 3 | 0.75 |  |
 | `protocol-rpc:Validation` | 1 | 78 | 0 | 4 | 1.00 |  |
 | `protocol-soap:Exceptions` | 1 | 15 | 1 | 0 | 0.00 |  |
-| `protocol-soap:Execution` | 5 | 594 | 1 | 10 | 0.91 |  |
+| `protocol-soap:Execution` | 5 | 595 | 1 | 10 | 0.91 |  |
 | `protocol-soap:Normalizer` | 1 | 445 | 1 | 4 | 0.80 |  |
 | `protocol-soap:Resolver` | 1 | 135 | 0 | 1 | 1.00 |  |
 | `protocol-soap:Transfer` | 2 | 201 | 1 | 1 | 0.50 |  |
@@ -75,21 +75,21 @@ targets. Regenerated before every commit.
 | `runner:Execution` | 16 | 368 | 4 | 10 | 0.71 |  |
 | `runner:Interfaces` | 1 | 24 | 0 | 2 | 1.00 |  |
 | `runner:Preflight` | 2 | 148 | 4 | 3 | 0.43 |  |
-| `runner:Sync` | 6 | 1076 | 3 | 21 | 0.88 | ⚠ unstable hub |
-| `(runner root)` | 9 | 561 | 3 | 18 | 0.86 | ⚠ unstable hub |
+| `runner:Sync` | 6 | 1077 | 3 | 21 | 0.88 | ⚠ unstable hub |
+| `(runner root)` | 9 | 577 | 3 | 18 | 0.86 | ⚠ unstable hub |
 | `sources:Exceptions` | 5 | 60 | 2 | 0 | 0.00 |  |
 | `sources:Normalizer` | 6 | 586 | 1 | 4 | 0.80 |  |
-| `sources:Registries` | 1 | 97 | 1 | 4 | 0.80 |  |
+| `sources:Registries` | 1 | 80 | 1 | 4 | 0.80 |  |
 | `sources:Resolver` | 11 | 467 | 3 | 4 | 0.57 |  |
-| `(sources root)` | 2 | 227 | 2 | 7 | 0.78 |  |
+| `(sources root)` | 2 | 205 | 2 | 6 | 0.75 |  |
 
-Total cross-module edges: **1483**
+Total cross-module edges: **1496**
 
 ## Most entangled module pairs
 
 | From → To | References |
 |---|---:|
-| `document:Validator` → `contracts:Validation` | 110 |
+| `document:Validator` → `contracts:Validation` | 111 |
 | `document:Validator` → `contracts:Spec` | 105 |
 | `document:Validator` → `contracts:Interfaces` | 52 |
 | `document:Validator` → `contracts:Attributes` | 50 |
@@ -97,7 +97,7 @@ Total cross-module edges: **1483**
 | `expression:Validation` → `contracts:Validation` | 35 |
 | `expression:Validation` → `contracts:Spec` | 33 |
 | `(evaluation root)` → `contracts:Spec` | 26 |
-| `runner:Sync` → `contracts:Spec` | 25 |
+| `runner:Sync` → `contracts:Spec` | 26 |
 | `contracts:Interfaces` → `contracts:Spec` | 24 |
 | `runner:Async` → `contracts:Spec` | 23 |
 | `(expression root)` → `expression:Ast` | 20 |

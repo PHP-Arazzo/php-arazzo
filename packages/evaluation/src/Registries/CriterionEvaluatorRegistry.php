@@ -16,15 +16,16 @@ use ReflectionClass;
 /**
  * Registry for criterion evaluator plugins.
  *
- * Plugins are stored with an integer priority (higher = earlier). Auto-discovers
- * `#[AsCriterionPlugin]` classes declared in installed packages' `composer.json`
- * `extra.arazzo.plugins`.
+ * Keyed by {@see CriterionType} (via `#[AsCriterionPlugin]`) or plugin name;
+ * last-registered wins when overriding a type. Auto-discovers
+ * `#[AsCriterionPlugin]` classes declared in installed packages'
+ * `composer.json` `extra.arazzo.plugins` directories.
  */
 final class CriterionEvaluatorRegistry
 {
     private static ?self $instance = null;
 
-    /** @var array<string, array{plugin: CriterionEvaluatorPluginInterface, priority: int}> */
+    /** @var array<string, CriterionEvaluatorPluginInterface> */
     private array $plugins = [];
 
     private function __construct(ExpressionEngineInterface $expression)
@@ -53,31 +54,19 @@ final class CriterionEvaluatorRegistry
         self::$instance = null;
     }
 
-    public function register(CriterionEvaluatorPluginInterface $plugin, ?int $priority = null): void
+    public function register(CriterionEvaluatorPluginInterface $plugin): void
     {
-        if ($priority === null) {
-            $ref = new ReflectionClass($plugin);
-            $attrs = $ref->getAttributes(AsCriterionPlugin::class);
-            if (!empty($attrs)) {
-                /** @var AsCriterionPlugin $attr */
-                $attr = $attrs[0]->newInstance();
-                $priority = $attr->priority;
-            }
-        }
-
-        $priority ??= $plugin->priority();
-
-        $this->plugins[$plugin->name()] = [
-            'plugin' => $plugin,
-            'priority' => $priority,
-        ];
+        $key = self::resolveKey($plugin);
+        // Move to end so last-registered wins on resolution.
+        unset($this->plugins[$key]);
+        $this->plugins[$key] = $plugin;
     }
 
     public function resolve(CriterionType|SuccessCriterion $criterion): ?CriterionEvaluatorPluginInterface
     {
-        foreach ($this->ordered() as $entry) {
-            if ($entry['plugin']->supports($criterion)) {
-                return $entry['plugin'];
+        foreach (array_reverse($this->plugins) as $plugin) {
+            if ($plugin->supports($criterion)) {
+                return $plugin;
             }
         }
 
@@ -87,23 +76,19 @@ final class CriterionEvaluatorRegistry
     /** @return list<CriterionEvaluatorPluginInterface> */
     public function all(): array
     {
-        return array_map(
-            static fn (array $entry): CriterionEvaluatorPluginInterface => $entry['plugin'],
-            $this->ordered(),
-        );
+        return array_values(array_reverse($this->plugins));
     }
 
-    /**
-     * @return list<array{plugin: CriterionEvaluatorPluginInterface, priority: int}>
-     */
-    private function ordered(): array
+    private static function resolveKey(CriterionEvaluatorPluginInterface $plugin): string
     {
-        $entries = array_values($this->plugins);
-        usort(
-            $entries,
-            static fn (array $a, array $b): int => $b['priority'] <=> $a['priority'],
-        );
+        $attrs = (new ReflectionClass($plugin))->getAttributes(AsCriterionPlugin::class);
+        if ($attrs !== []) {
+            /** @var AsCriterionPlugin $attr */
+            $attr = $attrs[0]->newInstance();
 
-        return $entries;
+            return 'type:'.$attr->type->value;
+        }
+
+        return 'name:'.$plugin->name();
     }
 }

@@ -10,6 +10,7 @@ use Alama\Arazzo\Contracts\Interfaces\OutputExtractorInterface;
 use Alama\Arazzo\Contracts\Interfaces\ResponseValidatorInterface;
 use Alama\Arazzo\Contracts\Interfaces\StepProtocolExecutorInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
+use Alama\Arazzo\Contracts\Spec\Enum\OperationProtocol;
 use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Contracts\Spec\StepExecutionOutcome;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
@@ -23,7 +24,7 @@ use Psr\Http\Message\RequestInterface as Psr7Request;
 /**
  * @internal stays out of the advertised contract; not part of the public API surface
  */
-#[AsOperationExecutor(priority: 100)]
+#[AsOperationExecutor(OperationProtocol::Http)]
 final class HttpStepExecutor implements OperationExecutorPluginInterface, StepProtocolExecutorInterface
 {
     /**

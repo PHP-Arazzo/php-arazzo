@@ -9,15 +9,27 @@ use Alama\Arazzo\Contracts\Interfaces\ValidationRuleInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Validation\ErrorCollector;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
+use Alama\Arazzo\Contracts\Validation\ValidationPhase;
 use Alama\Arazzo\Document\Registries\ValidationRuleRegistry;
 use Alama\Arazzo\Document\Validator\OfficialSchemaRule;
 
-#[AsValidationRule(priority: 500)]
-final class HighPriorityCustomRule implements ValidationRuleInterface
+#[AsValidationRule(ValidationPhase::Schema)]
+final class CustomSchemaPhaseRule implements ValidationRuleInterface
 {
     public function code(): string
     {
-        return 'custom.high_priority';
+        return 'custom.schema_phase';
+    }
+
+    public function check(ArazzoDocument $doc, SymbolTable $symbols, ErrorCollector $errors): void {}
+}
+
+#[AsValidationRule(ValidationPhase::Semantic)]
+final class OverrideSchemaRule implements ValidationRuleInterface
+{
+    public function code(): string
+    {
+        return 'custom.schema_phase';
     }
 
     public function check(ArazzoDocument $doc, SymbolTable $symbols, ErrorCollector $errors): void {}
@@ -49,11 +61,16 @@ it('operates as a singleton with create() and reset() and auto-discovers rules a
     expect($c)->not->toBe($a);
 });
 
-it('orders registered rules by #[AsValidationRule] priority descending', function (): void {
+it('orders Schema-phase rules before Semantic-phase rules and lets last-registered win on duplicate code', function (): void {
     $registry = ValidationRuleRegistry::create();
-    $custom = new HighPriorityCustomRule();
-    $registry->register($custom);
+    $schemaRule = new CustomSchemaPhaseRule();
+    $registry->register($schemaRule);
 
-    expect($registry->get('custom.high_priority'))->toBe($custom)
-        ->and($registry->all()[0])->toBe($custom);
+    expect($registry->get('custom.schema_phase'))->toBe($schemaRule)
+        ->and($registry->all()[1])->toBe($schemaRule);
+
+    $override = new OverrideSchemaRule();
+    $registry->register($override);
+
+    expect($registry->get('custom.schema_phase'))->toBe($override);
 });

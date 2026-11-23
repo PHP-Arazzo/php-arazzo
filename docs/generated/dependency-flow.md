@@ -35,7 +35,8 @@ cli-Console,runner-root,7
 cli-Console,sources-root,3
 cli-Generator,contracts-Interfaces,2
 cli-Renderer,contracts-Spec,8
-contracts-Attributes,contracts-Spec,2
+contracts-Attributes,contracts-Spec,5
+contracts-Attributes,contracts-Validation,1
 contracts-Data,contracts-Spec,1
 contracts-Dependency,contracts-Spec,6
 contracts-Dependency,contracts-State,1
@@ -51,13 +52,14 @@ document-Parser,contracts-Support,2
 document-Registries,contracts-Attributes,1
 document-Registries,contracts-Discovery,1
 document-Registries,contracts-Interfaces,1
+document-Registries,contracts-Validation,1
 document-Validator,contracts-Attributes,50
 document-Validator,contracts-Data,1
 document-Validator,contracts-Dependency,1
 document-Validator,contracts-Interfaces,52
 document-Validator,contracts-Spec,105
 document-Validator,contracts-Support,1
-document-Validator,contracts-Validation,110
+document-Validator,contracts-Validation,111
 document-Validator,document-Registries,1
 document-root,contracts-Data,2
 document-root,contracts-Interfaces,2
@@ -95,12 +97,12 @@ evaluation-Interfaces,evaluation-Data,1
 evaluation-Interfaces,evaluation-Events,1
 evaluation-Plugins,contracts-Attributes,2
 evaluation-Plugins,contracts-Interfaces,2
-evaluation-Plugins,contracts-Spec,5
+evaluation-Plugins,contracts-Spec,6
 evaluation-Plugins,expression-Interfaces,2
 evaluation-Registries,contracts-Attributes,2
 evaluation-Registries,contracts-Discovery,2
 evaluation-Registries,contracts-Interfaces,2
-evaluation-Registries,contracts-Spec,3
+evaluation-Registries,contracts-Spec,4
 evaluation-Registries,expression-Interfaces,2
 evaluation-root,contracts-Interfaces,1
 evaluation-root,contracts-Spec,26
@@ -175,7 +177,7 @@ protocol-http-Execution,expression-Interfaces,1
 protocol-http-Execution,protocol-http-Resolver,5
 protocol-http-Protocol,contracts-Attributes,2
 protocol-http-Protocol,contracts-Interfaces,8
-protocol-http-Protocol,contracts-Spec,9
+protocol-http-Protocol,contracts-Spec,11
 protocol-http-Protocol,contracts-State,2
 protocol-http-Protocol,engine-Exceptions,1
 protocol-http-Protocol,engine-Execution,3
@@ -191,7 +193,7 @@ protocol-http-Resolver,sources-Resolver,1
 protocol-http-Resolver,sources-root,1
 protocol-rpc-Execution,contracts-Attributes,1
 protocol-rpc-Execution,contracts-Interfaces,2
-protocol-rpc-Execution,contracts-Spec,9
+protocol-rpc-Execution,contracts-Spec,10
 protocol-rpc-Execution,contracts-State,2
 protocol-rpc-Execution,document-root,1
 protocol-rpc-Execution,engine-Exceptions,2
@@ -215,7 +217,7 @@ protocol-rpc-Validation,contracts-Spec,2
 protocol-rpc-Validation,contracts-Validation,2
 protocol-soap-Execution,contracts-Attributes,1
 protocol-soap-Execution,contracts-Interfaces,4
-protocol-soap-Execution,contracts-Spec,15
+protocol-soap-Execution,contracts-Spec,16
 protocol-soap-Execution,contracts-State,2
 protocol-soap-Execution,document-root,2
 protocol-soap-Execution,engine-Exceptions,2
@@ -274,7 +276,7 @@ runner-Sync,contracts-Attributes,1
 runner-Sync,contracts-Dependency,1
 runner-Sync,contracts-Exceptions,2
 runner-Sync,contracts-Interfaces,7
-runner-Sync,contracts-Spec,25
+runner-Sync,contracts-Spec,26
 runner-Sync,contracts-State,5
 runner-Sync,contracts-Support,2
 runner-Sync,contracts-Validation,1
@@ -293,7 +295,7 @@ runner-Sync,runner-Preflight,3
 runner-root,contracts-Attributes,1
 runner-root,contracts-Exceptions,1
 runner-root,contracts-Interfaces,14
-runner-root,contracts-Spec,12
+runner-root,contracts-Spec,13
 runner-root,contracts-State,1
 runner-root,document-root,1
 runner-root,engine-Exceptions,1
@@ -320,7 +322,6 @@ sources-Resolver,contracts-Interfaces,3
 sources-Resolver,contracts-Spec,5
 sources-Resolver,document-Parser,2
 sources-Resolver,sources-Exceptions,8
-sources-root,contracts-Attributes,1
 sources-root,contracts-Data,4
 sources-root,contracts-Interfaces,6
 sources-root,contracts-Spec,8

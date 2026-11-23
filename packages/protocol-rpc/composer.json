@@ -78,9 +78,9 @@
     "extra": {
         "arazzo": {
             "plugins": [
-                "Alama\\Arazzo\\Protocol\\Rpc\\Execution\\RpcOperationExecutor",
-                "Alama\\Arazzo\\Protocol\\Rpc\\Normalizer\\ProtoSourceNormalizer",
-                "Alama\\Arazzo\\Protocol\\Rpc\\Validation\\RpcStepRule"
+                "src/Normalizer",
+                "src/Validation",
+                "src/Execution"
             ]
         }
     }

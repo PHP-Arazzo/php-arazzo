@@ -80,6 +80,7 @@ flowchart LR
     sources_Registries["Alama\Arazzo\Sources\Registries"]:::coreNode
     sources_Resolver["Alama\Arazzo\Sources\Resolver\Exceptions"]:::coreNode
     sources__["(sources package root)"]:::coreNode
+    contracts_Attributes --> contracts_Validation
     contracts_Attributes --> contracts_Spec
     contracts_Data --> contracts_Spec
     contracts_Dependency --> contracts_Spec
@@ -185,6 +186,7 @@ flowchart LR
     document_Registries --> contracts_Attributes
     document_Registries --> contracts_Discovery
     document_Registries --> contracts_Interfaces
+    document_Registries --> contracts_Validation
     document_Validator --> contracts_Data
     document_Validator --> contracts_Spec
     document_Validator --> contracts_Validation
@@ -211,7 +213,6 @@ flowchart LR
     sources_Resolver --> contracts_Spec
     sources_Resolver --> document_Parser
     sources_Resolver --> sources_Exceptions
-    sources__ --> contracts_Attributes
     sources__ --> contracts_Data
     sources__ --> contracts_Interfaces
     sources__ --> contracts_Spec

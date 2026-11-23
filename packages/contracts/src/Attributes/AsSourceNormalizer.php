@@ -12,6 +12,5 @@ final readonly class AsSourceNormalizer
 {
     public function __construct(
         public SourceType $type,
-        public int $priority = 0,
     ) {}
 }

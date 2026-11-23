@@ -8,6 +8,7 @@ use Alama\Arazzo\Contracts\Attributes\AsOperationExecutor;
 use Alama\Arazzo\Contracts\Interfaces\HttpClientInterface;
 use Alama\Arazzo\Contracts\Interfaces\OperationExecutorPluginInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
+use Alama\Arazzo\Contracts\Spec\Enum\OperationProtocol;
 use Alama\Arazzo\Contracts\Spec\ResolvedOperation;
 use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Contracts\Spec\StepExecutionOutcome;
@@ -34,7 +35,7 @@ use RuntimeException;
  *
  * @internal stays out of the advertised contract; not part of the public API surface
  */
-#[AsOperationExecutor(priority: 50)]
+#[AsOperationExecutor(OperationProtocol::Soap)]
 final class SoapOperationExecutor implements OperationExecutorPluginInterface
 {
     /**

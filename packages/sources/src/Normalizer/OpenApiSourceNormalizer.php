@@ -21,7 +21,7 @@ use InvalidArgumentException;
  *
  * @internal stays out of the advertised contract; not part of the public API surface
  */
-#[AsSourceNormalizer(SourceType::Openapi, priority: 0)]
+#[AsSourceNormalizer(SourceType::Openapi)]
 final class OpenApiSourceNormalizer implements SourceNormalizerInterface
 {
     private const METHODS = ['get', 'put', 'post', 'delete', 'options', 'head', 'patch', 'trace'];

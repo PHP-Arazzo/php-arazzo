@@ -8,7 +8,7 @@
 3. Remove `selectorPlugins()` from `ExpressionEngineInterface` and `ExpressionEngine`.
 4. Delete `SelectorPluginRegistryInterface` entirely — `SelectorPluginRegistry` becomes a concrete singleton with `public static function create(): self` and `reset(): void`.
 5. Introduce `#[AsSelectorPlugin]` attribute in `packages/contracts` for declarative plugin metadata.
-6. Make `SelectorPluginRegistry` and `SelectorPluginInterface` public extension points for external custom plugin registration; keep default plugin implementations `@internal`.
+6. Keep `SelectorPluginRegistry` `@internal` inside `packages/expression` (an internal strategy implementation for the expression package); external extension happens via `SelectorPluginInterface` + `#[AsSelectorPlugin]` + Composer `extra.arazzo.plugins` directories.
 7. Purge all `$selectorRegistry` parameters from `packages/document` (`RuleSet`) and `packages/evaluation` (`EvaluationEngine`, `CriteriaEvaluator`, `BuiltInCriterionEvaluator`, `PayloadReplacer`).
 8. Promote `InterpolationOptions` to public and enforce boundary rules via `ArchTest`.
 
@@ -39,10 +39,10 @@
 - PHP `^8.4`, composer package `php-arazzo/arazzo-expression` (`@dev`).
 - Public API allow-list for `packages/expression`:
   - Seam: `ExpressionEngineInterface`, `ExpressionEngine`.
-  - Extension Points: `SelectorPluginRegistry`, `SelectorPluginInterface`.
+  - Extension Point: `SelectorPluginInterface`.
   - Value Objects: `ExpressionReference`, `EmbeddedSegment`, `InterpolationOptions`.
   - Exceptions: `ExpressionSyntaxException`, `SelectorEvaluationException`.
-- All other classes (`Parser`, `Lexer`, `Interpolator`, `ExpressionEvaluator`, `SelectorEvaluator`, `JsonPathEvaluator`, `ExpressionDependencyProvider`, `Plugins\*`, `Ast\*`, `JsonPath\*`, `Xpath\*`, `Internal\*`) stay `@internal`.
+- All other classes (`SelectorPluginRegistry`, `Parser`, `Lexer`, `Interpolator`, `ExpressionEvaluator`, `SelectorEvaluator`, `JsonPathEvaluator`, `ExpressionDependencyProvider`, `Plugins\*`, `Ast\*`, `JsonPath\*`, `Xpath\*`, `Internal\*`) stay `@internal`.
 - `SelectorPluginRegistryInterface` is deleted from git.
 - `packages/expression` has zero dependencies on `Alama\Arazzo\Document`, `Alama\Arazzo\Runner`, `Alama\Arazzo\Sources`, or `Alama\Arazzo\Evaluation`.
 

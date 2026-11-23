@@ -8,6 +8,7 @@ use Alama\Arazzo\Contracts\Attributes\AsOperationExecutor;
 use Alama\Arazzo\Contracts\Interfaces\OperationExecutorPluginInterface;
 use Alama\Arazzo\Contracts\Interfaces\StepProtocolExecutorInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
+use Alama\Arazzo\Contracts\Spec\Enum\OperationProtocol;
 use Alama\Arazzo\Contracts\Spec\Expression;
 use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Contracts\Spec\StepExecutionOutcome;
@@ -24,7 +25,7 @@ use Alama\Arazzo\Expression\Data\EvaluationContext;
  *
  * @internal stays out of the advertised contract; not part of the public API surface
  */
-#[AsOperationExecutor(priority: 0)]
+#[AsOperationExecutor(OperationProtocol::SubWorkflow)]
 final class SubWorkflowStepExecutor implements OperationExecutorPluginInterface, StepProtocolExecutorInterface
 {
     /**

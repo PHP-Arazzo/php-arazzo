@@ -8,12 +8,14 @@ use Alama\Arazzo\Contracts\Attributes\AsOperationExecutor;
 use Alama\Arazzo\Contracts\Attributes\AsSourceNormalizer;
 use Alama\Arazzo\Contracts\Attributes\AsValidationRule;
 use Alama\Arazzo\Contracts\Discovery\PluginDiscovery;
+use Alama\Arazzo\Contracts\Spec\Enum\OperationProtocol;
+use Alama\Arazzo\Contracts\Validation\ValidationPhase;
 use RuntimeException;
 
-#[AsValidationRule(priority: 10)]
+#[AsValidationRule]
 final class ZeroArgPlugin {}
 
-#[AsValidationRule(priority: 20)]
+#[AsValidationRule(ValidationPhase::Schema)]
 final class StaticCreatePlugin
 {
     public function __construct(public readonly string $source) {}
@@ -30,7 +32,7 @@ final class RequiredDependencyPlugin
     public function __construct(public readonly string $required) {}
 }
 
-#[AsOperationExecutor(priority: 100)]
+#[AsOperationExecutor(OperationProtocol::Http)]
 final class DiBoundExecutorPlugin
 {
     public function __construct(public readonly object $service) {}
@@ -40,7 +42,7 @@ afterEach(function (): void {
     PluginDiscovery::reset();
 });
 
-it('discovers plugins declared in installed packages composer.json manifests', function (): void {
+it('discovers plugins declared in installed packages composer.json plugin directories', function (): void {
     $normalizers = PluginDiscovery::classesWith(AsSourceNormalizer::class);
     $rules = PluginDiscovery::classesWith(AsValidationRule::class);
     $executors = PluginDiscovery::classesWith(AsOperationExecutor::class);

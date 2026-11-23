@@ -208,6 +208,9 @@ this file on a commit is a public API change — review it deliberately.
 #### `InteractionMode` enum
 - Cases: `Acknowledge`, `Form`, `Redirect`
 
+#### `OperationProtocol` enum
+- Cases: `AsyncApi`, `Http`, `Rpc`, `Soap`, `SubWorkflow`
+
 #### `ParameterIn` enum
 - Cases: `Body`, `Cookie`, `Header`, `Metadata`, `Path`, `Query`, `Querystring`, `Variable`
 
@@ -320,6 +323,9 @@ this file on a commit is a public API change — review it deliberately.
 - `public function __construct(public array $workflows, public array $sourceDescriptions, public array $components, KnownOperations|array $knownOperations = new KnownOperations(), array $resolvedOperations = [])`
 - `public static function build(ArazzoDocument $doc, KnownOperations|array|null $resolvedOperations = null): self`
 
+#### `ValidationPhase` enum
+- Cases: `Schema`, `Semantic`
+
 #### `ValidationResult` class
 - `public function __construct(public ArazzoDocument $document, public array $errors, public array $warnings, public array $inputs = [])`
 - `public function isValid(): bool`
@@ -413,17 +419,6 @@ this file on a commit is a public API change — review it deliberately.
 #### `SelectorContext` interface
 - `public function select(array $ast, array $nodes, string $path, int &$visited, int $depth = 0): array;`
 
-### `Alama\Arazzo\Expression\Registries`
-
-#### `SelectorPluginRegistry` class
-- `public function all(): array`
-- `public function get(ExpressionType $type): ?SelectorPluginInterface`
-- `public function has(ExpressionType $type): bool`
-- `public function register(ExpressionType|SelectorPluginInterface $typeOrPlugin, ?SelectorPluginInterface $plugin = null, int $priority = 0, ): void`
-- `public function supportedVersions(ExpressionType $type): array`
-- `public static function create(): self`
-- `public static function reset(): void`
-
 ### `Alama\Arazzo\Expression\Xpath`
 
 #### `XpathEvaluator` interface
@@ -473,14 +468,14 @@ this file on a commit is a public API change — review it deliberately.
 
 #### `CriterionEvaluatorRegistry` class
 - `public function all(): array`
-- `public function register(CriterionEvaluatorPluginInterface $plugin, ?int $priority = null): void`
+- `public function register(CriterionEvaluatorPluginInterface $plugin): void`
 - `public function resolve(CriterionType|SuccessCriterion $criterion): ?CriterionEvaluatorPluginInterface`
 - `public static function create(?ExpressionEngineInterface $expression = null): self`
 - `public static function reset(): void`
 
 #### `ExpressionEvaluatorRegistry` class
 - `public function all(): array`
-- `public function register(ExpressionEvaluatorPluginInterface $plugin, ?int $priority = null): void`
+- `public function register(ExpressionEvaluatorPluginInterface $plugin): void`
 - `public function resolve(Expression $expression): ?ExpressionEvaluatorPluginInterface`
 - `public static function create(?ExpressionEngineInterface $expression = null): self`
 - `public static function reset(): void`
@@ -521,7 +516,7 @@ this file on a commit is a public API change — review it deliberately.
 
 #### `SourceNormalizerRegistry` class
 - `public function get(SourceType $type): ?SourceNormalizerInterface`
-- `public function register(SourceNormalizerInterface $normalizer, ?int $priority = null): void`
+- `public function register(SourceNormalizerInterface $normalizer): void`
 - `public static function create(): self`
 - `public static function reset(): void`
 
@@ -594,7 +589,7 @@ this file on a commit is a public API change — review it deliberately.
 - `public function all(): array`
 - `public function get(string $code): ?ValidationRuleInterface`
 - `public function has(string $code): bool`
-- `public function register(ValidationRuleInterface $rule, ?int $priority = null): void`
+- `public function register(ValidationRuleInterface $rule, ?ValidationPhase $phase = null): void`
 - `public static function create(): self`
 - `public static function reset(): void`
 

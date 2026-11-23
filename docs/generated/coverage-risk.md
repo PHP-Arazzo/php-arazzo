@@ -23,7 +23,7 @@ quadrantChart
     cli/Console: [1, 0.75]
     cli/Generator: [1, 1]
     cli/Renderer: [0.5, 1]
-    contracts/Attributes: [0.05, 1]
+    contracts/Attributes: [0.1, 1]
     contracts/Data: [0.167, 1]
     contracts/Dependency: [0.333, 1]
     contracts/Discovery: [0, 1]
@@ -32,9 +32,9 @@ quadrantChart
     contracts/Spec: [0.02, 1]
     contracts/State: [0.063, 1]
     contracts/Support: [0, 1]
-    contracts/Validation: [0.182, 1]
+    contracts/Validation: [0.154, 1]
     document/Parser: [0.333, 1]
-    document/Registries: [0.75, 1]
+    document/Registries: [0.8, 1]
     document/Validator: [0.889, 1]
     engine/Data: [0.75, 1]
     engine/Enum: [0, 1]
@@ -92,18 +92,18 @@ quadrantChart
 | `cli/Console` | 1.00 | 9 | 12 | 75% |
 | `cli/Generator` | 1.00 | 2 | 2 | 100% |
 | `cli/Renderer` | 0.50 | 7 | 1 | 100% |
-| `contracts/Attributes` | 0.05 | 8 | 6 | 100% |
+| `contracts/Attributes` | 0.10 | 8 | 6 | 100% |
 | `contracts/Data` | 0.17 | 5 | 2 | 100% |
 | `contracts/Dependency` | 0.33 | 6 | 3 | 100% |
-| `contracts/Discovery` | 0.00 | 3 | 1 | 100% |
+| `contracts/Discovery` | 0.00 | 3 | 3 | 100% |
 | `contracts/Exceptions` | 0.00 | 5 | 1 | 100% |
 | `contracts/Interfaces` | 0.11 | 49 | 21 | 100% |
-| `contracts/Spec` | 0.02 | 287 | 51 | 100% |
+| `contracts/Spec` | 0.02 | 288 | 52 | 100% |
 | `contracts/State` | 0.06 | 83 | 3 | 100% |
 | `contracts/Support` | 0.00 | 11 | 5 | 100% |
-| `contracts/Validation` | 0.18 | 89 | 8 | 100% |
+| `contracts/Validation` | 0.15 | 91 | 9 | 100% |
 | `document/Parser` | 0.33 | 60 | 24 | 100% |
-| `document/Registries` | 0.75 | 3 | 1 | 100% |
+| `document/Registries` | 0.80 | 3 | 1 | 100% |
 | `document/Validator` | 0.89 | 70 | 56 | 100% |
 | `engine/Data` | 0.75 | 2 | 2 | 100% |
 | `engine/Enum` | 0.00 | 1 | 1 | 100% |

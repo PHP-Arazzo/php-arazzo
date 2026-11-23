@@ -151,7 +151,7 @@ Grouped cross-package uses of concrete internals (AST nodes, evaluators, resolve
 | `runner` | `ReusableParameterResolver` | `engine` | 1 | `SubWorkflowStepExecutor` |
 | `runner` | `StepParameterMerger` | `engine` | 2 | `StepExecutionWorker` |
 | `runner` | `ValidationResult` | `contracts` | 3 | `PreflightFailureException` |
-| `sources` | `AsSourceNormalizer` | `contracts` | 3 | `OpenApiSourceNormalizer` |
+| `sources` | `AsSourceNormalizer` | `contracts` | 2 | `OpenApiSourceNormalizer` |
 | `sources` | `DecodePolicy` | `document` | 1 | `DefaultSourceResolver` |
 | `sources` | `Decoders` | `document` | 1 | `DefaultSourceResolver` |
 | `sources` | `KnownOperations` | `contracts` | 2 | `Sources` |

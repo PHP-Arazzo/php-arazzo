@@ -7,6 +7,7 @@ namespace Alama\Arazzo\Evaluation\Registries;
 use Alama\Arazzo\Contracts\Attributes\AsExpressionPlugin;
 use Alama\Arazzo\Contracts\Discovery\PluginDiscovery;
 use Alama\Arazzo\Contracts\Interfaces\ExpressionEvaluatorPluginInterface;
+use Alama\Arazzo\Contracts\Spec\Enum\ExpressionType;
 use Alama\Arazzo\Contracts\Spec\Expression;
 use Alama\Arazzo\Expression\Interfaces\ExpressionEngineInterface;
 use InvalidArgumentException;
@@ -15,15 +16,16 @@ use ReflectionClass;
 /**
  * Registry for expression evaluator plugins.
  *
- * Plugins are stored with an integer priority (higher = earlier). Auto-discovers
- * `#[AsExpressionPlugin]` classes declared in installed packages' `composer.json`
- * `extra.arazzo.plugins`.
+ * Keyed by {@see ExpressionType} (via `#[AsExpressionPlugin]`) or plugin name;
+ * last-registered wins when overriding a type. Auto-discovers
+ * `#[AsExpressionPlugin]` classes declared in installed packages'
+ * `composer.json` `extra.arazzo.plugins` directories.
  */
 final class ExpressionEvaluatorRegistry
 {
     private static ?self $instance = null;
 
-    /** @var array<string, array{plugin: ExpressionEvaluatorPluginInterface, priority: int}> */
+    /** @var array<string, ExpressionEvaluatorPluginInterface> */
     private array $plugins = [];
 
     private function __construct(ExpressionEngineInterface $expression)
@@ -52,31 +54,19 @@ final class ExpressionEvaluatorRegistry
         self::$instance = null;
     }
 
-    public function register(ExpressionEvaluatorPluginInterface $plugin, ?int $priority = null): void
+    public function register(ExpressionEvaluatorPluginInterface $plugin): void
     {
-        if ($priority === null) {
-            $ref = new ReflectionClass($plugin);
-            $attrs = $ref->getAttributes(AsExpressionPlugin::class);
-            if (!empty($attrs)) {
-                /** @var AsExpressionPlugin $attr */
-                $attr = $attrs[0]->newInstance();
-                $priority = $attr->priority;
-            }
-        }
-
-        $priority ??= $plugin->priority();
-
-        $this->plugins[$plugin->name()] = [
-            'plugin' => $plugin,
-            'priority' => $priority,
-        ];
+        $key = self::resolveKey($plugin);
+        // Move to end so last-registered wins on resolution.
+        unset($this->plugins[$key]);
+        $this->plugins[$key] = $plugin;
     }
 
     public function resolve(Expression $expression): ?ExpressionEvaluatorPluginInterface
     {
-        foreach ($this->ordered() as $entry) {
-            if ($entry['plugin']->supports($expression)) {
-                return $entry['plugin'];
+        foreach (array_reverse($this->plugins) as $plugin) {
+            if ($plugin->supports($expression)) {
+                return $plugin;
             }
         }
 
@@ -86,23 +76,19 @@ final class ExpressionEvaluatorRegistry
     /** @return list<ExpressionEvaluatorPluginInterface> */
     public function all(): array
     {
-        return array_map(
-            static fn (array $entry): ExpressionEvaluatorPluginInterface => $entry['plugin'],
-            $this->ordered(),
-        );
+        return array_values(array_reverse($this->plugins));
     }
 
-    /**
-     * @return list<array{plugin: ExpressionEvaluatorPluginInterface, priority: int}>
-     */
-    private function ordered(): array
+    private static function resolveKey(ExpressionEvaluatorPluginInterface $plugin): string
     {
-        $entries = array_values($this->plugins);
-        usort(
-            $entries,
-            static fn (array $a, array $b): int => $b['priority'] <=> $a['priority'],
-        );
+        $attrs = (new ReflectionClass($plugin))->getAttributes(AsExpressionPlugin::class);
+        if ($attrs !== []) {
+            /** @var AsExpressionPlugin $attr */
+            $attr = $attrs[0]->newInstance();
 
-        return $entries;
+            return 'type:'.$attr->type->value;
+        }
+
+        return 'name:'.$plugin->name();
     }
 }

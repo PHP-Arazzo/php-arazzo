@@ -4,10 +4,12 @@
 Turn the Phase 1–2 PHP 8 plugin attributes (`#[AsSelectorPlugin]`, `#[AsSourceNormalizer]`, `#[AsOperationExecutor]`, `#[AsCriterionPlugin]`, `#[AsExpressionPlugin]`, and new `#[AsValidationRule]`) into true zero-scan auto-discovery via `composer.json` `extra.arazzo.plugins`, retire the pre-attribute `Protocol*Registrar` classes, and fully decouple `php-arazzo/arazzo-document` from `php-arazzo/arazzo-expression`.
 
 ## Implemented Changes
-1. **`Alama\Arazzo\Contracts\Discovery\PluginDiscovery` & `#[AsValidationRule]`**:
-   - Reads `extra.arazzo.plugins` from all installed Composer packages via `Composer\InstalledVersions` + root `composer.json` (memoized, with `overrideClasses()` / `reset()` for tests).
+1. **`Alama\Arazzo\Contracts\Discovery\PluginDiscovery` & Enum-Typed Attributes (Zero Numeric Priorities)**:
+   - Reads directory paths (e.g., `["src/Validator"]`, `["src/Plugins"]`) from `extra.arazzo.plugins` across all installed Composer packages via `Composer\InstalledVersions` + root `composer.json` (memoized, with `overrideClasses()` / `reset()` for tests).
    - `classesWith(string $attributeClass)` serves both stateless registries and DI-bound framework bridges (`#[AsOperationExecutor]`).
    - `instantiate(string $attributeClass, array $services = [])` instantiates via zero-arg `static create()` or type-matched service/default constructor injection, throwing loudly on unsatisfied required parameters.
+   - All 6 attributes use typed Enums (`ExpressionType`, `SourceType`, `CriterionType`, `ValidationPhase`, `OperationProtocol`) with last-registered-wins override semantics — no numeric priorities.
+   - `SelectorPluginRegistry` is `@internal` to `packages/expression` (blocked from external package imports via `ArchTest`).
 2. **All 5 Stateless Registries Auto-Discover**:
    - `SelectorPluginRegistry`, `SourceNormalizerRegistry`, `ValidationRuleRegistry`, `ExpressionEvaluatorRegistry`, and `CriterionEvaluatorRegistry` all auto-discover plugins from `extra.arazzo.plugins` inside `create()`.
    - Deleted obsolete `@internal` `ProtocolHttpRegistrar`, `SoapRegistrar`, `RpcRegistrar`, `ProtocolHttpRegistrarTest`, and removed `ProtocolHttpRegistrar` from PHPStan/PHPMD baselines.

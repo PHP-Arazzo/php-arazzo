@@ -77,9 +77,9 @@
     "extra": {
         "arazzo": {
             "plugins": [
-                "Alama\\Arazzo\\Protocol\\Soap\\Execution\\SoapOperationExecutor",
-                "Alama\\Arazzo\\Protocol\\Soap\\Normalizer\\WsdlSourceNormalizer",
-                "Alama\\Arazzo\\Protocol\\Soap\\Validation\\WsdlStepRule"
+                "src/Normalizer",
+                "src/Validation",
+                "src/Execution"
             ]
         }
     }

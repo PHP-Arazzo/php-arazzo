@@ -22,17 +22,22 @@ arch('expression facade seams are entry-point only')
     ->not->toUse('Alama\Arazzo\Sources\Document')
     ->not->toUse('Alama\Arazzo\Runner\RunnerFacade');
 
-arch('ExpressionDependencyProvider stays inside packages/expression')
+arch('ExpressionDependencyProvider and internal SelectorPluginRegistry stay inside packages/expression')
     ->expect('Alama\Arazzo\Document')
     ->not->toUse('Alama\Arazzo\Expression\ExpressionDependencyProvider')
+    ->not->toUse('Alama\Arazzo\Expression\Registries\SelectorPluginRegistry')
     ->and('Alama\Arazzo\Evaluation')
     ->not->toUse('Alama\Arazzo\Expression\ExpressionDependencyProvider')
+    ->not->toUse('Alama\Arazzo\Expression\Registries\SelectorPluginRegistry')
     ->and('Alama\Arazzo\Runner')
     ->not->toUse('Alama\Arazzo\Expression\ExpressionDependencyProvider')
+    ->not->toUse('Alama\Arazzo\Expression\Registries\SelectorPluginRegistry')
     ->and('Alama\Arazzo\Sources')
     ->not->toUse('Alama\Arazzo\Expression\ExpressionDependencyProvider')
+    ->not->toUse('Alama\Arazzo\Expression\Registries\SelectorPluginRegistry')
     ->and('Alama\Arazzo\Cli')
-    ->not->toUse('Alama\Arazzo\Expression\ExpressionDependencyProvider');
+    ->not->toUse('Alama\Arazzo\Expression\ExpressionDependencyProvider')
+    ->not->toUse('Alama\Arazzo\Expression\Registries\SelectorPluginRegistry');
 
 arch('expression public API contracts')
     ->expect('Alama\Arazzo\Expression\ExpressionEngine')

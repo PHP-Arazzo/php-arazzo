@@ -43,23 +43,8 @@
     "extra": {
         "arazzo": {
             "plugins": [
-                "Alama\\Arazzo\\Expression\\Plugins\\JsonPathSelectorPlugin",
-                "Alama\\Arazzo\\Expression\\Plugins\\JsonPointerSelectorPlugin",
-                "Alama\\Arazzo\\Expression\\Plugins\\XpathSelectorPlugin",
-                "Alama\\Arazzo\\Expression\\Validation\\Rules\\ActionOutputTargetExclusivityRule",
-                "Alama\\Arazzo\\Expression\\Validation\\Rules\\ExpressionContextMisuseRule",
-                "Alama\\Arazzo\\Expression\\Validation\\Rules\\ExpressionJsonPointerSyntaxRule",
-                "Alama\\Arazzo\\Expression\\Validation\\Rules\\ExpressionSyntaxRule",
-                "Alama\\Arazzo\\Expression\\Validation\\Rules\\ExpressionUnresolvedComponentRefRule",
-                "Alama\\Arazzo\\Expression\\Validation\\Rules\\ExpressionUnresolvedInputRefRule",
-                "Alama\\Arazzo\\Expression\\Validation\\Rules\\ExpressionUnresolvedSourceRefRule",
-                "Alama\\Arazzo\\Expression\\Validation\\Rules\\ExpressionUnresolvedStepRefRule",
-                "Alama\\Arazzo\\Expression\\Validation\\Rules\\ExpressionUnresolvedWorkflowRefRule",
-                "Alama\\Arazzo\\Expression\\Validation\\Rules\\JsonPathCriterionConditionRule",
-                "Alama\\Arazzo\\Expression\\Validation\\Rules\\MessageRefRequiresReceiveRule",
-                "Alama\\Arazzo\\Expression\\Validation\\Rules\\SelectorTypeSupportedRule",
-                "Alama\\Arazzo\\Expression\\Validation\\Rules\\StepOperationPathSyntaxRule",
-                "Alama\\Arazzo\\Expression\\Validation\\Rules\\SuccessCriteriaVersionSupportedRule"
+                "src/Plugins",
+                "src/Validation"
             ]
         }
     }

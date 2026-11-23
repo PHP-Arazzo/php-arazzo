@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Sources;
 
-use Alama\Arazzo\Contracts\Attributes\AsSourceNormalizer;
 use Alama\Arazzo\Contracts\Data\KnownOperations;
 use Alama\Arazzo\Contracts\Data\ResolvedOperationCollection;
 use Alama\Arazzo\Contracts\Interfaces\SourceFetcherInterface;
@@ -21,7 +20,6 @@ use Alama\Arazzo\Sources\Resolver\Fetchers\HttpFetcher;
 use GuzzleHttp\Psr7\HttpFactory;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
-use ReflectionClass;
 use Throwable;
 
 final readonly class Sources implements SourcesInterface
@@ -114,6 +112,7 @@ final readonly class Sources implements SourcesInterface
     public function withNormalizer(SourceNormalizerInterface $normalizer): static
     {
         $normalizers = $this->normalizers;
+        unset($normalizers[$normalizer->name()]);
         $normalizers[$normalizer->name()] = $normalizer;
 
         return new self($this->resolver, $normalizers, $this->documents);
@@ -133,33 +132,12 @@ final readonly class Sources implements SourcesInterface
 
     private function findNormalizer(SourceType $type): ?SourceNormalizerInterface
     {
-        if ($this->normalizers !== []) {
-            $ordered = array_values($this->normalizers);
-            usort(
-                $ordered,
-                static fn (SourceNormalizerInterface $a, SourceNormalizerInterface $b): int => self::priorityOf($b) <=> self::priorityOf($a),
-            );
-
-            foreach ($ordered as $normalizer) {
-                if ($normalizer->supports($type)) {
-                    return $normalizer;
-                }
+        foreach (array_reverse($this->normalizers) as $normalizer) {
+            if ($normalizer->supports($type)) {
+                return $normalizer;
             }
         }
 
         return SourceNormalizerRegistry::create()->get($type);
-    }
-
-    private static function priorityOf(SourceNormalizerInterface $normalizer): int
-    {
-        $attrs = (new ReflectionClass($normalizer))->getAttributes(AsSourceNormalizer::class);
-        if ($attrs !== []) {
-            /** @var AsSourceNormalizer $attr */
-            $attr = $attrs[0]->newInstance();
-
-            return $attr->priority;
-        }
-
-        return $normalizer->priority();
     }
 }

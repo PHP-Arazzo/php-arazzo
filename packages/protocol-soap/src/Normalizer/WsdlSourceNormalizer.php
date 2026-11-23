@@ -27,7 +27,7 @@ use InvalidArgumentException;
  *
  * @internal stays out of the advertised contract; not part of the public API surface
  */
-#[AsSourceNormalizer(SourceType::Wsdl, priority: 0)]
+#[AsSourceNormalizer(SourceType::Wsdl)]
 final class WsdlSourceNormalizer implements SourceNormalizerInterface
 {
     private const WSDL_NS = 'http://schemas.xmlsoap.org/wsdl/';

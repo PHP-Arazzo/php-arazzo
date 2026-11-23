@@ -78,8 +78,7 @@
     "extra": {
         "arazzo": {
             "plugins": [
-                "Alama\\Arazzo\\Protocol\\Http\\Protocol\\AsyncApiStepExecutor",
-                "Alama\\Arazzo\\Protocol\\Http\\Protocol\\HttpStepExecutor"
+                "src/Protocol"
             ]
         }
     }
