@@ -8,8 +8,7 @@ use Alama\Arazzo\Contracts\Spec\Expression;
 use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Contracts\Validation\ErrorCollector;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
-use Alama\Arazzo\Expression\ExpressionEngine;
-use Alama\Arazzo\Expression\Validation\Rules\ExpressionUnresolvedWorkflowRefRule;
+use Alama\Arazzo\Expression\Plugins\ValidationRule\ExpressionUnresolvedWorkflowRefRule;
 use Alama\Arazzo\Tests\Support\Fx;
 
 it('flags unknown workflow, not-in-dependsOn, missing inputs/outputs; accepts declared inputs/outputs', function (): void {
@@ -24,7 +23,7 @@ it('flags unknown workflow, not-in-dependsOn, missing inputs/outputs; accepts de
     ], []);
     $doc = Fx::doc(workflows: [$other, $main]);
     $ec = new ErrorCollector();
-    (new ExpressionUnresolvedWorkflowRefRule(new ExpressionEngine()))->check($doc, SymbolTable::build($doc), $ec);
+    (new ExpressionUnresolvedWorkflowRefRule())->check($doc, SymbolTable::build($doc), $ec);
     expect($ec->errors())->toHaveCount(1);
 });
 
@@ -35,6 +34,6 @@ it('flags reference to workflow not in dependsOn', function (): void {
     ], []);
     $doc = Fx::doc(workflows: [$other, $main]);
     $ec = new ErrorCollector();
-    (new ExpressionUnresolvedWorkflowRefRule(new ExpressionEngine()))->check($doc, SymbolTable::build($doc), $ec);
+    (new ExpressionUnresolvedWorkflowRefRule())->check($doc, SymbolTable::build($doc), $ec);
     expect($ec->errors())->toHaveCount(1);
 });

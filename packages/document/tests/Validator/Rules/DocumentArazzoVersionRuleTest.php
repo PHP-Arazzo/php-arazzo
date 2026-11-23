@@ -8,7 +8,7 @@ use Alama\Arazzo\Contracts\Spec\Enum\SpecVersion;
 use Alama\Arazzo\Contracts\Spec\Info;
 use Alama\Arazzo\Contracts\Validation\ErrorCollector;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
-use Alama\Arazzo\Document\Validator\Rules\DocumentArazzoVersionRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\DocumentArazzoVersionRule;
 
 function docV(string $arazzo, SpecVersion $sv): ArazzoDocument
 {

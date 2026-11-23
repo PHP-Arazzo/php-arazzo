@@ -1,0 +1,132 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Alama\Arazzo\Expression\Support;
+
+use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
+use Alama\Arazzo\Contracts\Spec\Expression;
+use Alama\Arazzo\Contracts\Spec\Reusable;
+use Alama\Arazzo\Contracts\Spec\Selector;
+use Alama\Arazzo\Contracts\Spec\Step;
+use Alama\Arazzo\Contracts\Spec\Workflow;
+use Alama\Arazzo\Contracts\Validation\SymbolTable;
+use Alama\Arazzo\Contracts\Validation\WorkflowSymbols;
+use Alama\Arazzo\Expression\Data\ExpressionSite;
+
+/**
+ * @internal stays out of the advertised contract; not part of the public API surface
+ */
+final class ExpressionWalker
+{
+    /**
+     * @return iterable<ExpressionSite>
+     */
+    public function walk(ArazzoDocument $doc, SymbolTable $symbols): iterable
+    {
+        foreach ($doc->workflows as $wi => $wf) {
+            $syms = $symbols->workflows[$wf->workflowId] ?? null;
+
+            yield from $this->walkWorkflowParameters($wf, $wi, $syms);
+            yield from $this->walkWorkflowOutputs($wf, $wi, $syms);
+
+            foreach ($wf->steps as $si => $s) {
+                yield from $this->walkStep($s, $wi, $si, $syms);
+            }
+        }
+    }
+
+    /** @return iterable<ExpressionSite> */
+    private function walkWorkflowParameters(Workflow $wf, int $wi, ?WorkflowSymbols $syms): iterable
+    {
+        foreach ($wf->parameters as $pi => $p) {
+            if ($p instanceof Reusable) {
+                continue;
+            }
+
+            yield from $this->extract($p->value, "/workflows/{$wi}/parameters/{$pi}/value", $syms, null, 'wf.parameters');
+        }
+    }
+
+    /** @return iterable<ExpressionSite> */
+    private function walkWorkflowOutputs(Workflow $wf, int $wi, ?WorkflowSymbols $syms): iterable
+    {
+        foreach ($wf->outputs as $name => $expr) {
+            yield from $this->extract($expr, "/workflows/{$wi}/outputs/{$name}", $syms, null, 'wf.outputs');
+        }
+    }
+
+    /** @return iterable<ExpressionSite> */
+    private function walkStep(Step $s, int $wi, int $si, ?WorkflowSymbols $syms): iterable
+    {
+        yield from $this->walkStepParameters($s, $wi, $si, $syms);
+        yield from $this->walkRequestBody($s, $wi, $si, $syms);
+        yield from $this->walkSuccessCriteria($s, $wi, $si, $syms);
+        yield from $this->walkStepOutputs($s, $wi, $si, $syms);
+    }
+
+    /** @return iterable<ExpressionSite> */
+    private function walkStepParameters(Step $s, int $wi, int $si, ?WorkflowSymbols $syms): iterable
+    {
+        foreach ($s->io->parameters as $pi => $p) {
+            if ($p instanceof Reusable) {
+                continue;
+            }
+
+            yield from $this->extract($p->value, "/workflows/{$wi}/steps/{$si}/parameters/{$pi}/value", $syms, $s->stepId, 'parameters');
+        }
+    }
+
+    /** @return iterable<ExpressionSite> */
+    private function walkRequestBody(Step $s, int $wi, int $si, ?WorkflowSymbols $syms): iterable
+    {
+        if ($s->io->requestBody === null) {
+            return;
+        }
+
+        yield from $this->extract($s->io->requestBody->payload, "/workflows/{$wi}/steps/{$si}/requestBody/payload", $syms, $s->stepId, 'requestBody');
+        foreach ($s->io->requestBody->replacements as $ri => $r) {
+            yield from $this->extract($r->value, "/workflows/{$wi}/steps/{$si}/requestBody/replacements/{$ri}/value", $syms, $s->stepId, 'requestBody');
+        }
+    }
+
+    /** @return iterable<ExpressionSite> */
+    private function walkSuccessCriteria(Step $s, int $wi, int $si, ?WorkflowSymbols $syms): iterable
+    {
+        foreach ($s->io->successCriteria as $ci => $c) {
+            if ($c->context !== null && str_starts_with($c->context, '{$')) {
+                yield new ExpressionSite(
+                    "/workflows/{$wi}/steps/{$si}/successCriteria/{$ci}/context", new Expression($c->context), $syms, $s->stepId, 'criteria',
+                );
+            }
+            if (str_starts_with($c->condition, '{$')) {
+                yield new ExpressionSite(
+                    "/workflows/{$wi}/steps/{$si}/successCriteria/{$ci}/condition", new Expression($c->condition), $syms, $s->stepId, 'criteria',
+                );
+            }
+        }
+    }
+
+    /** @return iterable<ExpressionSite> */
+    private function walkStepOutputs(Step $s, int $wi, int $si, ?WorkflowSymbols $syms): iterable
+    {
+        foreach ($s->io->outputs as $name => $expr) {
+            yield from $this->extract($expr, "/workflows/{$wi}/steps/{$si}/outputs/{$name}", $syms, $s->stepId, 'outputs');
+        }
+    }
+
+    /**
+     * @param  'components'|'criteria'|'onFailure'|'onSuccess'|'outputs'|'parameters'|'requestBody'|'wf.outputs'|'wf.parameters'  $context
+     * @return iterable<ExpressionSite>
+     */
+    private function extract(mixed $value, string $pointer, ?WorkflowSymbols $syms, ?string $stepId, string $context): iterable
+    {
+        if ($value instanceof Expression) {
+            yield new ExpressionSite($pointer, $value, $syms, $stepId, $context);
+        } elseif ($value instanceof Selector) {
+            if ($value->context !== null && str_starts_with($value->context, '$')) {
+                yield new ExpressionSite("{$pointer}/context", new Expression('{'.$value->context.'}'), $syms, $stepId, $context);
+            }
+        }
+    }
+}

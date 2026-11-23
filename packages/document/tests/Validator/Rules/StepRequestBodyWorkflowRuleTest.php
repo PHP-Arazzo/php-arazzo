@@ -16,7 +16,7 @@ use Alama\Arazzo\Contracts\Spec\StepTarget;
 use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Contracts\Validation\ErrorCollector;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
-use Alama\Arazzo\Document\Validator\Rules\StepRequestBodyWorkflowRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\StepRequestBodyWorkflowRule;
 
 it('rejects workflow step with requestBody', function (): void {
     $errors = new ErrorCollector();

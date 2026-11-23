@@ -18,7 +18,7 @@ use Alama\Arazzo\Contracts\Spec\StepTarget;
 use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Contracts\Validation\ErrorCollector;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
-use Alama\Arazzo\Document\Validator\Rules\ActionDuplicateRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\ActionDuplicateRule;
 
 function duplicateStep(string $stepId, array $onSuccess = [], array $onFailure = []): Step
 {

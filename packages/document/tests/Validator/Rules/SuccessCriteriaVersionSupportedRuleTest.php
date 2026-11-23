@@ -15,7 +15,7 @@ use Alama\Arazzo\Contracts\Spec\SuccessCriterion;
 use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Contracts\Validation\ErrorCollector;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
-use Alama\Arazzo\Expression\Validation\Rules\SuccessCriteriaVersionSupportedRule;
+use Alama\Arazzo\Expression\Plugins\ValidationRule\SuccessCriteriaVersionSupportedRule;
 
 function versionRuleDoc(SuccessCriterion $c): ArazzoDocument
 {

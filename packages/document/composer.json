@@ -42,7 +42,7 @@
     "extra": {
         "arazzo": {
             "plugins": [
-                "src/Validator"
+                "src/Plugins/ValidationRule"
             ]
         }
     }

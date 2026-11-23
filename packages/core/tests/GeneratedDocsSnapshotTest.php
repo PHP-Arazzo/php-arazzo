@@ -215,4 +215,10 @@ it('pins the fixed-doc contracts', function (): void {
     expect($get('expression-ast.md'))->toContain('StepRef');
     // Task 9: hard seam rule clean
     expect($get('boundaries-audit.md'))->toContain('no library package references another');
+    // Multi-package validator rule discovery via #[AsValidationRulePlugin]
+    expect($get('validator-rules.md'))
+        ->toContain('OfficialSchemaRule')
+        ->toContain('ExpressionUnresolvedSourceRefRule')
+        ->toContain('WsdlStepRule')
+        ->toContain('RpcStepRule');
 });

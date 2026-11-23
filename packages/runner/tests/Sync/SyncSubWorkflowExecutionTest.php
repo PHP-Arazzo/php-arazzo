@@ -24,8 +24,8 @@ use Alama\Arazzo\Protocol\Http\Resolver\OpenApiOperationHandle;
 use Alama\Arazzo\Protocol\Http\Resolver\OpenApiOperationResolver;
 use Alama\Arazzo\Runner\Execution\OperationRuntime;
 use Alama\Arazzo\Runner\OperationExecutorRegistry;
+use Alama\Arazzo\Runner\Plugins\OperationExecutor\SubWorkflowStepExecutor;
 use Alama\Arazzo\Runner\Sync\ExecutionGraphFactory;
-use Alama\Arazzo\Runner\Sync\SubWorkflowStepExecutor;
 use Alama\Arazzo\Runner\Sync\WorkflowExecutor;
 use Alama\Arazzo\Tests\Support\FakeOpenApiExecutor;
 use Alama\Arazzo\Tests\Support\FakeResponseValidator;
@@ -126,6 +126,10 @@ function subWorkflowGraph(OperationExecutorRegistry $registry): WorkflowExecutor
         new FakeResponseValidator(),
     ))->createWorkflowExecutor($registry);
 }
+
+afterEach(function (): void {
+    OperationExecutorRegistry::reset();
+});
 
 it('registers the sub-workflow executor on the synchronous graph, like the async assembler', function () {
     OperationExecutorRegistry::reset();

@@ -12,9 +12,9 @@ const BANNER = <<<'MD'
 
 # Generated: Validator Rules Taxonomy
 
-Every conformance rule in `packages/core/src/Validator/Rules`, grouped by the
-document area it governs (derived from rule-name prefixes). Regenerated before
-every commit.
+Every conformance rule registered via `#[AsValidationRulePlugin]` across all
+packages, grouped by the document area it governs (derived from rule-name
+prefixes). Regenerated before every commit.
 
 MD;
 
@@ -23,32 +23,41 @@ MD;
  */
 function render(array $scans): string
 {
+    /** @var list<array{class: string, package: string}> $rules */
     $rules = [];
-    foreach ($scans['document']['Validator'] ?? [] as $file) {
-        if ($file->relativeDir === 'Validator/Rules' && !$file->isInterface) {
-            $rules[] = $file->className;
+    foreach (\ArazzoDocs\flattenScans($scans) as $file) {
+        if ($file->isInterface) {
+            continue;
         }
+        if (preg_match('/^#\[AsValidationRulePlugin\b/m', $file->content) !== 1) {
+            continue;
+        }
+        $rules[] = ['class' => $file->className, 'package' => $file->package];
     }
-    sort($rules);
+    usort($rules, static fn (array $a, array $b): int => $a['class'] <=> $b['class']);
 
+    /** @var array<string, list<array{class: string, package: string}>> $groups */
     $groups = [];
-    foreach ($rules as $rule) {
-        preg_match('/^(Document|Workflow|Step|Expression|Action|Source|Self|Selector|Parameter|Components|AsyncApi|Doc|Extensions)/', $rule, $m);
+    foreach ($rules as $entry) {
+        $rule = $entry['class'];
+        preg_match('/^(Document|Workflow|Step|Expression|JsonPath|Message|Action|Source|Self|Selector|Parameter|Components|AsyncApi|Wsdl|Rpc|Doc|Extensions|OfficialSchema|SuccessCriteria|Interaction)/', $rule, $m);
         $group = match ($m[1] ?? '') {
-            'Document', 'Doc' => 'Document-level',
+            'Document', 'Doc', 'OfficialSchema' => 'Document-level',
             'Workflow' => 'Workflow-level',
-            'Step' => 'Step-level',
-            'Expression' => 'Expressions',
+            'Step', 'SuccessCriteria', 'Interaction' => 'Step-level',
+            'Expression', 'JsonPath', 'Message' => 'Expressions',
             'Action' => 'Actions',
             'Source', 'Self' => 'Sources',
             'Selector' => 'Selectors',
             'Parameter' => 'Parameters',
             'Components' => 'Components',
             'AsyncApi' => 'AsyncAPI',
+            'Wsdl' => 'SOAP / WSDL',
+            'Rpc' => 'RPC',
             'Extensions' => 'Specification extensions',
             default => 'General',
         };
-        $groups[$group][] = $rule;
+        $groups[$group][] = $entry;
     }
     ksort($groups);
 
@@ -59,7 +68,8 @@ function render(array $scans): string
         $gid = 'G_'.preg_replace('/[^A-Za-z0-9_]/', '_', $group);
         $lines[] = sprintf('    %s["%s"]', $gid, $group.' — '.count($groupRules));
         $lines[] = sprintf('    ROOT --> %s', $gid);
-        foreach ($groupRules as $rule) {
+        foreach ($groupRules as $entry) {
+            $rule = $entry['class'];
             $rid = 'R_'.preg_replace('/[^A-Za-z0-9_]/', '_', $rule);
             $label = preg_replace('/Rule$/', '', $rule);
             $lines[] = sprintf('    %s["%s"]', $rid, $label);
@@ -72,7 +82,10 @@ function render(array $scans): string
     $lines[] = '| Group | Rules |';
     $lines[] = '|---|---|';
     foreach ($groups as $group => $groupRules) {
-        $cells = implode(', ', array_map(static fn (string $r): string => '`'.$r.'`', $groupRules));
+        $cells = implode(', ', array_map(
+            static fn (array $e): string => '`'.$e['class'].'` <small>'.$e['package'].'</small>',
+            $groupRules,
+        ));
         $lines[] = "| **{$group}** | {$cells} |";
     }
 

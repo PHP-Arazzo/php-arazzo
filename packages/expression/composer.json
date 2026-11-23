@@ -43,8 +43,8 @@
     "extra": {
         "arazzo": {
             "plugins": [
-                "src/Plugins",
-                "src/Validation"
+                "src/Plugins/Selector",
+                "src/Plugins/ValidationRule"
             ]
         }
     }

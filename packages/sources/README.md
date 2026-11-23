@@ -104,7 +104,7 @@ $sources = Sources::create()
 ```
 
 ### 4. Registering Custom Normalizers
-Need to normalize non-standard formats into Arazzo? Register a normalizer implementing `SourceNormalizerInterface` either per-instance via `withNormalizer()` or globally via `SourceNormalizerRegistry::create()` (with optional `#[AsSourceNormalizer]` metadata):
+Need to normalize non-standard formats into Arazzo? Register a normalizer implementing `SourceNormalizerInterface` either per-instance via `withNormalizer()` or globally via `SourceNormalizerRegistry::create()` (with optional `#[AsSourceNormalizerPlugin]` metadata):
 
 ```php
 use Alama\Arazzo\Contracts\Interfaces\SourceNormalizerInterface;

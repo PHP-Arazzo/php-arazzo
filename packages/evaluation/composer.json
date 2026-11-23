@@ -43,7 +43,8 @@
     "extra": {
         "arazzo": {
             "plugins": [
-                "src/Plugins"
+                "src/Plugins/Expression",
+                "src/Plugins/Criterion"
             ]
         }
     }

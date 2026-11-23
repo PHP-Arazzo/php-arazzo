@@ -6,7 +6,7 @@ namespace Alama\Arazzo\Tests\Validation\Rules;
 
 use Alama\Arazzo\Contracts\Validation\ErrorCollector;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
-use Alama\Arazzo\Document\Validator\Rules\DocUnknownFieldRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\DocUnknownFieldRule;
 use Alama\Arazzo\Tests\Support\Fx;
 
 it('skips when rawRoot is null', function (): void {

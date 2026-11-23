@@ -15,7 +15,7 @@ use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Contracts\Spec\StepFlow;
 use Alama\Arazzo\Contracts\Spec\StepIo;
 use Alama\Arazzo\Contracts\Spec\StepTarget;
-use Alama\Arazzo\Protocol\Rpc\Normalizer\ProtoSourceNormalizer;
+use Alama\Arazzo\Protocol\Rpc\Plugins\SourceNormalizer\ProtoSourceNormalizer;
 use Alama\Arazzo\Protocol\Rpc\Protocol\ProtobufOperationResolver;
 use Alama\Arazzo\Sources\Resolver\Fetchers\LocalFetcher;
 use RuntimeException;

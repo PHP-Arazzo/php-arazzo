@@ -10,7 +10,7 @@ use Alama\Arazzo\Contracts\Spec\Action\SuccessEndAction;
 use Alama\Arazzo\Contracts\Spec\Action\SuccessGotoAction;
 use Alama\Arazzo\Contracts\Validation\ErrorCollector;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
-use Alama\Arazzo\Document\Validator\Rules\ActionTargetExclusivityRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\ActionTargetExclusivityRule;
 use Alama\Arazzo\Tests\Support\Fx;
 
 it('accepts single-target goto actions', function (): void {

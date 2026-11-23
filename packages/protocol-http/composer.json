@@ -78,7 +78,7 @@
     "extra": {
         "arazzo": {
             "plugins": [
-                "src/Protocol"
+                "src/Plugins/OperationExecutor"
             ]
         }
     }

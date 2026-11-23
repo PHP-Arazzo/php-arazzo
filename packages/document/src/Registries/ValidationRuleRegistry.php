@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Document\Registries;
 
-use Alama\Arazzo\Contracts\Attributes\AsValidationRule;
+use Alama\Arazzo\Contracts\Attributes\AsValidationRulePlugin;
 use Alama\Arazzo\Contracts\Discovery\PluginDiscovery;
 use Alama\Arazzo\Contracts\Interfaces\ValidationRuleInterface;
 use Alama\Arazzo\Contracts\Validation\ValidationPhase;
@@ -13,7 +13,7 @@ use ReflectionClass;
 /**
  * Concrete singleton registry of Arazzo document validation rules.
  *
- * Auto-discovers all `#[AsValidationRule]` classes declared across installed
+ * Auto-discovers all `#[AsValidationRulePlugin]` classes declared across installed
  * packages' `composer.json` `extra.arazzo.plugins` directories.
  *
  * Rules are keyed by {@see ValidationRuleInterface::code()} (last-registered
@@ -28,7 +28,7 @@ final class ValidationRuleRegistry
 
     private function __construct()
     {
-        foreach (PluginDiscovery::instantiate(AsValidationRule::class) as $rule) {
+        foreach (PluginDiscovery::instantiate(AsValidationRulePlugin::class) as $rule) {
             if ($rule instanceof ValidationRuleInterface) {
                 $this->register($rule);
             }
@@ -48,9 +48,9 @@ final class ValidationRuleRegistry
     public function register(ValidationRuleInterface $rule, ?ValidationPhase $phase = null): void
     {
         if ($phase === null) {
-            $attrs = (new ReflectionClass($rule))->getAttributes(AsValidationRule::class);
+            $attrs = (new ReflectionClass($rule))->getAttributes(AsValidationRulePlugin::class);
             if ($attrs !== []) {
-                /** @var AsValidationRule $attr */
+                /** @var AsValidationRulePlugin $attr */
                 $attr = $attrs[0]->newInstance();
                 $phase = $attr->phase;
             }

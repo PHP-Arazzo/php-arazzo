@@ -14,7 +14,7 @@ use Alama\Arazzo\Contracts\Validation\SymbolTable;
  * Rules can live in `arazzo-document` (structural/semantic core rules),
  * `arazzo-expression` (runtime expression & selector rules), protocol packages
  * (WSDL/RPC/etc.), or user applications, and are auto-discovered via
- * `#[AsValidationRule]` + `composer.json` `extra.arazzo.plugins`.
+ * `#[AsValidationRulePlugin]` + `composer.json` `extra.arazzo.plugins`.
  */
 interface ValidationRuleInterface
 {

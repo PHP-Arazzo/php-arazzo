@@ -7,6 +7,7 @@ namespace Alama\Arazzo\Expression;
 use Alama\Arazzo\Expression\Interfaces\ExpressionEngineInterface;
 use Alama\Arazzo\Expression\Internal\EmbeddedExpressionSplitter;
 use Alama\Arazzo\Expression\Registries\SelectorPluginRegistry;
+use Alama\Arazzo\Expression\Support\ExpressionWalker;
 use Alama\Arazzo\Expression\Xpath\DomXpathEvaluator;
 use Alama\Arazzo\Expression\Xpath\XpathEvaluator;
 
@@ -76,5 +77,10 @@ final class ExpressionDependencyProvider
     public function getEmbeddedExpressionSplitter(): EmbeddedExpressionSplitter
     {
         return $this->embeddedExpressionSplitter ??= new EmbeddedExpressionSplitter($this->getParser());
+    }
+
+    public function getExpressionWalker(): ExpressionWalker
+    {
+        return new ExpressionWalker();
     }
 }

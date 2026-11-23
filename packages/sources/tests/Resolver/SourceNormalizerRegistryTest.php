@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Tests\Resolver;
 
-use Alama\Arazzo\Contracts\Attributes\AsSourceNormalizer;
+use Alama\Arazzo\Contracts\Attributes\AsSourceNormalizerPlugin;
 use Alama\Arazzo\Contracts\Interfaces\SourceNormalizerInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
-use Alama\Arazzo\Sources\Normalizer\OpenApiSourceNormalizer;
+use Alama\Arazzo\Sources\Plugins\SourceNormalizer\OpenApiSourceNormalizer;
 use Alama\Arazzo\Sources\Registries\SourceNormalizerRegistry;
 
 final class FakeNormalizer implements SourceNormalizerInterface
@@ -41,7 +41,7 @@ final class FakeNormalizer implements SourceNormalizerInterface
     }
 }
 
-#[AsSourceNormalizer(SourceType::Wsdl)]
+#[AsSourceNormalizerPlugin(SourceType::Wsdl)]
 final class AttributedFakeNormalizer implements SourceNormalizerInterface
 {
     public function name(): string
@@ -115,7 +115,7 @@ it('resolves last-registered normalizer first when multiple normalizers support 
     expect($registry->get(SourceType::Openapi))->toBe($second);
 });
 
-it('replaces existing normalizer for the SourceType declared via #[AsSourceNormalizer] attribute', function (): void {
+it('replaces existing normalizer for the SourceType declared via #[AsSourceNormalizerPlugin] attribute', function (): void {
     $registry = SourceNormalizerRegistry::create();
     $attributed = new AttributedFakeNormalizer();
     $registry->register($attributed);

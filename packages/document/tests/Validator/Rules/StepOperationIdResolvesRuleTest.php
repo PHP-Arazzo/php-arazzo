@@ -15,7 +15,7 @@ use Alama\Arazzo\Contracts\Spec\StepIo;
 use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Contracts\Validation\ErrorCollector;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
-use Alama\Arazzo\Document\Validator\Rules\StepOperationIdResolvesRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\StepOperationIdResolvesRule;
 
 function opIdDoc(?string $operationId, array $sources = [], ?array $resolvedOps = null): ArazzoDocument
 {

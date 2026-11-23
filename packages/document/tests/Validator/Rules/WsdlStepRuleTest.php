@@ -10,7 +10,7 @@ use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Validation\ErrorCollector;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
 use Alama\Arazzo\Expression\ExpressionEngine;
-use Alama\Arazzo\Protocol\Soap\Validation\WsdlStepRule;
+use Alama\Arazzo\Protocol\Soap\Plugins\ValidationRule\WsdlStepRule;
 use Alama\Arazzo\Tests\Support\Fx;
 
 it('accepts a wsdl step that names its operation on a wsdl source', function (): void {

@@ -8,7 +8,7 @@ use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
 use Alama\Arazzo\Contracts\Spec\ResolvedOperation;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Protocol\Soap\Exceptions\UnsupportedSourceVersionException;
-use Alama\Arazzo\Protocol\Soap\Normalizer\WsdlSourceNormalizer;
+use Alama\Arazzo\Protocol\Soap\Plugins\SourceNormalizer\WsdlSourceNormalizer;
 use InvalidArgumentException;
 use RuntimeException;
 

@@ -22,13 +22,13 @@ parameters:
 			message: '#^Method __construct has too many parameters \(6\)\. Maximum allowed is 5\.$#'
 			identifier: arazzo.custom.maxParameterCount
 			count: 1
-			path: src/Protocol/AsyncApiStepExecutor.php
+			path: src/Plugins/OperationExecutor/AsyncApiStepExecutor.php
 
 		-
 			message: '#^Method __construct has too many parameters \(7\)\. Maximum allowed is 5\.$#'
 			identifier: arazzo.custom.maxParameterCount
 			count: 1
-			path: src/Protocol/HttpStepExecutor.php
+			path: src/Plugins/OperationExecutor/HttpStepExecutor.php
 
 		-
 			message: '#^Method resolve has too high cyclomatic complexity \(26\)\. Maximum allowed is 10\.$#'

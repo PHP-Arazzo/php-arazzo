@@ -14,8 +14,8 @@ use Alama\Arazzo\Contracts\Spec\Expression;
 use Alama\Arazzo\Contracts\Spec\Interfaces\WorkflowContextInterface;
 use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Contracts\Spec\SuccessCriterion;
-use Alama\Arazzo\Evaluation\Plugins\JsonPathCriterionPlugin;
-use Alama\Arazzo\Evaluation\Plugins\JsonPathExpressionPlugin;
+use Alama\Arazzo\Evaluation\Plugins\Criterion\JsonPathCriterionPlugin;
+use Alama\Arazzo\Evaluation\Plugins\Expression\JsonPathExpressionPlugin;
 use Alama\Arazzo\Evaluation\Registries\CriterionEvaluatorRegistry;
 use Alama\Arazzo\Evaluation\Registries\ExpressionEvaluatorRegistry;
 use Alama\Arazzo\Expression\ExpressionEngine;
@@ -73,6 +73,11 @@ class FakeAttributedCriterionPlugin implements CriterionEvaluatorPluginInterface
 }
 
 beforeEach(function (): void {
+    ExpressionEvaluatorRegistry::reset();
+    CriterionEvaluatorRegistry::reset();
+});
+
+afterEach(function (): void {
     ExpressionEvaluatorRegistry::reset();
     CriterionEvaluatorRegistry::reset();
 });

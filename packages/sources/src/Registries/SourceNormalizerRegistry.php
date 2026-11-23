@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Sources\Registries;
 
-use Alama\Arazzo\Contracts\Attributes\AsSourceNormalizer;
+use Alama\Arazzo\Contracts\Attributes\AsSourceNormalizerPlugin;
 use Alama\Arazzo\Contracts\Discovery\PluginDiscovery;
 use Alama\Arazzo\Contracts\Interfaces\SourceNormalizerInterface;
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
@@ -13,9 +13,9 @@ use ReflectionClass;
 /**
  * Public singleton registry of source normalizers.
  *
- * Keyed by {@see SourceType} (via `#[AsSourceNormalizer]`) or registration slot;
+ * Keyed by {@see SourceType} (via `#[AsSourceNormalizerPlugin]`) or registration slot;
  * last-registered wins when overriding a source type. Auto-discovers
- * `#[AsSourceNormalizer]` classes declared in installed packages'
+ * `#[AsSourceNormalizerPlugin]` classes declared in installed packages'
  * `composer.json` `extra.arazzo.plugins` directories.
  */
 final class SourceNormalizerRegistry
@@ -27,7 +27,7 @@ final class SourceNormalizerRegistry
 
     private function __construct()
     {
-        foreach (PluginDiscovery::instantiate(AsSourceNormalizer::class) as $normalizer) {
+        foreach (PluginDiscovery::instantiate(AsSourceNormalizerPlugin::class) as $normalizer) {
             if ($normalizer instanceof SourceNormalizerInterface) {
                 $this->register($normalizer);
             }
@@ -47,9 +47,9 @@ final class SourceNormalizerRegistry
     public function register(SourceNormalizerInterface $normalizer): void
     {
         $type = null;
-        $attrs = (new ReflectionClass($normalizer))->getAttributes(AsSourceNormalizer::class);
+        $attrs = (new ReflectionClass($normalizer))->getAttributes(AsSourceNormalizerPlugin::class);
         if ($attrs !== []) {
-            /** @var AsSourceNormalizer $attr */
+            /** @var AsSourceNormalizerPlugin $attr */
             $attr = $attrs[0]->newInstance();
             $type = $attr->type;
         }

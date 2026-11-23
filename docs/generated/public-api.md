@@ -450,13 +450,15 @@ this file on a commit is a public API change — review it deliberately.
 - `public function replacePayload(Step $step, array $body, ?callable $resolveValue = null, ?WorkflowContext $context = null): array;`
 - `public function resolveValue(mixed $value, WorkflowContextInterface $context, ?string $stepId = null): mixed;`
 
-### `Alama\Arazzo\Evaluation\Plugins`
+### `Alama\Arazzo\Evaluation\Plugins\Criterion`
 
 #### `JsonPathCriterionPlugin` class
 - `public function __construct(private ExpressionEngineInterface $expression)`
 - `public function evaluate(SuccessCriterion $criterion, mixed $context, Step $step, WorkflowContextInterface $workflowContext): bool`
 - `public function priority(): int`
 - `public function supports(CriterionType|SuccessCriterion $criterion): bool`
+
+### `Alama\Arazzo\Evaluation\Plugins\Expression`
 
 #### `JsonPathExpressionPlugin` class
 - `public function __construct(private ExpressionEngineInterface $expression)`

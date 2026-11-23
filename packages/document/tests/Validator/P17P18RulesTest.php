@@ -11,9 +11,9 @@ use Alama\Arazzo\Contracts\Spec\Info;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Validation\ErrorCollector;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
-use Alama\Arazzo\Document\Validator\OfficialSchemaRule;
-use Alama\Arazzo\Document\Validator\Rules\DocumentSourceDescriptionsPresentRule;
-use Alama\Arazzo\Document\Validator\Rules\DocUnknownFieldRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\DocumentSourceDescriptionsPresentRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\DocUnknownFieldRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\OfficialSchemaRule;
 use Alama\Arazzo\Tests\Support\Fx;
 
 function docWithRaw(array $raw, string $version = '1.1.0'): ArazzoDocument

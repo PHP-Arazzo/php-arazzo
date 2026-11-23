@@ -11,7 +11,7 @@ use Alama\Arazzo\Contracts\Spec\ResolvedOperation;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Document\OperationResolverInterface;
-use Alama\Arazzo\Protocol\Rpc\Normalizer\ProtoSourceNormalizer;
+use Alama\Arazzo\Protocol\Rpc\Plugins\SourceNormalizer\ProtoSourceNormalizer;
 use RuntimeException;
 
 /**

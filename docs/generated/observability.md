@@ -22,7 +22,6 @@ _No catalog found (LedgerAppendingListener not found)._
 
 | Class | Level(s) | Calls |
 |---|---|---:|
-| `OfficialSchemaRule` <small>core</small> | `error` | 3 |
 | `ActionDuplicateRule` <small>core</small> | `error` | 1 |
 | `ActionGotoTargetResolvesRule` <small>core</small> | `error` | 2 |
 | `ActionParameterInForbiddenRule` <small>core</small> | `error` | 2 |
@@ -38,6 +37,7 @@ _No catalog found (LedgerAppendingListener not found)._
 | `ExtensionsXPrefixRule` <small>core</small> | `warning` | 1 |
 | `GraphQlStepRule` <small>core</small> | `error` | 3 |
 | `InteractionStepRule` <small>core</small> | `error` | 4 |
+| `OfficialSchemaRule` <small>core</small> | `error` | 3 |
 | `ParameterQuerystringOperationShapeRule` <small>core</small> | `warning` | 1 |
 | `ParameterReusableRefResolvesRule` <small>core</small> | `error` | 2 |
 | `ReceiveStepSuccessCriteriaRule` <small>core</small> | `error` · `warning` | 2 |
@@ -60,7 +60,6 @@ _No catalog found (LedgerAppendingListener not found)._
 | `StepParametersHaveNameRule` <small>core</small> | `error` | 1 |
 | `StepRequestBodyReplacementsTargetRule` <small>core</small> | `error` | 1 |
 | `StepRequestBodyWorkflowRule` <small>core</small> | `error` | 1 |
-| `StepSuccessActionParameterInRule` <small>core</small> | `error` | 1 |
 | `StepSuccessCriteriaConditionRule` <small>core</small> | `error` | 3 |
 | `StepTimeoutRequires11Rule` <small>core</small> | `error` | 2 |
 | `StepUniqueIdRule` <small>core</small> | `error` | 1 |
@@ -70,6 +69,7 @@ _No catalog found (LedgerAppendingListener not found)._
 | `WorkflowIdPatternRule` <small>core</small> | `error` | 1 |
 | `WorkflowInputsValidSchemaRule` <small>core</small> | `error` | 3 |
 | `WorkflowUniqueIdRule` <small>core</small> | `error` | 1 |
+| `StepSuccessActionParameterInRule` <small>core</small> | `error` | 1 |
 | `WorkflowDependencyCycleWalker` <small>core</small> | `error` | 1 |
 | `ActionOutputTargetExclusivityRule` <small>core</small> | `error` | 2 |
 | `ExpressionContextMisuseRule` <small>core</small> | `error` | 1 |

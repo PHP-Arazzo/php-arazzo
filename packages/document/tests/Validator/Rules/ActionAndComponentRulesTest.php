@@ -16,12 +16,12 @@ use Alama\Arazzo\Contracts\Spec\StepIo;
 use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Contracts\Validation\ErrorCollector;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
-use Alama\Arazzo\Document\Validator\Rules\ActionGotoTargetResolvesRule;
-use Alama\Arazzo\Document\Validator\Rules\ActionRetryLimitsRule;
-use Alama\Arazzo\Document\Validator\Rules\ActionReusableRefResolvesRule;
-use Alama\Arazzo\Document\Validator\Rules\ActionTypeValidRule;
-use Alama\Arazzo\Document\Validator\Rules\DocUnknownFieldRule;
-use Alama\Arazzo\Document\Validator\Rules\ExtensionsXPrefixRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\ActionGotoTargetResolvesRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\ActionRetryLimitsRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\ActionReusableRefResolvesRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\ActionTypeValidRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\DocUnknownFieldRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\ExtensionsXPrefixRule;
 
 function actionDocSteps(array $steps, ?array $rawRoot = null): ArazzoDocument
 {

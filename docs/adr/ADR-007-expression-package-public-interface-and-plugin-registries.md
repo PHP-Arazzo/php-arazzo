@@ -42,14 +42,14 @@ The method `selectorPlugins()` is **removed** from `ExpressionEngineInterface` a
 - `SelectorPluginRegistry` stays `@internal` to `packages/expression` as an internal strategy registry (other packages never import it). External extension happens via `SelectorPluginInterface` + `#[AsSelectorPlugin]` + Composer `extra.arazzo.plugins` directories.
 - Default plugin implementations (`JsonPathSelectorPlugin`, `JsonPointerSelectorPlugin`, `XpathSelectorPlugin`) remain `@internal`.
 
-### 5. Declarative Enum-Typed Plugin Attributes (No Numeric Priorities)
-All 6 plugin attributes in `packages/contracts/src/Attributes/` carry typed PHP 8.4 Enums instead of numeric priorities (with last-registered-wins override semantics in registries):
-- `#[AsSelectorPlugin(ExpressionType $type)]`
-- `#[AsSourceNormalizer(SourceType $type)]`
-- `#[AsExpressionPlugin(ExpressionType $type)]`
-- `#[AsCriterionPlugin(CriterionType $type)]`
-- `#[AsValidationRule(ValidationPhase $phase = ValidationPhase::Semantic)]`
-- `#[AsOperationExecutor(OperationProtocol $protocol)]`
+### 5. Declarative Enum-Typed Plugin Attributes & `src/Plugins/<Name>` Directory Convention
+All 6 plugin attributes in `packages/contracts/src/Attributes/` carry the uniform `As<Name>Plugin` suffix and typed PHP 8.4 Enums instead of numeric priorities (with last-registered-wins override semantics in registries). Every package places its concrete plugins under `src/Plugins/<Name>/` matching the attribute name and declares those subdirectories in `composer.json` `extra.arazzo.plugins`:
+- `#[AsSelectorPlugin(ExpressionType $type)]` → `src/Plugins/Selector`
+- `#[AsSourceNormalizerPlugin(SourceType $type)]` → `src/Plugins/SourceNormalizer`
+- `#[AsExpressionPlugin(ExpressionType $type)]` → `src/Plugins/Expression`
+- `#[AsCriterionPlugin(CriterionType $type)]` → `src/Plugins/Criterion`
+- `#[AsValidationRulePlugin(ValidationPhase $phase = ValidationPhase::Semantic)]` → `src/Plugins/ValidationRule`
+- `#[AsOperationExecutorPlugin(OperationProtocol $protocol)]` → `src/Plugins/OperationExecutor`
 
 ### 6. Decouple Downstream Packages (`document` and `evaluation`)
 - **`packages/document`**: `RuleSet::default(ExpressionEngineInterface $engine, ...)` drops `$selectorRegistry` and queries `$engine->supportedSelectorVersions(ExpressionType::JsonPath)` directly. Test stubs in `document` remove all dummy `selectorPlugins()` methods.
@@ -62,11 +62,11 @@ A clear architectural distinction is established across all monorepo packages:
   - `SourceNormalizerRegistry` (Phase 2: promoted to `Alama\Arazzo\Sources\Registries\SourceNormalizerRegistry`, `SourceNormalizerRegistryInterface` deleted, singleton `create()` auto-seeding zero-vendor `OpenApiSourceNormalizer`, paired with per-instance `Sources::withNormalizer()` overrides).
   - `OperationExecutorRegistry` (Phase 2: singleton `create()`).
   - `ExpressionEvaluatorRegistry` & `CriterionEvaluatorRegistry` (Phase 2: singleton `create()`, encapsulated in `EvaluationEngine`).
-  - `ValidationRuleRegistry` (Phase 3: `Alama\Arazzo\Document\Registries\ValidationRuleRegistry`, singleton `create()`, auto-discovering `#[AsValidationRule]` rules across `document`, `expression`, `protocol-soap`, `protocol-rpc`, and consumer apps).
+  - `ValidationRuleRegistry` (Phase 3: `Alama\Arazzo\Document\Registries\ValidationRuleRegistry`, singleton `create()`, auto-discovering `#[AsValidationRulePlugin]` rules across `document`, `expression`, `protocol-soap`, `protocol-rpc`, and consumer apps).
 - **Zero-Scan Auto-Discovery (`PluginDiscovery`) & Registrar Retirement (Phase 3)**:
-  - `Alama\Arazzo\Contracts\Discovery\PluginDiscovery` reads installed packages' `composer.json` `extra.arazzo.plugins` manifests via `Composer\InstalledVersions` and filters by PHP 8 `#[As*]` attributes.
+  - `Alama\Arazzo\Contracts\Discovery\PluginDiscovery` reads installed packages' `composer.json` `extra.arazzo.plugins` manifests via `Composer\InstalledVersions` and filters by PHP 8 `#[As*Plugin]` attributes.
   - All 5 stateless registries (`SelectorPluginRegistry`, `SourceNormalizerRegistry`, `ValidationRuleRegistry`, `ExpressionEvaluatorRegistry`, `CriterionEvaluatorRegistry`) auto-discover plugins inside `create()`.
-  - `ProtocolHttpRegistrar`, `SoapRegistrar`, and `RpcRegistrar` are deleted; framework bridges discover DI-bound executors via `PluginDiscovery::classesWith(AsOperationExecutor::class)`.
+  - `ProtocolHttpRegistrar`, `SoapRegistrar`, and `RpcRegistrar` are deleted; framework bridges discover DI-bound executors via `PluginDiscovery::classesWith(AsOperationExecutorPlugin::class)`.
   - Validation SPI (`ValidationRuleInterface`, `SymbolTable`, `ErrorCollector`, `Error`, `Warning`, `Severity`, `ValidationResult`) is promoted to `packages/contracts`; expression validation rules (including `JsonPathCriterionConditionRule` with code `expr.jsonpath_condition`) move to `packages/expression`, `WsdlStepRule` moves to `packages/protocol-soap`, `RpcStepRule` moves to `packages/protocol-rpc`, and `packages/document` drops its dependency on `php-arazzo/arazzo-expression`.
 - **Runtime State / Cache Stores**:
   - `SourceRegistry` is not a plugin registry. It is eliminated in Phase 2 by merging document memoization (`$cache`), explicit document seeding (`$seeded`, exposed publicly via `SourcesInterface::withDocument()`), and circular-reference detection (`$resolving`) directly into `DefaultSourceResolver`.

@@ -15,7 +15,7 @@ use Alama\Arazzo\Contracts\Spec\SuccessCriterion;
 use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Contracts\Validation\ErrorCollector;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
-use Alama\Arazzo\Document\Validator\Rules\StepSuccessCriteriaConditionRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\StepSuccessCriteriaConditionRule;
 
 function critDoc(SuccessCriterion $crit): ArazzoDocument
 {

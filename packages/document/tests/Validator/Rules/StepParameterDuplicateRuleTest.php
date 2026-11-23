@@ -14,7 +14,7 @@ use Alama\Arazzo\Contracts\Spec\Reusable;
 use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Contracts\Validation\ErrorCollector;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
-use Alama\Arazzo\Document\Validator\Rules\StepParameterDuplicateRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\StepParameterDuplicateRule;
 use Alama\Arazzo\Tests\Support\Fx;
 
 it('rejects duplicate parameters within same step (same name and in)', function (): void {

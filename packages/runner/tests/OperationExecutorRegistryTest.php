@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Alama\Arazzo\Contracts\Attributes\AsOperationExecutor;
+use Alama\Arazzo\Contracts\Attributes\AsOperationExecutorPlugin;
 use Alama\Arazzo\Contracts\Interfaces\OperationExecutorPluginInterface;
 use Alama\Arazzo\Contracts\Interfaces\PluginInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
@@ -17,7 +17,7 @@ use Alama\Arazzo\Contracts\Spec\StepTarget;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
 use Alama\Arazzo\Runner\OperationExecutorRegistry;
 
-#[AsOperationExecutor(OperationProtocol::SubWorkflow)]
+#[AsOperationExecutorPlugin(OperationProtocol::SubWorkflow)]
 class SubWorkflowProtocolPlugin implements OperationExecutorPluginInterface, PluginInterface
 {
     public function name(): string
@@ -41,7 +41,7 @@ class SubWorkflowProtocolPlugin implements OperationExecutorPluginInterface, Plu
     }
 }
 
-#[AsOperationExecutor(OperationProtocol::Http)]
+#[AsOperationExecutorPlugin(OperationProtocol::Http)]
 class HttpProtocolPlugin implements OperationExecutorPluginInterface, PluginInterface
 {
     public function name(): string
@@ -65,7 +65,7 @@ class HttpProtocolPlugin implements OperationExecutorPluginInterface, PluginInte
     }
 }
 
-#[AsOperationExecutor(OperationProtocol::Http)]
+#[AsOperationExecutorPlugin(OperationProtocol::Http)]
 class CustomHttpOverridePlugin implements OperationExecutorPluginInterface, PluginInterface
 {
     public function name(): string
@@ -95,6 +95,10 @@ function registryDocument(): ArazzoDocument
 }
 
 beforeEach(function (): void {
+    OperationExecutorRegistry::reset();
+});
+
+afterEach(function (): void {
     OperationExecutorRegistry::reset();
 });
 

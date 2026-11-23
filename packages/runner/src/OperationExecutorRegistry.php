@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Runner;
 
-use Alama\Arazzo\Contracts\Attributes\AsOperationExecutor;
+use Alama\Arazzo\Contracts\Attributes\AsOperationExecutorPlugin;
 use Alama\Arazzo\Contracts\Interfaces\OperationExecutorPluginInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Enum\OperationProtocol;
@@ -14,7 +14,7 @@ use ReflectionClass;
 /**
  * Concrete singleton registry of operation executor plugins.
  *
- * Plugins decorated with `#[AsOperationExecutor(OperationProtocol::...)]` are
+ * Plugins decorated with `#[AsOperationExecutorPlugin(OperationProtocol::...)]` are
  * keyed by their {@see OperationProtocol} enum (last-registered wins) and
  * dispatched in canonical protocol order (`SubWorkflow`, `Soap`, `Rpc`,
  * `AsyncApi`, `Http`). Unattributed custom executors are checked first in
@@ -46,9 +46,9 @@ final class OperationExecutorRegistry
 
     public function register(OperationExecutorPluginInterface $plugin): void
     {
-        $attrs = (new ReflectionClass($plugin))->getAttributes(AsOperationExecutor::class);
+        $attrs = (new ReflectionClass($plugin))->getAttributes(AsOperationExecutorPlugin::class);
         if ($attrs !== []) {
-            /** @var AsOperationExecutor $attr */
+            /** @var AsOperationExecutorPlugin $attr */
             $attr = $attrs[0]->newInstance();
             $this->byProtocol[$attr->protocol->value] = $plugin;
 

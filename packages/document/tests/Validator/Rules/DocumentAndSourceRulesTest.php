@@ -11,11 +11,11 @@ use Alama\Arazzo\Contracts\Spec\Info;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Validation\ErrorCollector;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
-use Alama\Arazzo\Document\Validator\Rules\DocumentArazzoVersionRule;
-use Alama\Arazzo\Document\Validator\Rules\DocumentInfoRequiredRule;
-use Alama\Arazzo\Document\Validator\Rules\SourceTypeMatchesRule;
-use Alama\Arazzo\Document\Validator\Rules\SourceUniqueNameRule;
-use Alama\Arazzo\Document\Validator\Rules\SourceUrlSyntaxRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\DocumentArazzoVersionRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\DocumentInfoRequiredRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\SourceTypeMatchesRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\SourceUniqueNameRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\SourceUrlSyntaxRule;
 
 function baseDoc(string $version = '1.0.0', string $title = 'T', string $ver = '1', array $sources = []): ArazzoDocument
 {

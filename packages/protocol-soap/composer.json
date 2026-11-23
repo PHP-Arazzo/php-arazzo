@@ -77,9 +77,9 @@
     "extra": {
         "arazzo": {
             "plugins": [
-                "src/Normalizer",
-                "src/Validation",
-                "src/Execution"
+                "src/Plugins/SourceNormalizer",
+                "src/Plugins/ValidationRule",
+                "src/Plugins/OperationExecutor"
             ]
         }
     }

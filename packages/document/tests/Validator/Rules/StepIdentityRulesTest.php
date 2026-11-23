@@ -17,14 +17,13 @@ use Alama\Arazzo\Contracts\Spec\StepTarget;
 use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Contracts\Validation\ErrorCollector;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
-use Alama\Arazzo\Document\Validator\Rules\StepAtLeastOneRule;
-use Alama\Arazzo\Document\Validator\Rules\StepIdPatternRule;
-use Alama\Arazzo\Document\Validator\Rules\StepNestedWorkflowExistsRule;
-use Alama\Arazzo\Document\Validator\Rules\StepOperationIdSourceScopedRule;
-use Alama\Arazzo\Document\Validator\Rules\StepOperationTargetPresentRule;
-use Alama\Arazzo\Document\Validator\Rules\StepUniqueIdRule;
-use Alama\Arazzo\Expression\ExpressionEngine;
-use Alama\Arazzo\Expression\Validation\Rules\StepOperationPathSyntaxRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\StepAtLeastOneRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\StepIdPatternRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\StepNestedWorkflowExistsRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\StepOperationIdSourceScopedRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\StepOperationTargetPresentRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\StepUniqueIdRule;
+use Alama\Arazzo\Expression\Plugins\ValidationRule\StepOperationPathSyntaxRule;
 
 function stepIdMk(string $id, ?string $opId = 'op', ?string $opPath = null, ?string $wfId = null): Step
 {
@@ -105,7 +104,7 @@ it('requires single openapi source for unqualified operationId', function (): vo
 it('validates operationPath syntax', function (): void {
     $doc = stepIdDoc([stepIdWf('a', [stepIdMk('x', null, 'nosource-no-hash')])]);
     $ec = new ErrorCollector();
-    (new StepOperationPathSyntaxRule(new ExpressionEngine()))->check($doc, SymbolTable::build($doc), $ec);
+    (new StepOperationPathSyntaxRule())->check($doc, SymbolTable::build($doc), $ec);
     expect($ec->errors())->toHaveCount(1);
 });
 

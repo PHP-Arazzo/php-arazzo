@@ -19,7 +19,7 @@ use Alama\Arazzo\Contracts\Spec\StepIo;
 use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Contracts\Validation\ErrorCollector;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
-use Alama\Arazzo\Expression\Validation\Rules\SelectorTypeSupportedRule;
+use Alama\Arazzo\Expression\Plugins\ValidationRule\SelectorTypeSupportedRule;
 
 function docWithOutputSelector(Selector $s, SpecVersion $sv = SpecVersion::V1_1): ArazzoDocument
 {

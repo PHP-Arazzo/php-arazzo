@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Tests\Document\Registries;
 
-use Alama\Arazzo\Contracts\Attributes\AsValidationRule;
+use Alama\Arazzo\Contracts\Attributes\AsValidationRulePlugin;
 use Alama\Arazzo\Contracts\Interfaces\ValidationRuleInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Validation\ErrorCollector;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
 use Alama\Arazzo\Contracts\Validation\ValidationPhase;
+use Alama\Arazzo\Document\Plugins\ValidationRule\OfficialSchemaRule;
 use Alama\Arazzo\Document\Registries\ValidationRuleRegistry;
-use Alama\Arazzo\Document\Validator\OfficialSchemaRule;
 
-#[AsValidationRule(ValidationPhase::Schema)]
+#[AsValidationRulePlugin(ValidationPhase::Schema)]
 final class CustomSchemaPhaseRule implements ValidationRuleInterface
 {
     public function code(): string
@@ -24,7 +24,7 @@ final class CustomSchemaPhaseRule implements ValidationRuleInterface
     public function check(ArazzoDocument $doc, SymbolTable $symbols, ErrorCollector $errors): void {}
 }
 
-#[AsValidationRule(ValidationPhase::Semantic)]
+#[AsValidationRulePlugin(ValidationPhase::Semantic)]
 final class OverrideSchemaRule implements ValidationRuleInterface
 {
     public function code(): string

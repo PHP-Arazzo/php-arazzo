@@ -11,7 +11,7 @@ use Alama\Arazzo\Contracts\Spec\Selector;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Validation\ErrorCollector;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
-use Alama\Arazzo\Document\Validator\Rules\GraphQlStepRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\GraphQlStepRule;
 use Alama\Arazzo\Tests\Support\Fx;
 
 it('accepts a whole-source schema with an operation', function (): void {

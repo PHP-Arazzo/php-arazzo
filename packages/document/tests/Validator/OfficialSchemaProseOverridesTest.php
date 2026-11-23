@@ -9,8 +9,8 @@ use Alama\Arazzo\Contracts\Spec\Components;
 use Alama\Arazzo\Contracts\Spec\Info;
 use Alama\Arazzo\Contracts\Validation\ErrorCollector;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
-use Alama\Arazzo\Document\Validator\OfficialSchemaRule;
-use Alama\Arazzo\Expression\Validation\Rules\JsonPathCriterionConditionRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\OfficialSchemaRule;
+use Alama\Arazzo\Expression\Plugins\ValidationRule\JsonPathCriterionConditionRule;
 
 /**
  * @param  list<array<string, mixed>>  $steps

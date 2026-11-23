@@ -16,7 +16,7 @@ use Alama\Arazzo\Contracts\Spec\Reusable;
 use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Contracts\Validation\ErrorCollector;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
-use Alama\Arazzo\Document\Validator\Rules\ParameterReusableRefResolvesRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\ParameterReusableRefResolvesRule;
 use Alama\Arazzo\Tests\Support\Fx;
 
 it('rejects missing workflow parameter reference', function (): void {

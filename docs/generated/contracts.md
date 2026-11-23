@@ -83,140 +83,140 @@ flowchart LR
     C_expression_expression_Plugins_JsonPointerSelectorPlugin -.->|implements| I_SelectorPluginInterface
     C_expression_expression_Plugins_XpathSelectorPlugin["XpathSelectorPlugin<br/><small>expression:Plugins</small>"]:::implCore
     C_expression_expression_Plugins_XpathSelectorPlugin -.->|implements| I_SelectorPluginInterface
-    C_expression_expression_Validation_ActionOutputTargetExclusivityRule["ActionOutputTargetExclusivityRule<br/><small>expression:Validation</small>"]:::implCore
-    C_expression_expression_Validation_ActionOutputTargetExclusivityRule -.->|implements| I_ValidationRuleInterface
-    C_expression_expression_Validation_ExpressionContextMisuseRule["ExpressionContextMisuseRule<br/><small>expression:Validation</small>"]:::implCore
-    C_expression_expression_Validation_ExpressionContextMisuseRule -.->|implements| I_ValidationRuleInterface
-    C_expression_expression_Validation_ExpressionJsonPointerSyntaxRule["ExpressionJsonPointerSyntaxRule<br/><small>expression:Validation</small>"]:::implCore
-    C_expression_expression_Validation_ExpressionJsonPointerSyntaxRule -.->|implements| I_ValidationRuleInterface
-    C_expression_expression_Validation_ExpressionSyntaxRule["ExpressionSyntaxRule<br/><small>expression:Validation</small>"]:::implCore
-    C_expression_expression_Validation_ExpressionSyntaxRule -.->|implements| I_ValidationRuleInterface
-    C_expression_expression_Validation_ExpressionUnresolvedComponentRefRule["ExpressionUnresolvedComponentRefRule<br/><small>expression:Validation</small>"]:::implCore
-    C_expression_expression_Validation_ExpressionUnresolvedComponentRefRule -.->|implements| I_ValidationRuleInterface
-    C_expression_expression_Validation_ExpressionUnresolvedInputRefRule["ExpressionUnresolvedInputRefRule<br/><small>expression:Validation</small>"]:::implCore
-    C_expression_expression_Validation_ExpressionUnresolvedInputRefRule -.->|implements| I_ValidationRuleInterface
-    C_expression_expression_Validation_ExpressionUnresolvedSourceRefRule["ExpressionUnresolvedSourceRefRule<br/><small>expression:Validation</small>"]:::implCore
-    C_expression_expression_Validation_ExpressionUnresolvedSourceRefRule -.->|implements| I_ValidationRuleInterface
-    C_expression_expression_Validation_ExpressionUnresolvedStepRefRule["ExpressionUnresolvedStepRefRule<br/><small>expression:Validation</small>"]:::implCore
-    C_expression_expression_Validation_ExpressionUnresolvedStepRefRule -.->|implements| I_ValidationRuleInterface
-    C_expression_expression_Validation_ExpressionUnresolvedWorkflowRefRule["ExpressionUnresolvedWorkflowRefRule<br/><small>expression:Validation</small>"]:::implCore
-    C_expression_expression_Validation_ExpressionUnresolvedWorkflowRefRule -.->|implements| I_ValidationRuleInterface
-    C_expression_expression_Validation_JsonPathCriterionConditionRule["JsonPathCriterionConditionRule<br/><small>expression:Validation</small>"]:::implCore
-    C_expression_expression_Validation_JsonPathCriterionConditionRule -.->|implements| I_ValidationRuleInterface
-    C_expression_expression_Validation_MessageRefRequiresReceiveRule["MessageRefRequiresReceiveRule<br/><small>expression:Validation</small>"]:::implCore
-    C_expression_expression_Validation_MessageRefRequiresReceiveRule -.->|implements| I_ValidationRuleInterface
-    C_expression_expression_Validation_SelectorTypeSupportedRule["SelectorTypeSupportedRule<br/><small>expression:Validation</small>"]:::implCore
-    C_expression_expression_Validation_SelectorTypeSupportedRule -.->|implements| I_ValidationRuleInterface
-    C_expression_expression_Validation_StepOperationPathSyntaxRule["StepOperationPathSyntaxRule<br/><small>expression:Validation</small>"]:::implCore
-    C_expression_expression_Validation_StepOperationPathSyntaxRule -.->|implements| I_ValidationRuleInterface
-    C_expression_expression_Validation_SuccessCriteriaVersionSupportedRule["SuccessCriteriaVersionSupportedRule<br/><small>expression:Validation</small>"]:::implCore
-    C_expression_expression_Validation_SuccessCriteriaVersionSupportedRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_OfficialSchemaRule["OfficialSchemaRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_OfficialSchemaRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_ActionDuplicateRule["ActionDuplicateRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_ActionDuplicateRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_ActionGotoTargetResolvesRule["ActionGotoTargetResolvesRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_ActionGotoTargetResolvesRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_ActionParameterInForbiddenRule["ActionParameterInForbiddenRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_ActionParameterInForbiddenRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_ActionRetryLimitsRule["ActionRetryLimitsRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_ActionRetryLimitsRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_ActionReusableRefResolvesRule["ActionReusableRefResolvesRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_ActionReusableRefResolvesRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_ActionTargetExclusivityRule["ActionTargetExclusivityRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_ActionTargetExclusivityRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_ActionTypeValidRule["ActionTypeValidRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_ActionTypeValidRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_AsyncApiFieldsRequire11Rule["AsyncApiFieldsRequire11Rule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_AsyncApiFieldsRequire11Rule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_ComponentsUniqueNamesRule["ComponentsUniqueNamesRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_ComponentsUniqueNamesRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_DocUnknownFieldRule["DocUnknownFieldRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_DocUnknownFieldRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_DocumentArazzoVersionRule["DocumentArazzoVersionRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_DocumentArazzoVersionRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_DocumentInfoRequiredRule["DocumentInfoRequiredRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_DocumentInfoRequiredRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_DocumentSourceDescriptionsPresentRule["DocumentSourceDescriptionsPresentRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_DocumentSourceDescriptionsPresentRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_ExtensionsXPrefixRule["ExtensionsXPrefixRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_ExtensionsXPrefixRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_GraphQlStepRule["GraphQlStepRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_GraphQlStepRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_InteractionStepRule["InteractionStepRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_InteractionStepRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_ParameterQuerystringOperationShapeRule["ParameterQuerystringOperationShapeRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_ParameterQuerystringOperationShapeRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_ParameterReusableRefResolvesRule["ParameterReusableRefResolvesRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_ParameterReusableRefResolvesRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_ReceiveStepSuccessCriteriaRule["ReceiveStepSuccessCriteriaRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_ReceiveStepSuccessCriteriaRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_SelfUriSyntaxRule["SelfUriSyntaxRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_SelfUriSyntaxRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_SourceTypeMatchesRule["SourceTypeMatchesRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_SourceTypeMatchesRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_SourceUniqueNameRule["SourceUniqueNameRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_SourceUniqueNameRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_SourceUrlSyntaxRule["SourceUrlSyntaxRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_SourceUrlSyntaxRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_StepAtLeastOneRule["StepAtLeastOneRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_StepAtLeastOneRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_StepCriteriaTypeContextRule["StepCriteriaTypeContextRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_StepCriteriaTypeContextRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_StepDependsOnNoCycleRule["StepDependsOnNoCycleRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_StepDependsOnNoCycleRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_StepIdPatternRule["StepIdPatternRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_StepIdPatternRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_StepNestedWorkflowExistsRule["StepNestedWorkflowExistsRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_StepNestedWorkflowExistsRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_StepNestedWorkflowNoCycleRule["StepNestedWorkflowNoCycleRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_StepNestedWorkflowNoCycleRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_StepOperationIdResolvesRule["StepOperationIdResolvesRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_StepOperationIdResolvesRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_StepOperationIdSourceScopedRule["StepOperationIdSourceScopedRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_StepOperationIdSourceScopedRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_StepOperationTargetPresentRule["StepOperationTargetPresentRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_StepOperationTargetPresentRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_StepOutputsUniqueRule["StepOutputsUniqueRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_StepOutputsUniqueRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_StepParameterDuplicateRule["StepParameterDuplicateRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_StepParameterDuplicateRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_StepParameterInValidRule["StepParameterInValidRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_StepParameterInValidRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_StepParameterRequiresInRule["StepParameterRequiresInRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_StepParameterRequiresInRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_StepParametersHaveNameRule["StepParametersHaveNameRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_StepParametersHaveNameRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_StepRequestBodyReplacementsTargetRule["StepRequestBodyReplacementsTargetRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_StepRequestBodyReplacementsTargetRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_StepRequestBodyWorkflowRule["StepRequestBodyWorkflowRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_StepRequestBodyWorkflowRule -.->|implements| I_ValidationRuleInterface
+    C_expression_expression_Plugins_ActionOutputTargetExclusivityRule["ActionOutputTargetExclusivityRule<br/><small>expression:Plugins</small>"]:::implCore
+    C_expression_expression_Plugins_ActionOutputTargetExclusivityRule -.->|implements| I_ValidationRuleInterface
+    C_expression_expression_Plugins_ExpressionContextMisuseRule["ExpressionContextMisuseRule<br/><small>expression:Plugins</small>"]:::implCore
+    C_expression_expression_Plugins_ExpressionContextMisuseRule -.->|implements| I_ValidationRuleInterface
+    C_expression_expression_Plugins_ExpressionJsonPointerSyntaxRule["ExpressionJsonPointerSyntaxRule<br/><small>expression:Plugins</small>"]:::implCore
+    C_expression_expression_Plugins_ExpressionJsonPointerSyntaxRule -.->|implements| I_ValidationRuleInterface
+    C_expression_expression_Plugins_ExpressionSyntaxRule["ExpressionSyntaxRule<br/><small>expression:Plugins</small>"]:::implCore
+    C_expression_expression_Plugins_ExpressionSyntaxRule -.->|implements| I_ValidationRuleInterface
+    C_expression_expression_Plugins_ExpressionUnresolvedComponentRefRule["ExpressionUnresolvedComponentRefRule<br/><small>expression:Plugins</small>"]:::implCore
+    C_expression_expression_Plugins_ExpressionUnresolvedComponentRefRule -.->|implements| I_ValidationRuleInterface
+    C_expression_expression_Plugins_ExpressionUnresolvedInputRefRule["ExpressionUnresolvedInputRefRule<br/><small>expression:Plugins</small>"]:::implCore
+    C_expression_expression_Plugins_ExpressionUnresolvedInputRefRule -.->|implements| I_ValidationRuleInterface
+    C_expression_expression_Plugins_ExpressionUnresolvedSourceRefRule["ExpressionUnresolvedSourceRefRule<br/><small>expression:Plugins</small>"]:::implCore
+    C_expression_expression_Plugins_ExpressionUnresolvedSourceRefRule -.->|implements| I_ValidationRuleInterface
+    C_expression_expression_Plugins_ExpressionUnresolvedStepRefRule["ExpressionUnresolvedStepRefRule<br/><small>expression:Plugins</small>"]:::implCore
+    C_expression_expression_Plugins_ExpressionUnresolvedStepRefRule -.->|implements| I_ValidationRuleInterface
+    C_expression_expression_Plugins_ExpressionUnresolvedWorkflowRefRule["ExpressionUnresolvedWorkflowRefRule<br/><small>expression:Plugins</small>"]:::implCore
+    C_expression_expression_Plugins_ExpressionUnresolvedWorkflowRefRule -.->|implements| I_ValidationRuleInterface
+    C_expression_expression_Plugins_JsonPathCriterionConditionRule["JsonPathCriterionConditionRule<br/><small>expression:Plugins</small>"]:::implCore
+    C_expression_expression_Plugins_JsonPathCriterionConditionRule -.->|implements| I_ValidationRuleInterface
+    C_expression_expression_Plugins_MessageRefRequiresReceiveRule["MessageRefRequiresReceiveRule<br/><small>expression:Plugins</small>"]:::implCore
+    C_expression_expression_Plugins_MessageRefRequiresReceiveRule -.->|implements| I_ValidationRuleInterface
+    C_expression_expression_Plugins_SelectorTypeSupportedRule["SelectorTypeSupportedRule<br/><small>expression:Plugins</small>"]:::implCore
+    C_expression_expression_Plugins_SelectorTypeSupportedRule -.->|implements| I_ValidationRuleInterface
+    C_expression_expression_Plugins_StepOperationPathSyntaxRule["StepOperationPathSyntaxRule<br/><small>expression:Plugins</small>"]:::implCore
+    C_expression_expression_Plugins_StepOperationPathSyntaxRule -.->|implements| I_ValidationRuleInterface
+    C_expression_expression_Plugins_SuccessCriteriaVersionSupportedRule["SuccessCriteriaVersionSupportedRule<br/><small>expression:Plugins</small>"]:::implCore
+    C_expression_expression_Plugins_SuccessCriteriaVersionSupportedRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_ActionDuplicateRule["ActionDuplicateRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_ActionDuplicateRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_ActionGotoTargetResolvesRule["ActionGotoTargetResolvesRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_ActionGotoTargetResolvesRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_ActionParameterInForbiddenRule["ActionParameterInForbiddenRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_ActionParameterInForbiddenRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_ActionRetryLimitsRule["ActionRetryLimitsRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_ActionRetryLimitsRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_ActionReusableRefResolvesRule["ActionReusableRefResolvesRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_ActionReusableRefResolvesRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_ActionTargetExclusivityRule["ActionTargetExclusivityRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_ActionTargetExclusivityRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_ActionTypeValidRule["ActionTypeValidRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_ActionTypeValidRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_AsyncApiFieldsRequire11Rule["AsyncApiFieldsRequire11Rule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_AsyncApiFieldsRequire11Rule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_ComponentsUniqueNamesRule["ComponentsUniqueNamesRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_ComponentsUniqueNamesRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_DocUnknownFieldRule["DocUnknownFieldRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_DocUnknownFieldRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_DocumentArazzoVersionRule["DocumentArazzoVersionRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_DocumentArazzoVersionRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_DocumentInfoRequiredRule["DocumentInfoRequiredRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_DocumentInfoRequiredRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_DocumentSourceDescriptionsPresentRule["DocumentSourceDescriptionsPresentRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_DocumentSourceDescriptionsPresentRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_ExtensionsXPrefixRule["ExtensionsXPrefixRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_ExtensionsXPrefixRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_GraphQlStepRule["GraphQlStepRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_GraphQlStepRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_InteractionStepRule["InteractionStepRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_InteractionStepRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_OfficialSchemaRule["OfficialSchemaRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_OfficialSchemaRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_ParameterQuerystringOperationShapeRule["ParameterQuerystringOperationShapeRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_ParameterQuerystringOperationShapeRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_ParameterReusableRefResolvesRule["ParameterReusableRefResolvesRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_ParameterReusableRefResolvesRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_ReceiveStepSuccessCriteriaRule["ReceiveStepSuccessCriteriaRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_ReceiveStepSuccessCriteriaRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_SelfUriSyntaxRule["SelfUriSyntaxRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_SelfUriSyntaxRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_SourceTypeMatchesRule["SourceTypeMatchesRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_SourceTypeMatchesRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_SourceUniqueNameRule["SourceUniqueNameRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_SourceUniqueNameRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_SourceUrlSyntaxRule["SourceUrlSyntaxRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_SourceUrlSyntaxRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_StepAtLeastOneRule["StepAtLeastOneRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_StepAtLeastOneRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_StepCriteriaTypeContextRule["StepCriteriaTypeContextRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_StepCriteriaTypeContextRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_StepDependsOnNoCycleRule["StepDependsOnNoCycleRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_StepDependsOnNoCycleRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_StepIdPatternRule["StepIdPatternRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_StepIdPatternRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_StepNestedWorkflowExistsRule["StepNestedWorkflowExistsRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_StepNestedWorkflowExistsRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_StepNestedWorkflowNoCycleRule["StepNestedWorkflowNoCycleRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_StepNestedWorkflowNoCycleRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_StepOperationIdResolvesRule["StepOperationIdResolvesRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_StepOperationIdResolvesRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_StepOperationIdSourceScopedRule["StepOperationIdSourceScopedRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_StepOperationIdSourceScopedRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_StepOperationTargetPresentRule["StepOperationTargetPresentRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_StepOperationTargetPresentRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_StepOutputsUniqueRule["StepOutputsUniqueRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_StepOutputsUniqueRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_StepParameterDuplicateRule["StepParameterDuplicateRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_StepParameterDuplicateRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_StepParameterInValidRule["StepParameterInValidRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_StepParameterInValidRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_StepParameterRequiresInRule["StepParameterRequiresInRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_StepParameterRequiresInRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_StepParametersHaveNameRule["StepParametersHaveNameRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_StepParametersHaveNameRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_StepRequestBodyReplacementsTargetRule["StepRequestBodyReplacementsTargetRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_StepRequestBodyReplacementsTargetRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_StepRequestBodyWorkflowRule["StepRequestBodyWorkflowRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_StepRequestBodyWorkflowRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_StepSuccessCriteriaConditionRule["StepSuccessCriteriaConditionRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_StepSuccessCriteriaConditionRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_StepTimeoutRequires11Rule["StepTimeoutRequires11Rule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_StepTimeoutRequires11Rule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_StepUniqueIdRule["StepUniqueIdRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_StepUniqueIdRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_SubWorkflowInvokeTargetResolvesRule["SubWorkflowInvokeTargetResolvesRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_SubWorkflowInvokeTargetResolvesRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_WorkflowAtLeastOneRule["WorkflowAtLeastOneRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_WorkflowAtLeastOneRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_WorkflowDependsOnExistsRule["WorkflowDependsOnExistsRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_WorkflowDependsOnExistsRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_WorkflowDependsOnNoCycleRule["WorkflowDependsOnNoCycleRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_WorkflowDependsOnNoCycleRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_WorkflowIdPatternRule["WorkflowIdPatternRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_WorkflowIdPatternRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_WorkflowInputsValidSchemaRule["WorkflowInputsValidSchemaRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_WorkflowInputsValidSchemaRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_WorkflowUniqueIdRule["WorkflowUniqueIdRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_WorkflowUniqueIdRule -.->|implements| I_ValidationRuleInterface
     C_document_document_Validator_StepSuccessActionParameterInRule["StepSuccessActionParameterInRule<br/><small>document:Validator</small>"]:::implCore
     C_document_document_Validator_StepSuccessActionParameterInRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_StepSuccessCriteriaConditionRule["StepSuccessCriteriaConditionRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_StepSuccessCriteriaConditionRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_StepTimeoutRequires11Rule["StepTimeoutRequires11Rule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_StepTimeoutRequires11Rule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_StepUniqueIdRule["StepUniqueIdRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_StepUniqueIdRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_SubWorkflowInvokeTargetResolvesRule["SubWorkflowInvokeTargetResolvesRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_SubWorkflowInvokeTargetResolvesRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_WorkflowAtLeastOneRule["WorkflowAtLeastOneRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_WorkflowAtLeastOneRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_WorkflowDependsOnExistsRule["WorkflowDependsOnExistsRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_WorkflowDependsOnExistsRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_WorkflowDependsOnNoCycleRule["WorkflowDependsOnNoCycleRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_WorkflowDependsOnNoCycleRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_WorkflowIdPatternRule["WorkflowIdPatternRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_WorkflowIdPatternRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_WorkflowInputsValidSchemaRule["WorkflowInputsValidSchemaRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_WorkflowInputsValidSchemaRule -.->|implements| I_ValidationRuleInterface
-    C_document_document_Validator_WorkflowUniqueIdRule["WorkflowUniqueIdRule<br/><small>document:Validator</small>"]:::implCore
-    C_document_document_Validator_WorkflowUniqueIdRule -.->|implements| I_ValidationRuleInterface
-    C_protocol_rpc_protocol_rpc_Validation_RpcStepRule["RpcStepRule<br/><small>protocol-rpc:Validation</small>"]:::implCore
-    C_protocol_rpc_protocol_rpc_Validation_RpcStepRule -.->|implements| I_ValidationRuleInterface
-    C_protocol_soap_protocol_soap_Validation_WsdlStepRule["WsdlStepRule<br/><small>protocol-soap:Validation</small>"]:::implCore
-    C_protocol_soap_protocol_soap_Validation_WsdlStepRule -.->|implements| I_ValidationRuleInterface
+    C_protocol_rpc_protocol_rpc_Plugins_RpcStepRule["RpcStepRule<br/><small>protocol-rpc:Plugins</small>"]:::implCore
+    C_protocol_rpc_protocol_rpc_Plugins_RpcStepRule -.->|implements| I_ValidationRuleInterface
+    C_protocol_soap_protocol_soap_Plugins_WsdlStepRule["WsdlStepRule<br/><small>protocol-soap:Plugins</small>"]:::implCore
+    C_protocol_soap_protocol_soap_Plugins_WsdlStepRule -.->|implements| I_ValidationRuleInterface
     C_expression_expression_Xpath_DomXpathEvaluator["DomXpathEvaluator<br/><small>expression:Xpath</small>"]:::implCore
     C_expression_expression_Xpath_DomXpathEvaluator -.->|implements| I_XpathEvaluator
     C_expression_expression_Xpath_Xpath31Evaluator["Xpath31Evaluator<br/><small>expression:Xpath</small>"]:::implCore
@@ -245,12 +245,12 @@ flowchart LR
     C_evaluation_evaluation_Plugins_JsonPathExpressionPlugin -.->|implements| I_ExpressionEvaluatorPluginInterface
     C_sources_sources_Normalizer_OpenApi30Normalizer["OpenApi30Normalizer<br/><small>sources:Normalizer</small>"]:::implCore
     C_sources_sources_Normalizer_OpenApi30Normalizer -.->|implements| I_OpenApiNormalizerInterface
-    C_sources_sources_Normalizer_OpenApiSourceNormalizer["OpenApiSourceNormalizer<br/><small>sources:Normalizer</small>"]:::implCore
-    C_sources_sources_Normalizer_OpenApiSourceNormalizer -.->|implements| I_SourceNormalizerInterface
-    C_protocol_rpc_protocol_rpc_Normalizer_ProtoSourceNormalizer["ProtoSourceNormalizer<br/><small>protocol-rpc:Normalizer</small>"]:::implCore
-    C_protocol_rpc_protocol_rpc_Normalizer_ProtoSourceNormalizer -.->|implements| I_SourceNormalizerInterface
-    C_protocol_soap_protocol_soap_Normalizer_WsdlSourceNormalizer["WsdlSourceNormalizer<br/><small>protocol-soap:Normalizer</small>"]:::implCore
-    C_protocol_soap_protocol_soap_Normalizer_WsdlSourceNormalizer -.->|implements| I_SourceNormalizerInterface
+    C_sources_sources_Plugins_OpenApiSourceNormalizer["OpenApiSourceNormalizer<br/><small>sources:Plugins</small>"]:::implCore
+    C_sources_sources_Plugins_OpenApiSourceNormalizer -.->|implements| I_SourceNormalizerInterface
+    C_protocol_rpc_protocol_rpc_Plugins_ProtoSourceNormalizer["ProtoSourceNormalizer<br/><small>protocol-rpc:Plugins</small>"]:::implCore
+    C_protocol_rpc_protocol_rpc_Plugins_ProtoSourceNormalizer -.->|implements| I_SourceNormalizerInterface
+    C_protocol_soap_protocol_soap_Plugins_WsdlSourceNormalizer["WsdlSourceNormalizer<br/><small>protocol-soap:Plugins</small>"]:::implCore
+    C_protocol_soap_protocol_soap_Plugins_WsdlSourceNormalizer -.->|implements| I_SourceNormalizerInterface
     C_sources_sources_Resolver_DefaultSourceResolver["DefaultSourceResolver<br/><small>sources:Resolver</small>"]:::implCore
     C_sources_sources_Resolver_DefaultSourceResolver -.->|implements| I_SourceResolver
     C_sources_sources_Resolver_CachedFetcher["CachedFetcher<br/><small>sources:Resolver</small>"]:::implCore
@@ -289,22 +289,22 @@ flowchart LR
     C_protocol_soap_protocol_soap_Validation_XsdResponseValidator -.->|implements| I_ResponseValidatorInterface
     C_protocol_http_protocol_http_Execution_StepOutputExtractor["StepOutputExtractor<br/><small>protocol-http:Execution</small>"]:::implCore
     C_protocol_http_protocol_http_Execution_StepOutputExtractor -.->|implements| I_OutputExtractorInterface
-    C_protocol_http_protocol_http_Protocol_AsyncApiStepExecutor["AsyncApiStepExecutor<br/><small>protocol-http:Protocol</small>"]:::implCore
-    C_protocol_http_protocol_http_Protocol_AsyncApiStepExecutor -.->|implements| I_OperationExecutorPluginInterface
-    C_protocol_http_protocol_http_Protocol_HttpStepExecutor["HttpStepExecutor<br/><small>protocol-http:Protocol</small>"]:::implCore
-    C_protocol_http_protocol_http_Protocol_HttpStepExecutor -.->|implements| I_OperationExecutorPluginInterface
-    C_protocol_rpc_protocol_rpc_Execution_RpcOperationExecutor["RpcOperationExecutor<br/><small>protocol-rpc:Execution</small>"]:::implCore
-    C_protocol_rpc_protocol_rpc_Execution_RpcOperationExecutor -.->|implements| I_OperationExecutorPluginInterface
-    C_protocol_soap_protocol_soap_Execution_SoapOperationExecutor["SoapOperationExecutor<br/><small>protocol-soap:Execution</small>"]:::implCore
-    C_protocol_soap_protocol_soap_Execution_SoapOperationExecutor -.->|implements| I_OperationExecutorPluginInterface
-    C_runner_runner_Sync_SubWorkflowStepExecutor["SubWorkflowStepExecutor<br/><small>runner:Sync</small>"]:::implCore
-    C_runner_runner_Sync_SubWorkflowStepExecutor -.->|implements| I_OperationExecutorPluginInterface
-    C_protocol_http_protocol_http_Protocol_AsyncApiStepExecutor["AsyncApiStepExecutor<br/><small>protocol-http:Protocol</small>"]:::implCore
-    C_protocol_http_protocol_http_Protocol_AsyncApiStepExecutor -.->|implements| I_StepProtocolExecutorInterface
-    C_protocol_http_protocol_http_Protocol_HttpStepExecutor["HttpStepExecutor<br/><small>protocol-http:Protocol</small>"]:::implCore
-    C_protocol_http_protocol_http_Protocol_HttpStepExecutor -.->|implements| I_StepProtocolExecutorInterface
-    C_runner_runner_Sync_SubWorkflowStepExecutor["SubWorkflowStepExecutor<br/><small>runner:Sync</small>"]:::implCore
-    C_runner_runner_Sync_SubWorkflowStepExecutor -.->|implements| I_StepProtocolExecutorInterface
+    C_protocol_http_protocol_http_Plugins_AsyncApiStepExecutor["AsyncApiStepExecutor<br/><small>protocol-http:Plugins</small>"]:::implCore
+    C_protocol_http_protocol_http_Plugins_AsyncApiStepExecutor -.->|implements| I_OperationExecutorPluginInterface
+    C_protocol_http_protocol_http_Plugins_HttpStepExecutor["HttpStepExecutor<br/><small>protocol-http:Plugins</small>"]:::implCore
+    C_protocol_http_protocol_http_Plugins_HttpStepExecutor -.->|implements| I_OperationExecutorPluginInterface
+    C_protocol_rpc_protocol_rpc_Plugins_RpcOperationExecutor["RpcOperationExecutor<br/><small>protocol-rpc:Plugins</small>"]:::implCore
+    C_protocol_rpc_protocol_rpc_Plugins_RpcOperationExecutor -.->|implements| I_OperationExecutorPluginInterface
+    C_protocol_soap_protocol_soap_Plugins_SoapOperationExecutor["SoapOperationExecutor<br/><small>protocol-soap:Plugins</small>"]:::implCore
+    C_protocol_soap_protocol_soap_Plugins_SoapOperationExecutor -.->|implements| I_OperationExecutorPluginInterface
+    C_runner_runner_Plugins_SubWorkflowStepExecutor["SubWorkflowStepExecutor<br/><small>runner:Plugins</small>"]:::implCore
+    C_runner_runner_Plugins_SubWorkflowStepExecutor -.->|implements| I_OperationExecutorPluginInterface
+    C_protocol_http_protocol_http_Plugins_AsyncApiStepExecutor["AsyncApiStepExecutor<br/><small>protocol-http:Plugins</small>"]:::implCore
+    C_protocol_http_protocol_http_Plugins_AsyncApiStepExecutor -.->|implements| I_StepProtocolExecutorInterface
+    C_protocol_http_protocol_http_Plugins_HttpStepExecutor["HttpStepExecutor<br/><small>protocol-http:Plugins</small>"]:::implCore
+    C_protocol_http_protocol_http_Plugins_HttpStepExecutor -.->|implements| I_StepProtocolExecutorInterface
+    C_runner_runner_Plugins_SubWorkflowStepExecutor["SubWorkflowStepExecutor<br/><small>runner:Plugins</small>"]:::implCore
+    C_runner_runner_Plugins_SubWorkflowStepExecutor -.->|implements| I_StepProtocolExecutorInterface
     C_protocol_http_protocol_http_Resolver_OpenApiOperationResolver["OpenApiOperationResolver<br/><small>protocol-http:Resolver</small>"]:::implCore
     C_protocol_http_protocol_http_Resolver_OpenApiOperationResolver -.->|implements| I_OperationResolverInterface
     C_protocol_rpc_protocol_rpc_Protocol_ProtobufOperationResolver["ProtobufOperationResolver<br/><small>protocol-rpc:Protocol</small>"]:::implCore

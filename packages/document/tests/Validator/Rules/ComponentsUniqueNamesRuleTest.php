@@ -9,7 +9,7 @@ use Alama\Arazzo\Contracts\Spec\Components;
 use Alama\Arazzo\Contracts\Spec\Info;
 use Alama\Arazzo\Contracts\Validation\ErrorCollector;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
-use Alama\Arazzo\Document\Validator\Rules\ComponentsUniqueNamesRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\ComponentsUniqueNamesRule;
 
 function docWithComponents(array $components): ArazzoDocument
 {

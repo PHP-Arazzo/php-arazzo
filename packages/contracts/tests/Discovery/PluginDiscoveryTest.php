@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Tests\Contracts\Discovery;
 
-use Alama\Arazzo\Contracts\Attributes\AsOperationExecutor;
-use Alama\Arazzo\Contracts\Attributes\AsSourceNormalizer;
-use Alama\Arazzo\Contracts\Attributes\AsValidationRule;
+use Alama\Arazzo\Contracts\Attributes\AsOperationExecutorPlugin;
+use Alama\Arazzo\Contracts\Attributes\AsSourceNormalizerPlugin;
+use Alama\Arazzo\Contracts\Attributes\AsValidationRulePlugin;
 use Alama\Arazzo\Contracts\Discovery\PluginDiscovery;
 use Alama\Arazzo\Contracts\Spec\Enum\OperationProtocol;
 use Alama\Arazzo\Contracts\Validation\ValidationPhase;
 use RuntimeException;
 
-#[AsValidationRule]
+#[AsValidationRulePlugin]
 final class ZeroArgPlugin {}
 
-#[AsValidationRule(ValidationPhase::Schema)]
+#[AsValidationRulePlugin(ValidationPhase::Schema)]
 final class StaticCreatePlugin
 {
     public function __construct(public readonly string $source) {}
@@ -26,13 +26,13 @@ final class StaticCreatePlugin
     }
 }
 
-#[AsValidationRule]
+#[AsValidationRulePlugin]
 final class RequiredDependencyPlugin
 {
     public function __construct(public readonly string $required) {}
 }
 
-#[AsOperationExecutor(OperationProtocol::Http)]
+#[AsOperationExecutorPlugin(OperationProtocol::Http)]
 final class DiBoundExecutorPlugin
 {
     public function __construct(public readonly object $service) {}
@@ -43,9 +43,9 @@ afterEach(function (): void {
 });
 
 it('discovers plugins declared in installed packages composer.json plugin directories', function (): void {
-    $normalizers = PluginDiscovery::classesWith(AsSourceNormalizer::class);
-    $rules = PluginDiscovery::classesWith(AsValidationRule::class);
-    $executors = PluginDiscovery::classesWith(AsOperationExecutor::class);
+    $normalizers = PluginDiscovery::classesWith(AsSourceNormalizerPlugin::class);
+    $rules = PluginDiscovery::classesWith(AsValidationRulePlugin::class);
+    $executors = PluginDiscovery::classesWith(AsOperationExecutorPlugin::class);
 
     expect($normalizers)->not->toBeEmpty()
         ->and($rules)->not->toBeEmpty()
@@ -59,12 +59,12 @@ it('filters override classes by attribute and instantiates stateless plugins via
         DiBoundExecutorPlugin::class,
     ]);
 
-    expect(PluginDiscovery::classesWith(AsValidationRule::class))
+    expect(PluginDiscovery::classesWith(AsValidationRulePlugin::class))
         ->toBe([ZeroArgPlugin::class, StaticCreatePlugin::class])
-        ->and(PluginDiscovery::classesWith(AsOperationExecutor::class))
+        ->and(PluginDiscovery::classesWith(AsOperationExecutorPlugin::class))
         ->toBe([DiBoundExecutorPlugin::class]);
 
-    $instances = PluginDiscovery::instantiate(AsValidationRule::class);
+    $instances = PluginDiscovery::instantiate(AsValidationRulePlugin::class);
 
     expect($instances)->toHaveCount(2)
         ->and($instances[0])->toBeInstanceOf(ZeroArgPlugin::class)
@@ -75,6 +75,6 @@ it('filters override classes by attribute and instantiates stateless plugins via
 it('throws loudly when a stateless plugin requires constructor arguments without defaults or create()', function (): void {
     PluginDiscovery::overrideClasses([RequiredDependencyPlugin::class]);
 
-    expect(fn () => PluginDiscovery::instantiate(AsValidationRule::class))
+    expect(fn () => PluginDiscovery::instantiate(AsValidationRulePlugin::class))
         ->toThrow(RuntimeException::class, 'cannot be auto-instantiated');
 });

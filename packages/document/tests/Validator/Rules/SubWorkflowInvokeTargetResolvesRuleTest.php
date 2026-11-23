@@ -14,7 +14,7 @@ use Alama\Arazzo\Contracts\Spec\StepIo;
 use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Contracts\Validation\ErrorCollector;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
-use Alama\Arazzo\Document\Validator\Rules\SubWorkflowInvokeTargetResolvesRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\SubWorkflowInvokeTargetResolvesRule;
 
 function docWithInvoke(string $targetId, array $workflowIds = ['w', 'ride-reconcile']): ArazzoDocument
 {

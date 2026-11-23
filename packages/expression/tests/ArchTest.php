@@ -52,3 +52,10 @@ arch('expression has zero dependencies on document/runner/sources/evaluation')
     ->not->toUse('Alama\Arazzo\Runner')
     ->not->toUse('Alama\Arazzo\Sources')
     ->not->toUse('Alama\Arazzo\Evaluation');
+
+arch('in-house expression validation rules use internal collaborators rather than ExpressionEngine facade')
+    ->expect('Alama\Arazzo\Expression\Plugins\ValidationRule')
+    ->not->toUse([
+        'Alama\Arazzo\Expression\ExpressionEngine',
+        'Alama\Arazzo\Expression\Interfaces\ExpressionEngineInterface',
+    ]);

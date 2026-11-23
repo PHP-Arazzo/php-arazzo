@@ -15,7 +15,7 @@ use Alama\Arazzo\Contracts\Spec\StepFlow;
 use Alama\Arazzo\Contracts\Spec\StepIo;
 use Alama\Arazzo\Contracts\Spec\StepTarget;
 use Alama\Arazzo\Protocol\Soap\Execution\WsdlOperationResolver;
-use Alama\Arazzo\Protocol\Soap\Normalizer\WsdlSourceNormalizer;
+use Alama\Arazzo\Protocol\Soap\Plugins\SourceNormalizer\WsdlSourceNormalizer;
 use Alama\Arazzo\Sources\Resolver\Fetchers\LocalFetcher;
 use RuntimeException;
 

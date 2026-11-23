@@ -180,6 +180,10 @@ it('immutably seeds in-memory documents via withDocument() and preserves them ac
         ->and($rebound->resolve($desc))->toBe($seeded);
 });
 
+afterEach(function (): void {
+    SourceNormalizerRegistry::reset();
+});
+
 it('resolves normalizers from SourceNormalizerRegistry by default and lets withNormalizer() override per instance', function (): void {
     $globalCalled = false;
     $globalNormalizer = new class($globalCalled) implements SourceNormalizerInterface

@@ -8,7 +8,7 @@ use Alama\Arazzo\Contracts\Interfaces\ValidationRuleInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Validation\ErrorCollector;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
-use Alama\Arazzo\Document\Validator\Rules\ReceiveStepSuccessCriteriaRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\ReceiveStepSuccessCriteriaRule;
 use Alama\Arazzo\Document\Validator\RuleSet;
 
 class DummyRule implements ValidationRuleInterface

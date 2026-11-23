@@ -20,7 +20,7 @@ composer require php-arazzo/arazzo-document
 >
 > - For full validation including runtime expressions (`expr.*`), selector versions, and `jsonpath` criteria (`expr.jsonpath_condition`), also install `php-arazzo/arazzo-expression` — or install the default umbrella package **`php-arazzo/arazzo-core`**, which bundles them together.
 > - Protocol-specific step rules (`step.wsdl_step`, `step.rpc_step`) auto-activate whenever `php-arazzo/arazzo-protocol-soap` or `php-arazzo/arazzo-protocol-rpc` is installed.
-> - All installed packages' rules are discovered automatically by `ValidationRuleRegistry` via Composer's `extra.arazzo.plugins` manifest and `#[AsValidationRule]` attributes — no manual wiring required.
+> - All installed packages' rules are discovered automatically by `ValidationRuleRegistry` via Composer's `extra.arazzo.plugins` manifest (`src/Plugins/ValidationRule`) and `#[AsValidationRulePlugin]` attributes — no manual wiring required.
 
 ---
 
@@ -115,7 +115,7 @@ $documentFacade = Document::create()->withDecodePolicy($policy);
 ```
 
 ### 5. Registering Custom Validation Rules
-Register custom rules implementing `ValidationRuleInterface` either per-instance via `withRule()` or globally via `ValidationRuleRegistry::create()` (or declare them in your `composer.json` under `extra.arazzo.plugins` with `#[AsValidationRule]`):
+Register custom rules implementing `ValidationRuleInterface` either per-instance via `withRule()` or globally via `ValidationRuleRegistry::create()` (or declare them in your `composer.json` under `extra.arazzo.plugins` with `#[AsValidationRulePlugin]`):
 
 ```php
 use Alama\Arazzo\Document\Document;

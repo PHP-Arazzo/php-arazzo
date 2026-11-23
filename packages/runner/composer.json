@@ -52,7 +52,7 @@
     "extra": {
         "arazzo": {
             "plugins": [
-                "src/Sync"
+                "src/Plugins/OperationExecutor"
             ]
         }
     }

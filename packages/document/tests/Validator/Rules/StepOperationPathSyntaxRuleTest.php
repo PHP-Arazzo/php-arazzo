@@ -9,8 +9,7 @@ use Alama\Arazzo\Contracts\Spec\Enum\SpecVersion;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Validation\ErrorCollector;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
-use Alama\Arazzo\Expression\ExpressionEngine;
-use Alama\Arazzo\Expression\Validation\Rules\StepOperationPathSyntaxRule;
+use Alama\Arazzo\Expression\Plugins\ValidationRule\StepOperationPathSyntaxRule;
 use Alama\Arazzo\Tests\Support\Fx;
 
 it('flags missing hash, unknown source, empty pointer, and non-slash pointer', function (): void {
@@ -27,7 +26,7 @@ it('flags missing hash, unknown source, empty pointer, and non-slash pointer', f
         sources: [new SourceDescription('src', '/u', SourceType::Openapi)],
     );
     $ec = new ErrorCollector();
-    (new StepOperationPathSyntaxRule(new ExpressionEngine()))->check($doc, SymbolTable::build($doc), $ec);
+    (new StepOperationPathSyntaxRule())->check($doc, SymbolTable::build($doc), $ec);
     expect(count($ec->errors()))->toBeGreaterThanOrEqual(4);
 });
 
@@ -37,7 +36,7 @@ it('accepts a canonical source expression that names a declared source', functio
         sources: [new SourceDescription('src', '/u', SourceType::Openapi)],
     );
     $ec = new ErrorCollector();
-    (new StepOperationPathSyntaxRule(new ExpressionEngine()))->check($doc, SymbolTable::build($doc), $ec);
+    (new StepOperationPathSyntaxRule())->check($doc, SymbolTable::build($doc), $ec);
 
     expect($ec->errors())->toBeEmpty();
 });
@@ -48,7 +47,7 @@ it('accepts a JSON pointer that contains a closing brace', function (): void {
         sources: [new SourceDescription('src', '/u', SourceType::Openapi)],
     );
     $ec = new ErrorCollector();
-    (new StepOperationPathSyntaxRule(new ExpressionEngine()))->check($doc, SymbolTable::build($doc), $ec);
+    (new StepOperationPathSyntaxRule())->check($doc, SymbolTable::build($doc), $ec);
 
     expect($ec->errors())->toBeEmpty();
 });
@@ -59,7 +58,7 @@ it('honours the document spec version for the legacy ${...} spelling', function 
         sources: [new SourceDescription('src', '/u', SourceType::Openapi)],
         specVersion: $version,
     );
-    $rule = new StepOperationPathSyntaxRule(new ExpressionEngine());
+    $rule = new StepOperationPathSyntaxRule();
 
     $v10 = $document(SpecVersion::V1_0);
     $ec10 = new ErrorCollector();
@@ -79,7 +78,7 @@ it('reports a malformed source expression instead of throwing', function (): voi
         sources: [new SourceDescription('src', '/u', SourceType::Openapi)],
     );
     $ec = new ErrorCollector();
-    (new StepOperationPathSyntaxRule(new ExpressionEngine()))->check($doc, SymbolTable::build($doc), $ec);
+    (new StepOperationPathSyntaxRule())->check($doc, SymbolTable::build($doc), $ec);
 
     expect($ec->errors())->toHaveCount(1)
         ->and($ec->errors()[0]->code)->toBe('step.operationpath_syntax');
@@ -91,7 +90,7 @@ it('flags undeclared source in operationPath', function (): void {
         sources: [new SourceDescription('src', '/u', SourceType::Openapi)],
     );
     $ec = new ErrorCollector();
-    (new StepOperationPathSyntaxRule(new ExpressionEngine()))->check($doc, SymbolTable::build($doc), $ec);
+    (new StepOperationPathSyntaxRule())->check($doc, SymbolTable::build($doc), $ec);
 
     expect($ec->errors())->toHaveCount(1)
         ->and($ec->errors()[0]->code)->toBe('step.operationpath_syntax')
@@ -104,7 +103,7 @@ it('flags JSON pointer not starting with slash', function (): void {
         sources: [new SourceDescription('src', '/u', SourceType::Openapi)],
     );
     $ec = new ErrorCollector();
-    (new StepOperationPathSyntaxRule(new ExpressionEngine()))->check($doc, SymbolTable::build($doc), $ec);
+    (new StepOperationPathSyntaxRule())->check($doc, SymbolTable::build($doc), $ec);
 
     expect($ec->errors())->toHaveCount(1)
         ->and($ec->errors()[0]->code)->toBe('step.operationpath_syntax')
@@ -117,7 +116,7 @@ it('handles template source expression with multiple segments', function (): voi
         sources: [new SourceDescription('src', '/u', SourceType::Openapi)],
     );
     $ec = new ErrorCollector();
-    (new StepOperationPathSyntaxRule(new ExpressionEngine()))->check($doc, SymbolTable::build($doc), $ec);
+    (new StepOperationPathSyntaxRule())->check($doc, SymbolTable::build($doc), $ec);
 
     expect($ec->errors())->toHaveCount(1)
         ->and($ec->errors()[0]->code)->toBe('step.operationpath_syntax');

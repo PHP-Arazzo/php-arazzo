@@ -26,7 +26,7 @@ final readonly class RuleSet
 
     /**
      * Builds the default RuleSet from {@see ValidationRuleRegistry::create()},
-     * which auto-discovers all `#[AsValidationRule]` rules across installed
+     * which auto-discovers all `#[AsValidationRulePlugin]` rules across installed
      * packages (`arazzo-document`, `arazzo-expression`, protocol packages, and
      * user applications).
      *

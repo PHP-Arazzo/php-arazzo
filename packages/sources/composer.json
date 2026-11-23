@@ -49,7 +49,7 @@
     "extra": {
         "arazzo": {
             "plugins": [
-                "src/Normalizer"
+                "src/Plugins/SourceNormalizer"
             ]
         }
     }

@@ -18,8 +18,8 @@ use Alama\Arazzo\Contracts\Spec\StepIo;
 use Alama\Arazzo\Contracts\Spec\SuccessCriterion;
 use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
-use Alama\Arazzo\Expression\Validation\Support\ExpressionSite;
-use Alama\Arazzo\Expression\Validation\Support\ExpressionWalker;
+use Alama\Arazzo\Expression\Data\ExpressionSite;
+use Alama\Arazzo\Expression\Support\ExpressionWalker;
 
 it('walks every expression context', function (): void {
     $body = new RequestBody(

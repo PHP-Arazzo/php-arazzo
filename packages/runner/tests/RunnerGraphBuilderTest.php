@@ -150,6 +150,10 @@ function builderDocument(): ArazzoDocument
     );
 }
 
+afterEach(function (): void {
+    OperationExecutorRegistry::reset();
+});
+
 it('builds a queue worker from worker-only seams without protocol value seams', function (): void {
     $definitions = new InMemoryDefinitionRegistry();
     $definitionId = $definitions->register(builderDocument());

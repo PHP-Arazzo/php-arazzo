@@ -14,7 +14,7 @@ use Alama\Arazzo\Contracts\Spec\StepIo;
 use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Contracts\Validation\ErrorCollector;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
-use Alama\Arazzo\Document\Validator\Rules\StepTimeoutRequires11Rule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\StepTimeoutRequires11Rule;
 
 /**
  * @param  int|null  $timeout  timeout in milliseconds

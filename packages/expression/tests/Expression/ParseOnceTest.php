@@ -8,6 +8,7 @@ use Alama\Arazzo\Contracts\Spec\Expression;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
 use Alama\Arazzo\Expression\Ast\ExpressionAst;
 use Alama\Arazzo\Expression\Data\EvaluationContext;
+use Alama\Arazzo\Expression\Data\ExpressionReference;
 use Alama\Arazzo\Expression\Exceptions\ExpressionSyntaxException;
 use Alama\Arazzo\Expression\ExpressionDependencyProvider;
 use Alama\Arazzo\Expression\ExpressionEvaluator;
@@ -27,6 +28,16 @@ final class CountingExpressionParser implements ParserInterface
         $this->parses++;
 
         return $this->inner->parse($raw);
+    }
+
+    public function parseOrError(string $raw): ExpressionAst|ExpressionSyntaxException
+    {
+        return $this->inner->parseOrError($raw);
+    }
+
+    public function projectReferences(string $raw): ?ExpressionReference
+    {
+        return $this->inner->projectReferences($raw);
     }
 }
 

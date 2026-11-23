@@ -9,7 +9,7 @@ use Alama\Arazzo\Contracts\Spec\Components;
 use Alama\Arazzo\Contracts\Spec\Reusable;
 use Alama\Arazzo\Contracts\Validation\ErrorCollector;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
-use Alama\Arazzo\Document\Validator\Rules\ActionReusableRefResolvesRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\ActionReusableRefResolvesRule;
 use Alama\Arazzo\Tests\Support\Fx;
 
 it('skips non-reusable, flags wrong prefix and unresolved, resolves known', function (): void {

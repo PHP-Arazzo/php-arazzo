@@ -21,10 +21,10 @@ use Alama\Arazzo\Contracts\Spec\SuccessCriterion;
 use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Contracts\Validation\ErrorCollector;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
-use Alama\Arazzo\Document\Validator\Rules\StepCriteriaTypeContextRule;
-use Alama\Arazzo\Document\Validator\Rules\StepParametersHaveNameRule;
-use Alama\Arazzo\Document\Validator\Rules\StepRequestBodyReplacementsTargetRule;
-use Alama\Arazzo\Document\Validator\Rules\StepSuccessCriteriaConditionRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\StepCriteriaTypeContextRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\StepParametersHaveNameRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\StepRequestBodyReplacementsTargetRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\StepSuccessCriteriaConditionRule;
 
 function stepContentDoc(Step $s): ArazzoDocument
 {

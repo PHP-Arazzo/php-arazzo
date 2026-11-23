@@ -6,7 +6,7 @@ namespace Alama\Arazzo\Tests\Validation\Rules;
 
 use Alama\Arazzo\Contracts\Validation\ErrorCollector;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
-use Alama\Arazzo\Document\Validator\Rules\WorkflowDependsOnNoCycleRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\WorkflowDependsOnNoCycleRule;
 use Alama\Arazzo\Tests\Support\Fx;
 
 it('reports a single cycle only', function (): void {

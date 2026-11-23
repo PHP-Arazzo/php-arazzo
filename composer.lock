@@ -1382,7 +1382,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/document",
-                "reference": "28d559f54abffb4870ed0b42b688037f9ac720f6"
+                "reference": "d1941fc5e148be62982c1948f1fd07d5e0a49684"
             },
             "require": {
                 "justinrainbow/json-schema": "^6.0",
@@ -1404,7 +1404,7 @@
             "extra": {
                 "arazzo": {
                     "plugins": [
-                        "src/Validator"
+                        "src/Plugins/ValidationRule"
                     ]
                 }
             },
@@ -1471,7 +1471,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/evaluation",
-                "reference": "122f31b31e1d47b240e08ccec8d33dd36478f819"
+                "reference": "e64a52ee0f03643a12a312096c5226aa26d604a5"
             },
             "require": {
                 "php": "^8.4",
@@ -1494,7 +1494,8 @@
             "extra": {
                 "arazzo": {
                     "plugins": [
-                        "src/Plugins"
+                        "src/Plugins/Expression",
+                        "src/Plugins/Criterion"
                     ]
                 }
             },
@@ -1522,7 +1523,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/expression",
-                "reference": "04bd822e1091fc1b3030c566e2e5ebf3ab5e5a5a"
+                "reference": "bf987df0800ed099ea28246f9cfc70238c116f43"
             },
             "require": {
                 "php": "^8.4",
@@ -1545,8 +1546,8 @@
             "extra": {
                 "arazzo": {
                     "plugins": [
-                        "src/Plugins",
-                        "src/Validation"
+                        "src/Plugins/Selector",
+                        "src/Plugins/ValidationRule"
                     ]
                 }
             },
@@ -1574,7 +1575,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/protocol-http",
-                "reference": "1e03b9ab94f304d1b9b0b92013e63e80d8db3bc4"
+                "reference": "f794a361051779dea2906b3e05774950ccdbd536"
             },
             "require": {
                 "cebe/php-openapi": "^1.7",
@@ -1599,7 +1600,7 @@
             "extra": {
                 "arazzo": {
                     "plugins": [
-                        "src/Protocol"
+                        "src/Plugins/OperationExecutor"
                     ]
                 }
             },
@@ -1635,7 +1636,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/protocol-rpc",
-                "reference": "e31b445a4b56c1cf1a5442736c1420fe1b27fb19"
+                "reference": "3aa6be0797d3fef0d2f6f222158f95bf4b9c9fb3"
             },
             "require": {
                 "php": "^8.4",
@@ -1657,9 +1658,9 @@
             "extra": {
                 "arazzo": {
                     "plugins": [
-                        "src/Normalizer",
-                        "src/Validation",
-                        "src/Execution"
+                        "src/Plugins/SourceNormalizer",
+                        "src/Plugins/ValidationRule",
+                        "src/Plugins/OperationExecutor"
                     ]
                 }
             },
@@ -1698,7 +1699,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/protocol-soap",
-                "reference": "bf1dd0e6fa36ccaf48d0097bfdf2475407c2911e"
+                "reference": "083849f33ad0a93b1b52462f1092b53121d9d7b5"
             },
             "require": {
                 "ext-dom": "*",
@@ -1722,9 +1723,9 @@
             "extra": {
                 "arazzo": {
                     "plugins": [
-                        "src/Normalizer",
-                        "src/Validation",
-                        "src/Execution"
+                        "src/Plugins/SourceNormalizer",
+                        "src/Plugins/ValidationRule",
+                        "src/Plugins/OperationExecutor"
                     ]
                 }
             },
@@ -1760,7 +1761,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/runner",
-                "reference": "834f4c5c7466059547f2c4c2a931f7a4f93044ae"
+                "reference": "90e581315278aaed01c0ce966c2285bdcf1d38ba"
             },
             "require": {
                 "guzzlehttp/guzzle": "^7.9",
@@ -1790,7 +1791,7 @@
             "extra": {
                 "arazzo": {
                     "plugins": [
-                        "src/Sync"
+                        "src/Plugins/OperationExecutor"
                     ]
                 }
             },
@@ -1820,7 +1821,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/sources",
-                "reference": "3b9071a0adb9c38819233fceb8b342a9373682e5"
+                "reference": "0204194c4c4be2bf40495920e3cc3a3255225ce2"
             },
             "require": {
                 "ext-dom": "*",
@@ -1849,7 +1850,7 @@
             "extra": {
                 "arazzo": {
                     "plugins": [
-                        "src/Normalizer"
+                        "src/Plugins/SourceNormalizer"
                     ]
                 }
             },

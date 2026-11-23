@@ -6,22 +6,22 @@ namespace Alama\Arazzo\Contracts\Tests\Attributes;
 
 use Alama\Arazzo\Contracts\Attributes\AsCriterionPlugin;
 use Alama\Arazzo\Contracts\Attributes\AsExpressionPlugin;
-use Alama\Arazzo\Contracts\Attributes\AsOperationExecutor;
-use Alama\Arazzo\Contracts\Attributes\AsSourceNormalizer;
-use Alama\Arazzo\Contracts\Attributes\AsValidationRule;
+use Alama\Arazzo\Contracts\Attributes\AsOperationExecutorPlugin;
+use Alama\Arazzo\Contracts\Attributes\AsSourceNormalizerPlugin;
+use Alama\Arazzo\Contracts\Attributes\AsValidationRulePlugin;
 use Alama\Arazzo\Contracts\Spec\Enum\CriterionType;
 use Alama\Arazzo\Contracts\Spec\Enum\ExpressionType;
 use Alama\Arazzo\Contracts\Spec\Enum\OperationProtocol;
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
 use Alama\Arazzo\Contracts\Validation\ValidationPhase;
 
-it('instantiates AsSourceNormalizer attribute with SourceType enum', function (): void {
-    $attr = new AsSourceNormalizer(SourceType::Openapi);
+it('instantiates AsSourceNormalizerPlugin attribute with SourceType enum', function (): void {
+    $attr = new AsSourceNormalizerPlugin(SourceType::Openapi);
     expect($attr->type)->toBe(SourceType::Openapi);
 });
 
-it('instantiates AsOperationExecutor attribute with OperationProtocol enum', function (): void {
-    $attr = new AsOperationExecutor(OperationProtocol::Soap);
+it('instantiates AsOperationExecutorPlugin attribute with OperationProtocol enum', function (): void {
+    $attr = new AsOperationExecutorPlugin(OperationProtocol::Soap);
     expect($attr->protocol)->toBe(OperationProtocol::Soap);
 });
 
@@ -35,7 +35,7 @@ it('instantiates AsExpressionPlugin attribute with ExpressionType enum', functio
     expect($attr->type)->toBe(ExpressionType::JsonPath);
 });
 
-it('instantiates AsValidationRule attribute with ValidationPhase enum defaulting to Semantic', function (): void {
-    expect((new AsValidationRule())->phase)->toBe(ValidationPhase::Semantic)
-        ->and((new AsValidationRule(ValidationPhase::Schema))->phase)->toBe(ValidationPhase::Schema);
+it('instantiates AsValidationRulePlugin attribute with ValidationPhase enum defaulting to Semantic', function (): void {
+    expect((new AsValidationRulePlugin())->phase)->toBe(ValidationPhase::Semantic)
+        ->and((new AsValidationRulePlugin(ValidationPhase::Schema))->phase)->toBe(ValidationPhase::Schema);
 });

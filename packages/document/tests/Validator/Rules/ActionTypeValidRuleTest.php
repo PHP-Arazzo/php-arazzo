@@ -9,7 +9,7 @@ use Alama\Arazzo\Contracts\Spec\Components;
 use Alama\Arazzo\Contracts\Spec\Info;
 use Alama\Arazzo\Contracts\Validation\ErrorCollector;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
-use Alama\Arazzo\Document\Validator\Rules\ActionTypeValidRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\ActionTypeValidRule;
 
 it('is a no-op with reserved code', function (): void {
     $doc = new ArazzoDocument('1.0.0', new Info('T', null, null, '1'), [], [], new Components([], [], [], []), []);

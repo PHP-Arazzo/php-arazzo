@@ -36,7 +36,8 @@ when a boundary consciously moves.
 | contracts | `contracts:Interfaces` | `Psr` | 2 |
 | contracts | `contracts:Support` | `Psr` | 4 |
 | document | `document:Parser` | `Symfony` | 2 |
-| document | `document:Validator` | `JsonSchema` | 7 |
+| document | `document:Plugins` | `JsonSchema` | 4 |
+| document | `document:Validator` | `JsonSchema` | 3 |
 | engine | `engine:Execution` | `Psr` | 4 |
 | engine | `engine:Execution` | `cebe` | 2 |
 | engine | `engine:Runtime` | `OpenTelemetry` | 23 |
@@ -44,11 +45,13 @@ when a boundary consciously moves.
 | protocol-http | `protocol-http:Execution` | `GuzzleHttp` | 2 |
 | protocol-http | `protocol-http:Execution` | `Psr` | 8 |
 | protocol-http | `protocol-http:Execution` | `cebe` | 8 |
-| protocol-http | `protocol-http:Protocol` | `Psr` | 6 |
+| protocol-http | `protocol-http:Plugins` | `Psr` | 6 |
 | protocol-http | `protocol-http:Resolver` | `cebe` | 6 |
-| protocol-rpc | `protocol-rpc:Execution` | `Psr` | 4 |
+| protocol-rpc | `protocol-rpc:Execution` | `Psr` | 3 |
+| protocol-rpc | `protocol-rpc:Plugins` | `Psr` | 1 |
 | protocol-rpc | `protocol-rpc:Transfer` | `Psr` | 1 |
-| protocol-soap | `protocol-soap:Execution` | `Psr` | 4 |
+| protocol-soap | `protocol-soap:Execution` | `Psr` | 3 |
+| protocol-soap | `protocol-soap:Plugins` | `Psr` | 1 |
 | protocol-soap | `protocol-soap:Transfer` | `Psr` | 1 |
 | runner | `runner:Async` | `OpenTelemetry` | 2 |
 | runner | `runner:Async` | `Psr` | 3 |
@@ -60,12 +63,13 @@ when a boundary consciously moves.
 | sources | `sources:_` | `GuzzleHttp` | 1 |
 | sources | `sources:_` | `Psr` | 4 |
 
-**13 library boundary violation(s):**
+**14 library boundary violation(s):**
 - `cli:Console` imports `GuzzleHttp\*` (2 refs)
 - `cli:Console` imports `Symfony\*` (30 refs)
 - `contracts:Discovery` imports `Composer\*` (1 refs)
 - `document:Parser` imports `Symfony\*` (2 refs)
-- `document:Validator` imports `JsonSchema\*` (7 refs)
+- `document:Plugins` imports `JsonSchema\*` (4 refs)
+- `document:Validator` imports `JsonSchema\*` (3 refs)
 - `engine:Execution` imports `cebe\*` (2 refs)
 - `engine:Runtime` imports `OpenTelemetry\*` (23 refs)
 - `protocol-http:Execution` imports `GuzzleHttp\*` (2 refs)
@@ -91,12 +95,12 @@ Grouped cross-package uses of concrete internals (AST nodes, evaluators, resolve
 
 | From package | Target | In package | Refs | Example site |
 |---|---|---|---:|---|
-| `document` | `AsValidationRule` | `contracts` | 51 | `ValidationRuleRegistry` |
-| `document` | `ErrorCollector` | `contracts` | 53 | `Validator` |
+| `document` | `AsValidationRulePlugin` | `contracts` | 51 | `StepParameterDuplicateRule` |
+| `document` | `ErrorCollector` | `contracts` | 53 | `StepParameterDuplicateRule` |
 | `document` | `ImplicitDependencies` | `contracts` | 1 | `StepDependsOnNoCycleRule` |
 | `document` | `KnownOperations` | `contracts` | 3 | `Validator` |
 | `document` | `PluginDiscovery` | `contracts` | 1 | `ValidationRuleRegistry` |
-| `document` | `SymbolTable` | `contracts` | 53 | `Validator` |
+| `document` | `SymbolTable` | `contracts` | 53 | `StepParameterDuplicateRule` |
 | `document` | `ValidationResult` | `contracts` | 3 | `Validator` |
 | `document` | `WorkflowSymbols` | `contracts` | 1 | `ActionGotoTargetResolvesRule` |
 | `evaluation` | `AsCriterionPlugin` | `contracts` | 2 | `JsonPathCriterionPlugin` |
@@ -105,13 +109,13 @@ Grouped cross-package uses of concrete internals (AST nodes, evaluators, resolve
 | `evaluation` | `Parser` | `expression` | 1 | `AccessorParser` |
 | `evaluation` | `PluginDiscovery` | `contracts` | 2 | `ExpressionEvaluatorRegistry` |
 | `expression` | `AsSelectorPlugin` | `contracts` | 4 | `XpathSelectorPlugin` |
-| `expression` | `AsValidationRule` | `contracts` | 14 | `ExpressionUnresolvedStepRefRule` |
+| `expression` | `AsValidationRulePlugin` | `contracts` | 14 | `ExpressionUnresolvedStepRefRule` |
 | `expression` | `ErrorCollector` | `contracts` | 14 | `ExpressionUnresolvedStepRefRule` |
 | `expression` | `PluginDiscovery` | `contracts` | 1 | `SelectorPluginRegistry` |
 | `expression` | `StepSymbols` | `contracts` | 1 | `ExpressionUnresolvedStepRefRule` |
-| `expression` | `SymbolTable` | `contracts` | 15 | `ExpressionWalker` |
-| `expression` | `WorkflowSymbols` | `contracts` | 4 | `ExpressionWalker` |
-| `protocol-http` | `AsOperationExecutor` | `contracts` | 2 | `HttpStepExecutor` |
+| `expression` | `SymbolTable` | `contracts` | 15 | `ExpressionUnresolvedStepRefRule` |
+| `expression` | `WorkflowSymbols` | `contracts` | 4 | `ExpressionSite` |
+| `protocol-http` | `AsOperationExecutorPlugin` | `contracts` | 2 | `HttpStepExecutor` |
 | `protocol-http` | `EvaluationContext` | `expression` | 2 | `StepOutputExtractor` |
 | `protocol-http` | `IdempotencyKeyInjector` | `engine` | 1 | `HttpStepExecutor` |
 | `protocol-http` | `OpenApi30Normalizer` | `sources` | 1 | `OpenApiOperationResolver` |
@@ -124,20 +128,20 @@ Grouped cross-package uses of concrete internals (AST nodes, evaluators, resolve
 | `protocol-http` | `SourceReferenceParser` | `sources` | 1 | `OpenApiOperationResolver` |
 | `protocol-http` | `Sources` | `sources` | 1 | `OpenApiOperationResolver` |
 | `protocol-http` | `TypeCaster` | `engine` | 2 | `StepOutputExtractor` |
-| `protocol-rpc` | `AsOperationExecutor` | `contracts` | 1 | `RpcOperationExecutor` |
-| `protocol-rpc` | `AsSourceNormalizer` | `contracts` | 1 | `ProtoSourceNormalizer` |
-| `protocol-rpc` | `AsValidationRule` | `contracts` | 1 | `RpcStepRule` |
+| `protocol-rpc` | `AsOperationExecutorPlugin` | `contracts` | 1 | `RpcOperationExecutor` |
+| `protocol-rpc` | `AsSourceNormalizerPlugin` | `contracts` | 1 | `ProtoSourceNormalizer` |
+| `protocol-rpc` | `AsValidationRulePlugin` | `contracts` | 1 | `RpcStepRule` |
 | `protocol-rpc` | `ErrorCollector` | `contracts` | 1 | `RpcStepRule` |
 | `protocol-rpc` | `RequestCompiler` | `engine` | 1 | `RpcRequestBuilder` |
 | `protocol-rpc` | `ReusableParameterResolver` | `engine` | 1 | `RpcRequestBuilder` |
 | `protocol-rpc` | `SymbolTable` | `contracts` | 1 | `RpcStepRule` |
-| `protocol-soap` | `AsOperationExecutor` | `contracts` | 1 | `SoapOperationExecutor` |
-| `protocol-soap` | `AsSourceNormalizer` | `contracts` | 1 | `WsdlSourceNormalizer` |
-| `protocol-soap` | `AsValidationRule` | `contracts` | 1 | `WsdlStepRule` |
+| `protocol-soap` | `AsOperationExecutorPlugin` | `contracts` | 1 | `SoapOperationExecutor` |
+| `protocol-soap` | `AsSourceNormalizerPlugin` | `contracts` | 1 | `WsdlSourceNormalizer` |
+| `protocol-soap` | `AsValidationRulePlugin` | `contracts` | 1 | `WsdlStepRule` |
 | `protocol-soap` | `ErrorCollector` | `contracts` | 1 | `WsdlStepRule` |
 | `protocol-soap` | `RequestCompiler` | `engine` | 1 | `SoapRequestBuilder` |
 | `protocol-soap` | `SymbolTable` | `contracts` | 1 | `WsdlStepRule` |
-| `runner` | `AsOperationExecutor` | `contracts` | 2 | `SubWorkflowStepExecutor` |
+| `runner` | `AsOperationExecutorPlugin` | `contracts` | 2 | `SubWorkflowStepExecutor` |
 | `runner` | `DependencyAnalyzer` | `contracts` | 1 | `StepOutcomeHandler` |
 | `runner` | `DependencyGraph` | `contracts` | 2 | `StepOutcomeHandler` |
 | `runner` | `EvaluationContext` | `expression` | 5 | `SubWorkflowInvoker` |
@@ -151,7 +155,7 @@ Grouped cross-package uses of concrete internals (AST nodes, evaluators, resolve
 | `runner` | `ReusableParameterResolver` | `engine` | 1 | `SubWorkflowStepExecutor` |
 | `runner` | `StepParameterMerger` | `engine` | 2 | `StepExecutionWorker` |
 | `runner` | `ValidationResult` | `contracts` | 3 | `PreflightFailureException` |
-| `sources` | `AsSourceNormalizer` | `contracts` | 2 | `OpenApiSourceNormalizer` |
+| `sources` | `AsSourceNormalizerPlugin` | `contracts` | 2 | `OpenApiSourceNormalizer` |
 | `sources` | `DecodePolicy` | `document` | 1 | `DefaultSourceResolver` |
 | `sources` | `Decoders` | `document` | 1 | `DefaultSourceResolver` |
 | `sources` | `KnownOperations` | `contracts` | 2 | `Sources` |
