@@ -34,7 +34,20 @@ same pull request.
 | **Goto** | `onSuccess.goto.stepId` / `onFailure.goto.stepId` transfers execution to a target step, skipping intermediates (issue #382 R3/R4). |
 | **Success criteria** | `successCriteria` evaluated via `EvaluationEngine`: regex match, body comparison, simple comparison (issue #382 R5). |
 | **Sub-workflow (workflowId step)** | A step that references another workflow by `workflowId`; the child runs and its outputs are exposed as `$steps.<childStepId>.outputs` (issue #382 R6). |
-| **ExecutionState** | Canonical owner of workflow-output state: the state↔context mapping in `packages/contracts/src/State/ExecutionState.php` (issue #341 P0). |
+| **ExecutionState** | Mutable in-flight working state of an active run (`packages/contracts/src/State/ExecutionState.php` — inputs, step results, outputs, attempts, budget, call stack). Stored in hot state between queued jobs; evictable, not the source of truth for audit or replay. |
+| **ExecutionHistory** | Append-only, monotonically sequenced log of execution facts — the canonical source of truth for audit trails, deterministic replay, and lease fencing (`persist-68`). _Avoid_: `EventLedger`. |
+| **ExecutionSnapshot** | Immutable, content-hashed (`sha256`), sequence-pinned durable freeze of `ExecutionState` written after terminal steps or joins so workers resume crashed or long-parked runs in O(1) without full-history replay (`persist-70`, `persist-120`). _Avoid_: `SuperstepCheckpoint`. |
+| **Runner** | Synchronous, protocol-agnostic, in-process workflow runner facade (`Alama\Arazzo\Runner\Runner`) that executes steps exclusively via `OperationExecutorPluginInterface` plugins. _Avoid_: `RunnerFacade`. |
+| **AsyncRunner** | Durable, queue-driven workflow runner facade (`Alama\Arazzo\Runner\AsyncRunner`) for hosts executing persisted steps and resuming suspended correlations. _Avoid_: `RunnerGraphBuilder`, `AsyncGraphSeams`. |
+| **ExecutionResult** | Immutable typed outcome returned by `Runner::run()`, carrying workflow status (`ExecutionStatus`), outputs, per-step `StepResult` verdicts, steps spent, and call stack. |
+| **Preflight** | Execution-readiness gate run before the first step side effect: validates workflow `inputs` against JSON Schema (always when enabled) and step operation resolution when `OperationResolverInterface`s are registered. |
+| **OperationExecutorRegistry** | Concrete singleton registry (`Alama\Arazzo\Runner\Registries\OperationExecutorRegistry`) holding globally registered `OperationExecutorPluginInterface` plugins ordered by `OperationProtocol`, overridden per-instance via `withExecutor()`. |
+| **ExecutionStore** | Single coarse persistence port (`Alama\Arazzo\Runner\ExecutionStoreInterface`) injected into `AsyncRunner` via `withStore()`, owning in-flight execution state, lifecycle status, and pending correlations for OSS durable runs. |
+| **Policy (`*Policy`)** | Monorepo-wide convention for immutable rule/limit value objects (`final readonly`, `DEFAULT_*` constants, `::default()`, immutable `with*()` methods — e.g. `DecodePolicy`, `YamlPolicy`, `RetryPolicy`, `ExecutionPolicy`). _Avoid_: `*Options`, `*Settings`, `*Config` on public APIs. |
+| **ExecutionPolicy** | Immutable execution rules/limits DTO (`Alama\Arazzo\Runner\Policy\ExecutionPolicy`) configuring budgets (`maxSteps`, `maxWorkflowDepth`), retry, preflight, state TTL, and source-description-scoped policies. |
+| **SourcePolicy** | Strict, immutable per-source policy DTO (`Alama\Arazzo\Contracts\Policy\SourcePolicy`) addressed by `sourceDescriptions[*].name`, carrying server overrides, redacted `Credential`s, headers, transport settings, and protocol extensions so API settings never leak across sources. |
+| **Tracer** | Vendor-agnostic distributed tracing seam (`Alama\Arazzo\Contracts\Observability\TracerInterface`) shared across I/O and orchestration packages (defaulting to `NullTracer`), bridged to OpenTelemetry via an external adapter (`OtelTracer`). |
+| **Clock** | PSR-20 `ClockInterface` time provider injected via `withClock()` (defaulting to `SystemClock`) for deterministic timestamps, retry timing, and replayable execution. |
 
 ## 4. Validation
 
@@ -55,11 +68,11 @@ same pull request.
 | `packages/document` | Document parsing & validation rules (issues #388, document-level bugfixes). |
 | `packages/evaluation` | `EvaluationEngine` — success criteria evaluation (issue #382 R5). |
 | `packages/expression` | Runtime expression parsing & JSONPath (ABNF strictness, issue #386). |
-| `packages/runner` | Execution engine: `WorkflowExecutor`, `RunnerFacade`, `WorkflowDependencyResolver`, `StepExecutor` (issues #341, #382). |
-| `packages/protocol-http` | PSR-18 HTTP client services, mirrors of runner defaults (issue #334). |
-| `packages/sources` | Source resolution & reachability (issues #330–#332). |
-| `packages/cli` | `arazzo run` / `validate` commands, `RunCommand` (issue #334). |
-| `packages/laravel` | Laravel host integration, `AsyncGraphResolver`, `ProtocolHttpServiceProvider`. |
+| `packages/engine` | Transport-agnostic request pipeline helpers (`RequestCompiler`, `StepParameterMerger`, `IdempotencyKeyInjector`) and runtime state/policy/telemetry utilities. |
+| `packages/runner` | Protocol-agnostic execution engine: `Runner` (sync), `AsyncRunner` (durable/queue), `ExecutionResult`, `Preflight`, and workflow lifecycle events. |
+| `packages/protocol-http` | PSR-18 HTTP/OpenAPI + AsyncAPI protocol slice (`HttpProtocol`, `HttpStepExecutor`, response validation). |
+| `packages/sources` | Source resolution & reachability (`Sources`, `SourceNormalizerRegistry`). |
+| `packages/cli` | `arazzo run` / `validate` commands, `RunCommand`, `CliRunner`. |
 
 ## 6. Architecture decisions (ADRs)
 
@@ -70,6 +83,11 @@ same pull request.
 | ADR-003 | Runner semantics: retry/goto/criteria/workflowId via shared seam | #382 |
 | ADR-004 | Cross-workflow dependsOn + source qualification in RuleSet | #388 |
 | ADR-005 | Validation degrades gracefully on unreachable remote sources | #384 |
+| ADR-006 | Document package public interface & preflight boundary | #447 |
+| ADR-007 | Expression package public interface & unified plugin registries | #457 |
+| ADR-008 | `As<Name>Plugin` attributes & `src/Plugins/<Name>` directory convention | #457 |
+| ADR-009 | Runner package public interface (`Runner` / `AsyncRunner`), `ExecutionStore`, `ExecutionPolicy` & protocol-agnostic execution | — |
+| ADR-010 | Monorepo observability tiers, vendor-agnostic `TracerInterface` & `*Policy` value-object standard | — |
 
 ## 7. How to update this file
 
