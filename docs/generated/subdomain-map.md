@@ -80,7 +80,7 @@ flowchart LR
         S_protocol_rpc_Transfer["protocol-rpc:Transfer<br/><small>219 LOC</small>"]:::unknownDomain
         S_protocol_soap_Exceptions["protocol-soap:Exceptions<br/><small>16 LOC</small>"]:::unknownDomain
         S_protocol_soap_Execution["protocol-soap:Execution<br/><small>484 LOC</small>"]:::unknownDomain
-        S_protocol_soap_Plugins["protocol-soap:Plugins<br/><small>859 LOC</small>"]:::unknownDomain
+        S_protocol_soap_Plugins["protocol-soap:Plugins<br/><small>899 LOC</small>"]:::unknownDomain
         S_protocol_soap_Transfer["protocol-soap:Transfer<br/><small>203 LOC</small>"]:::unknownDomain
         S_protocol_soap_Validation["protocol-soap:Validation<br/><small>139 LOC</small>"]:::unknownDomain
         S_runner_Async["runner:Async<br/><small>1435 LOC</small>"]:::unknownDomain
@@ -110,7 +110,7 @@ flowchart LR
 | Core domain | 1 | 1,300 | 0 | 4% |
 | Supporting | 8 | 5,377 | 0 | 16% |
 | Generic subdomain | 6 | 1,678 | 0 | 5% |
-| Unclassified | 62 | 25,031 | 0 | 75% |
+| Unclassified | 62 | 25,071 | 0 | 75% |
 
 **Unclassified modules** — classify them in `SUBDOMAINS` or delete them:
 - `contracts:Attributes`

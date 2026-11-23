@@ -118,7 +118,6 @@ Concrete types over 300 LOC:
 | `ExecutionContext` | `engine:Runtime` | 553 |
 | `ExecutionState` | `contracts:State` | 465 |
 | `ProtoParser` | `protocol-rpc:Normalizer` | 446 |
-| `WsdlSourceNormalizer` | `protocol-soap:Plugins` | 446 |
 | `StepOutcomeHandler` | `runner:Async` | 418 |
 | `WorkflowContext` | `contracts:State` | 410 |
 | `StepExecutionWorker` | `runner:Async` | 408 |

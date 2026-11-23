@@ -156,7 +156,7 @@ quadrantChart
 | `protocol-rpc/Transfer` | 0.60 | 3 | 2 | 100% |
 | `protocol-soap/Exceptions` | 0.00 | 3 | 1 | 100% |
 | `protocol-soap/Execution` | 0.82 | 5 | 4 | 100% |
-| `protocol-soap/Plugins` | 0.94 | 7 | 3 | 100% |
+| `protocol-soap/Plugins` | 0.94 | 7 | 5 | 100% |
 | `protocol-soap/Resolver` | 1.00 | 1 | 1 | 100% |
 | `protocol-soap/Transfer` | 0.33 | 5 | 2 | 100% |
 | `protocol-soap/Validation` | 1.00 | 1 | 1 | 100% |

@@ -69,7 +69,7 @@ flowchart LR
     protocol_rpc_Transfer["Alama\Arazzo\Protocol\Rpc\Transfer"]:::coreNode
     protocol_soap_Exceptions["Alama\Arazzo\Protocol\Soap\Exceptions"]:::coreNode
     protocol_soap_Execution["Alama\Arazzo\Protocol\Soap\Execution"]:::coreNode
-    protocol_soap_Plugins["Alama\Arazzo\Protocol\Soap\Plugins\OperationExecutor"]:::coreNode
+    protocol_soap_Plugins["Alama\Arazzo\Protocol\Soap\Plugins\SourceNormalizer"]:::coreNode
     protocol_soap_Resolver["Alama\Arazzo\Protocol\Soap\Resolver"]:::coreNode
     protocol_soap_Transfer["Alama\Arazzo\Protocol\Soap\Transfer"]:::coreNode
     protocol_soap_Validation["Alama\Arazzo\Protocol\Soap\Validation"]:::coreNode

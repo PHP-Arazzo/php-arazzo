@@ -17,7 +17,7 @@ xychart-beta
     bar [52, 40, 30, 22, 20, 19, 18, 17, 16, 13, 11, 11]
 ```
 
-Analyzed 481 total file-touches across 77 modules.
+Analyzed 484 total file-touches across 77 modules.
 
 | Module | Touches | Share | LOC | Touches/KLOC |
 |---|---:|---:|---:|---:|
@@ -40,7 +40,7 @@ Analyzed 481 total file-touches across 77 modules.
 | `contracts:State` | 7 | 1% | 1,062 | 6.6 |
 | `evaluation:Condition` | 7 | 1% | 1,054 | 6.6 |
 | `expression:Plugins` | 7 | 1% | 1,371 | 5.1 |
-| `protocol-http:Execution` | 6 | 1% | 946 | 6.3 |
+| `protocol-http:Execution` | 7 | 1% | 946 | 7.4 |
 | `protocol-rpc:Execution` | 6 | 1% | 188 | 31.9 |
 | `runner:Events` | 6 | 1% | 187 | 32.1 |
 | `contracts:Attributes` | 5 | 1% | 106 | 47.2 |
@@ -57,12 +57,12 @@ Analyzed 481 total file-touches across 77 modules.
 | `cli:Renderer` | 4 | 1% | 255 | 15.7 |
 | `evaluation:Data` | 4 | 1% | 86 | 46.5 |
 | `expression:Enum` | 4 | 1% | 47 | 85.1 |
+| `protocol-http:Plugins` | 4 | 1% | 340 | 11.8 |
 | `contracts:Support` | 3 | 1% | 185 | 16.2 |
 | `document:Registries` | 3 | 1% | 97 | 30.9 |
 | `evaluation:Interfaces` | 3 | 1% | 44 | 68.2 |
 | `expression:Exceptions` | 3 | 1% | 64 | 46.9 |
 | `expression:JsonPath` | 3 | 1% | 1,470 | 2 |
-| `protocol-http:Plugins` | 3 | 1% | 340 | 8.8 |
 | `protocol-rpc:Protocol` | 3 | 1% | 514 | 5.8 |
 | `runner:Exceptions` | 3 | 1% | 134 | 22.4 |
 | `sources:Registries` | 3 | 1% | 81 | 37 |
@@ -73,8 +73,9 @@ Analyzed 481 total file-touches across 77 modules.
 | `engine:Enum` | 2 | 0% | 17 | 117.6 |
 | `evaluation:Enum` | 2 | 0% | 123 | 16.3 |
 | `expression:Support` | 2 | 0% | 192 | 10.4 |
+| `protocol-http:Resolver` | 2 | 0% | 317 | 6.3 |
 | `protocol-rpc:Plugins` | 2 | 0% | 422 | 4.7 |
-| `protocol-soap:Plugins` | 2 | 0% | 859 | 2.3 |
+| `protocol-soap:Plugins` | 2 | 0% | 899 | 2.2 |
 | `protocol-soap:Validation` | 2 | 0% | 139 | 14.4 |
 | `runner:Plugins` | 2 | 0% | 86 | 23.3 |
 | `contracts:Clock` | 1 | 0% | 20 | 50 |
@@ -86,7 +87,6 @@ Analyzed 481 total file-touches across 77 modules.
 | `evaluation:Events` | 1 | 0% | 27 | 37 |
 | `expression:Policy` | 1 | 0% | 37 | 27 |
 | `protocol-http:Policy` | 1 | 0% | 43 | 23.3 |
-| `protocol-http:Resolver` | 1 | 0% | 317 | 3.2 |
 | `protocol-rpc:Transfer` | 1 | 0% | 219 | 4.6 |
 | `protocol-soap:Exceptions` | 1 | 0% | 16 | 62.5 |
 | `protocol-soap:Resolver` | 1 | 0% | 136 | 7.4 |

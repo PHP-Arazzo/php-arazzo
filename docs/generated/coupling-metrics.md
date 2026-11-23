@@ -71,7 +71,7 @@ targets. Regenerated before every commit.
 | `protocol-rpc:Transfer` | 2 | 217 | 2 | 3 | 0.60 |  |
 | `protocol-soap:Exceptions` | 1 | 15 | 1 | 0 | 0.00 |  |
 | `protocol-soap:Execution` | 4 | 480 | 2 | 9 | 0.82 |  |
-| `protocol-soap:Plugins` | 3 | 856 | 1 | 15 | 0.94 |  |
+| `protocol-soap:Plugins` | 5 | 894 | 1 | 15 | 0.94 |  |
 | `protocol-soap:Resolver` | 1 | 135 | 0 | 1 | 1.00 |  |
 | `protocol-soap:Transfer` | 2 | 201 | 2 | 1 | 0.33 |  |
 | `protocol-soap:Validation` | 1 | 138 | 0 | 4 | 1.00 |  |
