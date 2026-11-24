@@ -15,7 +15,7 @@ the declaration honest.
 ```mermaid
 flowchart LR
     subgraph S_core["Core domain"]
-        S_contracts_Spec["contracts:Spec<br/><small>1435 LOC</small>"]:::coreDomain
+        S_contracts_Spec["contracts:Spec<br/><small>1429 LOC</small>"]:::coreDomain
     end
     subgraph S_supporting["Supporting"]
         S_cli_Console["cli:Console<br/><small>797 LOC</small>"]:::supportingDomain
@@ -40,8 +40,8 @@ flowchart LR
         S_contracts_Clock["contracts:Clock<br/><small>20 LOC</small>"]:::unknownDomain
         S_contracts_Data["contracts:Data<br/><small>155 LOC</small>"]:::unknownDomain
         S_contracts_Dependency["contracts:Dependency<br/><small>375 LOC</small>"]:::unknownDomain
-        S_contracts_Discovery["contracts:Discovery<br/><small>421 LOC</small>"]:::unknownDomain
-        S_contracts_Exceptions["contracts:Exceptions<br/><small>31 LOC</small>"]:::unknownDomain
+        S_contracts_Discovery["contracts:Discovery<br/><small>416 LOC</small>"]:::unknownDomain
+        S_contracts_Exceptions["contracts:Exceptions<br/><small>123 LOC</small>"]:::unknownDomain
         S_contracts_Interfaces["contracts:Interfaces<br/><small>387 LOC</small>"]:::unknownDomain
         S_contracts_Observability["contracts:Observability<br/><small>108 LOC</small>"]:::unknownDomain
         S_contracts_Policy["contracts:Policy<br/><small>268 LOC</small>"]:::unknownDomain
@@ -107,10 +107,10 @@ flowchart LR
 
 | Subdomain | Modules | Core pkg LOC | Laravel pkg LOC | Share |
 |---|---:|---:|---:|---:|
-| Core domain | 1 | 1,435 | 0 | 4% |
+| Core domain | 1 | 1,429 | 0 | 4% |
 | Supporting | 8 | 5,437 | 0 | 16% |
 | Generic subdomain | 6 | 1,678 | 0 | 5% |
-| Unclassified | 62 | 25,457 | 0 | 75% |
+| Unclassified | 62 | 25,544 | 0 | 75% |
 
 **Unclassified modules** — classify them in `SUBDOMAINS` or delete them:
 - `contracts:Attributes`

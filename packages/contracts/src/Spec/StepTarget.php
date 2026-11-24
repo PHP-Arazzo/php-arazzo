@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Contracts\Spec;
 
+use Alama\Arazzo\Contracts\Exceptions\InvalidStepTargetException;
 use Alama\Arazzo\Contracts\Spec\Enum\RpcProtocol;
-use InvalidArgumentException;
 
 /**
  * The operation/protocol axis of a Step (D4). Exactly one variant is set
@@ -31,9 +31,7 @@ final readonly class StepTarget
     public static function http(?string $operationId = null, ?string $operationPath = null): self
     {
         if (($operationId === null) === ($operationPath === null)) {
-            throw new InvalidArgumentException(
-                'http target requires exactly one of operationId or operationPath',
-            );
+            throw InvalidStepTargetException::httpRequiresSingleOperation();
         }
 
         return new self(operationId: $operationId, operationPath: $operationPath);

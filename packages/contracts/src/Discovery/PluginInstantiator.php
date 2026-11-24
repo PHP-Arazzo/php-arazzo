@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Contracts\Discovery;
 
+use Alama\Arazzo\Contracts\Exceptions\PluginInstantiationException;
 use ReflectionClass;
 use ReflectionNamedType;
 use ReflectionParameter;
-use RuntimeException;
 
 /**
  * Instantiates stateless attribute-annotated plugin classes via zero-arg
@@ -42,9 +42,7 @@ final class PluginInstantiator
         }
 
         if (!$constructor->isPublic()) {
-            throw new RuntimeException(
-                "Plugin '{$class}' decorated with #[{$attributeClass}] cannot be auto-instantiated: constructor is not public.",
-            );
+            throw PluginInstantiationException::nonPublicConstructor($class, $attributeClass);
         }
 
         $args = self::resolveConstructorArgs($constructor->getParameters(), $services, $class, $attributeClass);
@@ -80,10 +78,7 @@ final class PluginInstantiator
                 continue;
             }
 
-            throw new RuntimeException(
-                "Plugin '{$class}' decorated with #[{$attributeClass}] cannot be auto-instantiated: "
-                .'constructor requires arguments without defaults and no zero-arg static create() factory exists.',
-            );
+            throw PluginInstantiationException::missingConstructorArguments($class, $attributeClass);
         }
 
         return $args;

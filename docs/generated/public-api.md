@@ -48,6 +48,21 @@ this file on a commit is a public API change — review it deliberately.
 - `public static function overrideClasses(?array $classes): void`
 - `public static function reset(): void`
 
+### `Alama\Arazzo\Contracts\Exceptions`
+
+#### `InvalidSpecVersionException` class
+- `public static function unsupported(string $raw): self`
+
+#### `InvalidStepTargetException` class
+- `public static function httpRequiresSingleOperation(): self`
+
+#### `PluginInstantiationException` class
+- `public static function missingConstructorArguments(string $class, string $attributeClass): self`
+- `public static function nonPublicConstructor(string $class, string $attributeClass): self`
+
+#### `UnresolvableReusableReferenceException` class
+- `public static function forParameter(string $reference): self`
+
 ### `Alama\Arazzo\Contracts\Interfaces`
 
 #### `AiClientInterface` interface

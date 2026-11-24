@@ -98,11 +98,14 @@ flowchart LR
     contracts_Data --> contracts_Spec
     contracts_Dependency --> contracts_Spec
     contracts_Dependency --> contracts_State
+    contracts_Discovery --> contracts_Exceptions
+    contracts_Exceptions --> contracts_Support
     contracts_Interfaces --> contracts_Spec
     contracts_Interfaces --> contracts_State
     contracts_Interfaces --> contracts_Exceptions
     contracts_Interfaces --> contracts_Validation
     contracts_Spec --> contracts_Interfaces
+    contracts_Spec --> contracts_Exceptions
     contracts_State --> contracts_Policy
     contracts_State --> contracts_Spec
     contracts_Validation --> contracts_Spec

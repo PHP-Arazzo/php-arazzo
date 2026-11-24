@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Contracts\Spec\Enum;
 
-use InvalidArgumentException;
+use Alama\Arazzo\Contracts\Exceptions\InvalidSpecVersionException;
 
 enum SpecVersion: string
 {
@@ -26,8 +26,6 @@ enum SpecVersion: string
             return self::V1_2;
         }
 
-        throw new InvalidArgumentException(
-            "Unsupported arazzo version '{$raw}'; expected 1.0.x, 1.1.x, or 1.2.x.",
-        );
+        throw InvalidSpecVersionException::unsupported($raw);
     }
 }

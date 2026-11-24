@@ -18,14 +18,14 @@ targets. Regenerated before every commit.
 | `contracts:Clock` | 1 | 19 | 4 | 0 | 0.00 |  |
 | `contracts:Data` | 2 | 153 | 5 | 1 | 0.17 |  |
 | `contracts:Dependency` | 3 | 372 | 4 | 2 | 0.33 |  |
-| `contracts:Discovery` | 3 | 418 | 4 | 0 | 0.00 |  |
-| `contracts:Exceptions` | 1 | 30 | 7 | 0 | 0.00 |  |
+| `contracts:Discovery` | 3 | 413 | 4 | 1 | 0.20 |  |
+| `contracts:Exceptions` | 5 | 118 | 9 | 1 | 0.10 |  |
 | `contracts:Interfaces` | 20 | 367 | 35 | 4 | 0.10 |  |
 | `contracts:Observability` | 4 | 104 | 12 | 0 | 0.00 |  |
 | `contracts:Policy` | 5 | 263 | 6 | 0 | 0.00 |  |
-| `contracts:Spec` | 52 | 1383 | 54 | 1 | 0.02 |  |
+| `contracts:Spec` | 52 | 1377 | 54 | 2 | 0.04 |  |
 | `contracts:State` | 4 | 1058 | 17 | 2 | 0.11 |  |
-| `contracts:Support` | 5 | 180 | 8 | 0 | 0.00 |  |
+| `contracts:Support` | 5 | 180 | 9 | 0 | 0.00 |  |
 | `contracts:Validation` | 9 | 339 | 16 | 2 | 0.11 |  |
 | `document:Parser` | 31 | 2403 | 5 | 2 | 0.29 |  |
 | `document:Plugins` | 50 | 3068 | 0 | 7 | 1.00 |  |
@@ -96,7 +96,7 @@ targets. Regenerated before every commit.
 | `sources:Resolver` | 12 | 617 | 3 | 6 | 0.67 |  |
 | `(sources root)` | 2 | 339 | 3 | 9 | 0.75 |  |
 
-Total cross-module edges: **1670**
+Total cross-module edges: **1676**
 
 ## Most entangled module pairs
 

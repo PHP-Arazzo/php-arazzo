@@ -14,10 +14,10 @@ xychart-beta
     title "Edit churn per module (git touches)"
     x-axis ["document:Validator", "cli:Console", "runner:Execution", "runner:Async", "runner:Sync", "sources:Normalizer", "expression:Interfaces", "document:Parser", "contracts:Interfaces", "contracts:Spec", "expression:Data", "sources:Resolver"]
     y-axis "Touches" 0 --> 60
-    bar [52, 41, 30, 23, 20, 20, 18, 17, 16, 13, 11, 11]
+    bar [52, 41, 30, 23, 20, 20, 18, 17, 16, 14, 11, 11]
 ```
 
-Analyzed 491 total file-touches across 77 modules.
+Analyzed 492 total file-touches across 77 modules.
 
 | Module | Touches | Share | LOC | Touches/KLOC |
 |---|---:|---:|---:|---:|
@@ -30,7 +30,7 @@ Analyzed 491 total file-touches across 77 modules.
 | `expression:Interfaces` | 18 | 4% | 214 | 84.1 |
 | `document:Parser` | 17 | 3% | 2,434 | 7 |
 | `contracts:Interfaces` | 16 | 3% | 387 | 41.3 |
-| `contracts:Spec` | 13 | 3% | 1,435 | 9.1 |
+| `contracts:Spec` | 14 | 3% | 1,429 | 9.8 |
 | `expression:Data` | 11 | 2% | 199 | 55.3 |
 | `sources:Resolver` | 11 | 2% | 629 | 17.5 |
 | `evaluation:Plugins` | 10 | 2% | 125 | 80 |
@@ -67,8 +67,8 @@ Analyzed 491 total file-touches across 77 modules.
 | `protocol-soap:Plugins` | 3 | 1% | 899 | 3.3 |
 | `runner:Exceptions` | 3 | 1% | 134 | 22.4 |
 | `sources:Registries` | 3 | 1% | 81 | 37 |
-| `contracts:Discovery` | 2 | 0% | 421 | 4.8 |
-| `contracts:Exceptions` | 2 | 0% | 31 | 64.5 |
+| `contracts:Discovery` | 2 | 0% | 416 | 4.8 |
+| `contracts:Exceptions` | 2 | 0% | 123 | 16.3 |
 | `contracts:Validation` | 2 | 0% | 348 | 5.7 |
 | `engine:Data` | 2 | 0% | 74 | 27 |
 | `engine:Enum` | 2 | 0% | 17 | 117.6 |

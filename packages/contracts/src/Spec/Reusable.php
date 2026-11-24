@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Contracts\Spec;
 
-use RuntimeException;
+use Alama\Arazzo\Contracts\Exceptions\UnresolvableReusableReferenceException;
 
 final readonly class Reusable
 {
@@ -22,12 +22,10 @@ final readonly class Reusable
             return null;
         }
 
-        $component = $document->components->parameters[$m[1]] ?? null;
+        $component = $document->components->findParameter($m[1]);
 
         if ($component === null) {
-            throw new RuntimeException(
-                "Unresolvable reusable parameter reference '{$this->reference}'.",
-            );
+            throw UnresolvableReusableReferenceException::forParameter($this->reference);
         }
 
         return $this->value !== null

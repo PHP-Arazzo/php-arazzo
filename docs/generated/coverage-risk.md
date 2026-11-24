@@ -27,12 +27,12 @@ quadrantChart
     contracts/Clock: [0, 1]
     contracts/Data: [0.167, 1]
     contracts/Dependency: [0.333, 1]
-    contracts/Discovery: [0, 1]
-    contracts/Exceptions: [0, 1]
+    contracts/Discovery: [0.2, 1]
+    contracts/Exceptions: [0.1, 1]
     contracts/Interfaces: [0.103, 1]
     contracts/Observability: [0, 1]
     contracts/Policy: [0, 1]
-    contracts/Spec: [0.018, 1]
+    contracts/Spec: [0.036, 1]
     contracts/State: [0.105, 1]
     contracts/Support: [0, 1]
     contracts/Validation: [0.111, 1]
@@ -108,12 +108,12 @@ quadrantChart
 | `contracts/Clock` | 0.00 | 2 | 1 | 100% |
 | `contracts/Data` | 0.17 | 5 | 2 | 100% |
 | `contracts/Dependency` | 0.33 | 6 | 3 | 100% |
-| `contracts/Discovery` | 0.00 | 3 | 3 | 100% |
-| `contracts/Exceptions` | 0.00 | 6 | 1 | 100% |
+| `contracts/Discovery` | 0.20 | 4 | 3 | 100% |
+| `contracts/Exceptions` | 0.10 | 7 | 5 | 100% |
 | `contracts/Interfaces` | 0.10 | 49 | 20 | 100% |
 | `contracts/Observability` | 0.00 | 9 | 4 | 100% |
 | `contracts/Policy` | 0.00 | 12 | 5 | 100% |
-| `contracts/Spec` | 0.02 | 292 | 52 | 100% |
+| `contracts/Spec` | 0.04 | 293 | 52 | 100% |
 | `contracts/State` | 0.10 | 85 | 4 | 100% |
 | `contracts/Support` | 0.00 | 12 | 5 | 100% |
 | `contracts/Validation` | 0.11 | 92 | 9 | 100% |

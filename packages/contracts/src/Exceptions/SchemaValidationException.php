@@ -27,4 +27,12 @@ final class SchemaValidationException extends RuntimeException
 
         parent::__construct($message);
     }
+
+    /**
+     * @param  list<array{path: string, message: string}>  $violations
+     */
+    public static function forStep(string $stepId, array $violations): self
+    {
+        return new self($stepId, $violations);
+    }
 }

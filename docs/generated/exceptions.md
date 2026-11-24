@@ -10,6 +10,7 @@ source. Use this to decide which exception to throw or catch.
 classDiagram
     direction TB
     class E_RuntimeException["RuntimeException"]:::builtin
+    class E_InvalidArgumentException["InvalidArgumentException"]:::builtin
     class E_BaseException["BaseException"]:::builtin
     class E_ArazzoException["ArazzoException<br/><small>contracts:Support</small>"]:::domain
     class E_ConditionSyntaxException["ConditionSyntaxException<br/><small>evaluation:Condition</small>"]:::domain
@@ -21,6 +22,8 @@ classDiagram
     class E_ExpressionSyntaxException["ExpressionSyntaxException<br/><small>expression:Exceptions</small>"]:::domain
     class E_GotoTargetNotFoundException["GotoTargetNotFoundException<br/><small>runner:Exceptions</small>"]:::domain
     class E_InvalidSourcePolicyException["InvalidSourcePolicyException<br/><small>runner:Exceptions</small>"]:::domain
+    class E_InvalidSpecVersionException["InvalidSpecVersionException<br/><small>contracts:Exceptions</small>"]:::domain
+    class E_InvalidStepTargetException["InvalidStepTargetException<br/><small>contracts:Exceptions</small>"]:::domain
     class E_LoaderException["LoaderException<br/><small>document:Parser</small>"]:::domain
     class E_MaxAliasesExceededException["MaxAliasesExceededException<br/><small>document:Parser</small>"]:::domain
     class E_MaxBytesExceededException["MaxBytesExceededException<br/><small>document:Parser</small>"]:::domain
@@ -29,6 +32,7 @@ classDiagram
     class E_NotImplementedException["NotImplementedException<br/><small>contracts:Support</small>"]:::domain
     class E_ObjectDeserializationForbiddenException["ObjectDeserializationForbiddenException<br/><small>document:Parser</small>"]:::domain
     class E_ParserException["ParserException<br/><small>document:Parser</small>"]:::domain
+    class E_PluginInstantiationException["PluginInstantiationException<br/><small>contracts:Exceptions</small>"]:::domain
     class E_PreflightFailureException["PreflightFailureException<br/><small>runner:Exceptions</small>"]:::domain
     class E_RunnerException["RunnerException<br/><small>runner:Exceptions</small>"]:::domain
     class E_SchemaValidationException["SchemaValidationException<br/><small>contracts:Exceptions</small>"]:::domain
@@ -39,6 +43,7 @@ classDiagram
     class E_StepBudgetExceededException["StepBudgetExceededException<br/><small>runner:Exceptions</small>"]:::domain
     class E_UnknownWorkflowException["UnknownWorkflowException<br/><small>runner:Exceptions</small>"]:::domain
     class E_UnresolvableReferenceException["UnresolvableReferenceException<br/><small>sources:Resolver</small>"]:::domain
+    class E_UnresolvableReusableReferenceException["UnresolvableReusableReferenceException<br/><small>contracts:Exceptions</small>"]:::domain
     class E_UnsupportedSerializationStyleException["UnsupportedSerializationStyleException<br/><small>document:Parser</small>"]:::domain
     class E_UnsupportedSourceVersionException["UnsupportedSourceVersionException<br/><small>protocol-soap:Exceptions</small>"]:::domain
     class E_WorkflowCycleException["WorkflowCycleException<br/><small>runner:Exceptions</small>"]:::domain
@@ -53,6 +58,8 @@ classDiagram
     E_ArazzoException <|-- E_ExpressionSyntaxException
     E_RunnerException <|-- E_GotoTargetNotFoundException
     E_RunnerException <|-- E_InvalidSourcePolicyException
+    E_InvalidArgumentException <|-- E_InvalidSpecVersionException
+    E_InvalidArgumentException <|-- E_InvalidStepTargetException
     E_ArazzoException <|-- E_LoaderException
     E_DecodeLimitException <|-- E_MaxAliasesExceededException
     E_DecodeLimitException <|-- E_MaxBytesExceededException
@@ -61,6 +68,7 @@ classDiagram
     E_ArazzoException <|-- E_NotImplementedException
     E_DecodeLimitException <|-- E_ObjectDeserializationForbiddenException
     E_ArazzoException <|-- E_ParserException
+    E_ArazzoException <|-- E_PluginInstantiationException
     E_RunnerException <|-- E_PreflightFailureException
     E_RuntimeException <|-- E_RunnerException
     E_RuntimeException <|-- E_SchemaValidationException
@@ -71,6 +79,7 @@ classDiagram
     E_RunnerException <|-- E_StepBudgetExceededException
     E_RunnerException <|-- E_UnknownWorkflowException
     E_BaseException <|-- E_UnresolvableReferenceException
+    E_ArazzoException <|-- E_UnresolvableReusableReferenceException
     E_RuntimeException <|-- E_UnsupportedSerializationStyleException
     E_RuntimeException <|-- E_UnsupportedSourceVersionException
     E_RunnerException <|-- E_WorkflowCycleException
@@ -91,6 +100,8 @@ classDiagram
 | `ExpressionSyntaxException` | `ArazzoException` | expression:Exceptions |
 | `GotoTargetNotFoundException` | `RunnerException` | runner:Exceptions |
 | `InvalidSourcePolicyException` | `RunnerException` | runner:Exceptions |
+| `InvalidSpecVersionException` | `InvalidArgumentException` | contracts:Exceptions |
+| `InvalidStepTargetException` | `InvalidArgumentException` | contracts:Exceptions |
 | `LoaderException` | `ArazzoException` | document:Parser |
 | `MaxAliasesExceededException` | `DecodeLimitException` | document:Parser |
 | `MaxBytesExceededException` | `DecodeLimitException` | document:Parser |
@@ -99,6 +110,7 @@ classDiagram
 | `NotImplementedException` | `ArazzoException` | contracts:Support |
 | `ObjectDeserializationForbiddenException` | `DecodeLimitException` | document:Parser |
 | `ParserException` | `ArazzoException` | document:Parser |
+| `PluginInstantiationException` | `ArazzoException` | contracts:Exceptions |
 | `PreflightFailureException` | `RunnerException` | runner:Exceptions |
 | `RunnerException` | `RuntimeException` | runner:Exceptions |
 | `SchemaValidationException` | `RuntimeException` | contracts:Exceptions |
@@ -109,6 +121,7 @@ classDiagram
 | `StepBudgetExceededException` | `RunnerException` | runner:Exceptions |
 | `UnknownWorkflowException` | `RunnerException` | runner:Exceptions |
 | `UnresolvableReferenceException` | `BaseException` | sources:Resolver |
+| `UnresolvableReusableReferenceException` | `ArazzoException` | contracts:Exceptions |
 | `UnsupportedSerializationStyleException` | `RuntimeException` | document:Parser |
 | `UnsupportedSourceVersionException` | `RuntimeException` | protocol-soap:Exceptions |
 | `WorkflowCycleException` | `RunnerException` | runner:Exceptions |

@@ -40,10 +40,13 @@ contracts-Attributes,contracts-Validation,1
 contracts-Data,contracts-Spec,1
 contracts-Dependency,contracts-Spec,6
 contracts-Dependency,contracts-State,1
+contracts-Discovery,contracts-Exceptions,1
+contracts-Exceptions,contracts-Support,2
 contracts-Interfaces,contracts-Exceptions,1
 contracts-Interfaces,contracts-Spec,21
 contracts-Interfaces,contracts-State,1
 contracts-Interfaces,contracts-Validation,2
+contracts-Spec,contracts-Exceptions,3
 contracts-State,contracts-Policy,1
 contracts-State,contracts-Spec,3
 contracts-Validation,contracts-Data,1

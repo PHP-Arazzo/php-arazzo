@@ -150,10 +150,13 @@ flowchart TB
     M_contracts_Data --> M_contracts_Spec
     M_contracts_Dependency --> M_contracts_Spec
     M_contracts_Dependency --> M_contracts_State
+    M_contracts_Discovery --> M_contracts_Exceptions
+    M_contracts_Exceptions --> M_contracts_Support
     M_contracts_Interfaces --> M_contracts_Exceptions
     M_contracts_Interfaces --> M_contracts_Spec
     M_contracts_Interfaces --> M_contracts_State
     M_contracts_Interfaces --> M_contracts_Validation
+    M_contracts_Spec --> M_contracts_Exceptions
     M_contracts_Spec --> M_contracts_Interfaces
     M_contracts_State --> M_contracts_Policy
     M_contracts_State --> M_contracts_Spec
