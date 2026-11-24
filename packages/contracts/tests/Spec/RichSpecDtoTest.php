@@ -13,6 +13,8 @@ use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
 use Alama\Arazzo\Contracts\Spec\Info;
 use Alama\Arazzo\Contracts\Spec\Interaction;
 use Alama\Arazzo\Contracts\Spec\Parameter;
+use Alama\Arazzo\Contracts\Spec\PayloadReplacement;
+use Alama\Arazzo\Contracts\Spec\PendingCorrelation;
 use Alama\Arazzo\Contracts\Spec\Reusable;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Spec\Step;
@@ -21,6 +23,8 @@ use Alama\Arazzo\Contracts\Spec\StepFlow;
 use Alama\Arazzo\Contracts\Spec\StepIo;
 use Alama\Arazzo\Contracts\Spec\StepTarget;
 use Alama\Arazzo\Contracts\Spec\Workflow;
+use Alama\Arazzo\Contracts\Validation\SymbolTable;
+use DateTimeImmutable;
 
 it('queries workflows, sources, steps, components, and step predicates directly on domain DTOs', function (): void {
     $okEnd = new SuccessEndAction('done', []);
@@ -95,4 +99,36 @@ it('queries workflows, sources, steps, components, and step predicates directly 
         ->and($doc->nonArazzoSources())->toBe([$apiSrc])
         ->and($doc->hasExternalSourceFor('sub.child'))->toBeTrue()
         ->and($doc->hasExternalSourceFor('main'))->toBeFalse();
+
+    $wsdlSrc = new SourceDescription('soap', 'specs/service.wsdl', SourceType::Wsdl);
+    $protoSrc = new SourceDescription('rpc', 'HTTP://rpc.test/svc.proto', SourceType::Protobuf);
+
+    expect($apiSrc->isOpenApi())->toBeTrue()
+        ->and($apiSrc->isArazzo())->toBeFalse()
+        ->and($apiSrc->scheme())->toBe('https')
+        ->and($arazzoSrc->isArazzo())->toBeTrue()
+        ->and($wsdlSrc->isWsdl())->toBeTrue()
+        ->and($wsdlSrc->scheme())->toBe('file')
+        ->and($protoSrc->isProtobuf())->toBeTrue()
+        ->and($protoSrc->scheme())->toBe('http');
+
+    $now = new DateTimeImmutable('2026-01-01T00:05:00Z');
+    $expired = new PendingCorrelation('c1', 'e1', 's1', '/ch', new DateTimeImmutable('2026-01-01T00:01:00Z'));
+    $noExpiry = new PendingCorrelation('c2', 'e1', 's1', '/ch');
+    expect($expired->isExpiredAt($now))->toBeTrue()
+        ->and($noExpiry->isExpiredAt($now))->toBeFalse();
+
+    expect((new PayloadReplacement('/a', 1, 'xpath'))->selectorType())->toBe('xpath')
+        ->and((new PayloadReplacement('/a', 1, ['type' => 'jsonpath']))->selectorType())->toBe('jsonpath')
+        ->and((new PayloadReplacement('/a', 1, ['version' => '1']))->selectorType())->toBeNull()
+        ->and((new PayloadReplacement('/a', 1))->selectorType())->toBeNull();
+
+    $symbols = SymbolTable::build($doc);
+    expect($symbols->hasWorkflow('main'))->toBeTrue()
+        ->and($symbols->hasWorkflow('missing'))->toBeFalse()
+        ->and($symbols->hasSource('api'))->toBeTrue()
+        ->and($symbols->hasSource('missing'))->toBeFalse()
+        ->and($symbols->workflows['main']->hasStep('s1'))->toBeTrue()
+        ->and($symbols->workflows['main']->hasInput('none'))->toBeFalse()
+        ->and($symbols->workflows['main']->hasOutput('none'))->toBeFalse();
 });

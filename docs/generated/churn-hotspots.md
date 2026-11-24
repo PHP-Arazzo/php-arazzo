@@ -17,7 +17,7 @@ xychart-beta
     bar [53, 41, 30, 23, 21, 20, 18, 18, 16, 16, 12, 12]
 ```
 
-Analyzed 523 total file-touches across 79 modules.
+Analyzed 525 total file-touches across 79 modules.
 
 | Module | Touches | Share | LOC | Touches/KLOC |
 |---|---:|---:|---:|---:|
@@ -30,15 +30,15 @@ Analyzed 523 total file-touches across 79 modules.
 | `document:Parser` | 18 | 3% | 2,476 | 7.3 |
 | `expression:Interfaces` | 18 | 3% | 214 | 84.1 |
 | `contracts:Interfaces` | 16 | 3% | 387 | 41.3 |
-| `contracts:Spec` | 16 | 3% | 1,452 | 11 |
+| `contracts:Spec` | 16 | 3% | 1,495 | 10.7 |
 | `expression:Data` | 12 | 2% | 247 | 48.6 |
 | `sources:Resolver` | 12 | 2% | 624 | 19.2 |
 | `engine:Execution` | 10 | 2% | 1,199 | 8.3 |
 | `evaluation:Plugins` | 10 | 2% | 125 | 80 |
 | `evaluation:Registries` | 10 | 2% | 190 | 52.6 |
+| `evaluation:Condition` | 9 | 2% | 1,149 | 7.8 |
 | `expression:Plugins` | 9 | 2% | 1,341 | 6.7 |
 | `protocol-soap:Execution` | 9 | 2% | 484 | 18.6 |
-| `evaluation:Condition` | 8 | 2% | 1,149 | 7 |
 | `protocol-http:Execution` | 8 | 2% | 946 | 8.5 |
 | `contracts:State` | 7 | 1% | 1,062 | 6.6 |
 | `expression:Internal` | 7 | 1% | 896 | 7.8 |
@@ -50,13 +50,13 @@ Analyzed 523 total file-touches across 79 modules.
 | `runner:Events` | 6 | 1% | 187 | 32.1 |
 | `contracts:Attributes` | 5 | 1% | 106 | 47.2 |
 | `contracts:Dependency` | 5 | 1% | 375 | 13.3 |
+| `evaluation:Data` | 5 | 1% | 96 | 52.1 |
 | `expression:Ast` | 5 | 1% | 355 | 14.1 |
 | `expression:Xpath` | 5 | 1% | 173 | 28.9 |
 | `protocol-http:Plugins` | 5 | 1% | 336 | 14.9 |
 | `runner:Policy` | 5 | 1% | 124 | 40.3 |
 | `runner:Preflight` | 5 | 1% | 156 | 32.1 |
 | `cli:Generator` | 4 | 1% | 141 | 28.4 |
-| `evaluation:Data` | 4 | 1% | 96 | 41.7 |
 | `expression:Enum` | 4 | 1% | 47 | 85.1 |
 | `expression:Exceptions` | 4 | 1% | 209 | 19.1 |
 | `expression:JsonPath` | 4 | 1% | 1,470 | 2.7 |
@@ -70,7 +70,7 @@ Analyzed 523 total file-touches across 79 modules.
 | `protocol-soap:Plugins` | 3 | 1% | 899 | 3.3 |
 | `runner:Exceptions` | 3 | 1% | 134 | 22.4 |
 | `sources:Registries` | 3 | 1% | 81 | 37 |
-| `contracts:Validation` | 2 | 0% | 348 | 5.7 |
+| `contracts:Validation` | 2 | 0% | 373 | 5.4 |
 | `document:Plugins` | 2 | 0% | 3,112 | 0.6 |
 | `engine:Data` | 2 | 0% | 74 | 27 |
 | `engine:Enum` | 2 | 0% | 17 | 117.6 |

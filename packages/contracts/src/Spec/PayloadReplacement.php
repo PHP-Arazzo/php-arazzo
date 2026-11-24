@@ -15,4 +15,15 @@ final readonly class PayloadReplacement
         public mixed $value,
         public mixed $targetSelectorType = null,
     ) {}
+
+    public function selectorType(): ?string
+    {
+        if (is_array($this->targetSelectorType)) {
+            $type = $this->targetSelectorType['type'] ?? null;
+
+            return is_string($type) ? $type : null;
+        }
+
+        return is_string($this->targetSelectorType) ? $this->targetSelectorType : null;
+    }
 }

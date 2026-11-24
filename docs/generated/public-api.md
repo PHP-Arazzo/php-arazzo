@@ -205,6 +205,12 @@ this file on a commit is a public API change — review it deliberately.
 #### `GraphQlOperation` class
 - `public function __construct(public string $schema, public string $operation, /** @param array<string,mixed>|null $extensions */ ?iterable $extensions = null, public ?Selector $extensionsSelector = null)`
 
+#### `PayloadReplacement` class
+- `public function __construct(public string $target, public mixed $value, public mixed $targetSelectorType = null)`
+
+#### `PendingCorrelation` class
+- `public function __construct(public string $correlationId, public string $executionId, public string $stepId, public string $channelPath, public ?\DateTimeImmutable $expiresAt = null)`
+
 #### `ResolvedOperation` class
 - `public function __construct(public SourceDescription $source, public NormalizedOpenApiOperation $normalized, public ?RpcProtocol $rpcProtocol = null, public ?string $operationName = null, public ?string $rpcMethod = null, public ?GraphQlOperation $graphqlOperation = null, public ?Interaction $interaction = null)`
 - `public function binding(): string`
@@ -219,6 +225,13 @@ this file on a commit is a public API change — review it deliberately.
 
 #### `Reusable` class
 - `public function __construct(public string $reference, public mixed $value = null)`
+
+#### `SourceDescription` class
+- `public function __construct(public string $name, public string $url, public SourceType $type)`
+- `public function isOpenApi(): bool`
+- `public function isProtobuf(): bool`
+- `public function isWsdl(): bool`
+- `public function scheme(): string`
 
 #### `Step` class
 - `public function __construct(public string $stepId, public ?string $description, public StepTarget $target, public StepFlow $flow, public StepIo $io)`
@@ -426,6 +439,8 @@ this file on a commit is a public API change — review it deliberately.
 
 #### `SymbolTable` class
 - `public function __construct(public array $workflows, public array $sourceDescriptions, public array $components, KnownOperations|array $knownOperations = new KnownOperations(), array $resolvedOperations = [])`
+- `public function hasSource(string $name): bool`
+- `public function hasWorkflow(string $workflowId): bool`
 - `public static function build(ArazzoDocument $doc, KnownOperations|array|null $resolvedOperations = null): self`
 
 #### `ValidationPhase` enum
@@ -437,6 +452,11 @@ this file on a commit is a public API change — review it deliberately.
 
 #### `Warning` class
 - `public function __construct(public string $code, public string $message, public string $path, public ?int $line = null, public Severity $severity = Severity::Warning)`
+
+#### `WorkflowSymbols` class
+- `public function __construct(public array $inputs, public array $parameters, public array $stepsById, public array $outputs, public array $dependsOn)`
+- `public function hasInput(string $name): bool`
+- `public function hasOutput(string $name): bool`
 
 ## expression
 

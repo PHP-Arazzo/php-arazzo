@@ -118,7 +118,7 @@ quadrantChart
 | `contracts/Spec` | 0.04 | 300 | 52 | 100% |
 | `contracts/State` | 0.10 | 87 | 4 | 100% |
 | `contracts/Support` | 0.00 | 13 | 5 | 100% |
-| `contracts/Validation` | 0.11 | 94 | 9 | 100% |
+| `contracts/Validation` | 0.11 | 95 | 9 | 100% |
 | `document/Parser` | 0.29 | 65 | 31 | 100% |
 | `document/Plugins` | 1.00 | 52 | 50 | 100% |
 | `document/Registries` | 0.80 | 3 | 1 | 100% |

@@ -15,7 +15,7 @@ the declaration honest.
 ```mermaid
 flowchart LR
     subgraph S_core["Core domain"]
-        S_contracts_Spec["contracts:Spec<br/><small>1452 LOC</small>"]:::coreDomain
+        S_contracts_Spec["contracts:Spec<br/><small>1495 LOC</small>"]:::coreDomain
     end
     subgraph S_supporting["Supporting"]
         S_cli_Console["cli:Console<br/><small>797 LOC</small>"]:::supportingDomain
@@ -45,7 +45,7 @@ flowchart LR
         S_contracts_Interfaces["contracts:Interfaces<br/><small>387 LOC</small>"]:::unknownDomain
         S_contracts_Observability["contracts:Observability<br/><small>108 LOC</small>"]:::unknownDomain
         S_contracts_Policy["contracts:Policy<br/><small>268 LOC</small>"]:::unknownDomain
-        S_contracts_Validation["contracts:Validation<br/><small>348 LOC</small>"]:::unknownDomain
+        S_contracts_Validation["contracts:Validation<br/><small>373 LOC</small>"]:::unknownDomain
         S_document_Plugins["document:Plugins<br/><small>3112 LOC</small>"]:::unknownDomain
         S_document_Registries["document:Registries<br/><small>97 LOC</small>"]:::unknownDomain
         S_engine_Data["engine:Data<br/><small>74 LOC</small>"]:::unknownDomain
@@ -109,10 +109,10 @@ flowchart LR
 
 | Subdomain | Modules | Core pkg LOC | Laravel pkg LOC | Share |
 |---|---:|---:|---:|---:|
-| Core domain | 1 | 1,452 | 0 | 4% |
+| Core domain | 1 | 1,495 | 0 | 4% |
 | Supporting | 8 | 5,458 | 0 | 16% |
 | Generic subdomain | 6 | 1,678 | 0 | 5% |
-| Unclassified | 64 | 26,243 | 0 | 75% |
+| Unclassified | 64 | 26,268 | 0 | 75% |
 
 **Unclassified modules** — classify them in `SUBDOMAINS` or delete them:
 - `contracts:Attributes`
