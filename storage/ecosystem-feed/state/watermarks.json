@@ -38,7 +38,7 @@
                     "lastSeenUpdatedAt": "2026-11-21T15:16:37Z"
                 },
                 "pulls": {
-                    "lastSeenUpdatedAt": "2026-11-23T00:54:29Z"
+                    "lastSeenUpdatedAt": "2026-11-24T00:53:42Z"
                 },
                 "releases": {
                     "lastSeenUpdatedAt": "2026-05-18T11:11:50Z",
@@ -132,7 +132,7 @@
         "OAI/org": {
             "endpoints": {
                 "org_diff": {
-                    "lastSeenUpdatedAt": "2026-11-23T17:59:57+00:00"
+                    "lastSeenUpdatedAt": "2026-11-24T17:37:51+00:00"
                 }
             }
         },
@@ -169,10 +169,10 @@
         "OAI/spec.openapis.org": {
             "endpoints": {
                 "commits": {
-                    "lastSeenUpdatedAt": "2026-11-23T10:25:48Z"
+                    "lastSeenUpdatedAt": "2026-11-24T11:13:43Z"
                 },
                 "pulls": {
-                    "lastSeenUpdatedAt": "2026-11-23T10:25:50Z"
+                    "lastSeenUpdatedAt": "2026-11-24T16:10:07Z"
                 }
             }
         },
@@ -190,8 +190,8 @@
         "Redocly/redocly-cli": {
             "endpoints": {
                 "releases": {
-                    "lastSeenUpdatedAt": "2026-11-19T14:30:22Z",
-                    "lastTag": "@redocly/respect-core@2.82.0"
+                    "lastSeenUpdatedAt": "2026-11-24T10:01:25Z",
+                    "lastTag": "@redocly/respect-core@2.83.0"
                 }
             }
         },
@@ -312,7 +312,7 @@
         "spec.arazzo.html": {
             "endpoints": {
                 "spec_html_checksum": {
-                    "lastSeenUpdatedAt": "2026-11-23T10:27:03+00:00"
+                    "lastSeenUpdatedAt": "2026-11-24T11:15:00+00:00"
                 }
             }
         },
@@ -388,7 +388,7 @@
                     "lastSeenUpdatedAt": "2026-11-21T19:50:15Z"
                 },
                 "pulls": {
-                    "lastSeenUpdatedAt": "2026-11-21T21:23:08Z"
+                    "lastSeenUpdatedAt": "2026-11-23T23:09:20Z"
                 },
                 "releases": {
                     "lastSeenUpdatedAt": "2026-11-19T11:09:46Z",
