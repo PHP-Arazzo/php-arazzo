@@ -12,26 +12,26 @@ same corner every week" signal that static structure graphs cannot show.
 ```mermaid
 xychart-beta
     title "Edit churn per module (git touches)"
-    x-axis ["document:Validator", "cli:Console", "runner:Execution", "runner:Async", "runner:Sync", "sources:Normalizer", "document:Parser", "expression:Interfaces", "contracts:Spec", "contracts:Interfaces", "expression:Data", "sources:Resolver"]
+    x-axis ["document:Validator", "cli:Console", "runner:Execution", "runner:Async", "runner:Sync", "sources:Normalizer", "expression:Interfaces", "document:Parser", "contracts:Spec", "contracts:Interfaces", "expression:Data", "sources:Resolver"]
     y-axis "Touches" 0 --> 70
-    bar [53, 42, 31, 24, 21, 21, 18, 18, 17, 16, 12, 12]
+    bar [53, 42, 31, 24, 21, 21, 19, 18, 17, 16, 13, 12]
 ```
 
-Analyzed 552 total file-touches across 81 modules.
+Analyzed 555 total file-touches across 81 modules.
 
 | Module | Touches | Share | LOC | Touches/KLOC |
 |---|---:|---:|---:|---:|
 | `document:Validator` | 53 | 10% | 656 | 80.8 |
 | `cli:Console` | 42 | 8% | 791 | 53.1 |
-| `runner:Execution` | 31 | 6% | 673 | 46.1 |
+| `runner:Execution` | 31 | 6% | 698 | 44.4 |
 | `runner:Async` | 24 | 4% | 1,470 | 16.3 |
 | `runner:Sync` | 21 | 4% | 1,146 | 18.3 |
 | `sources:Normalizer` | 21 | 4% | 498 | 42.2 |
+| `expression:Interfaces` | 19 | 3% | 252 | 75.4 |
 | `document:Parser` | 18 | 3% | 2,476 | 7.3 |
-| `expression:Interfaces` | 18 | 3% | 252 | 71.4 |
 | `contracts:Spec` | 17 | 3% | 1,495 | 11.4 |
 | `contracts:Interfaces` | 16 | 3% | 387 | 41.3 |
-| `expression:Data` | 12 | 2% | 439 | 27.3 |
+| `expression:Data` | 13 | 2% | 439 | 29.6 |
 | `sources:Resolver` | 12 | 2% | 624 | 19.2 |
 | `engine:Execution` | 11 | 2% | 1,204 | 9.1 |
 | `evaluation:Plugins` | 10 | 2% | 125 | 80 |
@@ -39,11 +39,11 @@ Analyzed 552 total file-touches across 81 modules.
 | `protocol-soap:Execution` | 10 | 2% | 444 | 22.5 |
 | `evaluation:Condition` | 9 | 2% | 1,149 | 7.8 |
 | `expression:Plugins` | 9 | 2% | 1,341 | 6.7 |
+| `expression:Internal` | 8 | 1% | 885 | 9 |
 | `protocol-http:Execution` | 8 | 1% | 946 | 8.5 |
 | `cli:Renderer` | 7 | 1% | 317 | 22.1 |
 | `contracts:State` | 7 | 1% | 1,062 | 6.6 |
 | `engine:Runtime` | 7 | 1% | 1,870 | 3.7 |
-| `expression:Internal` | 7 | 1% | 885 | 7.9 |
 | `protocol-rpc:Execution` | 7 | 1% | 176 | 39.8 |
 | `protocol-rpc:Normalizer` | 7 | 1% | 604 | 11.6 |
 | `expression:Registries` | 6 | 1% | 113 | 53.1 |
@@ -103,4 +103,4 @@ Analyzed 552 total file-touches across 81 modules.
 | `runner:Registries` | 1 | 0% | 151 | 6.6 |
 | `runner:Store` | 1 | 0% | 138 | 7.2 |
 
-**Hotspots** (highest touches-per-KLOC with meaningful size/churn): `document:Validator` (80.8), `evaluation:Plugins` (80), `expression:Interfaces` (71.4)
+**Hotspots** (highest touches-per-KLOC with meaningful size/churn): `document:Validator` (80.8), `evaluation:Plugins` (80), `expression:Interfaces` (75.4)

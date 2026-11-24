@@ -115,7 +115,7 @@ quadrantChart
 | `contracts/Dependency` | 0.33 | 6 | 3 | 100% |
 | `contracts/Discovery` | 0.20 | 4 | 3 | 100% |
 | `contracts/Exceptions` | 0.10 | 7 | 5 | 100% |
-| `contracts/Interfaces` | 0.10 | 50 | 20 | 100% |
+| `contracts/Interfaces` | 0.10 | 51 | 20 | 100% |
 | `contracts/Observability` | 0.00 | 9 | 4 | 100% |
 | `contracts/Policy` | 0.00 | 12 | 5 | 100% |
 | `contracts/Spec` | 0.04 | 304 | 52 | 100% |
@@ -172,14 +172,14 @@ quadrantChart
 | `runner/Data` | 0.43 | 18 | 3 | 100% |
 | `runner/Events` | 0.00 | 18 | 9 | 100% |
 | `runner/Exceptions` | 0.38 | 13 | 11 | 100% |
-| `runner/Execution` | 0.86 | 26 | 12 | 100% |
+| `runner/Execution` | 0.86 | 27 | 12 | 100% |
 | `runner/Plugins` | 0.82 | 6 | 1 | 100% |
-| `runner/Policy` | 0.29 | 4 | 2 | 100% |
-| `runner/Preflight` | 0.50 | 6 | 2 | 100% |
+| `runner/Policy` | 0.29 | 5 | 2 | 100% |
+| `runner/Preflight` | 0.50 | 7 | 2 | 100% |
 | `runner/Queue` | 0.33 | 13 | 1 | 100% |
 | `runner/Registries` | 0.60 | 23 | 1 | 100% |
 | `runner/Store` | 0.60 | 18 | 2 | 100% |
-| `runner/Sync` | 0.84 | 38 | 7 | 100% |
+| `runner/Sync` | 0.84 | 39 | 7 | 100% |
 | `sources/Exceptions` | 0.00 | 10 | 8 | 100% |
 | `sources/Normalizer` | 0.50 | 7 | 6 | 100% |
 | `sources/Plugins` | 1.00 | 3 | 1 | 100% |

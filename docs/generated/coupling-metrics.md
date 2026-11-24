@@ -83,7 +83,7 @@ targets. Regenerated before every commit.
 | `runner:Data` | 3 | 135 | 4 | 3 | 0.43 |  |
 | `runner:Events` | 9 | 178 | 2 | 0 | 0.00 |  |
 | `runner:Exceptions` | 11 | 272 | 5 | 3 | 0.38 |  |
-| `runner:Execution` | 12 | 661 | 3 | 18 | 0.86 | ⚠ unstable hub |
+| `runner:Execution` | 12 | 686 | 3 | 18 | 0.86 | ⚠ unstable hub |
 | `runner:Plugins` | 1 | 79 | 2 | 9 | 0.82 |  |
 | `runner:Policy` | 2 | 122 | 5 | 2 | 0.29 |  |
 | `runner:Preflight` | 2 | 154 | 4 | 4 | 0.50 |  |

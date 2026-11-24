@@ -90,7 +90,7 @@ flowchart LR
         S_runner_Async["runner:Async<br/><small>1470 LOC</small>"]:::unknownDomain
         S_runner_Data["runner:Data<br/><small>138 LOC</small>"]:::unknownDomain
         S_runner_Exceptions["runner:Exceptions<br/><small>283 LOC</small>"]:::unknownDomain
-        S_runner_Execution["runner:Execution<br/><small>673 LOC</small>"]:::unknownDomain
+        S_runner_Execution["runner:Execution<br/><small>698 LOC</small>"]:::unknownDomain
         S_runner_Plugins["runner:Plugins<br/><small>80 LOC</small>"]:::unknownDomain
         S_runner_Policy["runner:Policy<br/><small>124 LOC</small>"]:::unknownDomain
         S_runner_Preflight["runner:Preflight<br/><small>156 LOC</small>"]:::unknownDomain
@@ -114,7 +114,7 @@ flowchart LR
 | Core domain | 1 | 1,495 | 0 | 4% |
 | Supporting | 8 | 5,448 | 0 | 15% |
 | Generic subdomain | 6 | 1,678 | 0 | 5% |
-| Unclassified | 66 | 26,880 | 0 | 76% |
+| Unclassified | 66 | 26,905 | 0 | 76% |
 
 **Unclassified modules** — classify them in `SUBDOMAINS` or delete them:
 - `cli:Exceptions`

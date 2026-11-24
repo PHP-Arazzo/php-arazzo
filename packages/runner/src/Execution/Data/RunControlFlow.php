@@ -24,4 +24,29 @@ final readonly class RunControlFlow
         public ExecutionPolicy $policy = new ExecutionPolicy(),
         public ?Preflight $preflight = null,
     ) {}
+
+    public function withWorkflowEngine(WorkflowEngine $workflowEngine): self
+    {
+        return new self($workflowEngine, $this->queueDriver, $this->observability, $this->policy, $this->preflight);
+    }
+
+    public function withQueueDriver(QueueDriverInterface $queueDriver): self
+    {
+        return new self($this->workflowEngine, $queueDriver, $this->observability, $this->policy, $this->preflight);
+    }
+
+    public function withObservability(ObservabilityContext $observability): self
+    {
+        return new self($this->workflowEngine, $this->queueDriver, $observability, $this->policy, $this->preflight);
+    }
+
+    public function withPolicy(ExecutionPolicy $policy): self
+    {
+        return new self($this->workflowEngine, $this->queueDriver, $this->observability, $policy, $this->preflight);
+    }
+
+    public function withPreflight(?Preflight $preflight): self
+    {
+        return new self($this->workflowEngine, $this->queueDriver, $this->observability, $this->policy, $preflight);
+    }
 }
