@@ -461,4 +461,50 @@ final readonly class ExecutionState implements JsonSerializable
     {
         return $this->copy(skippedSteps: $skippedSteps);
     }
+
+    /** @return array<mixed, mixed>|null */
+    public function stepResult(string $stepId): ?array
+    {
+        $res = $this->stepResults[$stepId] ?? null;
+
+        return is_array($res) ? $res : null;
+    }
+
+    public function hasStepResult(string $stepId): bool
+    {
+        return isset($this->stepResults[$stepId]);
+    }
+
+    /** @return array<string, mixed> */
+    public function stepOutputs(string $stepId): array
+    {
+        $res = $this->stepResult($stepId);
+        $outputs = is_array($res) ? ($res['outputs'] ?? null) : null;
+        if (!is_array($outputs)) {
+            return [];
+        }
+
+        /** @var array<string, mixed> $outputs */
+        return $outputs;
+    }
+
+    public function hasErrors(): bool
+    {
+        return $this->errors !== [];
+    }
+
+    public function isRunning(): bool
+    {
+        return $this->status === 'running';
+    }
+
+    public function isSucceeded(): bool
+    {
+        return $this->status === 'succeeded';
+    }
+
+    public function isFailed(): bool
+    {
+        return $this->status === 'failed';
+    }
 }

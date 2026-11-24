@@ -406,4 +406,138 @@ final readonly class WorkflowContext implements WorkflowContextInterface
             activeSourcePolicy: $policy,
         );
     }
+
+    public function hasStep(string $stepId): bool
+    {
+        return isset($this->steps[$stepId]);
+    }
+
+    public function hasExecutedSteps(): bool
+    {
+        return $this->steps !== [];
+    }
+
+    /**
+     * @return array<mixed, mixed>|null
+     */
+    public function getStepRecord(string $stepId): ?array
+    {
+        $record = $this->steps[$stepId] ?? null;
+
+        return is_array($record) ? $record : null;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function getStepOutputs(string $stepId): array
+    {
+        $record = $this->getStepRecord($stepId);
+        $outputs = $record['outputs'] ?? null;
+        if (!is_array($outputs)) {
+            return [];
+        }
+
+        /** @var array<string, mixed> $outputs */
+        return $outputs;
+    }
+
+    public function getStepOutput(string $stepId, string $key): mixed
+    {
+        return $this->getStepOutputs($stepId)[$key] ?? null;
+    }
+
+    /**
+     * @return array<mixed, mixed>|null
+     */
+    public function getStepResponse(string $stepId): ?array
+    {
+        $record = $this->getStepRecord($stepId);
+        $response = $record['response'] ?? null;
+
+        return is_array($response) ? $response : null;
+    }
+
+    public function getStepResponseBody(string $stepId): mixed
+    {
+        $response = $this->getStepResponse($stepId);
+
+        return $response['body'] ?? null;
+    }
+
+    public function getStepResponseHeader(string $stepId, string $name): ?string
+    {
+        $response = $this->getStepResponse($stepId);
+        if ($response === null) {
+            return null;
+        }
+
+        $headers = $response['headers'] ?? null;
+        if (!is_array($headers)) {
+            return null;
+        }
+
+        $normalized = strtolower($name);
+        foreach ($headers as $headerKey => $headerVal) {
+            if (is_string($headerKey) && strtolower($headerKey) === $normalized) {
+                return is_scalar($headerVal) ? (string) $headerVal : null;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return array<mixed, mixed>|null
+     */
+    public function getStepRequest(string $stepId): ?array
+    {
+        $record = $this->getStepRecord($stepId);
+        $request = $record['request'] ?? null;
+
+        return is_array($request) ? $request : null;
+    }
+
+    /**
+     * @return array<mixed, mixed>
+     */
+    public function getStepInputs(string $stepId): array
+    {
+        $record = $this->getStepRecord($stepId);
+        $inputs = $record['inputs'] ?? null;
+
+        return is_array($inputs) ? $inputs : [];
+    }
+
+    public function getStepStatusCode(string $stepId): ?int
+    {
+        $record = $this->getStepRecord($stepId);
+        if ($record === null) {
+            return null;
+        }
+
+        $code = $record['statusCode'] ?? null;
+        if (is_int($code)) {
+            return $code;
+        }
+
+        $response = $this->getStepResponse($stepId);
+        if ($response !== null) {
+            $respCode = $response['statusCode'] ?? $response['status'] ?? null;
+
+            return is_int($respCode) ? $respCode : null;
+        }
+
+        return null;
+    }
+
+    public function getInput(string $name): mixed
+    {
+        return $this->inputs[$name] ?? null;
+    }
+
+    public function hasInput(string $name): bool
+    {
+        return array_key_exists($name, $this->inputs);
+    }
 }

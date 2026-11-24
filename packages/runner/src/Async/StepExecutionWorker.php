@@ -373,7 +373,7 @@ class StepExecutionWorker
 
     private function documentPreflightValidation(WorkflowContext $context): void
     {
-        if ($this->preflight !== null && $context->getSteps() === []) {
+        if ($this->preflight !== null && !$context->hasExecutedSteps()) {
             $preflightDoc = $this->definitions->find($context->getDefinitionId());
             if ($preflightDoc !== null) {
                 $preflightResult = $this->preflight->validate($preflightDoc);

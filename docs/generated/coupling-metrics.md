@@ -24,8 +24,8 @@ targets. Regenerated before every commit.
 | `contracts:Interfaces` | 20 | 367 | 35 | 4 | 0.10 |  |
 | `contracts:Observability` | 4 | 104 | 12 | 0 | 0.00 |  |
 | `contracts:Policy` | 5 | 263 | 6 | 0 | 0.00 |  |
-| `contracts:Spec` | 58 | 2394 | 54 | 2 | 0.04 |  |
-| `contracts:State` | 4 | 1058 | 17 | 2 | 0.11 |  |
+| `contracts:Spec` | 58 | 2419 | 54 | 2 | 0.04 |  |
+| `contracts:State` | 4 | 1238 | 17 | 2 | 0.11 |  |
 | `contracts:Support` | 5 | 180 | 10 | 0 | 0.00 |  |
 | `contracts:Validation` | 9 | 364 | 16 | 2 | 0.11 |  |
 | `document:Parser` | 31 | 2446 | 5 | 2 | 0.29 |  |
@@ -49,7 +49,7 @@ targets. Regenerated before every commit.
 | `evaluation:Registries` | 2 | 188 | 1 | 6 | 0.86 |  |
 | `(evaluation root)` | 6 | 822 | 12 | 14 | 0.54 |  |
 | `expression:Ast` | 15 | 340 | 4 | 2 | 0.33 |  |
-| `expression:Data` | 6 | 433 | 15 | 5 | 0.25 |  |
+| `expression:Data` | 6 | 388 | 15 | 5 | 0.25 |  |
 | `expression:Enum` | 2 | 45 | 6 | 0 | 0.00 |  |
 | `expression:Exceptions` | 4 | 205 | 11 | 1 | 0.08 |  |
 | `expression:Interfaces` | 4 | 248 | 12 | 6 | 0.33 |  |
@@ -79,7 +79,7 @@ targets. Regenerated before every commit.
 | `protocol-soap:Resolver` | 1 | 135 | 0 | 1 | 1.00 |  |
 | `protocol-soap:Transfer` | 2 | 225 | 2 | 1 | 0.33 |  |
 | `protocol-soap:Validation` | 1 | 138 | 0 | 4 | 1.00 |  |
-| `runner:Async` | 6 | 1464 | 1 | 22 | 0.96 |  |
+| `runner:Async` | 6 | 1451 | 1 | 22 | 0.96 |  |
 | `runner:Data` | 3 | 135 | 4 | 3 | 0.43 |  |
 | `runner:Events` | 9 | 178 | 2 | 0 | 0.00 |  |
 | `runner:Exceptions` | 11 | 272 | 5 | 3 | 0.38 |  |

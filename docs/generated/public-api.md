@@ -494,11 +494,21 @@ this file on a commit is a public API change — review it deliberately.
 
 #### `WorkflowContextInterface` interface
 - `public function getComponents(): array;`
+- `public function getInput(string $name): mixed;`
 - `public function getInputs(): array;`
+- `public function getStepInputs(string $stepId): array;`
+- `public function getStepOutputs(string $stepId): array;`
+- `public function getStepRecord(string $stepId): ?array;`
+- `public function getStepRequest(string $stepId): ?array;`
+- `public function getStepResponse(string $stepId): ?array;`
 - `public function getStepStatus(string $stepId): ?StepStatus;`
+- `public function getStepStatusCode(string $stepId): ?int;`
 - `public function getSteps(): array;`
 - `public function getWorkflowId(): ?string;`
 - `public function getWorkflows(): array;`
+- `public function hasExecutedSteps(): bool;`
+- `public function hasInput(string $name): bool;`
+- `public function hasStep(string $stepId): bool;`
 
 ### `Alama\Arazzo\Contracts\State`
 
@@ -507,10 +517,17 @@ this file on a commit is a public API change — review it deliberately.
 - `public function attemptFor(string $stepId): int`
 - `public function enterWorkflow(string $workflowId): self`
 - `public function getSkippedSteps(): array`
+- `public function hasErrors(): bool`
+- `public function hasStepResult(string $stepId): bool`
+- `public function isFailed(): bool`
+- `public function isRunning(): bool`
+- `public function isSucceeded(): bool`
 - `public function jsonSerialize(): array`
 - `public function leaveWorkflow(): self`
 - `public function restoreBudget(int $stepsSpent, array $workflowCallStack): self`
 - `public function spendStep(): self`
+- `public function stepOutputs(string $stepId): array`
+- `public function stepResult(string $stepId): ?array`
 - `public function toArray(): array`
 - `public function toContext(): WorkflowContext`
 - `public function withCurrentStep(?string $stepId): self`
@@ -533,15 +550,28 @@ this file on a commit is a public API change — review it deliberately.
 - `public function getComponents(): array`
 - `public function getDefinitionId(): string`
 - `public function getExecutionId(): string`
+- `public function getInput(string $name): mixed`
 - `public function getInputs(): array`
 - `public function getSkippedSteps(): array`
 - `public function getStepAttempts(string $stepId): int`
+- `public function getStepInputs(string $stepId): array`
+- `public function getStepOutput(string $stepId, string $key): mixed`
+- `public function getStepOutputs(string $stepId): array`
+- `public function getStepRecord(string $stepId): ?array`
+- `public function getStepRequest(string $stepId): ?array`
+- `public function getStepResponse(string $stepId): ?array`
+- `public function getStepResponseBody(string $stepId): mixed`
+- `public function getStepResponseHeader(string $stepId, string $name): ?string`
 - `public function getStepStatus(string $stepId): ?StepStatus`
+- `public function getStepStatusCode(string $stepId): ?int`
 - `public function getSteps(): array`
 - `public function getStepsSpent(): int`
 - `public function getWorkflowCallStack(): array`
 - `public function getWorkflowId(): ?string`
 - `public function getWorkflows(): array`
+- `public function hasExecutedSteps(): bool`
+- `public function hasInput(string $name): bool`
+- `public function hasStep(string $stepId): bool`
 - `public function rootScope(): array`
 - `public function toArray(): array`
 - `public function withActiveSourcePolicy(?SourcePolicy $policy): self`

@@ -46,13 +46,8 @@ final readonly class EvaluationContext implements EvaluationInputInterface
             return [];
         }
 
-        $stepData = $this->workflowContext->getSteps()[$this->currentStepId] ?? null;
-        if (!is_array($stepData)) {
-            return [];
-        }
-
-        $response = $stepData['response'] ?? null;
-        if (!is_array($response)) {
+        $response = $this->workflowContext->getStepResponse($this->currentStepId);
+        if ($response === null) {
             return [];
         }
 
@@ -64,33 +59,13 @@ final readonly class EvaluationContext implements EvaluationInputInterface
     /** @return array<mixed, mixed>|null */
     public function stepResponse(string $stepId): ?array
     {
-        $stepData = $this->workflowContext->getSteps()[$stepId] ?? null;
-        if (!is_array($stepData)) {
-            return null;
-        }
-
-        $response = $stepData['response'] ?? null;
-        if (!is_array($response)) {
-            return null;
-        }
-
-        return $response;
+        return $this->workflowContext->getStepResponse($stepId);
     }
 
     /** @return array<mixed, mixed>|null */
     public function stepRequest(string $stepId): ?array
     {
-        $stepData = $this->workflowContext->getSteps()[$stepId] ?? null;
-        if (!is_array($stepData)) {
-            return null;
-        }
-
-        $request = $stepData['request'] ?? null;
-        if (!is_array($request)) {
-            return null;
-        }
-
-        return $request;
+        return $this->workflowContext->getStepRequest($stepId);
     }
 
     /** @return array<mixed, mixed> */
@@ -131,8 +106,8 @@ final readonly class EvaluationContext implements EvaluationInputInterface
      */
     public function httpMetaForStep(string $stepId, string $field): mixed
     {
-        $stepData = $this->workflowContext->getSteps()[$stepId] ?? null;
-        if (!is_array($stepData)) {
+        $stepData = $this->workflowContext->getStepRecord($stepId);
+        if ($stepData === null) {
             return null;
         }
 
@@ -147,33 +122,13 @@ final readonly class EvaluationContext implements EvaluationInputInterface
     /** @return array<mixed, mixed> */
     public function stepOutputs(string $stepId): array
     {
-        $stepData = $this->workflowContext->getSteps()[$stepId] ?? null;
-        if (!is_array($stepData)) {
-            return [];
-        }
-
-        $outputs = $stepData['outputs'] ?? null;
-        if (!is_array($outputs)) {
-            return [];
-        }
-
-        return $outputs;
+        return $this->workflowContext->getStepOutputs($stepId);
     }
 
     /** @return array<mixed, mixed> */
     public function stepInputs(string $stepId): array
     {
-        $stepData = $this->workflowContext->getSteps()[$stepId] ?? null;
-        if (!is_array($stepData)) {
-            return [];
-        }
-
-        $inputs = $stepData['inputs'] ?? null;
-        if (!is_array($inputs)) {
-            return [];
-        }
-
-        return $inputs;
+        return $this->workflowContext->getStepInputs($stepId);
     }
 
     /**

@@ -236,14 +236,14 @@ class WorkflowExecutor
         $this->events->dispatch(new StepStartedEvent($state->executionId, $workflow->workflowId, $stepId, $attempt, $this->clock->now()));
 
         [$stepContext, $success] = $this->executeTracedStep($step, $workflow, $state, $document, $state->executionId);
-        $raw = $stepContext->getSteps()[$stepId] ?? [];
+        $raw = $stepContext->getStepRecord($stepId) ?? [];
         /** @var array<string, mixed> $raw */
         $state = $state->withStepResult($stepId, $raw);
 
         $result = new StepResult(
             $stepId,
             $success,
-            is_array($raw['outputs'] ?? null) ? $raw['outputs'] : [],
+            $stepContext->getStepOutputs($stepId),
             $success ? null : ExecutionError::stepFailed($stepId),
         );
 

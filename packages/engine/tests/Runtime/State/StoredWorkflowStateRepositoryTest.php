@@ -42,6 +42,56 @@ function storedRepositoryContext(): WorkflowContextInterface
         {
             return 'wf-1';
         }
+
+        public function hasStep(string $stepId): bool
+        {
+            return false;
+        }
+
+        public function hasExecutedSteps(): bool
+        {
+            return false;
+        }
+
+        public function getStepRecord(string $stepId): ?array
+        {
+            return null;
+        }
+
+        public function getStepOutputs(string $stepId): array
+        {
+            return [];
+        }
+
+        public function getStepResponse(string $stepId): ?array
+        {
+            return null;
+        }
+
+        public function getStepRequest(string $stepId): ?array
+        {
+            return null;
+        }
+
+        public function getStepInputs(string $stepId): array
+        {
+            return [];
+        }
+
+        public function getStepStatusCode(string $stepId): ?int
+        {
+            return null;
+        }
+
+        public function getInput(string $name): mixed
+        {
+            return null;
+        }
+
+        public function hasInput(string $name): bool
+        {
+            return false;
+        }
     };
 }
 

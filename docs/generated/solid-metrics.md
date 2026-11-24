@@ -120,11 +120,11 @@ Concrete types over 300 LOC:
 | Class | Module | LOC |
 |---|---|---:|
 | `ExecutionContext` | `engine:Runtime` | 553 |
-| `ExecutionState` | `contracts:State` | 465 |
-| `WorkflowContext` | `contracts:State` | 410 |
+| `WorkflowContext` | `contracts:State` | 544 |
+| `ExecutionState` | `contracts:State` | 511 |
 | `WorkflowExecutor` | `runner:Sync` | 397 |
 | `StepExecutionWorker` | `runner:Async` | 387 |
-| `StepOutcomeHandler` | `runner:Async` | 379 |
+| `StepOutcomeHandler` | `runner:Async` | 366 |
 | `WorkflowEngine` | `runner:Sync` | 309 |
 | `DefaultOpenApiExecutor` | `protocol-http:Execution` | 306 |
 
@@ -134,6 +134,7 @@ Contracts declaring more than 7 methods:
 
 | Interface | Methods |
 |---|---:|
+| `WorkflowContextInterface` <small>contracts</small> | 16 |
 | `AsyncRunnerInterface` <small>runner</small> | 16 |
 | `ExpressionEngineInterface` <small>expression</small> | 14 |
 | `EvaluationInputInterface` <small>expression</small> | 12 |

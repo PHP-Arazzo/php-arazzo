@@ -46,6 +46,16 @@ public contract between packages.
   - `public function getWorkflows(): array;`
   - `public function getStepStatus(string $stepId): ?StepStatus;`
   - `public function getWorkflowId(): ?string;`
+  - `public function hasStep(string $stepId): bool;`
+  - `public function hasExecutedSteps(): bool;`
+  - `public function getStepRecord(string $stepId): ?array;`
+  - `public function getStepOutputs(string $stepId): array;`
+  - `public function getStepResponse(string $stepId): ?array;`
+  - `public function getStepRequest(string $stepId): ?array;`
+  - `public function getStepInputs(string $stepId): array;`
+  - `public function getStepStatusCode(string $stepId): ?int;`
+  - `public function getInput(string $name): mixed;`
+  - `public function hasInput(string $name): bool;`
 
 ### Cross-boundary value types
 

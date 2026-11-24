@@ -302,7 +302,7 @@ class StepOutcomeHandler
             $this->events->dispatch(new RunCompletedEvent(
                 $executionId,
                 $workflow->workflowId,
-                $this->stepOutputs($context, $step->stepId),
+                $context->getStepOutputs($step->stepId),
                 $this->clock->now(),
             ));
         } else {
@@ -330,19 +330,6 @@ class StepOutcomeHandler
         }
 
         return null;
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function stepOutputs(WorkflowContext $context, string $stepId): array
-    {
-        $record = $context->getSteps()[$stepId] ?? null;
-        $outputs = is_array($record) ? ($record['outputs'] ?? null) : null;
-
-        return is_array($outputs)
-            ? array_filter($outputs, static fn (mixed $key): bool => is_string($key), ARRAY_FILTER_USE_KEY)
-            : [];
     }
 
     private function continueFrom(Workflow $workflow, WorkflowContext $context, string $executionId): void

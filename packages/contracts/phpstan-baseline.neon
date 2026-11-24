@@ -97,7 +97,7 @@ parameters:
 			path: src/Spec/Workflow.php
 
 		-
-			message: '#^Class ExecutionState has too many methods \(29\)\. Maximum allowed is 20\.$#'
+			message: '#^Class ExecutionState has too many methods \(36\)\. Maximum allowed is 20\.$#'
 			identifier: arazzo.custom.maxMethodCount
 			count: 1
 			path: src/State/ExecutionState.php
@@ -121,7 +121,7 @@ parameters:
 			path: src/State/ExecutionState.php
 
 		-
-			message: '#^Class WorkflowContext has too many methods \(34\)\. Maximum allowed is 20\.$#'
+			message: '#^Class WorkflowContext has too many methods \(47\)\. Maximum allowed is 20\.$#'
 			identifier: arazzo.custom.maxMethodCount
 			count: 1
 			path: src/State/WorkflowContext.php

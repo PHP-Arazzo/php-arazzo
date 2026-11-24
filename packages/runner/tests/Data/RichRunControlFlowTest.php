@@ -10,11 +10,10 @@ use Alama\Arazzo\Runner\Policy\ExecutionPolicy;
 use Alama\Arazzo\Runner\Preflight\OperationResolvers;
 use Alama\Arazzo\Runner\Preflight\Preflight;
 use Alama\Arazzo\Runner\Sync\WorkflowEngine;
-use Mockery;
 
 test('run control flow hosts with* mutators (Tell, Dont Ask)', function (): void {
-    $engine = new WorkflowEngine(Mockery::mock(EvaluationEngineInterface::class));
-    $queue = Mockery::mock(QueueDriverInterface::class);
+    $engine = new WorkflowEngine($this->createMock(EvaluationEngineInterface::class));
+    $queue = $this->createMock(QueueDriverInterface::class);
     $observability = new ObservabilityContext();
     $policy = new ExecutionPolicy();
 
@@ -32,7 +31,7 @@ test('run control flow hosts with* mutators (Tell, Dont Ask)', function (): void
     expect($controlFlow->preflight)->toBeNull();
 
     // withWorkflowEngine returns a new instance with the engine replaced
-    $otherEngine = new WorkflowEngine(Mockery::mock(EvaluationEngineInterface::class));
+    $otherEngine = new WorkflowEngine($this->createMock(EvaluationEngineInterface::class));
     $withEngine = $controlFlow->withWorkflowEngine($otherEngine);
     expect($withEngine)->not->toBe($controlFlow);
     expect($withEngine->workflowEngine)->toBe($otherEngine);
@@ -40,7 +39,7 @@ test('run control flow hosts with* mutators (Tell, Dont Ask)', function (): void
     expect($withEngine->policy)->toBe($policy);
 
     // withQueueDriver returns a new instance with the queue driver replaced
-    $otherQueue = Mockery::mock(QueueDriverInterface::class);
+    $otherQueue = $this->createMock(QueueDriverInterface::class);
     $withQueue = $controlFlow->withQueueDriver($otherQueue);
     expect($withQueue)->not->toBe($controlFlow);
     expect($withQueue->queueDriver)->toBe($otherQueue);
