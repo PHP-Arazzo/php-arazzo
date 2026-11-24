@@ -107,6 +107,7 @@ flowchart TB
         M_protocol_http__["(protocol-http package root)"]:::node
     end
     subgraph PKG_M_protocol_rpc["protocol-rpc"]
+        M_protocol_rpc_Exceptions["protocol-rpc:Exceptions"]:::node
         M_protocol_rpc_Execution["protocol-rpc:Execution"]:::node
         M_protocol_rpc_Normalizer["protocol-rpc:Normalizer"]:::node
         M_protocol_rpc_Plugins["protocol-rpc:Plugins"]:::node
@@ -348,13 +349,15 @@ flowchart TB
     M_protocol_http__ --> M_protocol_http_Policy
     M_protocol_http__ --> M_protocol_http_Resolver
     M_protocol_http__ --> M_sources__
+    M_protocol_rpc_Exceptions --> M_engine_Exceptions
     M_protocol_rpc_Execution --> M_contracts_Spec
     M_protocol_rpc_Execution --> M_contracts_State
-    M_protocol_rpc_Execution --> M_engine_Exceptions
     M_protocol_rpc_Execution --> M_engine_Execution
     M_protocol_rpc_Execution --> M_evaluation__
+    M_protocol_rpc_Execution --> M_protocol_rpc_Exceptions
     M_protocol_rpc_Execution --> M_protocol_rpc_Protocol
     M_protocol_rpc_Execution --> M_protocol_rpc_Transfer
+    M_protocol_rpc_Normalizer --> M_protocol_rpc_Exceptions
     M_protocol_rpc_Plugins --> M_contracts_Attributes
     M_protocol_rpc_Plugins --> M_contracts_Interfaces
     M_protocol_rpc_Plugins --> M_contracts_Observability
@@ -363,7 +366,7 @@ flowchart TB
     M_protocol_rpc_Plugins --> M_contracts_State
     M_protocol_rpc_Plugins --> M_contracts_Validation
     M_protocol_rpc_Plugins --> M_document__
-    M_protocol_rpc_Plugins --> M_engine_Exceptions
+    M_protocol_rpc_Plugins --> M_protocol_rpc_Exceptions
     M_protocol_rpc_Plugins --> M_protocol_rpc_Execution
     M_protocol_rpc_Plugins --> M_protocol_rpc_Normalizer
     M_protocol_rpc_Plugins --> M_protocol_rpc_Protocol
@@ -371,6 +374,7 @@ flowchart TB
     M_protocol_rpc_Protocol --> M_contracts_Interfaces
     M_protocol_rpc_Protocol --> M_contracts_Spec
     M_protocol_rpc_Protocol --> M_document__
+    M_protocol_rpc_Protocol --> M_protocol_rpc_Exceptions
     M_protocol_rpc_Protocol --> M_protocol_rpc_Plugins
     M_protocol_rpc_Transfer --> M_contracts_Interfaces
     M_protocol_rpc_Transfer --> M_contracts_Spec
@@ -573,9 +577,9 @@ flowchart TB
 | `protocol-http` | `evaluation` | 6 |
 | `protocol-http` | `expression` | 7 |
 | `protocol-http` | `sources` | 8 |
-| `protocol-rpc` | `contracts` | 40 |
+| `protocol-rpc` | `contracts` | 38 |
 | `protocol-rpc` | `document` | 2 |
-| `protocol-rpc` | `engine` | 4 |
+| `protocol-rpc` | `engine` | 5 |
 | `protocol-rpc` | `evaluation` | 1 |
 | `protocol-soap` | `contracts` | 46 |
 | `protocol-soap` | `document` | 2 |

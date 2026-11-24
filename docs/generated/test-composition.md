@@ -149,15 +149,15 @@ pie showData
 
 ```mermaid
 pie showData
-    title Protocol-rpc — 10 test files
-    "Module-scoped": 9
+    title Protocol-rpc — 11 test files
+    "Module-scoped": 10
     "Architecture": 1
 ```
 
 | Suite | Files | Share |
 |---|---:|---:|
-| Module-scoped | 9 | 90% |
-| Architecture | 1 | 10% |
+| Module-scoped | 10 | 91% |
+| Architecture | 1 | 9% |
 
 ## Protocol-soap package
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Protocol\Rpc\Normalizer;
 
-use InvalidArgumentException;
+use Alama\Arazzo\Protocol\Rpc\Exceptions\ProtoSyntaxException;
 
 /**
  * Stateful lookahead cursor over tokens produced by {@see ProtoTokenizer}.
@@ -68,7 +68,7 @@ final class ProtoTokenCursor
     {
         $word = $this->peekWord();
         if ($word === null) {
-            throw new InvalidArgumentException("Expected {$what} in .proto source.");
+            throw ProtoSyntaxException::expectedWord($what);
         }
         $this->offset++;
 
@@ -78,7 +78,7 @@ final class ProtoTokenCursor
     public function expectSymbol(string $symbol): void
     {
         if (!$this->atSymbol($symbol)) {
-            throw new InvalidArgumentException("Expected '{$symbol}' in .proto source.");
+            throw ProtoSyntaxException::expectedSymbol($symbol);
         }
         $this->offset++;
     }
@@ -87,7 +87,7 @@ final class ProtoTokenCursor
     {
         $token = $this->tokens[$this->offset] ?? null;
         if ($token === null || $token[0] !== 'string') {
-            throw new InvalidArgumentException('Expected a string literal in .proto source.');
+            throw ProtoSyntaxException::expectedStringLiteral();
         }
         $this->offset++;
 
@@ -98,7 +98,7 @@ final class ProtoTokenCursor
     {
         $token = $this->tokens[$this->offset] ?? null;
         if ($token === null || $token[0] !== 'number') {
-            throw new InvalidArgumentException('Expected a field number in .proto source.');
+            throw ProtoSyntaxException::expectedFieldNumber();
         }
         $this->offset++;
 

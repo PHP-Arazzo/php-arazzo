@@ -17,12 +17,11 @@ Regenerated before every commit.
 | Exception | Raised by |
 |---|---|
 | **ExecutionError** | `AsyncExecutionGraphAssembler` <small>runner:Async</small>, `WorkflowEngine` <small>runner:Sync</small> |
-| **ExecutionException** | `RpcRequestBuilder` <small>protocol-rpc:Execution</small>, `RpcOperationExecutor` <small>protocol-rpc:Plugins</small>, `StepExecutionWorker` <small>runner:Async</small>, `StepExecutor` <small>runner:Sync</small> |
+| **ExecutionException** | `StepExecutionWorker` <small>runner:Async</small>, `StepExecutor` <small>runner:Sync</small> |
 | **GotoTargetNotFoundException** | `WorkflowEngine` <small>runner:Sync</small>, `WorkflowNavigator` <small>runner:Sync</small> |
-| **InvalidArgumentException** | `ProtoParser` <small>protocol-rpc:Normalizer</small>, `ProtoTokenCursor` <small>protocol-rpc:Normalizer</small> |
 | **LogicException** | `StepExecutionWorker` <small>runner:Async</small> |
 | **PreflightFailureException** | `AsyncExecutionGraphAssembler` <small>runner:Async</small>, `StepExecutionWorker` <small>runner:Async</small>, `WorkflowPreflightRunner` <small>runner:Sync</small> |
-| **RuntimeException** | `CliRunner` <small>cli:Console</small>, `OpenAiClient` <small>cli:Generator</small>, `ProtobufOperationResolver` <small>protocol-rpc:Protocol</small>, `RpcMessageCodec` <small>protocol-rpc:Protocol</small>, `OperationResolvers` <small>runner:Preflight</small> |
+| **RuntimeException** | `CliRunner` <small>cli:Console</small>, `OpenAiClient` <small>cli:Generator</small>, `OperationResolvers` <small>runner:Preflight</small> |
 | **StepBudgetExceededException** | `WorkflowEngine` <small>runner:Sync</small> |
 | **WorkflowCycleException** | `WorkflowNavigator` <small>runner:Sync</small> |
 | **WorkflowDepthExceededException** | `WorkflowNavigator` <small>runner:Sync</small> |
@@ -59,7 +58,11 @@ Regenerated before every commit.
 | **ParameterResolutionException** | _(never raised in src)_ |
 | **ParserException** | _(never raised in src)_ |
 | **PluginInstantiationException** | _(never raised in src)_ |
+| **ProtoSyntaxException** | _(never raised in src)_ |
+| **ProtobufResolutionException** | _(never raised in src)_ |
 | **RegistryInitializationException** | _(never raised in src)_ |
+| **RpcCodecException** | _(never raised in src)_ |
+| **RpcExecutionException** | _(never raised in src)_ |
 | **RunnerException** | _(never raised in src)_ |
 | **SchemaValidationException** | _(never raised in src)_ |
 | **SelectorEvaluationException** | _(never raised in src)_ |

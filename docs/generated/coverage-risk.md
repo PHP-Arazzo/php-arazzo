@@ -42,7 +42,7 @@ quadrantChart
     document/Validator: [0.714, 1]
     engine/Data: [0.75, 1]
     engine/Enum: [0, 1]
-    engine/Exceptions: [0.091, 1]
+    engine/Exceptions: [0.1, 1]
     engine/Execution: [0.357, 1]
     engine/Runtime: [0.6, 1]
     evaluation/Condition: [0.889, 1]
@@ -70,10 +70,11 @@ quadrantChart
     protocol-http/Plugins: [0.917, 1]
     protocol-http/Policy: [0.333, 1]
     protocol-http/Resolver: [0.7, 1]
+    protocol-rpc/Exceptions: [0.2, 0.25]
     protocol-rpc/Execution: [0.875, 1]
-    protocol-rpc/Normalizer: [0, 0.143]
+    protocol-rpc/Normalizer: [0.5, 0.286]
     protocol-rpc/Plugins: [0.929, 1]
-    protocol-rpc/Protocol: [0.571, 1]
+    protocol-rpc/Protocol: [0.625, 1]
     protocol-rpc/Transfer: [0.6, 1]
     protocol-soap/Exceptions: [0.333, 0.8]
     protocol-soap/Execution: [0.818, 1]
@@ -125,7 +126,7 @@ quadrantChart
 | `document/Validator` | 0.71 | 26 | 6 | 100% |
 | `engine/Data` | 0.75 | 3 | 2 | 100% |
 | `engine/Enum` | 0.00 | 1 | 1 | 100% |
-| `engine/Exceptions` | 0.09 | 11 | 8 | 100% |
+| `engine/Exceptions` | 0.10 | 12 | 8 | 100% |
 | `engine/Execution` | 0.36 | 15 | 10 | 100% |
 | `engine/Runtime` | 0.60 | 25 | 21 | 100% |
 | `evaluation/Condition` | 0.89 | 83 | 18 | 100% |
@@ -153,11 +154,12 @@ quadrantChart
 | `protocol-http/Plugins` | 0.92 | 18 | 2 | 100% |
 | `protocol-http/Policy` | 0.33 | 2 | 1 | 100% |
 | `protocol-http/Resolver` | 0.70 | 19 | 3 | 100% |
+| `protocol-rpc/Exceptions` | 0.20 | 1 | 4 | 25% |
 | `protocol-rpc/Execution` | 0.88 | 3 | 2 | 100% |
-| `protocol-rpc/Normalizer` | 0.00 | 1 | 7 | 14% |
+| `protocol-rpc/Normalizer` | 0.50 | 2 | 7 | 29% |
 | `protocol-rpc/Plugins` | 0.93 | 6 | 3 | 100% |
-| `protocol-rpc/Protocol` | 0.57 | 6 | 4 | 100% |
-| `protocol-rpc/Transfer` | 0.60 | 3 | 2 | 100% |
+| `protocol-rpc/Protocol` | 0.62 | 6 | 4 | 100% |
+| `protocol-rpc/Transfer` | 0.60 | 4 | 2 | 100% |
 | `protocol-soap/Exceptions` | 0.33 | 4 | 5 | 80% |
 | `protocol-soap/Execution` | 0.82 | 6 | 4 | 100% |
 | `protocol-soap/Plugins` | 0.93 | 7 | 5 | 100% |
@@ -183,4 +185,4 @@ quadrantChart
 | `sources/Registries` | 0.80 | 5 | 1 | 100% |
 | `sources/Resolver` | 0.67 | 26 | 12 | 100% |
 
-**Refactor-now list** (untested churn): `expression/Internal`
+**Refactor-now list** (untested churn): `expression/Internal`, `protocol-rpc/Normalizer`

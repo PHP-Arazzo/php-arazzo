@@ -34,7 +34,7 @@ targets. Regenerated before every commit.
 | `(document root)` | 5 | 229 | 12 | 6 | 0.33 |  |
 | `engine:Data` | 2 | 97 | 1 | 3 | 0.75 |  |
 | `engine:Enum` | 1 | 16 | 1 | 0 | 0.00 |  |
-| `engine:Exceptions` | 8 | 214 | 10 | 1 | 0.09 |  |
+| `engine:Exceptions` | 8 | 214 | 9 | 1 | 0.10 |  |
 | `engine:Execution` | 10 | 1194 | 9 | 5 | 0.36 |  |
 | `engine:Runtime` | 21 | 1849 | 4 | 6 | 0.60 |  |
 | `(engine root)` | 2 | 192 | 0 | 3 | 1.00 |  |
@@ -66,11 +66,12 @@ targets. Regenerated before every commit.
 | `protocol-http:Policy` | 1 | 42 | 2 | 1 | 0.33 |  |
 | `protocol-http:Resolver` | 3 | 304 | 3 | 7 | 0.70 |  |
 | `(protocol-http root)` | 1 | 128 | 1 | 12 | 0.92 |  |
-| `protocol-rpc:Execution` | 2 | 186 | 1 | 7 | 0.88 |  |
-| `protocol-rpc:Normalizer` | 7 | 571 | 1 | 0 | 0.00 |  |
-| `protocol-rpc:Plugins` | 3 | 419 | 1 | 13 | 0.93 |  |
-| `protocol-rpc:Protocol` | 4 | 510 | 3 | 4 | 0.57 |  |
-| `protocol-rpc:Transfer` | 2 | 217 | 2 | 3 | 0.60 |  |
+| `protocol-rpc:Exceptions` | 4 | 183 | 4 | 1 | 0.20 |  |
+| `protocol-rpc:Execution` | 2 | 174 | 1 | 7 | 0.88 |  |
+| `protocol-rpc:Normalizer` | 7 | 597 | 1 | 1 | 0.50 |  |
+| `protocol-rpc:Plugins` | 3 | 394 | 1 | 13 | 0.93 |  |
+| `protocol-rpc:Protocol` | 4 | 497 | 3 | 5 | 0.63 |  |
+| `protocol-rpc:Transfer` | 2 | 241 | 2 | 3 | 0.60 |  |
 | `protocol-soap:Exceptions` | 5 | 147 | 2 | 1 | 0.33 |  |
 | `protocol-soap:Execution` | 4 | 440 | 2 | 9 | 0.82 |  |
 | `protocol-soap:Plugins` | 5 | 862 | 1 | 13 | 0.93 |  |
@@ -98,7 +99,7 @@ targets. Regenerated before every commit.
 | `sources:Resolver` | 12 | 612 | 3 | 6 | 0.67 |  |
 | `(sources root)` | 2 | 339 | 3 | 9 | 0.75 |  |
 
-Total cross-module edges: **1696**
+Total cross-module edges: **1702**
 
 ## Most entangled module pairs
 

@@ -18,4 +18,9 @@ final readonly class ProtoService
         public string $name,
         public array $methods,
     ) {}
+
+    public function methodReference(ProtoMethod $method): string
+    {
+        return $this->name.'/'.$method->name;
+    }
 }

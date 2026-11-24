@@ -49,7 +49,11 @@ classDiagram
     class E_ParserException["ParserException<br/><small>document:Parser</small>"]:::domain
     class E_PluginInstantiationException["PluginInstantiationException<br/><small>contracts:Exceptions</small>"]:::domain
     class E_PreflightFailureException["PreflightFailureException<br/><small>runner:Exceptions</small>"]:::domain
+    class E_ProtoSyntaxException["ProtoSyntaxException<br/><small>protocol-rpc:Exceptions</small>"]:::domain
+    class E_ProtobufResolutionException["ProtobufResolutionException<br/><small>protocol-rpc:Exceptions</small>"]:::domain
     class E_RegistryInitializationException["RegistryInitializationException<br/><small>evaluation:Exceptions</small>"]:::domain
+    class E_RpcCodecException["RpcCodecException<br/><small>protocol-rpc:Exceptions</small>"]:::domain
+    class E_RpcExecutionException["RpcExecutionException<br/><small>protocol-rpc:Exceptions</small>"]:::domain
     class E_RunnerException["RunnerException<br/><small>runner:Exceptions</small>"]:::domain
     class E_SchemaValidationException["SchemaValidationException<br/><small>contracts:Exceptions</small>"]:::domain
     class E_SelectorEvaluationException["SelectorEvaluationException<br/><small>expression:Exceptions</small>"]:::domain
@@ -106,7 +110,11 @@ classDiagram
     E_ArazzoException <|-- E_ParserException
     E_ArazzoException <|-- E_PluginInstantiationException
     E_RunnerException <|-- E_PreflightFailureException
+    E_InvalidArgumentException <|-- E_ProtoSyntaxException
+    E_EngineException <|-- E_ProtobufResolutionException
     E_InvalidArgumentException <|-- E_RegistryInitializationException
+    E_EngineException <|-- E_RpcCodecException
+    E_ExecutionException <|-- E_RpcExecutionException
     E_RuntimeException <|-- E_RunnerException
     E_RuntimeException <|-- E_SchemaValidationException
     E_ArazzoException <|-- E_SelectorEvaluationException
@@ -169,7 +177,11 @@ classDiagram
 | `ParserException` | `ArazzoException` | document:Parser |
 | `PluginInstantiationException` | `ArazzoException` | contracts:Exceptions |
 | `PreflightFailureException` | `RunnerException` | runner:Exceptions |
+| `ProtoSyntaxException` | `InvalidArgumentException` | protocol-rpc:Exceptions |
+| `ProtobufResolutionException` | `EngineException` | protocol-rpc:Exceptions |
 | `RegistryInitializationException` | `InvalidArgumentException` | evaluation:Exceptions |
+| `RpcCodecException` | `EngineException` | protocol-rpc:Exceptions |
+| `RpcExecutionException` | `ExecutionException` | protocol-rpc:Exceptions |
 | `RunnerException` | `RuntimeException` | runner:Exceptions |
 | `SchemaValidationException` | `RuntimeException` | contracts:Exceptions |
 | `SelectorEvaluationException` | `ArazzoException` | expression:Exceptions |

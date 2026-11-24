@@ -17,7 +17,7 @@ use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Contracts\Spec\StepExecutionOutcome;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
 use Alama\Arazzo\Document\OperationResolverInterface;
-use Alama\Arazzo\Engine\Exceptions\ExecutionException;
+use Alama\Arazzo\Protocol\Rpc\Exceptions\RpcExecutionException;
 use Alama\Arazzo\Protocol\Rpc\Execution\RpcFailureMapper;
 use Alama\Arazzo\Protocol\Rpc\Execution\RpcRequestBuilder;
 use Alama\Arazzo\Protocol\Rpc\Protocol\RpcFieldBag;
@@ -96,7 +96,7 @@ final class RpcOperationExecutor implements OperationExecutorPluginInterface
 
     public function supports(Step $step, ArazzoDocument $document): bool
     {
-        return $step->target->action === null && $this->operationResolver->supportsStep($step, $document);
+        return !$step->hasAction() && $this->operationResolver->supportsStep($step, $document);
     }
 
     public function execute(Step $step, WorkflowContext $context, ArazzoDocument $document, string $executionId): StepExecutionOutcome
@@ -135,20 +135,15 @@ final class RpcOperationExecutor implements OperationExecutorPluginInterface
             $span->setStatus(false, 'rpc_protocol_missing');
             $span->end();
 
-            throw new ExecutionException(
-                "RPC step '{$step->stepId}' does not declare an rpcProtocol; expected one of grpc, grpc-web, twirp, connect.",
-                '/',
-                'execution.rpc_protocol_missing',
-            );
+            throw RpcExecutionException::protocolMissing($step->stepId);
         }
 
         $bags = $resolved->normalized->requestBodies['application/protobuf'] ?? null;
         $responseFields = RpcFieldBag::normalize(is_array($bags) ? ($bags['responseFields'] ?? []) : []);
         $transfer = $this->responseMapper->map($response, $protocol, $responseFields);
-        $meta = $transfer->meta();
 
-        if (isset($meta['rpc.error']) || isset($meta['error'])) {
-            $category = isset($meta['rpc.error']) ? 'rpc-error' : 'transport';
+        if ($transfer->hasFailure()) {
+            $category = $transfer->failureCategory() ?? 'transport';
             $span->setStatus(false, $category);
             $span->end();
             $this->logger->warning('RPC operation returned error.', [
@@ -159,7 +154,7 @@ final class RpcOperationExecutor implements OperationExecutorPluginInterface
             return $this->failureMapper->map($transfer, $category);
         }
 
-        $statusCode = is_int($transfer->status()) ? $transfer->status() : 500;
+        $statusCode = $transfer->httpStatusCode();
         $span->setAttribute('http.response.status_code', $statusCode);
         $span->setStatus(true);
         $span->end();
@@ -174,7 +169,7 @@ final class RpcOperationExecutor implements OperationExecutorPluginInterface
             outputs: [],
             responseBody: ['transfer' => $transfer],
             responseHeaders: $transfer->headers(),
-            rawBody: is_string($transfer->rawBody()) ? $transfer->rawBody() : null,
+            rawBody: $transfer->rawPayload(),
         );
     }
 
@@ -202,12 +197,7 @@ final class RpcOperationExecutor implements OperationExecutorPluginInterface
         try {
             return $this->operationResolver->resolve($step, $document);
         } catch (RuntimeException $e) {
-            throw new ExecutionException(
-                "RPC resolution failed for step '{$step->stepId}': ".$e->getMessage(),
-                '/',
-                'execution.rpc_resolution_failed',
-                $e,
-            );
+            throw RpcExecutionException::resolutionFailed($step->stepId, $e);
         }
     }
 }

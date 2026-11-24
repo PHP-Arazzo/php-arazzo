@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Protocol\Rpc\Protocol;
 
-use RuntimeException;
+use Alama\Arazzo\Protocol\Rpc\Exceptions\RpcCodecException;
 
 /**
  * Minimal protobuf wire codec (plan F5.1): binary encode/decode of scalar
@@ -76,7 +76,7 @@ final class RpcMessageCodec
                 1 => self::unpackFloat('e', $bytes, $offset, 8),
                 2 => self::readLengthDelimited($bytes, $offset),
                 5 => self::unpackFloat('g', $bytes, $offset, 4),
-                default => throw new RuntimeException("Unsupported protobuf wire type {$wire} while decoding an RPC response."),
+                default => throw RpcCodecException::unsupportedWireType($wire),
             };
 
             if ($field === null || !in_array($field['type'], self::SCALAR_TYPES, true)) {
@@ -134,7 +134,7 @@ final class RpcMessageCodec
     private function encodeScalar(string $type, int $number, mixed $value, string $name): string
     {
         if (!is_scalar($value)) {
-            throw new RuntimeException("Non-scalar value for field '{$name}' cannot be wire-encoded.");
+            throw RpcCodecException::nonScalarFieldValue($name);
         }
 
         $key = self::writeVarint(($number << 3) | self::wireTypeOf($type));
@@ -145,7 +145,7 @@ final class RpcMessageCodec
             'string', 'bytes' => $key.self::writeVarint(strlen((string) $value)).(string) $value,
             'double' => $key.pack('e', (float) $value),
             'float' => $key.pack('g', (float) $value),
-            default => throw new RuntimeException("Unsupported protobuf field type '{$type}' for field '{$name}'."),
+            default => throw RpcCodecException::unsupportedFieldTypeFor($type, $name),
         };
     }
 
@@ -156,7 +156,7 @@ final class RpcMessageCodec
             'string', 'bytes' => 2,
             'double' => 1,
             'float' => 5,
-            default => throw new RuntimeException("Unsupported protobuf field type '{$type}'."),
+            default => throw RpcCodecException::unsupportedFieldType($type),
         };
     }
 

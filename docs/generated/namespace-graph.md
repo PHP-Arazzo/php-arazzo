@@ -64,6 +64,7 @@ flowchart LR
     protocol_http_Policy["Alama\Arazzo\Protocol\Http\Policy"]:::coreNode
     protocol_http_Resolver["Alama\Arazzo\Protocol\Http\Resolver"]:::coreNode
     protocol_http__["(protocol-http package root)"]:::coreNode
+    protocol_rpc_Exceptions["Alama\Arazzo\Protocol\Rpc\Exceptions"]:::coreNode
     protocol_rpc_Execution["Alama\Arazzo\Protocol\Rpc\Execution"]:::coreNode
     protocol_rpc_Normalizer["Alama\Arazzo\Protocol\Rpc\Normalizer"]:::coreNode
     protocol_rpc_Plugins["Alama\Arazzo\Protocol\Rpc\Plugins\OperationExecutor"]:::coreNode
@@ -448,13 +449,15 @@ flowchart LR
     protocol_http__ --> protocol_http_Policy
     protocol_http__ --> protocol_http_Resolver
     protocol_http__ --> sources__
+    protocol_rpc_Exceptions --> engine_Exceptions
     protocol_rpc_Execution --> contracts_Spec
     protocol_rpc_Execution --> contracts_State
-    protocol_rpc_Execution --> engine_Exceptions
     protocol_rpc_Execution --> engine_Execution
     protocol_rpc_Execution --> evaluation__
+    protocol_rpc_Execution --> protocol_rpc_Exceptions
     protocol_rpc_Execution --> protocol_rpc_Protocol
     protocol_rpc_Execution --> protocol_rpc_Transfer
+    protocol_rpc_Normalizer --> protocol_rpc_Exceptions
     protocol_rpc_Plugins --> contracts_Attributes
     protocol_rpc_Plugins --> contracts_Interfaces
     protocol_rpc_Plugins --> contracts_Spec
@@ -463,7 +466,7 @@ flowchart LR
     protocol_rpc_Plugins --> contracts_Policy
     protocol_rpc_Plugins --> contracts_State
     protocol_rpc_Plugins --> document__
-    protocol_rpc_Plugins --> engine_Exceptions
+    protocol_rpc_Plugins --> protocol_rpc_Exceptions
     protocol_rpc_Plugins --> protocol_rpc_Execution
     protocol_rpc_Plugins --> protocol_rpc_Protocol
     protocol_rpc_Plugins --> protocol_rpc_Transfer
@@ -471,6 +474,7 @@ flowchart LR
     protocol_rpc_Protocol --> contracts_Interfaces
     protocol_rpc_Protocol --> contracts_Spec
     protocol_rpc_Protocol --> document__
+    protocol_rpc_Protocol --> protocol_rpc_Exceptions
     protocol_rpc_Protocol --> protocol_rpc_Plugins
     protocol_rpc_Transfer --> contracts_Interfaces
     protocol_rpc_Transfer --> contracts_Spec

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Protocol\Rpc\Normalizer;
 
-use InvalidArgumentException;
+use Alama\Arazzo\Protocol\Rpc\Exceptions\ProtoSyntaxException;
 
 /**
  * Hand-rolled, dependency-free `.proto` parser (plan F5.1). This is the
@@ -28,12 +28,12 @@ final class ProtoParser
 
         $header = $cursor->expectWord('syntax');
         if ($header !== 'syntax') {
-            throw new InvalidArgumentException('Source content is not a proto3 document.');
+            throw ProtoSyntaxException::notProto3Document();
         }
         $cursor->expectSymbol('=');
         $version = $cursor->expectString();
         if ($version !== 'proto3') {
-            throw new InvalidArgumentException("Source content announces unsupported syntax '{$version}'; only proto3 is supported.");
+            throw ProtoSyntaxException::unsupportedSyntax($version);
         }
         $cursor->expectSymbol(';');
 
