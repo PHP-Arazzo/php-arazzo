@@ -25,7 +25,7 @@ final class FixtureRunner extends ConformanceHarness
     {
         $document = $this->prepare($fixture);
 
-        if (($document->workflows[0] ?? null) === null) {
+        if ($document->firstWorkflow() === null) {
             throw new \InvalidArgumentException('Fixture has no workflows');
         }
 
@@ -47,7 +47,7 @@ final class FixtureRunner extends ConformanceHarness
         );
 
         try {
-            $executor->execute($document->workflows[0], $document, $fixture['inputs'] ?? []);
+            $executor->execute($document->firstWorkflow(), $document, $fixture['inputs'] ?? []);
         } catch (\Throwable) {
             // Terminal failures are observed through the event stream.
         }

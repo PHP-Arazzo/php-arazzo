@@ -42,9 +42,7 @@ final class MessageRefRequiresReceiveRule implements ValidationRuleInterface
             }
 
             $stepId = $site->currentStepId;
-            $step = $stepId !== null
-                ? array_find($doc->workflows, static fn ($wf): bool => $wf->findStep($stepId) !== null)?->findStep($stepId)
-                : null;
+            $step = $stepId !== null ? $doc->workflows->findStepByWorkflow($stepId) : null;
             if ($step === null || !$step->isReceiveAction()) {
                 $errors->error(
                     $this->code(),

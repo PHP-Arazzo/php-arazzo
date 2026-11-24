@@ -25,7 +25,7 @@ final class ListWorkflowsCommand extends Command
         $file = $input->getArgument('file');
         $document = Document::create()->load($file);
 
-        if ($document->workflows === []) {
+        if ($document->workflows->isEmpty()) {
             $output->writeln('<comment>no workflows</comment>');
 
             return Command::SUCCESS;

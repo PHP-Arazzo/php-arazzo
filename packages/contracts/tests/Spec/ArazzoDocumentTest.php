@@ -6,13 +6,14 @@ use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Components;
 use Alama\Arazzo\Contracts\Spec\Enum\SpecVersion;
 use Alama\Arazzo\Contracts\Spec\Info;
+use Alama\Arazzo\Contracts\Spec\WorkflowCollection;
 
 it('exposes specVersion derived from the raw arazzo string', function () {
     $doc = new ArazzoDocument(
         arazzo: '1.1.0',
         info: new Info('t', null, null, '1.0'),
         sourceDescriptions: [],
-        workflows: [],
+        workflows: WorkflowCollection::empty(),
         components: new Components([], [], [], []),
         specificationExtensions: [],
         specVersion: SpecVersion::V1_1,
@@ -27,7 +28,7 @@ it('carries a root $self URI when provided', function () {
         arazzo: '1.1.0',
         info: new Info('t', null, null, '1.0'),
         sourceDescriptions: [],
-        workflows: [],
+        workflows: WorkflowCollection::empty(),
         components: new Components([], [], [], []),
         specificationExtensions: [],
         specVersion: SpecVersion::V1_1,

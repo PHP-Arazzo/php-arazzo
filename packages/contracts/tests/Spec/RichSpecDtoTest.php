@@ -23,6 +23,7 @@ use Alama\Arazzo\Contracts\Spec\StepFlow;
 use Alama\Arazzo\Contracts\Spec\StepIo;
 use Alama\Arazzo\Contracts\Spec\StepTarget;
 use Alama\Arazzo\Contracts\Spec\Workflow;
+use Alama\Arazzo\Contracts\Spec\WorkflowCollection;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
 use DateTimeImmutable;
 
@@ -88,7 +89,7 @@ it('queries workflows, sources, steps, components, and step predicates directly 
 
     $apiSrc = new SourceDescription('api', 'https://api.test/openapi.json', SourceType::Openapi);
     $arazzoSrc = new SourceDescription('sub', 'https://api.test/sub.yaml', SourceType::Arazzo);
-    $doc = new ArazzoDocument('1.0.0', new Info('T', null, null, '1'), [$apiSrc, $arazzoSrc], [$wf, $emptyWf], $components, []);
+    $doc = new ArazzoDocument('1.0.0', new Info('T', null, null, '1'), [$apiSrc, $arazzoSrc], WorkflowCollection::fromArray([$wf, $emptyWf]), $components, []);
 
     expect($doc->findWorkflow('main'))->toBe($wf)
         ->and($doc->findWorkflow('missing'))->toBeNull()

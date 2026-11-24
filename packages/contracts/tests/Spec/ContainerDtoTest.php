@@ -13,6 +13,7 @@ use Alama\Arazzo\Contracts\Spec\StepFactory;
 use Alama\Arazzo\Contracts\Spec\StepFlow;
 use Alama\Arazzo\Contracts\Spec\StepIo;
 use Alama\Arazzo\Contracts\Spec\Workflow;
+use Alama\Arazzo\Contracts\Spec\WorkflowCollection;
 
 it('builds full document tree', function (): void {
     $step = StepFactory::http('s1', null, new StepFlow(), new StepIo(), operationId: 'getFoo');
@@ -21,10 +22,10 @@ it('builds full document tree', function (): void {
         arazzo: '1.0.0',
         info: new Info('T', null, null, '1'),
         sourceDescriptions: [new SourceDescription('api', '/x', SourceType::Openapi)],
-        workflows: [$wf],
+        workflows: WorkflowCollection::fromArray([$wf]),
         components: new Components([], [], [], []),
         specificationExtensions: [],
     );
 
-    expect($doc->workflows[0]->steps[0]->stepId)->toBe('s1');
+    expect($doc->firstWorkflow()->steps[0]->stepId)->toBe('s1');
 });

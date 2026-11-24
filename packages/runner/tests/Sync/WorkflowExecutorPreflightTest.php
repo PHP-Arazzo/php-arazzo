@@ -74,7 +74,7 @@ it('guards the synchronous adapter before any side effect or event fires', funct
     );
 
     try {
-        $executor->execute($document->workflows[0], $document, []);
+        $executor->execute($document->firstWorkflow(), $document, []);
         $this->fail('expected PreflightFailureException');
     } catch (PreflightFailureException $e) {
         expect($e->result->errors)->not->toBeEmpty()

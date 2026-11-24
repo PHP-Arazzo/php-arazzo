@@ -31,7 +31,7 @@ it('parses x-strict-validation boolean from a step', function (): void {
     $decoder = new SymfonyYamlDecoder();
     $raw = new RawDocument($decoder->decode($yaml), 'memory://test', Format::Yaml);
     $document = (new Parser())->parse($raw);
-    $steps = $document->workflows[0]->steps;
+    $steps = $document->firstWorkflow()->steps;
 
     expect($steps[0]->flow->strictValidation)->toBeTrue();
     expect($steps[1]->flow->strictValidation)->toBeFalse();
@@ -59,7 +59,7 @@ it('parses x-idempotency-key boolean from a step', function (): void {
     $decoder = new SymfonyYamlDecoder();
     $raw = new RawDocument($decoder->decode($yaml), 'memory://test', Format::Yaml);
     $document = (new Parser())->parse($raw);
-    $steps = $document->workflows[0]->steps;
+    $steps = $document->firstWorkflow()->steps;
 
     expect($steps[0]->flow->idempotencyKey)->toBeTrue();
     expect($steps[1]->flow->idempotencyKey)->toBeFalse();
@@ -84,7 +84,7 @@ it('parses x-idempotency-header string from a step', function (): void {
     $decoder = new SymfonyYamlDecoder();
     $raw = new RawDocument($decoder->decode($yaml), 'memory://test', Format::Yaml);
     $document = (new Parser())->parse($raw);
-    $steps = $document->workflows[0]->steps;
+    $steps = $document->firstWorkflow()->steps;
 
     expect($steps[0]->flow->idempotencyHeader)->toBe('X-Adyen-Idempotency-Key');
     expect($steps[1]->flow->idempotencyHeader)->toBeNull();

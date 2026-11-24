@@ -35,11 +35,11 @@ final class QueueFixtureRunner extends ConformanceHarness
     {
         $document = $this->prepare($fixture);
 
-        if (($document->workflows[0] ?? null) === null) {
+        if ($document->firstWorkflow() === null) {
             throw new \InvalidArgumentException('Fixture has no workflows');
         }
 
-        $workflow = $document->workflows[0];
+        $workflow = $document->firstWorkflow();
         $runtime = $this->runtime($this->sourceRegistry);
 
         $definitions = new InMemoryDefinitionStore();

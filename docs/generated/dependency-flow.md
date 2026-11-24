@@ -54,7 +54,7 @@ contracts-State,contracts-Policy,1
 contracts-State,contracts-Spec,3
 contracts-Validation,contracts-Data,1
 contracts-Validation,contracts-Spec,4
-document-Parser,contracts-Spec,57
+document-Parser,contracts-Spec,58
 document-Parser,contracts-Support,2
 document-Plugins,contracts-Attributes,50
 document-Plugins,contracts-Dependency,1
@@ -362,7 +362,7 @@ runner-Sync,contracts-Dependency,1
 runner-Sync,contracts-Exceptions,1
 runner-Sync,contracts-Interfaces,2
 runner-Sync,contracts-Observability,1
-runner-Sync,contracts-Spec,30
+runner-Sync,contracts-Spec,31
 runner-Sync,contracts-State,5
 runner-Sync,contracts-Validation,1
 runner-Sync,document-root,3

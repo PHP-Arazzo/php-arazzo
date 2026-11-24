@@ -12,6 +12,7 @@ use Alama\Arazzo\Contracts\Spec\StepFactory;
 use Alama\Arazzo\Contracts\Spec\StepFlow;
 use Alama\Arazzo\Contracts\Spec\StepIo;
 use Alama\Arazzo\Contracts\Spec\Workflow;
+use Alama\Arazzo\Contracts\Spec\WorkflowCollection;
 use Alama\Arazzo\Contracts\Validation\ErrorCollector;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
 use Alama\Arazzo\Document\Plugins\ValidationRule\SubWorkflowInvokeTargetResolvesRule;
@@ -30,7 +31,7 @@ function docWithInvoke(string $targetId, array $workflowIds = ['w', 'ride-reconc
 
     return new ArazzoDocument(
         arazzo: '1.1.0', info: new Info('t', null, null, '1'),
-        sourceDescriptions: [], workflows: $workflows,
+        sourceDescriptions: [], workflows: WorkflowCollection::fromArray($workflows),
         components: new Components([], [], [], []),
         specificationExtensions: [],
         specVersion: SpecVersion::V1_1,

@@ -61,6 +61,7 @@ classDiagram
     class SuccessGotoAction <<value>>
     class ValueMode
     class Workflow
+    class WorkflowCollection
     Action "1" --> "0..1" ActionKind : holds
     FailureAction "1" --> "0..*" SuccessCriterion : holds
     FailureEndAction "1" --> "0..*" SuccessCriterion : holds
@@ -84,6 +85,7 @@ classDiagram
     ArazzoDocument "1" --> "0..1" SpecVersion : holds
     ArazzoDocument "1" --> "0..*" SourceDescription : holds
     ArazzoDocument "1" --> "0..*" Workflow : holds
+    ArazzoDocument "1" --> "0..1" WorkflowCollection : holds
     Components "1" --> "0..1" Parameter : holds
     Components "1" --> "0..1" SuccessAction : holds
     Components "1" --> "0..1" FailureAction : holds
@@ -132,6 +134,7 @@ classDiagram
     Workflow "1" --> "0..1" Expression : holds
     Workflow "1" --> "0..1" Selector : holds
     Workflow "1" --> "0..1" Parameter : holds
+    WorkflowCollection "1" --> "0..*" Workflow : holds
 ```
 
 ## Enumerations

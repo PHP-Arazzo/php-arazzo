@@ -136,7 +136,7 @@ it('never retries beyond the configured ceiling', function (): void {
             Fx::step('flaky'),
         ]),
     ]);
-    $workflow = $document->workflows[0];
+    $workflow = $document->firstWorkflow();
     $step = $workflow->steps[0];
 
     for ($limit = 1; $limit <= 5; $limit++) {

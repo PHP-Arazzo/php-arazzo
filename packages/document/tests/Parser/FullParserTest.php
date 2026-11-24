@@ -32,7 +32,7 @@ it('parses a full arazzo document', function (): void {
         ->and($doc->sourceDescriptions[0]->type)->toBe(SourceType::Openapi)
         ->and($doc->workflows)->toHaveCount(1);
 
-    $wf = $doc->workflows[0];
+    $wf = $doc->firstWorkflow();
     expect($wf->workflowId)->toBe('main')
         ->and($wf->dependsOn)->toBe(['init'])
         ->and($wf->steps)->toHaveCount(2)
@@ -58,7 +58,7 @@ it('parses a minimal arazzo document', function (): void {
 
     expect($doc->arazzo)->toBe('1.0.0')
         ->and($doc->info->title)->toBe('Minimal')
-        ->and($doc->workflows)->toBeArray()->toBeEmpty();
+        ->and($doc->workflows->isEmpty())->toBeTrue();
 });
 
 it('rejects missing workflows', function (): void {
@@ -86,7 +86,7 @@ it('parses AsyncAPI action/channelPath/correlationId fields on a step', function
     ];
 
     $document = (new Parser())->parse(new RawDocument($raw, 'memory://test', Format::Json));
-    $step = $document->workflows[0]->steps[0];
+    $step = $document->firstWorkflow()->steps[0];
 
     expect($step->target->action)->toBe('receive');
     expect($step->target->channelPath)->toBe('channels/rides/created');
@@ -104,7 +104,7 @@ it('leaves action/channelPath/correlationId null when absent', function (): void
     ];
 
     $document = (new Parser())->parse(new RawDocument($raw, 'memory://test', Format::Json));
-    $step = $document->workflows[0]->steps[0];
+    $step = $document->firstWorkflow()->steps[0];
 
     expect($step->target->action)->toBeNull();
     expect($step->target->channelPath)->toBeNull();

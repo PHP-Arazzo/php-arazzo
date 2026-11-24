@@ -77,7 +77,7 @@ it('blocks executor runs on invalid inputs before any event fires', function ():
 
     try {
         $executor->execute(
-            $document->workflows[0],
+            $document->firstWorkflow(),
             $document,
             ['rideId' => 'wrong-type'],
         );

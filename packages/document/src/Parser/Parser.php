@@ -20,6 +20,7 @@ use Alama\Arazzo\Contracts\Spec\Selector;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Spec\SuccessCriterion;
 use Alama\Arazzo\Contracts\Spec\Workflow;
+use Alama\Arazzo\Contracts\Spec\WorkflowCollection;
 use Alama\Arazzo\Document\Parser\Exceptions\ParserException;
 use InvalidArgumentException;
 
@@ -89,7 +90,7 @@ class Parser extends FieldParser
             arazzo: $arazzo,
             info: $info,
             sourceDescriptions: $sourceDescriptions,
-            workflows: $workflows,
+            workflows: WorkflowCollection::fromArray($workflows),
             components: $components,
             specificationExtensions: $extensions,
             rawRoot: $d,

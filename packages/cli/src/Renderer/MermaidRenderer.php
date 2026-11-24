@@ -128,7 +128,7 @@ final class MermaidRenderer
     private function workflows(ArazzoDocument $document, ?string $workflowId): array
     {
         if ($workflowId === null) {
-            return $document->workflows;
+            return array_values($document->workflows->all());
         }
 
         $workflow = $document->findWorkflow($workflowId);

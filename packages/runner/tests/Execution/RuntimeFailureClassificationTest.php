@@ -102,11 +102,11 @@ it('preserves raw body, content type, and transport category on synthetic failur
         $schemaValidator,
     );
 
-    $step = $document->workflows[0]->steps[0];
+    $step = $document->firstWorkflow()->steps[0];
     $context = new WorkflowContext(
-        definitionId: $document->workflows[0]->workflowId,
+        definitionId: $document->firstWorkflow()->workflowId,
         inputs: $fixture['inputs'],
-        workflowId: $document->workflows[0]->workflowId,
+        workflowId: $document->firstWorkflow()->workflowId,
         executionId: 'exec_classification',
     );
 
@@ -178,7 +178,7 @@ it('classifies unmet-criteria failures on step events while keeping execution fa
         events: $classificationHarness->ev(),
     );
 
-    $result = $executor->execute($document->workflows[0], $document, []);
+    $result = $executor->execute($document->firstWorkflow(), $document, []);
 
     $categories = [];
     foreach ($classificationHarness->ev()->events as $event) {

@@ -16,6 +16,7 @@ use Alama\Arazzo\Contracts\Spec\Enum\SpecVersion;
 use Alama\Arazzo\Contracts\Spec\Info;
 use Alama\Arazzo\Contracts\Spec\Reusable;
 use Alama\Arazzo\Contracts\Spec\StepTarget;
+use Alama\Arazzo\Contracts\Spec\WorkflowCollection;
 
 final class NonPublicConstructorPluginFixture
 {
@@ -32,7 +33,7 @@ it('throws domain exceptions constructed via static factories across contracts',
     expect(fn () => PluginInstantiator::instantiate(NonPublicConstructorPluginFixture::class, 'Attr'))
         ->toThrow(PluginInstantiationException::class, 'constructor is not public');
 
-    $emptyDoc = new ArazzoDocument('1.0.0', new Info('T', null, null, '1'), [], [], new Components([], [], [], []), []);
+    $emptyDoc = new ArazzoDocument('1.0.0', new Info('T', null, null, '1'), [], WorkflowCollection::empty(), new Components([], [], [], []), []);
     expect(fn () => (new Reusable('$components.parameters.missing'))->getParamterComponent($emptyDoc))
         ->toThrow(UnresolvableReusableReferenceException::class, "Unresolvable reusable parameter reference '\$components.parameters.missing'");
 

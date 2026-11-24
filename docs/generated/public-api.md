@@ -189,11 +189,13 @@ this file on a commit is a public API change — review it deliberately.
 ### `Alama\Arazzo\Contracts\Spec`
 
 #### `ArazzoDocument` class
-- `public function __construct(public string $arazzo, public Info $info, public array $sourceDescriptions, public array $workflows, public Components $components, public array $specificationExtensions, public ?array $rawRoot = null, public SpecVersion $specVersion = SpecVersion::V1_0, public ?string $self = null)`
+- `public function __construct(public string $arazzo, public Info $info, public array $sourceDescriptions, array|WorkflowCollection $workflows, public Components $components, public array $specificationExtensions, public ?array $rawRoot = null, public SpecVersion $specVersion = SpecVersion::V1_0, public ?string $self = null)`
 - `public function findSource(string $name): ?SourceDescription`
 - `public function findWorkflow(?string $workflowId): ?Workflow`
 - `public function firstWorkflow(): ?Workflow`
+- `public function hasExternalSourceFor(string $workflowId): bool`
 - `public function nonArazzoSources(): array`
+- `public function workflowsCollection(): WorkflowCollection`
 
 #### `Components` class
 - `public function __construct(public array $inputs, public array $parameters, public array $successActions, public array $failureActions, public array $interactions = [])`
@@ -273,6 +275,19 @@ this file on a commit is a public API change — review it deliberately.
 #### `Workflow` class
 - `public function __construct(public string $workflowId, public ?string $summary, public ?string $description, public ?array $inputs, public array $dependsOn, public array $steps, public array $successActions, public array $failureActions, public array $outputs, public array $parameters)`
 - `public function firstStep(): ?Step`
+
+#### `WorkflowCollection` class
+- `public function __construct(private array $workflows = [])`
+- `public function all(): array`
+- `public function allIds(): array`
+- `public function byId(): array`
+- `public function count(): int`
+- `public function findStepByWorkflow(string $stepId): ?Step`
+- `public function findWorkflow(string $workflowId): ?Workflow`
+- `public function firstWorkflow(): ?Workflow`
+- `public function getIterator(): Traversable`
+- `public function isEmpty(): bool`
+- `public static function fromArray(array $workflows): self`
 
 ### `Alama\Arazzo\Contracts\Spec\Action`
 

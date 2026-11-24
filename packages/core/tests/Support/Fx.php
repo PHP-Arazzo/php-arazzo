@@ -22,6 +22,7 @@ use Alama\Arazzo\Contracts\Spec\StepIo;
 use Alama\Arazzo\Contracts\Spec\StepTarget;
 use Alama\Arazzo\Contracts\Spec\SuccessCriterion;
 use Alama\Arazzo\Contracts\Spec\Workflow;
+use Alama\Arazzo\Contracts\Spec\WorkflowCollection;
 
 final class Fx
 {
@@ -43,7 +44,7 @@ final class Fx
             $specVersion->value,
             new Info('T', null, null, '1'),
             $sources,
-            $workflows,
+            WorkflowCollection::fromArray($workflows),
             $components ?? new Components([], [], [], []),
             $extensions,
             $rawRoot,

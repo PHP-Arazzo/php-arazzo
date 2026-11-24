@@ -11,7 +11,7 @@ final readonly class ArazzoDocument
 {
     /**
      * @param  list<SourceDescription>  $sourceDescriptions
-     * @param  list<Workflow>  $workflows
+     * @param  array<Workflow>|WorkflowCollection  $workflows
      * @param  array<string,mixed>  $specificationExtensions
      * @param  array<string,mixed>|null  $rawRoot
      */
@@ -19,13 +19,19 @@ final readonly class ArazzoDocument
         public string $arazzo,
         public Info $info,
         public array $sourceDescriptions,
-        public array $workflows,
+        array|WorkflowCollection $workflows,
         public Components $components,
         public array $specificationExtensions,
         public ?array $rawRoot = null,
         public SpecVersion $specVersion = SpecVersion::V1_0,
         public ?string $self = null,
-    ) {}
+    ) {
+        $this->workflows = $workflows instanceof WorkflowCollection
+            ? $workflows
+            : WorkflowCollection::fromArray($workflows);
+    }
+
+    public WorkflowCollection $workflows;
 
     public function hasExternalSourceFor(string $workflowId): bool
     {
@@ -34,21 +40,26 @@ final readonly class ArazzoDocument
         });
     }
 
+    /**
+     * Strongly typed accessor to the workflows collection.
+     */
+    public function workflowsCollection(): WorkflowCollection
+    {
+        return $this->workflows;
+    }
+
     public function findWorkflow(?string $workflowId): ?Workflow
     {
         if ($workflowId === null) {
             return null;
         }
 
-        return array_find(
-            $this->workflows,
-            static fn (Workflow $workflow): bool => $workflow->workflowId === $workflowId,
-        );
+        return $this->workflows->findWorkflow($workflowId);
     }
 
     public function firstWorkflow(): ?Workflow
     {
-        return $this->workflows[0] ?? null;
+        return $this->workflows->firstWorkflow();
     }
 
     public function findSource(string $name): ?SourceDescription

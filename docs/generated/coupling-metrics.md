@@ -24,11 +24,11 @@ targets. Regenerated before every commit.
 | `contracts:Interfaces` | 20 | 367 | 35 | 4 | 0.10 |  |
 | `contracts:Observability` | 4 | 104 | 12 | 0 | 0.00 |  |
 | `contracts:Policy` | 5 | 263 | 6 | 0 | 0.00 |  |
-| `contracts:Spec` | 52 | 1443 | 54 | 2 | 0.04 |  |
+| `contracts:Spec` | 53 | 1568 | 54 | 2 | 0.04 |  |
 | `contracts:State` | 4 | 1058 | 17 | 2 | 0.11 |  |
 | `contracts:Support` | 5 | 180 | 10 | 0 | 0.00 |  |
 | `contracts:Validation` | 9 | 364 | 16 | 2 | 0.11 |  |
-| `document:Parser` | 31 | 2445 | 5 | 2 | 0.29 |  |
+| `document:Parser` | 31 | 2446 | 5 | 2 | 0.29 |  |
 | `document:Plugins` | 50 | 3062 | 0 | 7 | 1.00 |  |
 | `document:Registries` | 1 | 96 | 1 | 4 | 0.80 |  |
 | `document:Validator` | 6 | 650 | 2 | 5 | 0.71 |  |
@@ -55,7 +55,7 @@ targets. Regenerated before every commit.
 | `expression:Interfaces` | 4 | 248 | 12 | 6 | 0.33 |  |
 | `expression:Internal` | 6 | 879 | 2 | 7 | 0.78 |  |
 | `expression:JsonPath` | 9 | 1461 | 1 | 2 | 0.67 |  |
-| `expression:Plugins` | 17 | 1324 | 0 | 13 | 1.00 |  |
+| `expression:Plugins` | 17 | 1322 | 0 | 13 | 1.00 |  |
 | `expression:Policy` | 1 | 36 | 2 | 0 | 0.00 |  |
 | `expression:Registries` | 1 | 112 | 3 | 5 | 0.63 |  |
 | `expression:Support` | 2 | 190 | 2 | 4 | 0.67 |  |
@@ -100,7 +100,7 @@ targets. Regenerated before every commit.
 | `sources:Resolver` | 12 | 612 | 3 | 6 | 0.67 |  |
 | `(sources root)` | 2 | 339 | 3 | 9 | 0.75 |  |
 
-Total cross-module edges: **1705**
+Total cross-module edges: **1707**
 
 ## Most entangled module pairs
 
@@ -108,11 +108,11 @@ Total cross-module edges: **1705**
 |---|---:|
 | `document:Plugins` → `contracts:Validation` | 102 |
 | `document:Plugins` → `contracts:Spec` | 98 |
-| `document:Parser` → `contracts:Spec` | 57 |
+| `document:Parser` → `contracts:Spec` | 58 |
 | `document:Plugins` → `contracts:Attributes` | 50 |
 | `document:Plugins` → `contracts:Interfaces` | 50 |
 | `expression:Plugins` → `contracts:Validation` | 32 |
-| `runner:Sync` → `contracts:Spec` | 30 |
+| `runner:Sync` → `contracts:Spec` | 31 |
 | `runner:Async` → `contracts:Spec` | 29 |
 | `expression:Plugins` → `contracts:Spec` | 27 |
 | `(evaluation root)` → `contracts:Spec` | 26 |

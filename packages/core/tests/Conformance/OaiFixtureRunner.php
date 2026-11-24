@@ -53,7 +53,7 @@ final class OaiFixtureRunner extends ConformanceHarness
             'inputs' => $inputs,
         ]);
 
-        if (($document->workflows[0] ?? null) === null) {
+        if ($document->firstWorkflow() === null) {
             throw new \InvalidArgumentException('Document has no workflows');
         }
 
@@ -78,7 +78,7 @@ final class OaiFixtureRunner extends ConformanceHarness
         );
 
         try {
-            $executor->execute($document->workflows[0], $document, $fixture['inputs'] ?? []);
+            $executor->execute($document->firstWorkflow(), $document, $fixture['inputs'] ?? []);
         } catch (\Throwable) {
             // Observed through the event stream.
         }

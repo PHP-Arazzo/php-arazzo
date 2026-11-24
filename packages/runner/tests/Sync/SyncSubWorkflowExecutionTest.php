@@ -145,7 +145,7 @@ it('runs a parent -> child workflow synchronously', function (): void {
     $document = subWorkflowDocument();
     OperationExecutorRegistry::reset();
     $result = subWorkflowGraph(OperationExecutorRegistry::create())
-        ->execute($document->workflows[0], $document, []);
+        ->execute($document->firstWorkflow(), $document, []);
 
     expect($result->status)->toBe(ExecutionStatus::Succeeded)
         ->and($result->stepResults)->toHaveKey('call-child')

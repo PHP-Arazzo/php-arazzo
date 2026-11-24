@@ -118,7 +118,7 @@ quadrantChart
 | `contracts/Interfaces` | 0.10 | 51 | 20 | 100% |
 | `contracts/Observability` | 0.00 | 9 | 4 | 100% |
 | `contracts/Policy` | 0.00 | 12 | 5 | 100% |
-| `contracts/Spec` | 0.04 | 304 | 52 | 100% |
+| `contracts/Spec` | 0.04 | 305 | 53 | 100% |
 | `contracts/State` | 0.10 | 91 | 4 | 100% |
 | `contracts/Support` | 0.00 | 13 | 5 | 100% |
 | `contracts/Validation` | 0.11 | 97 | 9 | 100% |

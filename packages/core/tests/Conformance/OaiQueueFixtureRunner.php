@@ -65,11 +65,11 @@ final class OaiQueueFixtureRunner extends ConformanceHarness
             'inputs' => $inputs,
         ]);
 
-        if (($document->workflows[0] ?? null) === null) {
+        if ($document->firstWorkflow() === null) {
             throw new \InvalidArgumentException('Document has no workflows');
         }
 
-        $workflow = $document->workflows[0];
+        $workflow = $document->firstWorkflow();
         $runtime = $this->runtime($this->sourceRegistry);
         $engine = $this->engine();
 
