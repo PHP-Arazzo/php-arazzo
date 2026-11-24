@@ -155,8 +155,7 @@ final class DefaultSourceResolver implements SourceResolver
 
     private function fetchAndDecode(SourceDescription $source, string $basePath): SourceDocument
     {
-        $rawScheme = parse_url($source->url, PHP_URL_SCHEME);
-        $scheme = (is_string($rawScheme) && $rawScheme !== '') ? strtolower($rawScheme) : 'file';
+        $scheme = $source->scheme();
 
         $fetcher = $this->fetchers[$scheme] ?? null;
         if ($fetcher === null) {

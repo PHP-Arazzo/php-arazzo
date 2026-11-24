@@ -35,6 +35,45 @@ final readonly class ExecutionResult
         return $this->status === ExecutionStatus::Failed;
     }
 
+    public function stepResult(string $stepId): ?StepResult
+    {
+        return $this->stepResults[$stepId] ?? null;
+    }
+
+    public function hasStepResult(string $stepId): bool
+    {
+        return isset($this->stepResults[$stepId]);
+    }
+
+    public function output(string $name): mixed
+    {
+        return $this->outputs[$name] ?? null;
+    }
+
+    public function hasOutput(string $name): bool
+    {
+        return array_key_exists($name, $this->outputs);
+    }
+
+    public function failedStep(): ?StepResult
+    {
+        foreach ($this->stepResults as $result) {
+            if ($result->isFailed()) {
+                return $result;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function executedStepIds(): array
+    {
+        return array_keys($this->stepResults);
+    }
+
     /**
      * @return array{
      *     workflowId: string,

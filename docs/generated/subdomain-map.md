@@ -25,7 +25,7 @@ flowchart LR
         S_document_Validator["document:Validator<br/><small>659 LOC</small>"]:::supportingDomain
         S_protocol_http_Resolver["protocol-http:Resolver<br/><small>307 LOC</small>"]:::supportingDomain
         S_protocol_soap_Resolver["protocol-soap:Resolver<br/><small>136 LOC</small>"]:::supportingDomain
-        S_sources_Resolver["sources:Resolver<br/><small>624 LOC</small>"]:::supportingDomain
+        S_sources_Resolver["sources:Resolver<br/><small>623 LOC</small>"]:::supportingDomain
     end
     subgraph S_generic["Generic subdomain"]
         S_contracts_State["contracts:State<br/><small>1242 LOC</small>"]:::genericDomain
@@ -88,9 +88,9 @@ flowchart LR
         S_protocol_soap_Transfer["protocol-soap:Transfer<br/><small>227 LOC</small>"]:::unknownDomain
         S_protocol_soap_Validation["protocol-soap:Validation<br/><small>139 LOC</small>"]:::unknownDomain
         S_runner_Async["runner:Async<br/><small>1457 LOC</small>"]:::unknownDomain
-        S_runner_Data["runner:Data<br/><small>138 LOC</small>"]:::unknownDomain
+        S_runner_Data["runner:Data<br/><small>202 LOC</small>"]:::unknownDomain
         S_runner_Exceptions["runner:Exceptions<br/><small>283 LOC</small>"]:::unknownDomain
-        S_runner_Execution["runner:Execution<br/><small>698 LOC</small>"]:::unknownDomain
+        S_runner_Execution["runner:Execution<br/><small>723 LOC</small>"]:::unknownDomain
         S_runner_Plugins["runner:Plugins<br/><small>80 LOC</small>"]:::unknownDomain
         S_runner_Policy["runner:Policy<br/><small>124 LOC</small>"]:::unknownDomain
         S_runner_Preflight["runner:Preflight<br/><small>156 LOC</small>"]:::unknownDomain
@@ -111,10 +111,10 @@ flowchart LR
 
 | Subdomain | Modules | Core pkg LOC | Laravel pkg LOC | Share |
 |---|---:|---:|---:|---:|
-| Core domain | 1 | 2,776 | 0 | 8% |
-| Supporting | 8 | 5,452 | 0 | 15% |
+| Core domain | 1 | 2,776 | 0 | 7% |
+| Supporting | 8 | 5,451 | 0 | 15% |
 | Generic subdomain | 6 | 1,858 | 0 | 5% |
-| Unclassified | 66 | 26,845 | 0 | 73% |
+| Unclassified | 66 | 26,934 | 0 | 73% |
 
 **Unclassified modules** — classify them in `SUBDOMAINS` or delete them:
 - `cli:Exceptions`

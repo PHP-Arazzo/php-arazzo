@@ -58,6 +58,31 @@ final readonly class Transition
         return $this->type === TransitionType::End;
     }
 
+    public function isNext(): bool
+    {
+        return $this->type === TransitionType::Next;
+    }
+
+    public function isRetry(): bool
+    {
+        return $this->type === TransitionType::Retry;
+    }
+
+    public function isGoto(): bool
+    {
+        return $this->type === TransitionType::Goto;
+    }
+
+    public function isInvoke(): bool
+    {
+        return $this->type === TransitionType::Invoke;
+    }
+
+    public function isSuspend(): bool
+    {
+        return $this->type === TransitionType::Suspend;
+    }
+
     public function isSucceeded(): bool
     {
         return $this->status === 'succeeded';

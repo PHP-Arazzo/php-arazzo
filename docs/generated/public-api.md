@@ -1202,11 +1202,22 @@ this file on a commit is a public API change — review it deliberately.
 
 #### `ExecutionResult` class
 - `public function __construct(public string $workflowId, public ExecutionStatus $status, public array $outputs = [], public array $stepResults = [], public int $stepsSpent = 0, public array $workflowCallStack = [])`
+- `public function executedStepIds(): array`
+- `public function failedStep(): ?StepResult`
+- `public function hasOutput(string $name): bool`
+- `public function hasStepResult(string $stepId): bool`
 - `public function isFailed(): bool`
+- `public function output(string $name): mixed`
+- `public function stepResult(string $stepId): ?StepResult`
 - `public function toArray(): array`
 
 #### `StepResult` class
 - `public function __construct(public string $stepId, public bool $success, public array $outputs = [], public ?Throwable $error = null)`
+- `public function errorMessage(): ?string`
+- `public function hasError(): bool`
+- `public function hasOutput(string $name): bool`
+- `public function isFailed(): bool`
+- `public function output(string $name): mixed`
 - `public function toArray(): array`
 
 ### `Alama\Arazzo\Runner\Exceptions`

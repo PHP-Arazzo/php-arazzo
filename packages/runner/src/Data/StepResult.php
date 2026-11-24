@@ -21,9 +21,34 @@ final readonly class StepResult
         public ?Throwable $error = null,
     ) {}
 
+    public function isSucceeded(): bool
+    {
+        return $this->success;
+    }
+
     public function isFailed(): bool
     {
         return !$this->success;
+    }
+
+    public function hasError(): bool
+    {
+        return $this->error !== null;
+    }
+
+    public function errorMessage(): ?string
+    {
+        return $this->error?->getMessage();
+    }
+
+    public function output(string $name): mixed
+    {
+        return $this->outputs[$name] ?? null;
+    }
+
+    public function hasOutput(string $name): bool
+    {
+        return array_key_exists($name, $this->outputs);
     }
 
     /**
@@ -35,7 +60,7 @@ final readonly class StepResult
             'stepId' => $this->stepId,
             'success' => $this->success,
             'outputs' => $this->outputs,
-            'error' => $this->error?->getMessage(),
+            'error' => $this->errorMessage(),
         ];
     }
 }

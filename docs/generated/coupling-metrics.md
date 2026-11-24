@@ -80,10 +80,10 @@ targets. Regenerated before every commit.
 | `protocol-soap:Transfer` | 2 | 225 | 2 | 1 | 0.33 |  |
 | `protocol-soap:Validation` | 1 | 138 | 0 | 4 | 1.00 |  |
 | `runner:Async` | 6 | 1451 | 1 | 22 | 0.96 |  |
-| `runner:Data` | 3 | 135 | 4 | 3 | 0.43 |  |
+| `runner:Data` | 3 | 199 | 4 | 3 | 0.43 |  |
 | `runner:Events` | 9 | 178 | 2 | 0 | 0.00 |  |
 | `runner:Exceptions` | 11 | 272 | 5 | 3 | 0.38 |  |
-| `runner:Execution` | 12 | 686 | 3 | 18 | 0.86 | ⚠ unstable hub |
+| `runner:Execution` | 12 | 711 | 3 | 18 | 0.86 | ⚠ unstable hub |
 | `runner:Plugins` | 1 | 79 | 2 | 9 | 0.82 |  |
 | `runner:Policy` | 2 | 122 | 5 | 2 | 0.29 |  |
 | `runner:Preflight` | 2 | 154 | 4 | 4 | 0.50 |  |
@@ -97,7 +97,7 @@ targets. Regenerated before every commit.
 | `sources:Plugins` | 1 | 146 | 0 | 6 | 1.00 |  |
 | `sources:Policy` | 1 | 124 | 2 | 1 | 0.33 |  |
 | `sources:Registries` | 1 | 80 | 1 | 4 | 0.80 |  |
-| `sources:Resolver` | 12 | 612 | 3 | 6 | 0.67 |  |
+| `sources:Resolver` | 12 | 611 | 3 | 6 | 0.67 |  |
 | `(sources root)` | 2 | 339 | 3 | 9 | 0.75 |  |
 
 Total cross-module edges: **1707**
