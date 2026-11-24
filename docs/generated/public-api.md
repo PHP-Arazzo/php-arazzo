@@ -804,6 +804,12 @@ this file on a commit is a public API change — review it deliberately.
 #### `StepTransitionType` enum
 - Cases: `Cancelled`, `Enter`, `GuardFailed`, `Timeout`
 
+### `Alama\Arazzo\Engine\Exceptions`
+
+#### `InvalidRetryPolicyException` class
+- `public static function invalidBackoffMultiplier(): self`
+- `public static function nonPositiveMaxAttempts(): self`
+
 ### `Alama\Arazzo\Runtime\Policy`
 
 #### `RetryPolicy` class

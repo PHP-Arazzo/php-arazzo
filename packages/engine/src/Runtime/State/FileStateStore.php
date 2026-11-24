@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Runtime\State;
 
+use Alama\Arazzo\Engine\Exceptions\StateStoreException;
 use Alama\Arazzo\Runtime\State\Interfaces\StateStoreInterface;
-use RuntimeException;
 
 /**
  * Filesystem-backed state store for CLI and single-process runs.
@@ -25,7 +25,7 @@ final class FileStateStore implements StateStoreInterface
         $this->dir = $dir ?? (getcwd() ?: '.').'/storage/executions';
 
         if (!is_dir($this->dir) && !@mkdir($this->dir, 0777, true) && !is_dir($this->dir)) {
-            throw new RuntimeException("Could not create state directory: {$this->dir}");
+            throw StateStoreException::directoryCreationFailed($this->dir);
         }
     }
 
@@ -38,7 +38,7 @@ final class FileStateStore implements StateStoreInterface
         $bytesWritten = file_put_contents($this->path($executionId), $json);
 
         if ($bytesWritten === false) {
-            throw new RuntimeException("Could not persist execution state: {$executionId}");
+            throw StateStoreException::persistFailed($executionId);
         }
     }
 
@@ -79,7 +79,7 @@ final class FileStateStore implements StateStoreInterface
         $path = $this->path($executionId);
 
         if (is_file($path) && !@unlink($path)) {
-            throw new RuntimeException("Could not delete execution state: {$executionId}");
+            throw StateStoreException::deleteFailed($executionId);
         }
     }
 

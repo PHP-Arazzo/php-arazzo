@@ -57,7 +57,7 @@ class ParameterSerializer
             'spaceDelimited' => self::serializeDelimited($name, $value, $explode, ' '),
             'pipeDelimited' => self::serializeDelimited($name, $value, $explode, '|'),
             'deepObject' => self::serializeDeepObject($name, $value),
-            default => throw new UnsupportedSerializationStyleException($style, $location),
+            default => throw UnsupportedSerializationStyleException::forStyle($style, $location),
         };
     }
 

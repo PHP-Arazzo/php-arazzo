@@ -19,13 +19,12 @@ Regenerated before every commit.
 | **ExecutionError** | `AsyncExecutionGraphAssembler` <small>runner:Async</small>, `WorkflowEngine` <small>runner:Sync</small> |
 | **ExecutionException** | `RpcRequestBuilder` <small>protocol-rpc:Execution</small>, `RpcOperationExecutor` <small>protocol-rpc:Plugins</small>, `SoapRequestBuilder` <small>protocol-soap:Execution</small>, `SoapOperationExecutor` <small>protocol-soap:Plugins</small>, `StepExecutionWorker` <small>runner:Async</small>, `StepExecutor` <small>runner:Sync</small> |
 | **GotoTargetNotFoundException** | `WorkflowEngine` <small>runner:Sync</small>, `WorkflowNavigator` <small>runner:Sync</small> |
-| **InvalidArgumentException** | `TypeCaster` <small>engine:Execution</small>, `ProtoParser` <small>protocol-rpc:Normalizer</small>, `ProtoTokenCursor` <small>protocol-rpc:Normalizer</small>, `WsdlDomReader` <small>protocol-soap:Plugins</small>, `WsdlSourceNormalizer` <small>protocol-soap:Plugins</small>, `RetryPolicy` <small>engine:Runtime</small> |
+| **InvalidArgumentException** | `ProtoParser` <small>protocol-rpc:Normalizer</small>, `ProtoTokenCursor` <small>protocol-rpc:Normalizer</small>, `WsdlDomReader` <small>protocol-soap:Plugins</small>, `WsdlSourceNormalizer` <small>protocol-soap:Plugins</small> |
 | **LogicException** | `AsyncApiStepExecutor` <small>protocol-http:Plugins</small>, `StepExecutionWorker` <small>runner:Async</small> |
 | **PreflightFailureException** | `AsyncExecutionGraphAssembler` <small>runner:Async</small>, `StepExecutionWorker` <small>runner:Async</small>, `WorkflowPreflightRunner` <small>runner:Sync</small> |
-| **RuntimeException** | `CliRunner` <small>cli:Console</small>, `OpenAiClient` <small>cli:Generator</small>, `ReusableParameterResolver` <small>engine:Execution</small>, `OpenApiOperationResolver` <small>protocol-http:Resolver</small>, `ProtobufOperationResolver` <small>protocol-rpc:Protocol</small>, `RpcMessageCodec` <small>protocol-rpc:Protocol</small>, `SoapEnvelope` <small>protocol-soap:Execution</small>, `WsdlOperationResolver` <small>protocol-soap:Execution</small>, `OperationResolvers` <small>runner:Preflight</small>, `FileLockStrategy` <small>engine:Runtime</small>, `FileStateStore` <small>engine:Runtime</small>, `OtelSetup` <small>engine:Runtime</small> |
+| **RuntimeException** | `CliRunner` <small>cli:Console</small>, `OpenAiClient` <small>cli:Generator</small>, `OpenApiOperationResolver` <small>protocol-http:Resolver</small>, `ProtobufOperationResolver` <small>protocol-rpc:Protocol</small>, `RpcMessageCodec` <small>protocol-rpc:Protocol</small>, `SoapEnvelope` <small>protocol-soap:Execution</small>, `WsdlOperationResolver` <small>protocol-soap:Execution</small>, `OperationResolvers` <small>runner:Preflight</small> |
 | **SchemaValidationException** | `ResponseSchemaValidator` <small>protocol-http:Execution</small>, `XsdResponseValidator` <small>protocol-soap:Validation</small> |
 | **StepBudgetExceededException** | `WorkflowEngine` <small>runner:Sync</small> |
-| **UnsupportedSerializationStyleException** | `ParameterSerializer` <small>engine:Execution</small> |
 | **WorkflowCycleException** | `WorkflowNavigator` <small>runner:Sync</small> |
 | **WorkflowDepthExceededException** | `WorkflowNavigator` <small>runner:Sync</small> |
 | **ArazzoException** | _(never raised in src)_ |
@@ -36,9 +35,11 @@ Regenerated before every commit.
 | **DecodeException** | _(never raised in src)_ |
 | **DecodeLimitException** | _(never raised in src)_ |
 | **DefinitionHydrationException** | _(never raised in src)_ |
+| **EngineException** | _(never raised in src)_ |
 | **ExpressionSyntaxException** | _(never raised in src)_ |
 | **InvalidFetchPolicyException** | _(never raised in src)_ |
 | **InvalidOpenApiSourceException** | _(never raised in src)_ |
+| **InvalidRetryPolicyException** | _(never raised in src)_ |
 | **InvalidSelectorPluginException** | _(never raised in src)_ |
 | **InvalidSourcePolicyException** | _(never raised in src)_ |
 | **InvalidSourceReferenceException** | _(never raised in src)_ |
@@ -46,12 +47,14 @@ Regenerated before every commit.
 | **InvalidStepTargetException** | _(never raised in src)_ |
 | **JsonPathSyntaxException** | _(never raised in src)_ |
 | **LoaderException** | _(never raised in src)_ |
+| **LockException** | _(never raised in src)_ |
 | **MaxAliasesExceededException** | _(never raised in src)_ |
 | **MaxBytesExceededException** | _(never raised in src)_ |
 | **MaxDepthExceededException** | _(never raised in src)_ |
 | **MaxNodesExceededException** | _(never raised in src)_ |
 | **NotImplementedException** | _(never raised in src)_ |
 | **ObjectDeserializationForbiddenException** | _(never raised in src)_ |
+| **ParameterResolutionException** | _(never raised in src)_ |
 | **ParserException** | _(never raised in src)_ |
 | **PluginInstantiationException** | _(never raised in src)_ |
 | **RegistryInitializationException** | _(never raised in src)_ |
@@ -60,9 +63,13 @@ Regenerated before every commit.
 | **SourceFetchException** | _(never raised in src)_ |
 | **SourceParseException** | _(never raised in src)_ |
 | **SourceResolutionException** | _(never raised in src)_ |
+| **StateStoreException** | _(never raised in src)_ |
+| **TelemetrySetupException** | _(never raised in src)_ |
+| **TypeCastException** | _(never raised in src)_ |
 | **UnknownWorkflowException** | _(never raised in src)_ |
 | **UnresolvableReferenceException** | _(never raised in src)_ |
 | **UnresolvableReusableReferenceException** | _(never raised in src)_ |
+| **UnsupportedSerializationStyleException** | _(never raised in src)_ |
 | **UnsupportedSourceVersionException** | _(never raised in src)_ |
 
 ## Catch sites

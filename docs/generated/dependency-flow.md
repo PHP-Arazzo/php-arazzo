@@ -82,12 +82,14 @@ engine-Exceptions,contracts-Support,1
 engine-Execution,contracts-Spec,13
 engine-Execution,contracts-State,2
 engine-Execution,document-Parser,1
+engine-Execution,engine-Exceptions,2
 engine-Execution,evaluation-root,1
 engine-Runtime,contracts-Clock,1
 engine-Runtime,contracts-Interfaces,7
 engine-Runtime,contracts-Observability,3
 engine-Runtime,contracts-Spec,8
 engine-Runtime,contracts-State,4
+engine-Runtime,engine-Exceptions,4
 engine-root,contracts-Spec,6
 engine-root,contracts-State,2
 engine-root,engine-Data,2

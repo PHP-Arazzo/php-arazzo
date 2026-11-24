@@ -268,7 +268,9 @@ flowchart LR
     engine_Execution --> contracts_Spec
     engine_Execution --> contracts_State
     engine_Execution --> document_Parser
+    engine_Execution --> engine_Exceptions
     engine_Execution --> evaluation__
+    engine_Runtime --> engine_Exceptions
     engine_Runtime --> contracts_Interfaces
     engine_Runtime --> contracts_Spec
     engine_Runtime --> contracts_State

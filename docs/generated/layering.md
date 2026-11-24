@@ -194,12 +194,14 @@ flowchart TB
     M_engine_Execution --> M_contracts_Spec
     M_engine_Execution --> M_contracts_State
     M_engine_Execution --> M_document_Parser
+    M_engine_Execution --> M_engine_Exceptions
     M_engine_Execution -.->|violation| M_evaluation__
     M_engine_Runtime --> M_contracts_Clock
     M_engine_Runtime --> M_contracts_Interfaces
     M_engine_Runtime --> M_contracts_Observability
     M_engine_Runtime --> M_contracts_Spec
     M_engine_Runtime --> M_contracts_State
+    M_engine_Runtime --> M_engine_Exceptions
     M_engine__ --> M_contracts_Spec
     M_engine__ --> M_contracts_State
     M_engine__ --> M_engine_Data

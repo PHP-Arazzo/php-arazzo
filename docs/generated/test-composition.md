@@ -89,17 +89,17 @@ pie showData
 
 ```mermaid
 pie showData
-    title Engine — 13 test files
-    "Module-scoped": 10
+    title Engine — 14 test files
+    "Module-scoped": 11
     "Root": 2
     "Unit": 1
 ```
 
 | Suite | Files | Share |
 |---|---:|---:|
-| Module-scoped | 10 | 77% |
-| Root | 2 | 15% |
-| Unit | 1 | 8% |
+| Module-scoped | 11 | 79% |
+| Root | 2 | 14% |
+| Unit | 1 | 7% |
 
 ## Runner package
 

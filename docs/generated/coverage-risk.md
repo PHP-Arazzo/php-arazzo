@@ -42,9 +42,9 @@ quadrantChart
     document/Validator: [0.714, 1]
     engine/Data: [0.75, 1]
     engine/Enum: [0, 1]
-    engine/Exceptions: [0.111, 1]
-    engine/Execution: [0.308, 1]
-    engine/Runtime: [0.556, 1]
+    engine/Exceptions: [0.091, 1]
+    engine/Execution: [0.357, 1]
+    engine/Runtime: [0.6, 1]
     evaluation/Condition: [0.889, 1]
     evaluation/Data: [0.4, 1]
     evaluation/Enum: [0, 1]
@@ -116,7 +116,7 @@ quadrantChart
 | `contracts/Policy` | 0.00 | 12 | 5 | 100% |
 | `contracts/Spec` | 0.04 | 297 | 52 | 100% |
 | `contracts/State` | 0.10 | 86 | 4 | 100% |
-| `contracts/Support` | 0.00 | 12 | 5 | 100% |
+| `contracts/Support` | 0.00 | 13 | 5 | 100% |
 | `contracts/Validation` | 0.11 | 93 | 9 | 100% |
 | `document/Parser` | 0.29 | 65 | 31 | 100% |
 | `document/Plugins` | 1.00 | 52 | 50 | 100% |
@@ -124,9 +124,9 @@ quadrantChart
 | `document/Validator` | 0.71 | 26 | 6 | 100% |
 | `engine/Data` | 0.75 | 2 | 2 | 100% |
 | `engine/Enum` | 0.00 | 1 | 1 | 100% |
-| `engine/Exceptions` | 0.11 | 8 | 1 | 100% |
-| `engine/Execution` | 0.31 | 14 | 10 | 100% |
-| `engine/Runtime` | 0.56 | 23 | 21 | 100% |
+| `engine/Exceptions` | 0.09 | 9 | 8 | 100% |
+| `engine/Execution` | 0.36 | 14 | 10 | 100% |
+| `engine/Runtime` | 0.60 | 24 | 21 | 100% |
 | `evaluation/Condition` | 0.89 | 81 | 18 | 100% |
 | `evaluation/Data` | 0.40 | 13 | 2 | 100% |
 | `evaluation/Enum` | 0.00 | 6 | 5 | 100% |

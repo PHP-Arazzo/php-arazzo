@@ -40,14 +40,14 @@ Evans' first question: does the code speak one language?
 
 ### state vs status
 
-- **State**: `ExecutionState`, `FileStateStore`, `InMemoryStateStore`, `StateStoreInterface` + 5 more (9 types)
+- **State**: `ExecutionState`, `FileStateStore`, `InMemoryStateStore`, `StateStoreException` + 6 more (10 types)
 - **Status**: `ExecutionStatus`, `StepStatus` (2 types)
 
 ### registry vs store vs repository
 
 - **Registry**: `CriterionEvaluatorRegistry`, `DecoderRegistry`, `DefinitionRegistryInterface`, `ExecutionRegistryInterface` + 8 more (12 types)
 - **Repository**: `StoredWorkflowStateRepository`, `WorkflowStateRepositoryInterface` (2 types)
-- **Store**: `CliExecutionStore`, `DefinitionStoreInterface`, `ExecutionStoreCorrelationBridge`, `ExecutionStoreInterface` + 6 more (10 types)
+- **Store**: `CliExecutionStore`, `DefinitionStoreInterface`, `ExecutionStoreCorrelationBridge`, `ExecutionStoreInterface` + 7 more (11 types)
 
 ### workflow vs process vs flow
 

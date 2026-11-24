@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Runtime\Infrastructure;
 
 use Alama\Arazzo\Contracts\Interfaces\LockStrategyInterface;
-use RuntimeException;
+use Alama\Arazzo\Engine\Exceptions\LockException;
 
 /**
  * flock() drops the descriptor when the process exits, so there is no stale
@@ -35,12 +35,12 @@ final class FileLockStrategy implements LockStrategyInterface
         $fp = @fopen($lockFile, 'c+');
 
         if ($fp === false) {
-            throw new RuntimeException("Could not create lock file: {$lockFile}");
+            throw LockException::lockFileCreationFailed($lockFile);
         }
 
         if (!flock($fp, LOCK_EX)) {
             fclose($fp);
-            throw new RuntimeException("Could not acquire lock for key: {$key}");
+            throw LockException::lockAcquisitionFailed($key);
         }
 
         $this->heldLocks[$key] = $fp;

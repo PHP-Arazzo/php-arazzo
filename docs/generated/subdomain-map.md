@@ -50,9 +50,9 @@ flowchart LR
         S_document_Registries["document:Registries<br/><small>97 LOC</small>"]:::unknownDomain
         S_engine_Data["engine:Data<br/><small>74 LOC</small>"]:::unknownDomain
         S_engine_Enum["engine:Enum<br/><small>17 LOC</small>"]:::unknownDomain
-        S_engine_Exceptions["engine:Exceptions<br/><small>42 LOC</small>"]:::unknownDomain
-        S_engine_Execution["engine:Execution<br/><small>1201 LOC</small>"]:::unknownDomain
-        S_engine_Runtime["engine:Runtime<br/><small>1844 LOC</small>"]:::unknownDomain
+        S_engine_Exceptions["engine:Exceptions<br/><small>222 LOC</small>"]:::unknownDomain
+        S_engine_Execution["engine:Execution<br/><small>1199 LOC</small>"]:::unknownDomain
+        S_engine_Runtime["engine:Runtime<br/><small>1845 LOC</small>"]:::unknownDomain
         S_evaluation_Condition["evaluation:Condition<br/><small>1139 LOC</small>"]:::unknownDomain
         S_evaluation_Data["evaluation:Data<br/><small>86 LOC</small>"]:::unknownDomain
         S_evaluation_Enum["evaluation:Enum<br/><small>123 LOC</small>"]:::unknownDomain
@@ -111,7 +111,7 @@ flowchart LR
 | Core domain | 1 | 1,452 | 0 | 4% |
 | Supporting | 8 | 5,468 | 0 | 16% |
 | Generic subdomain | 6 | 1,678 | 0 | 5% |
-| Unclassified | 63 | 25,929 | 0 | 75% |
+| Unclassified | 63 | 26,108 | 0 | 75% |
 
 **Unclassified modules** — classify them in `SUBDOMAINS` or delete them:
 - `contracts:Attributes`

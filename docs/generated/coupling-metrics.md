@@ -34,9 +34,9 @@ targets. Regenerated before every commit.
 | `(document root)` | 5 | 229 | 12 | 6 | 0.33 |  |
 | `engine:Data` | 2 | 72 | 1 | 3 | 0.75 |  |
 | `engine:Enum` | 1 | 16 | 1 | 0 | 0.00 |  |
-| `engine:Exceptions` | 1 | 41 | 8 | 1 | 0.11 |  |
-| `engine:Execution` | 10 | 1191 | 9 | 4 | 0.31 |  |
-| `engine:Runtime` | 21 | 1823 | 4 | 5 | 0.56 |  |
+| `engine:Exceptions` | 8 | 214 | 10 | 1 | 0.09 |  |
+| `engine:Execution` | 10 | 1189 | 9 | 5 | 0.36 |  |
+| `engine:Runtime` | 21 | 1824 | 4 | 6 | 0.60 |  |
 | `(engine root)` | 2 | 192 | 0 | 3 | 1.00 |  |
 | `evaluation:Condition` | 18 | 1121 | 1 | 8 | 0.89 |  |
 | `evaluation:Data` | 2 | 84 | 3 | 2 | 0.40 |  |
@@ -97,7 +97,7 @@ targets. Regenerated before every commit.
 | `sources:Resolver` | 12 | 612 | 3 | 6 | 0.67 |  |
 | `(sources root)` | 2 | 339 | 3 | 9 | 0.75 |  |
 
-Total cross-module edges: **1688**
+Total cross-module edges: **1694**
 
 ## Most entangled module pairs
 

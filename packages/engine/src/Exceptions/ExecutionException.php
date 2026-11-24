@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Engine\Exceptions;
 
-use Alama\Arazzo\Contracts\Support\Exceptions\ArazzoException;
-
 /**
  * @internal stays out of the advertised contract; not part of the public API surface
  */
-final class ExecutionException extends ArazzoException
+class ExecutionException extends EngineException
 {
     public static function subWorkflowNotFound(string $workflowId): self
     {
@@ -36,6 +34,33 @@ final class ExecutionException extends ArazzoException
             .'Use an absolute broker/webhook URL, or wire AsyncAPI server resolution in the executor.',
             '/',
             'execution.unresolvable_channel_target',
+        );
+    }
+
+    public static function noExecutorRegistry(): self
+    {
+        return new self(
+            'No operation executor registry configured; register a protocol executor plugin.',
+            '/',
+            'execution.no_executor_registry',
+        );
+    }
+
+    public static function noSupportingExecutor(string $stepId): self
+    {
+        return new self(
+            "No OperationExecutorPluginInterface supports step '{$stepId}'. Register a protocol executor plugin (e.g. HttpProtocol::create()->executor()).",
+            '/',
+            'execution.no_supporting_executor',
+        );
+    }
+
+    public static function suspendedInSyncMode(string $stepId): self
+    {
+        return new self(
+            "Step '{$stepId}' suspended, which the synchronous runner cannot resume.",
+            '/',
+            'execution.suspended_in_sync_mode',
         );
     }
 }

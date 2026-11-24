@@ -9,8 +9,8 @@ use Alama\Arazzo\Contracts\Interfaces\BackoffCalculatorInterface;
 use Alama\Arazzo\Contracts\Spec\Action\RetryAction;
 use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
+use Alama\Arazzo\Engine\Exceptions\InvalidRetryPolicyException;
 use DateTimeImmutable;
-use InvalidArgumentException;
 use Psr\Clock\ClockInterface;
 
 /**
@@ -34,11 +34,11 @@ final readonly class RetryPolicy
         ?ClockInterface $clock = null,
     ) {
         if ($maxAttempts < 1) {
-            throw new InvalidArgumentException('RetryPolicy maxAttempts must be at least 1.');
+            throw InvalidRetryPolicyException::nonPositiveMaxAttempts();
         }
 
         if ($backoffMultiplier <= 0.0) {
-            throw new InvalidArgumentException('RetryPolicy backoffMultiplier must be greater than 0.');
+            throw InvalidRetryPolicyException::invalidBackoffMultiplier();
         }
 
         $this->calculator = $calculator ?? new ExponentialBackoffCalculator();

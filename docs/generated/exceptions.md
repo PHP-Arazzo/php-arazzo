@@ -20,11 +20,13 @@ classDiagram
     class E_DecodeException["DecodeException<br/><small>document:Parser</small>"]:::domain
     class E_DecodeLimitException["DecodeLimitException<br/><small>document:Parser</small>"]:::domain
     class E_DefinitionHydrationException["DefinitionHydrationException<br/><small>engine:Runtime</small>"]:::domain
+    class E_EngineException["EngineException<br/><small>engine:Exceptions</small>"]:::domain
     class E_ExecutionException["ExecutionException<br/><small>engine:Exceptions</small>"]:::domain
     class E_ExpressionSyntaxException["ExpressionSyntaxException<br/><small>expression:Exceptions</small>"]:::domain
     class E_GotoTargetNotFoundException["GotoTargetNotFoundException<br/><small>runner:Exceptions</small>"]:::domain
     class E_InvalidFetchPolicyException["InvalidFetchPolicyException<br/><small>sources:Exceptions</small>"]:::domain
     class E_InvalidOpenApiSourceException["InvalidOpenApiSourceException<br/><small>sources:Exceptions</small>"]:::domain
+    class E_InvalidRetryPolicyException["InvalidRetryPolicyException<br/><small>engine:Exceptions</small>"]:::domain
     class E_InvalidSelectorPluginException["InvalidSelectorPluginException<br/><small>expression:Exceptions</small>"]:::domain
     class E_InvalidSourcePolicyException["InvalidSourcePolicyException<br/><small>runner:Exceptions</small>"]:::domain
     class E_InvalidSourceReferenceException["InvalidSourceReferenceException<br/><small>sources:Exceptions</small>"]:::domain
@@ -32,12 +34,14 @@ classDiagram
     class E_InvalidStepTargetException["InvalidStepTargetException<br/><small>contracts:Exceptions</small>"]:::domain
     class E_JsonPathSyntaxException["JsonPathSyntaxException<br/><small>expression:Exceptions</small>"]:::domain
     class E_LoaderException["LoaderException<br/><small>document:Parser</small>"]:::domain
+    class E_LockException["LockException<br/><small>engine:Exceptions</small>"]:::domain
     class E_MaxAliasesExceededException["MaxAliasesExceededException<br/><small>document:Parser</small>"]:::domain
     class E_MaxBytesExceededException["MaxBytesExceededException<br/><small>document:Parser</small>"]:::domain
     class E_MaxDepthExceededException["MaxDepthExceededException<br/><small>document:Parser</small>"]:::domain
     class E_MaxNodesExceededException["MaxNodesExceededException<br/><small>document:Parser</small>"]:::domain
     class E_NotImplementedException["NotImplementedException<br/><small>contracts:Support</small>"]:::domain
     class E_ObjectDeserializationForbiddenException["ObjectDeserializationForbiddenException<br/><small>document:Parser</small>"]:::domain
+    class E_ParameterResolutionException["ParameterResolutionException<br/><small>engine:Exceptions</small>"]:::domain
     class E_ParserException["ParserException<br/><small>document:Parser</small>"]:::domain
     class E_PluginInstantiationException["PluginInstantiationException<br/><small>contracts:Exceptions</small>"]:::domain
     class E_PreflightFailureException["PreflightFailureException<br/><small>runner:Exceptions</small>"]:::domain
@@ -48,7 +52,10 @@ classDiagram
     class E_SourceFetchException["SourceFetchException<br/><small>sources:Resolver</small>"]:::domain
     class E_SourceParseException["SourceParseException<br/><small>sources:Resolver</small>"]:::domain
     class E_SourceResolutionException["SourceResolutionException<br/><small>sources:Resolver</small>"]:::domain
+    class E_StateStoreException["StateStoreException<br/><small>engine:Exceptions</small>"]:::domain
     class E_StepBudgetExceededException["StepBudgetExceededException<br/><small>runner:Exceptions</small>"]:::domain
+    class E_TelemetrySetupException["TelemetrySetupException<br/><small>engine:Exceptions</small>"]:::domain
+    class E_TypeCastException["TypeCastException<br/><small>engine:Exceptions</small>"]:::domain
     class E_UnknownWorkflowException["UnknownWorkflowException<br/><small>runner:Exceptions</small>"]:::domain
     class E_UnresolvableReferenceException["UnresolvableReferenceException<br/><small>sources:Resolver</small>"]:::domain
     class E_UnresolvableReusableReferenceException["UnresolvableReusableReferenceException<br/><small>contracts:Exceptions</small>"]:::domain
@@ -64,11 +71,13 @@ classDiagram
     E_RuntimeException <|-- E_DecodeException
     E_DecodeException <|-- E_DecodeLimitException
     E_RuntimeException <|-- E_DefinitionHydrationException
-    E_ArazzoException <|-- E_ExecutionException
+    E_RuntimeException <|-- E_EngineException
+    E_EngineException <|-- E_ExecutionException
     E_ArazzoException <|-- E_ExpressionSyntaxException
     E_RunnerException <|-- E_GotoTargetNotFoundException
     E_InvalidArgumentException <|-- E_InvalidFetchPolicyException
     E_InvalidArgumentException <|-- E_InvalidOpenApiSourceException
+    E_InvalidArgumentException <|-- E_InvalidRetryPolicyException
     E_InvalidArgumentException <|-- E_InvalidSelectorPluginException
     E_RunnerException <|-- E_InvalidSourcePolicyException
     E_SourceResolutionException <|-- E_InvalidSourceReferenceException
@@ -76,12 +85,14 @@ classDiagram
     E_InvalidArgumentException <|-- E_InvalidStepTargetException
     E_ArazzoException <|-- E_JsonPathSyntaxException
     E_ArazzoException <|-- E_LoaderException
+    E_EngineException <|-- E_LockException
     E_DecodeLimitException <|-- E_MaxAliasesExceededException
     E_DecodeLimitException <|-- E_MaxBytesExceededException
     E_DecodeLimitException <|-- E_MaxDepthExceededException
     E_DecodeLimitException <|-- E_MaxNodesExceededException
     E_ArazzoException <|-- E_NotImplementedException
     E_DecodeLimitException <|-- E_ObjectDeserializationForbiddenException
+    E_EngineException <|-- E_ParameterResolutionException
     E_ArazzoException <|-- E_ParserException
     E_ArazzoException <|-- E_PluginInstantiationException
     E_RunnerException <|-- E_PreflightFailureException
@@ -92,7 +103,10 @@ classDiagram
     E_BaseException <|-- E_SourceFetchException
     E_BaseException <|-- E_SourceParseException
     E_RuntimeException <|-- E_SourceResolutionException
+    E_EngineException <|-- E_StateStoreException
     E_RunnerException <|-- E_StepBudgetExceededException
+    E_EngineException <|-- E_TelemetrySetupException
+    E_InvalidArgumentException <|-- E_TypeCastException
     E_RunnerException <|-- E_UnknownWorkflowException
     E_BaseException <|-- E_UnresolvableReferenceException
     E_ArazzoException <|-- E_UnresolvableReusableReferenceException
@@ -114,11 +128,13 @@ classDiagram
 | `DecodeException` | `RuntimeException` | document:Parser |
 | `DecodeLimitException` | `DecodeException` | document:Parser |
 | `DefinitionHydrationException` | `RuntimeException` | engine:Runtime |
-| `ExecutionException` | `ArazzoException` | engine:Exceptions |
+| `EngineException` | `RuntimeException` | engine:Exceptions |
+| `ExecutionException` | `EngineException` | engine:Exceptions |
 | `ExpressionSyntaxException` | `ArazzoException` | expression:Exceptions |
 | `GotoTargetNotFoundException` | `RunnerException` | runner:Exceptions |
 | `InvalidFetchPolicyException` | `InvalidArgumentException` | sources:Exceptions |
 | `InvalidOpenApiSourceException` | `InvalidArgumentException` | sources:Exceptions |
+| `InvalidRetryPolicyException` | `InvalidArgumentException` | engine:Exceptions |
 | `InvalidSelectorPluginException` | `InvalidArgumentException` | expression:Exceptions |
 | `InvalidSourcePolicyException` | `RunnerException` | runner:Exceptions |
 | `InvalidSourceReferenceException` | `SourceResolutionException` | sources:Exceptions |
@@ -126,12 +142,14 @@ classDiagram
 | `InvalidStepTargetException` | `InvalidArgumentException` | contracts:Exceptions |
 | `JsonPathSyntaxException` | `ArazzoException` | expression:Exceptions |
 | `LoaderException` | `ArazzoException` | document:Parser |
+| `LockException` | `EngineException` | engine:Exceptions |
 | `MaxAliasesExceededException` | `DecodeLimitException` | document:Parser |
 | `MaxBytesExceededException` | `DecodeLimitException` | document:Parser |
 | `MaxDepthExceededException` | `DecodeLimitException` | document:Parser |
 | `MaxNodesExceededException` | `DecodeLimitException` | document:Parser |
 | `NotImplementedException` | `ArazzoException` | contracts:Support |
 | `ObjectDeserializationForbiddenException` | `DecodeLimitException` | document:Parser |
+| `ParameterResolutionException` | `EngineException` | engine:Exceptions |
 | `ParserException` | `ArazzoException` | document:Parser |
 | `PluginInstantiationException` | `ArazzoException` | contracts:Exceptions |
 | `PreflightFailureException` | `RunnerException` | runner:Exceptions |
@@ -142,7 +160,10 @@ classDiagram
 | `SourceFetchException` | `BaseException` | sources:Resolver |
 | `SourceParseException` | `BaseException` | sources:Resolver |
 | `SourceResolutionException` | `RuntimeException` | sources:Resolver |
+| `StateStoreException` | `EngineException` | engine:Exceptions |
 | `StepBudgetExceededException` | `RunnerException` | runner:Exceptions |
+| `TelemetrySetupException` | `EngineException` | engine:Exceptions |
+| `TypeCastException` | `InvalidArgumentException` | engine:Exceptions |
 | `UnknownWorkflowException` | `RunnerException` | runner:Exceptions |
 | `UnresolvableReferenceException` | `BaseException` | sources:Resolver |
 | `UnresolvableReusableReferenceException` | `ArazzoException` | contracts:Exceptions |

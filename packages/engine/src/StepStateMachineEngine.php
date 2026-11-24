@@ -99,12 +99,12 @@ final class StepStateMachineEngine
             return self::parseIso8601Duration($step->flow->timeoutDuration);
         }
 
-        return $step->flow->timeout !== null ? $step->flow->timeout / 1000.0 : null;
+        return $step->flow->timeoutSeconds();
     }
 
     private function fromPending(Step $step, ArazzoDocument $document, ExecutionState $state, bool $criteriaMet): StepTransition
     {
-        if ($step->target->interaction !== null) {
+        if ($step->isInteraction()) {
             return StepTransition::enter(StepState::Pending, StepState::AwaitingActorInput, 'interaction step bypass');
         }
 
@@ -130,7 +130,7 @@ final class StepStateMachineEngine
             return StepTransition::enter(StepState::EvaluatingCriteria, StepState::Completed, 'success criteria met');
         }
 
-        if ($step->target->interaction !== null) {
+        if ($step->isInteraction()) {
             return StepTransition::enter(StepState::EvaluatingCriteria, StepState::AwaitingActorInput, 'actor-in-the-loop re-evaluation');
         }
 

@@ -12,30 +12,30 @@ same corner every week" signal that static structure graphs cannot show.
 ```mermaid
 xychart-beta
     title "Edit churn per module (git touches)"
-    x-axis ["document:Validator", "cli:Console", "runner:Execution", "runner:Async", "runner:Sync", "sources:Normalizer", "document:Parser", "expression:Interfaces", "contracts:Interfaces", "contracts:Spec", "expression:Data", "sources:Resolver"]
+    x-axis ["document:Validator", "cli:Console", "runner:Execution", "runner:Async", "sources:Normalizer", "runner:Sync", "document:Parser", "expression:Interfaces", "contracts:Interfaces", "contracts:Spec", "sources:Resolver", "expression:Data"]
     y-axis "Touches" 0 --> 70
-    bar [53, 41, 30, 23, 20, 20, 18, 18, 16, 16, 11, 11]
+    bar [53, 41, 30, 23, 21, 20, 18, 18, 16, 16, 12, 11]
 ```
 
-Analyzed 508 total file-touches across 78 modules.
+Analyzed 513 total file-touches across 78 modules.
 
 | Module | Touches | Share | LOC | Touches/KLOC |
 |---|---:|---:|---:|---:|
 | `document:Validator` | 53 | 10% | 656 | 80.8 |
 | `cli:Console` | 41 | 8% | 797 | 51.4 |
 | `runner:Execution` | 30 | 6% | 679 | 44.2 |
-| `runner:Async` | 23 | 5% | 1,568 | 14.7 |
+| `runner:Async` | 23 | 4% | 1,568 | 14.7 |
+| `sources:Normalizer` | 21 | 4% | 498 | 42.2 |
 | `runner:Sync` | 20 | 4% | 1,188 | 16.8 |
-| `sources:Normalizer` | 20 | 4% | 498 | 40.2 |
 | `document:Parser` | 18 | 4% | 2,476 | 7.3 |
 | `expression:Interfaces` | 18 | 4% | 214 | 84.1 |
 | `contracts:Interfaces` | 16 | 3% | 387 | 41.3 |
 | `contracts:Spec` | 16 | 3% | 1,452 | 11 |
+| `sources:Resolver` | 12 | 2% | 624 | 19.2 |
 | `expression:Data` | 11 | 2% | 199 | 55.3 |
-| `sources:Resolver` | 11 | 2% | 624 | 17.6 |
 | `evaluation:Plugins` | 10 | 2% | 125 | 80 |
 | `evaluation:Registries` | 10 | 2% | 190 | 52.6 |
-| `engine:Execution` | 9 | 2% | 1,201 | 7.5 |
+| `engine:Execution` | 9 | 2% | 1,199 | 7.5 |
 | `protocol-soap:Execution` | 9 | 2% | 484 | 18.6 |
 | `evaluation:Condition` | 8 | 2% | 1,139 | 7 |
 | `expression:Plugins` | 8 | 2% | 1,353 | 5.9 |
@@ -49,7 +49,7 @@ Analyzed 508 total file-touches across 78 modules.
 | `runner:Events` | 6 | 1% | 187 | 32.1 |
 | `contracts:Attributes` | 5 | 1% | 106 | 47.2 |
 | `contracts:Dependency` | 5 | 1% | 375 | 13.3 |
-| `engine:Runtime` | 5 | 1% | 1,844 | 2.7 |
+| `engine:Runtime` | 5 | 1% | 1,845 | 2.7 |
 | `expression:Ast` | 5 | 1% | 355 | 14.1 |
 | `expression:Xpath` | 5 | 1% | 173 | 28.9 |
 | `runner:Policy` | 5 | 1% | 124 | 40.3 |
@@ -80,11 +80,14 @@ Analyzed 508 total file-touches across 78 modules.
 | `protocol-rpc:Plugins` | 2 | 0% | 422 | 4.7 |
 | `protocol-soap:Validation` | 2 | 0% | 139 | 14.4 |
 | `runner:Plugins` | 2 | 0% | 86 | 23.3 |
+| `sources:Exceptions` | 2 | 0% | 220 | 9.1 |
+| `sources:Plugins` | 2 | 0% | 147 | 13.6 |
+| `sources:Policy` | 2 | 0% | 125 | 16 |
 | `contracts:Clock` | 1 | 0% | 20 | 50 |
 | `contracts:Data` | 1 | 0% | 155 | 6.5 |
 | `contracts:Observability` | 1 | 0% | 108 | 9.3 |
 | `contracts:Policy` | 1 | 0% | 268 | 3.7 |
-| `engine:Exceptions` | 1 | 0% | 42 | 23.8 |
+| `engine:Exceptions` | 1 | 0% | 222 | 4.5 |
 | `evaluation:Events` | 1 | 0% | 27 | 37 |
 | `expression:Policy` | 1 | 0% | 37 | 27 |
 | `protocol-http:Policy` | 1 | 0% | 43 | 23.3 |
@@ -96,8 +99,5 @@ Analyzed 508 total file-touches across 78 modules.
 | `runner:Queue` | 1 | 0% | 25 | 40 |
 | `runner:Registries` | 1 | 0% | 151 | 6.6 |
 | `runner:Store` | 1 | 0% | 138 | 7.2 |
-| `sources:Exceptions` | 1 | 0% | 220 | 4.5 |
-| `sources:Plugins` | 1 | 0% | 147 | 6.8 |
-| `sources:Policy` | 1 | 0% | 125 | 8 |
 
 **Hotspots** (highest touches-per-KLOC with meaningful size/churn): `expression:Interfaces` (84.1), `document:Validator` (80.8), `evaluation:Plugins` (80)
