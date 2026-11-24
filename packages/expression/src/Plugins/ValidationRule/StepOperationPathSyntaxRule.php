@@ -10,7 +10,6 @@ use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Enum\SpecVersion;
 use Alama\Arazzo\Contracts\Validation\ErrorCollector;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
-use Alama\Arazzo\Expression\Enum\ReferenceKind;
 use Alama\Arazzo\Expression\Exceptions\ExpressionSyntaxException;
 use Alama\Arazzo\Expression\Interfaces\ParserInterface;
 use Alama\Arazzo\Expression\Internal\EmbeddedExpressionSplitter;
@@ -81,17 +80,13 @@ final class StepOperationPathSyntaxRule implements ValidationRuleInterface
         }
 
         $segment = $segments[0];
-        if (!$segment->isExpression
-            || $segment->offset !== 0
-            || strlen($segment->text) + 2 !== strlen($source)) {
+        if (!$segment->isSoleExpressionOf($source)) {
             return null;
         }
 
         $reference = $this->parser->projectReferences($segment->text);
 
-        return $reference !== null
-            && $reference->kind === ReferenceKind::Source
-            && $reference->name === 'url'
+        return $reference !== null && $reference->isSourceUrl()
             ? $reference->target
             : null;
     }

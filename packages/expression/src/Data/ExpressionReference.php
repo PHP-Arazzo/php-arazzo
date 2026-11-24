@@ -42,4 +42,18 @@ final readonly class ExpressionReference
         public ?string $httpPart = null,
         public ?string $jsonPointer = null,
     ) {}
+
+    public function isSourceUrl(): bool
+    {
+        return $this->kind === ReferenceKind::Source
+            && $this->name === 'url'
+            && $this->target !== null;
+    }
+
+    public function isRuntimeHttpReference(): bool
+    {
+        return $this->kind === ReferenceKind::HttpMeta
+            || ($this->kind === ReferenceKind::Step
+                && ($this->part === 'request' || $this->part === 'response'));
+    }
 }

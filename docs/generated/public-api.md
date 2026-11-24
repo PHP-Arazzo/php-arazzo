@@ -472,10 +472,18 @@ this file on a commit is a public API change — review it deliberately.
 
 ### `Alama\Arazzo\Expression\Data`
 
+#### `EmbeddedSegment` class
+- `public function __construct(public bool $isExpression, public string $text, public int $offset)`
+- `public function isSoleExpressionOf(string $source): bool`
+
 #### `EvaluationContext` class
 - `public function __construct(public WorkflowContextInterface $workflowContext, public ?string $currentStepId = null, public ?ArazzoDocument $document = null)`
 - `public function getCurrentStepId(): ?string`
 - `public function getDocument(): ?ArazzoDocument`
+
+#### `ExpressionReference` class
+- `public function __construct(public ReferenceKind $kind, public ?string $target = null, public ?string $part = null, public ?string $name = null, public ?string $httpPart = null, public ?string $jsonPointer = null)`
+- `public function isRuntimeHttpReference(): bool`
 
 ### `Alama\Arazzo\Expression\Enum`
 

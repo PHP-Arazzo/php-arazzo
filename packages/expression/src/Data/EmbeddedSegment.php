@@ -18,4 +18,16 @@ final readonly class EmbeddedSegment
         public string $text,
         public int $offset,
     ) {}
+
+    public function isLiteral(): bool
+    {
+        return !$this->isExpression;
+    }
+
+    public function isSoleExpressionOf(string $source): bool
+    {
+        return $this->isExpression
+            && $this->offset === 0
+            && strlen($this->text) + 2 === strlen($source);
+    }
 }

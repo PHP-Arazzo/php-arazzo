@@ -16,4 +16,19 @@ final readonly class Token
         public string $value,
         public int $offset,
     ) {}
+
+    public function isKind(TokenKind $kind): bool
+    {
+        return $this->kind === $kind;
+    }
+
+    public function isIdentifier(): bool
+    {
+        return $this->kind === TokenKind::Name || $this->kind === TokenKind::Keyword;
+    }
+
+    public function isPointerSegment(): bool
+    {
+        return $this->kind === TokenKind::PointerSegment || $this->isIdentifier();
+    }
 }

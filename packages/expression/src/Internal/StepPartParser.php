@@ -29,10 +29,10 @@ final readonly class StepPartParser
     {
         $rest = array_slice($tokens, $offset);
         if (count($rest) < 5
-            || $rest[1]->kind !== TokenKind::Dot
-            || !$this->pointers->isIdentifierToken($rest[2])
-            || $rest[3]->kind !== TokenKind::Dot
-            || !$this->pointers->isIdentifierToken($rest[4])) {
+            || !$rest[1]->isKind(TokenKind::Dot)
+            || !$rest[2]->isIdentifier()
+            || !$rest[3]->isKind(TokenKind::Dot)
+            || !$rest[4]->isIdentifier()) {
             $this->pointers->fail("Malformed step reference: {$raw}", $raw, $this->pointers->firstUnexpected($rest, [
                 1 => [TokenKind::Dot],
                 2 => [TokenKind::Name, TokenKind::Keyword],
@@ -58,8 +58,8 @@ final readonly class StepPartParser
     public function parseMessageRef(array $rest, string $raw): MessageRef
     {
         if (count($rest) < 3
-            || $rest[1]->kind !== TokenKind::Dot
-            || $rest[2]->kind !== TokenKind::Keyword) {
+            || !$rest[1]->isKind(TokenKind::Dot)
+            || !$rest[2]->isKind(TokenKind::Keyword)) {
             $this->pointers->fail("Malformed message reference: {$raw}", $raw, $this->pointers->firstUnexpected($rest, [
                 1 => [TokenKind::Dot],
                 2 => [TokenKind::Keyword],
@@ -89,10 +89,10 @@ final readonly class StepPartParser
         if ($rest === []) {
             return new $cls(null, null, null);
         }
-        if ($rest[0]->kind !== TokenKind::Dot) {
+        if (!$rest[0]->isKind(TokenKind::Dot)) {
             $this->pointers->fail("Expected '.' after part in: {$raw}", $raw, $rest[0]);
         }
-        if (count($rest) < 2 || $rest[1]->kind !== TokenKind::Keyword) {
+        if (count($rest) < 2 || !$rest[1]->isKind(TokenKind::Keyword)) {
             $this->pointers->fail("Expected keyword after '.' in: {$raw}", $raw, $this->pointers->firstUnexpected($rest, [
                 1 => [TokenKind::Keyword],
             ]));
@@ -129,7 +129,7 @@ final readonly class StepPartParser
             return new OutputPart($name);
         }
 
-        if ($tail[0]->kind === TokenKind::Hash) {
+        if ($tail[0]->isKind(TokenKind::Hash)) {
             return new OutputPart($name, $this->pointers->parseJsonPointer($tail, $raw));
         }
 
@@ -142,7 +142,7 @@ final readonly class StepPartParser
      */
     private function parseNamedPart(array $rest, string $cls, string $raw, bool $allowPointer = false): OutputPart|InputPart
     {
-        if (count($rest) < 2 || $rest[0]->kind !== TokenKind::Dot || !$this->pointers->isIdentifierToken($rest[1])) {
+        if (count($rest) < 2 || !$rest[0]->isKind(TokenKind::Dot) || !$rest[1]->isIdentifier()) {
             $this->pointers->fail("Malformed reference: {$raw}", $raw, $this->pointers->firstUnexpected($rest, [
                 0 => [TokenKind::Dot],
                 1 => [TokenKind::Name, TokenKind::Keyword],
@@ -163,11 +163,11 @@ final readonly class StepPartParser
     /** @param list<Token> $rest */
     private function parseOutputWithSuffix(array $rest, string $raw): OutputPart
     {
-        if ($rest[2]->kind === TokenKind::Hash) {
+        if ($rest[2]->isKind(TokenKind::Hash)) {
             return new OutputPart($rest[1]->value, $this->pointers->parseJsonPointer(array_slice($rest, 2), $raw));
         }
 
-        if ($rest[2]->kind === TokenKind::LeftBracket) {
+        if ($rest[2]->isKind(TokenKind::LeftBracket)) {
             return new OutputPart($rest[1]->value, $this->pointers->parseArrayIndexPointer(array_slice($rest, 2), $raw));
         }
 

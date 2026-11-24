@@ -21,7 +21,7 @@ final class PointerParser
         if ($tail === []) {
             return null;
         }
-        if ($tail[0]->kind !== TokenKind::Hash) {
+        if (!$tail[0]->isKind(TokenKind::Hash)) {
             $this->fail("Expected '#' before JSON pointer in: {$raw}", $raw, $tail[0]);
         }
 
@@ -29,12 +29,12 @@ final class PointerParser
         $i = 1;
         $tokenCount = count($tail);
         while ($i < $tokenCount) {
-            if ($tail[$i]->kind !== TokenKind::Slash) {
+            if (!$tail[$i]->isKind(TokenKind::Slash)) {
                 $this->fail("Expected '/' in JSON pointer at token {$i} in: {$raw}", $raw, $tail[$i]);
             }
             $out .= '/';
             $i++;
-            if ($i < $tokenCount && $this->isPointerSegmentToken($tail[$i])) {
+            if ($i < $tokenCount && $tail[$i]->isPointerSegment()) {
                 $out .= $tail[$i]->value;
                 $i++;
             }
@@ -65,7 +65,7 @@ final class PointerParser
     /** @param list<Token> $tail */
     public function parseHeaderName(array $tail, string $raw): string
     {
-        if (count($tail) !== 2 || $tail[0]->kind !== TokenKind::Dot || !$this->isIdentifierToken($tail[1])) {
+        if (count($tail) !== 2 || !$tail[0]->isKind(TokenKind::Dot) || !$tail[1]->isIdentifier()) {
             $at = $this->firstUnexpected($tail, [
                 0 => [TokenKind::Dot],
                 1 => [TokenKind::Name, TokenKind::Keyword],
@@ -77,11 +77,6 @@ final class PointerParser
         }
 
         return $tail[1]->value;
-    }
-
-    public function isIdentifierToken(Token $token): bool
-    {
-        return $token->kind === TokenKind::Name || $token->kind === TokenKind::Keyword;
     }
 
     /**
@@ -113,35 +108,28 @@ final class PointerParser
         throw ExpressionSyntaxException::atOffset($message, $raw, $at->offset ?? strlen($raw));
     }
 
-    private function isPointerSegmentToken(Token $token): bool
-    {
-        return $token->kind === TokenKind::PointerSegment
-            || $token->kind === TokenKind::Name
-            || $token->kind === TokenKind::Keyword;
-    }
-
     /**
      * @param  list<Token>  $rest
      */
     private function parseIndexSegment(array $rest, int &$i, int $count, string $raw): string
     {
-        if ($rest[$i]->kind !== TokenKind::LeftBracket) {
+        if (!$rest[$i]->isKind(TokenKind::LeftBracket)) {
             $this->fail("Expected '[' in array index in: {$raw}", $raw, $rest[$i]);
         }
         $i++;
-        if ($i >= $count || $rest[$i]->kind !== TokenKind::Name) {
+        if ($i >= $count || !$rest[$i]->isKind(TokenKind::Name)) {
             $this->fail("Expected array index in: {$raw}", $raw, $rest[$i] ?? null);
         }
         $out = '/'.$rest[$i]->value;
         $i++;
-        if ($i >= $count || $rest[$i]->kind !== TokenKind::RightBracket) {
+        if ($i >= $count || !$rest[$i]->isKind(TokenKind::RightBracket)) {
             $this->fail("Expected ']' after array index in: {$raw}", $raw, $rest[$i] ?? null);
         }
         $i++;
 
-        if ($i < $count && $rest[$i]->kind === TokenKind::Dot) {
+        if ($i < $count && $rest[$i]->isKind(TokenKind::Dot)) {
             $i++;
-            if ($i >= $count || !$this->isIdentifierToken($rest[$i])) {
+            if ($i >= $count || !$rest[$i]->isIdentifier()) {
                 $this->fail("Expected name after '.' in: {$raw}", $raw, $rest[$i] ?? null);
             }
             $out .= '/'.$rest[$i]->value;

@@ -158,7 +158,7 @@ expression-Plugins,contracts-Interfaces,14
 expression-Plugins,contracts-Spec,27
 expression-Plugins,contracts-Validation,32
 expression-Plugins,expression-Data,3
-expression-Plugins,expression-Enum,10
+expression-Plugins,expression-Enum,8
 expression-Plugins,expression-Exceptions,3
 expression-Plugins,expression-Interfaces,14
 expression-Plugins,expression-Internal,1

@@ -33,7 +33,7 @@ final readonly class ReferenceTailParser
     public function parseSimpleRef(array $tokens, string $refClass, string $raw, int $offset): InputRef|OutputRef
     {
         $rest = array_slice($tokens, $offset);
-        if (count($rest) < 3 || $rest[1]->kind !== TokenKind::Dot || !$this->pointers->isIdentifierToken($rest[2])) {
+        if (count($rest) < 3 || !$rest[1]->isKind(TokenKind::Dot) || !$rest[2]->isIdentifier()) {
             $this->pointers->fail("Malformed reference: {$raw}", $raw, $this->pointers->firstUnexpected($rest, [
                 1 => [TokenKind::Dot],
                 2 => [TokenKind::Name, TokenKind::Keyword],
@@ -41,7 +41,7 @@ final readonly class ReferenceTailParser
         }
 
         if (count($rest) > 3) {
-            if ($rest[3]->kind === TokenKind::Hash) {
+            if ($rest[3]->isKind(TokenKind::Hash)) {
                 return new $refClass($rest[2]->value, $this->pointers->parseJsonPointer(array_slice($rest, 3), $raw));
             }
 
@@ -106,7 +106,7 @@ final readonly class ReferenceTailParser
     public function parseSourceRef(array $tokens, string $raw, int $offset): SourceRef
     {
         $rest = array_slice($tokens, $offset);
-        if (count($rest) < 3 || $rest[1]->kind !== TokenKind::Dot || !$this->pointers->isIdentifierToken($rest[2])) {
+        if (count($rest) < 3 || !$rest[1]->isKind(TokenKind::Dot) || !$rest[2]->isIdentifier()) {
             $this->pointers->fail("Malformed sourceDescriptions reference: {$raw}", $raw, $this->pointers->firstUnexpected($rest, [
                 1 => [TokenKind::Dot],
                 2 => [TokenKind::Name, TokenKind::Keyword],
@@ -117,13 +117,13 @@ final readonly class ReferenceTailParser
         if (count($rest) === 3) {
             return new SourceRef($name, null);
         }
-        if ($rest[3]->kind !== TokenKind::Dot) {
+        if (!$rest[3]->isKind(TokenKind::Dot)) {
             $this->pointers->fail("Expected '.' after source name in: {$raw}", $raw, $rest[3]);
         }
 
         $out = '';
         foreach (array_slice($rest, 4) as $t) {
-            $out .= $t->kind === TokenKind::Dot ? '.' : $t->value;
+            $out .= $t->isKind(TokenKind::Dot) ? '.' : $t->value;
         }
 
         return new SourceRef($name, $out === '' ? null : $out);
@@ -134,10 +134,10 @@ final readonly class ReferenceTailParser
     {
         $rest = array_slice($tokens, $offset);
         if (count($rest) !== 5
-            || $rest[1]->kind !== TokenKind::Dot
-            || !$this->pointers->isIdentifierToken($rest[2])
-            || $rest[3]->kind !== TokenKind::Dot
-            || !$this->pointers->isIdentifierToken($rest[4])) {
+            || !$rest[1]->isKind(TokenKind::Dot)
+            || !$rest[2]->isIdentifier()
+            || !$rest[3]->isKind(TokenKind::Dot)
+            || !$rest[4]->isIdentifier()) {
             $at = $this->pointers->firstUnexpected($rest, [
                 1 => [TokenKind::Dot],
                 2 => [TokenKind::Name, TokenKind::Keyword],
