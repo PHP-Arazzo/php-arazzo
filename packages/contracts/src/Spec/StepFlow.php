@@ -31,4 +31,9 @@ final readonly class StepFlow
         public ?bool $idempotencyKey = null,
         public ?string $idempotencyHeader = null,
     ) {}
+
+    public function timeoutSeconds(): ?float
+    {
+        return $this->timeout !== null ? $this->timeout / 1000.0 : null;
+    }
 }

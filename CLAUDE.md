@@ -57,7 +57,7 @@ check-baselines` enforces that.
 All code changes MUST follow [`docs/CODING-STANDARDS.md`](docs/CODING-STANDARDS.md):
 
 - **Domain exceptions with static factories**: never throw bare `RuntimeException` / `InvalidArgumentException` / `LogicException` with inline message strings; use package domain exceptions with named static factories (e.g. `GotoTargetNotFoundException::unknownStep($stepId, $workflowId)`).
-- **Rich DTOs (Tell, Don't Ask)**: place pure queries and predicates over DTO data on the DTO itself (`$document->findWorkflow()`, `$document->findSource()`, `$workflow->findStep()`, `$step->isActorHandoff()`, `$context->getStepOutputs()`) instead of repeating lookup helpers across callers.
+- **Rich DTOs (Tell, Don't Ask)**: place pure queries and predicates over DTO data on the DTO itself (`$document->findWorkflow()`, `$document->findSource()`, `$workflow->findStep()`, `$step->isActorHandoff()`, `$step->flow->timeoutSeconds()`, `$components->resolveReusableAction()`) instead of repeating lookup helpers across callers.
 - **Symmetric decomposition & zero baseline regressions**: extract sibling collaborators symmetrically, mark internal helpers `@internal`, and never add PHPMD/PHPStan baseline entries.
 
 ## Project structure

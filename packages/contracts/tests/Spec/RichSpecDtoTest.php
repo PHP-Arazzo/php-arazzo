@@ -45,7 +45,7 @@ it('queries workflows, sources, steps, components, and step predicates directly 
         ->and($components->resolveReusableAction(new Reusable('$components.failureActions.abort')))->toBe($failEnd)
         ->and($components->resolveReusableAction(new Reusable('$components.successActions.nope')))->toBeNull();
 
-    $httpStep = StepFactory::http('s1', null, new StepFlow(onSuccess: [$okEnd]), new StepIo(), operationId: 'listPets');
+    $httpStep = StepFactory::http('s1', null, new StepFlow(timeout: 2500, onSuccess: [$okEnd]), new StepIo(), operationId: 'listPets');
     $subStep = StepFactory::workflow('s2', null, new StepFlow(), new StepIo(), workflowId: 'child');
     $recvStep = new Step('s3', null, StepTarget::async('receive', '/events'), new StepFlow(), new StepIo());
     $interactStep = new Step('s4', null, StepTarget::interaction($interaction), new StepFlow(), new StepIo());
@@ -62,15 +62,20 @@ it('queries workflows, sources, steps, components, and step predicates directly 
     expect($httpStep->isHttpOperation())->toBeTrue()
         ->and($httpStep->isSubWorkflow())->toBeFalse()
         ->and($httpStep->isAsyncAction())->toBeFalse()
+        ->and($httpStep->hasAction())->toBeFalse()
         ->and($httpStep->isReceiveAction())->toBeFalse()
         ->and($httpStep->isInteraction())->toBeFalse()
         ->and($httpStep->isActorHandoff())->toBeFalse()
         ->and($httpStep->operationReference())->toBe('listPets')
+        ->and($httpStep->flow->timeoutSeconds())->toBe(2.5)
+        ->and($subStep->flow->timeoutSeconds())->toBeNull()
         ->and($httpStep->effectiveActions(true, $wf))->toBe([$okEnd])
         ->and($httpStep->effectiveActions(false, $wf))->toBe([$failEnd])
+        ->and($httpStep->allActions($wf))->toBe([$okEnd, $okEnd, $failEnd])
         ->and($subStep->isSubWorkflow())->toBeTrue()
         ->and($subStep->effectiveActions(true, $wf))->toBe([$okEnd])
         ->and($recvStep->isAsyncAction())->toBeTrue()
+        ->and($recvStep->hasAction())->toBeTrue()
         ->and($recvStep->isReceiveAction())->toBeTrue()
         ->and($recvStep->isActorHandoff())->toBeTrue()
         ->and($interactStep->isInteraction())->toBeTrue()

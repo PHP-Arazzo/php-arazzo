@@ -27,6 +27,11 @@ final readonly class Step
         return in_array($this->target->action, ['send', 'receive'], true);
     }
 
+    public function hasAction(): bool
+    {
+        return $this->target->action !== null;
+    }
+
     public function isReceiveAction(): bool
     {
         return $this->target->action === 'receive';
@@ -67,5 +72,18 @@ final readonly class Step
         }
 
         return $criteriaMet ? $workflow->successActions : $workflow->failureActions;
+    }
+
+    /**
+     * @return list<SuccessAction|FailureAction|Reusable>
+     */
+    public function allActions(Workflow $workflow): array
+    {
+        return [
+            ...$this->flow->onSuccess,
+            ...$this->flow->onFailure,
+            ...$workflow->successActions,
+            ...$workflow->failureActions,
+        ];
     }
 }

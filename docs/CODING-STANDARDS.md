@@ -31,7 +31,8 @@ These standards apply to every package in the `php-arazzo` monorepo and are bind
      $source = $document->findSource($sourceName);
      $step = $workflow->findStep($stepId);
      $first = $workflow->firstStep();
-     $outputs = $context->getStepOutputs($stepId);
+     $action = $document->components->resolveReusableAction($reusable);
+     $timeout = $step->flow->timeoutSeconds();
      if ($step->isActorHandoff()) { ... }
 
      // Bad

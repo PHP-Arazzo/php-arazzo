@@ -222,7 +222,9 @@ this file on a commit is a public API change — review it deliberately.
 
 #### `Step` class
 - `public function __construct(public string $stepId, public ?string $description, public StepTarget $target, public StepFlow $flow, public StepIo $io)`
+- `public function allActions(Workflow $workflow): array`
 - `public function effectiveActions(bool $criteriaMet, Workflow $workflow): array`
+- `public function hasAction(): bool`
 - `public function isActorHandoff(): bool`
 - `public function isAsyncAction(): bool`
 - `public function isInteraction(): bool`
@@ -242,6 +244,9 @@ this file on a commit is a public API change — review it deliberately.
 - `public static function rpc(string $stepId, ?string $description, StepFlow $flow, StepIo $io, string $rpcMethod, RpcProtocol $rpcProtocol): Step`
 - `public static function workflow(string $stepId, ?string $description, StepFlow $flow, StepIo $io, string $workflowId): Step`
 - `public static function wsdl(string $stepId, ?string $description, StepFlow $flow, StepIo $io, string $operationName): Step`
+
+#### `StepFlow` class
+- `public function __construct(public array $dependsOn = [], public ?int $timeout = null,`
 
 #### `StepTarget` class
 - `public function __construct(public ?string $operationId = null, public ?string $operationPath = null, public ?string $workflowId = null, public ?string $action = null, public ?string $channelPath = null, public ?Expression $correlationId = null, public ?string $operationName = null, public ?string $rpcMethod = null, public ?RpcProtocol $rpcProtocol = null, public ?GraphQlOperation $graphqlOperation = null, public ?Interaction $interaction = null)`
