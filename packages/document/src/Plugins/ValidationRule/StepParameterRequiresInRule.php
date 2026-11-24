@@ -34,7 +34,7 @@ final class StepParameterRequiresInRule implements ValidationRuleInterface
     }
 
     /**
-     * @param  list<Parameter|Reusable>  $params
+     * @param  array<Parameter|Reusable>  $params
      */
     private function checkStepParameters(array $params, ErrorCollector $errors, string $base): void
     {

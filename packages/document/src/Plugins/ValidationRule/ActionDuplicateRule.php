@@ -45,13 +45,13 @@ final class ActionDuplicateRule implements ValidationRuleInterface
 
             // Workflow-level success/failure actions
             $this->checkActions(
-                $w->successActions,
+                $w->successActions->all(),
                 $errors,
                 "/workflows/{$wi}/successActions",
                 'workflow.actions_duplicate',
             );
             $this->checkActions(
-                $w->failureActions,
+                $w->failureActions->all(),
                 $errors,
                 "/workflows/{$wi}/failureActions",
                 'workflow.actions_duplicate',
@@ -60,8 +60,8 @@ final class ActionDuplicateRule implements ValidationRuleInterface
     }
 
     /**
-     * @param  list<Action|Reusable>  $actions  Each entry is an action object with a
-     *                                          `name` property, or a `Reusable`.
+     * @param  array<Action|Reusable>  $actions  Each entry is an action object with a
+     *                                           `name` property, or a `Reusable`.
      */
     private function checkActions(array $actions, ErrorCollector $errors, string $base, string $code): void
     {

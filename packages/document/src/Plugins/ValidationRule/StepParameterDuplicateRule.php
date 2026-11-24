@@ -36,7 +36,7 @@ final class StepParameterDuplicateRule implements ValidationRuleInterface
         // Check for duplicate parameters within workflow parameters scope
         foreach ($doc->workflows as $wi => $w) {
             $this->checkStepParameters(
-                $w->parameters,
+                $w->parameters->all(),
                 $errors,
                 "/workflows/{$wi}/parameters",
                 'workflow.parameters_duplicate',
@@ -45,7 +45,7 @@ final class StepParameterDuplicateRule implements ValidationRuleInterface
     }
 
     /**
-     * @param  list<Parameter|Reusable>  $params
+     * @param  array<Parameter|Reusable>  $params
      */
     private function checkStepParameters(array $params, ErrorCollector $errors, string $base, string $code): void
     {

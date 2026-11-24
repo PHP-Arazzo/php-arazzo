@@ -50,11 +50,11 @@ final class SelectorTypeSupportedRule implements ValidationRuleInterface
         }
 
         foreach ($doc->workflows as $wi => $wf) {
-            $this->checkParameters($wf->parameters, "/workflows/{$wi}/parameters", $errors);
+            $this->checkParameters($wf->parameters->all(), "/workflows/{$wi}/parameters", $errors);
             foreach ($wf->steps as $si => $step) {
                 $this->checkStep($step, "/workflows/{$wi}/steps/{$si}", $errors);
             }
-            $this->checkValues($wf->outputs, "/workflows/{$wi}/outputs", $errors);
+            $this->checkValues($wf->outputs->all(), "/workflows/{$wi}/outputs", $errors);
         }
 
         foreach ($doc->components->parameters as $name => $p) {

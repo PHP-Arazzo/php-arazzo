@@ -64,7 +64,7 @@ it('supports steps targeting a workflowId and not plain operation steps', functi
 
     $document = nestedExecutorDocument();
 
-    expect($executor->supports($document->firstWorkflow()->steps[0], $document))->toBeTrue()
+    expect($executor->supports($document->firstWorkflow()->firstStep(), $document))->toBeTrue()
         ->and($executor->supports(Fx::step('plain', 'op'), $document))->toBeFalse()
         ->and($executor->supports(new Step(
             'async', null, new StepTarget(action: 'send', channelPath: 'https://broker/x'), new StepFlow(), new StepIo(),
@@ -86,7 +86,7 @@ it('executes the child workflow and surfaces its outputs as step outputs', funct
     $executor = new SubWorkflowStepExecutor($childExecutor, new EvaluationEngine(expression: new ExpressionEngine()));
 
     $document = nestedExecutorDocument();
-    $step = $document->firstWorkflow()->steps[0];
+    $step = $document->firstWorkflow()->firstStep();
     $context = new WorkflowContext('def_1', ['uid' => 42], [], [], 'wf_1', 'exec_1');
 
     $outcome = $executor->execute($step, $context, $document, 'exec_1');

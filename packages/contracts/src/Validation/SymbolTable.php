@@ -127,7 +127,7 @@ final readonly class SymbolTable
         }
 
         $outputs = [];
-        foreach (array_keys($wf->outputs) as $k) {
+        foreach (array_keys($wf->outputs->all()) as $k) {
             $outputs[$k] = true;
         }
 

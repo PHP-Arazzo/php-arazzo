@@ -27,7 +27,7 @@ final class StepOutputsUniqueRule implements ValidationRuleInterface
     public function check(ArazzoDocument $doc, SymbolTable $symbols, ErrorCollector $errors): void
     {
         foreach ($doc->workflows as $i => $w) {
-            foreach (array_keys($w->outputs) as $key) {
+            foreach (array_keys($w->outputs->all()) as $key) {
                 if (preg_match(self::PATTERN, $key) !== 1) {
                     $errors->error(
                         'workflow.outputs_key_pattern',

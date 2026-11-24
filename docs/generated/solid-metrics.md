@@ -36,7 +36,7 @@ quadrantChart
     contracts/Interfaces: [0.103, 1]
     contracts/Observability: [0, 0.5]
     contracts/Policy: [0, 0]
-    contracts/Spec: [0.036, 0.019]
+    contracts/Spec: [0.036, 0.017]
     contracts/State: [0.105, 0]
     contracts/Support: [0, 0.2]
     contracts/Validation: [0.111, 0]

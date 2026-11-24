@@ -61,7 +61,7 @@ final readonly class Step
     }
 
     /**
-     * @return list<SuccessAction|FailureAction|Reusable>
+     * @return array<SuccessAction|FailureAction|Reusable>
      */
     public function effectiveActions(bool $criteriaMet, Workflow $workflow): array
     {
@@ -71,19 +71,19 @@ final readonly class Step
             return $actions;
         }
 
-        return $criteriaMet ? $workflow->successActions : $workflow->failureActions;
+        return $criteriaMet ? $workflow->successActions->all() : $workflow->failureActions->all();
     }
 
     /**
-     * @return list<SuccessAction|FailureAction|Reusable>
+     * @return array<SuccessAction|FailureAction|Reusable>
      */
     public function allActions(Workflow $workflow): array
     {
         return [
             ...$this->flow->onSuccess,
             ...$this->flow->onFailure,
-            ...$workflow->successActions,
-            ...$workflow->failureActions,
+            ...$workflow->successActions->all(),
+            ...$workflow->failureActions->all(),
         ];
     }
 }

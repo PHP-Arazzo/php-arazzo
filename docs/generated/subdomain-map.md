@@ -15,14 +15,14 @@ the declaration honest.
 ```mermaid
 flowchart LR
     subgraph S_core["Core domain"]
-        S_contracts_Spec["contracts:Spec<br/><small>1621 LOC</small>"]:::coreDomain
+        S_contracts_Spec["contracts:Spec<br/><small>2010 LOC</small>"]:::coreDomain
     end
     subgraph S_supporting["Supporting"]
         S_cli_Console["cli:Console<br/><small>791 LOC</small>"]:::supportingDomain
         S_cli_Generator["cli:Generator<br/><small>141 LOC</small>"]:::supportingDomain
         S_cli_Renderer["cli:Renderer<br/><small>317 LOC</small>"]:::supportingDomain
         S_document_Parser["document:Parser<br/><small>2477 LOC</small>"]:::supportingDomain
-        S_document_Validator["document:Validator<br/><small>656 LOC</small>"]:::supportingDomain
+        S_document_Validator["document:Validator<br/><small>659 LOC</small>"]:::supportingDomain
         S_protocol_http_Resolver["protocol-http:Resolver<br/><small>307 LOC</small>"]:::supportingDomain
         S_protocol_soap_Resolver["protocol-soap:Resolver<br/><small>136 LOC</small>"]:::supportingDomain
         S_sources_Resolver["sources:Resolver<br/><small>624 LOC</small>"]:::supportingDomain
@@ -111,8 +111,8 @@ flowchart LR
 
 | Subdomain | Modules | Core pkg LOC | Laravel pkg LOC | Share |
 |---|---:|---:|---:|---:|
-| Core domain | 1 | 1,621 | 0 | 5% |
-| Supporting | 8 | 5,449 | 0 | 15% |
+| Core domain | 1 | 2,010 | 0 | 6% |
+| Supporting | 8 | 5,452 | 0 | 15% |
 | Generic subdomain | 6 | 1,678 | 0 | 5% |
 | Unclassified | 66 | 26,903 | 0 | 75% |
 

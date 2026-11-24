@@ -42,7 +42,7 @@ final class ExplainCommand extends Command
             return Command::FAILURE;
         }
 
-        $graph = new DependencyGraph($workflow->steps);
+        $graph = new DependencyGraph($workflow->steps->all());
         $order = $graph->getTopologicalOrder();
 
         $output->writeln(sprintf('workflow <info>%s</info>: %d step(s)', $workflow->workflowId, count($workflow->steps)));

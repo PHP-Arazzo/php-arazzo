@@ -25,7 +25,7 @@ use Alama\Arazzo\Runner\Exceptions\WorkflowDepthExceededException;
 final class WorkflowNavigator
 {
     /**
-     * @return list<SuccessAction|FailureAction>
+     * @return array<SuccessAction|FailureAction>
      */
     public function resolveActions(ArazzoDocument $document, Workflow $workflow, Step $step, bool $criteriaMet): array
     {
@@ -66,7 +66,7 @@ final class WorkflowNavigator
             return [];
         }
 
-        $order = (new DependencyGraph($workflow->steps))->getTopologicalOrder();
+        $order = (new DependencyGraph($workflow->steps->all()))->getTopologicalOrder();
         $sourceIndex = array_search($source, $order, true);
         $targetIndex = array_search($target, $order, true);
 
@@ -80,7 +80,7 @@ final class WorkflowNavigator
 
     public function nextRunnable(Workflow $workflow, ExecutionState $state, string $completed): ?string
     {
-        $graph = new DependencyGraph($workflow->steps);
+        $graph = new DependencyGraph($workflow->steps->all());
 
         foreach ($graph->getTopologicalOrder() as $candidateId) {
             if ($candidateId === $completed || isset($state->stepResults[$candidateId])) {

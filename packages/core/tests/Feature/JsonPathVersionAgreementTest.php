@@ -79,7 +79,7 @@ it('accepts and evaluates every jsonpath version the evaluator implements', func
 
     expect(jsonPathVersionErrors(jsonPathVersionResult($document)->errors))->toBe([])
         ->and((new EvaluationEngine(expression: new ExpressionEngine()))->evaluateSelector(
-            $document->firstWorkflow()->steps[0]->io->outputs['id'],
+            $document->firstWorkflow()->firstStep()->io->outputs['id'],
             jsonPathContext(),
             's',
         ))->toBe('found');
@@ -99,7 +99,7 @@ it('accepts a versionless selector and evaluates it as the engine default', func
 
     expect(jsonPathVersionErrors(jsonPathVersionResult($document)->errors))->toBe([])
         ->and((new EvaluationEngine(expression: new ExpressionEngine()))->evaluateSelector(
-            $document->firstWorkflow()->steps[0]->io->outputs['id'],
+            $document->firstWorkflow()->firstStep()->io->outputs['id'],
             jsonPathContext(),
             's',
         ))->toBe('found');

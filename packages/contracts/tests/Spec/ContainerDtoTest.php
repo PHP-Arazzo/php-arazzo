@@ -27,5 +27,5 @@ it('builds full document tree', function (): void {
         specificationExtensions: [],
     );
 
-    expect($doc->firstWorkflow()->steps[0]->stepId)->toBe('s1');
+    expect($doc->firstWorkflow()->firstStep()->stepId)->toBe('s1');
 });

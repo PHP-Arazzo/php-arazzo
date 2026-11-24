@@ -188,6 +188,14 @@ this file on a commit is a public API change — review it deliberately.
 
 ### `Alama\Arazzo\Contracts\Spec`
 
+#### `ActionCollection` class
+- `public function __construct(private array $actions = [])`
+- `public function all(): array`
+- `public function count(): int`
+- `public function getIterator(): Traversable`
+- `public function isEmpty(): bool`
+- `public static function fromArray(array $actions): self`
+
 #### `ArazzoDocument` class
 - `public function __construct(public string $arazzo, public Info $info, public array $sourceDescriptions, array|WorkflowCollection $workflows, public Components $components, public array $specificationExtensions, public ?array $rawRoot = null, public SpecVersion $specVersion = SpecVersion::V1_0, public ?string $self = null)`
 - `public function findSource(string $name): ?SourceDescription`
@@ -206,6 +214,24 @@ this file on a commit is a public API change — review it deliberately.
 
 #### `GraphQlOperation` class
 - `public function __construct(public string $schema, public string $operation, /** @param array<string,mixed>|null $extensions */ ?iterable $extensions = null, public ?Selector $extensionsSelector = null)`
+
+#### `OutputMap` class
+- `public function __construct(private array $outputs = [])`
+- `public function all(): array`
+- `public function count(): int`
+- `public function get(string $name): mixed`
+- `public function getIterator(): Traversable`
+- `public function has(string $name): bool`
+- `public function isEmpty(): bool`
+- `public static function fromArray(array $outputs): self`
+
+#### `ParameterCollection` class
+- `public function __construct(private array $parameters = [])`
+- `public function all(): array`
+- `public function count(): int`
+- `public function getIterator(): Traversable`
+- `public function isEmpty(): bool`
+- `public static function fromArray(array $parameters): self`
 
 #### `PayloadReplacement` class
 - `public function __construct(public string $target, public mixed $value, public mixed $targetSelectorType = null)`
@@ -247,6 +273,16 @@ this file on a commit is a public API change — review it deliberately.
 - `public function isSubWorkflow(): bool`
 - `public function operationReference(): ?string`
 
+#### `StepCollection` class
+- `public function __construct(private array $steps = [])`
+- `public function all(): array`
+- `public function count(): int`
+- `public function findStep(string $stepId): ?Step`
+- `public function firstStep(): ?Step`
+- `public function getIterator(): Traversable`
+- `public function isEmpty(): bool`
+- `public static function fromArray(array $steps): self`
+
 #### `StepExecutionOutcome` class
 - `public static function resolved(int $statusCode, array $outputs, array $responseBody, array $inputs = [], ?array $request = null, array $responseHeaders = [], ?string $rawBody = null, ?string $contentType = null, ?string $failureCategory = null): self`
 - `public static function suspended(): self`
@@ -272,9 +308,14 @@ this file on a commit is a public API change — review it deliberately.
 - `public static function workflow(string $workflowId): self`
 - `public static function wsdl(string $operationName): self`
 
-#### `Workflow` class
-- `public function __construct(public string $workflowId, public ?string $summary, public ?string $description, public ?array $inputs, public array $dependsOn, public array $steps, public array $successActions, public array $failureActions, public array $outputs, public array $parameters)`
-- `public function firstStep(): ?Step`
+#### `StringList` class
+- `public function __construct(private array $values = [])`
+- `public function all(): array`
+- `public function contains(string $value): bool`
+- `public function count(): int`
+- `public function getIterator(): Traversable`
+- `public function isEmpty(): bool`
+- `public static function fromArray(array $values): self`
 
 #### `WorkflowCollection` class
 - `public function __construct(private array $workflows = [])`

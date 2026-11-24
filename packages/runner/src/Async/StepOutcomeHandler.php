@@ -233,7 +233,7 @@ class StepOutcomeHandler
         assert($targetWorkflow instanceof Workflow);
 
         if ($transition->stepId === null) {
-            $analyzer = new DependencyAnalyzer(new DependencyGraph($targetWorkflow->steps));
+            $analyzer = new DependencyAnalyzer(new DependencyGraph($targetWorkflow->steps->all()));
             $runnable = $analyzer->getRunnableSteps($newContext);
 
             $this->store->saveState($executionId, $newContext->toArray(), $this->policy->stateTtlSeconds);
@@ -349,7 +349,7 @@ class StepOutcomeHandler
     {
         $this->store->saveState($executionId, $context->toArray(), $this->policy->stateTtlSeconds);
 
-        $graph = new DependencyGraph($workflow->steps);
+        $graph = new DependencyGraph($workflow->steps->all());
         $runnable = (new DependencyAnalyzer($graph))->getRunnableSteps($context);
 
         if ($runnable !== []) {

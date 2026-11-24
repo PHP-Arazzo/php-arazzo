@@ -89,7 +89,7 @@ final class WorkflowEngine
      */
     public function evaluateWorkflowOutputs(Workflow $workflow, ExecutionState|ExecutionContext $state): array
     {
-        if ($workflow->outputs === []) {
+        if ($workflow->outputs->isEmpty()) {
             return [];
         }
 

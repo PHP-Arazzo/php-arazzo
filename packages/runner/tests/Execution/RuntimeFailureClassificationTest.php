@@ -102,7 +102,7 @@ it('preserves raw body, content type, and transport category on synthetic failur
         $schemaValidator,
     );
 
-    $step = $document->firstWorkflow()->steps[0];
+    $step = $document->firstWorkflow()->firstStep();
     $context = new WorkflowContext(
         definitionId: $document->firstWorkflow()->workflowId,
         inputs: $fixture['inputs'],

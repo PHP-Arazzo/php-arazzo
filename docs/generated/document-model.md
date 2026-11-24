@@ -11,6 +11,7 @@ promoted properties whose types resolve to other `Spec\` classes.
 classDiagram
     direction LR
     class Action <<value>>
+    class ActionCollection
     class ActionKind
     class ArazzoDocument
     class Components
@@ -29,7 +30,9 @@ classDiagram
     class NormalizedOpenApiOperation
     class OpenApiPayload
     class OperationProtocol
+    class OutputMap
     class Parameter
+    class ParameterCollection
     class ParameterIn
     class PayloadReplacement
     class PendingCorrelation
@@ -46,6 +49,7 @@ classDiagram
     class SourceType
     class SpecVersion
     class Step
+    class StepCollection
     class StepExecutionOutcome
     class StepFactory
     class StepFlow
@@ -53,6 +57,7 @@ classDiagram
     class StepState
     class StepStatus
     class StepTarget
+    class StringList
     class SubWorkflowFailureAction <<value>>
     class SubWorkflowSuccessAction <<value>>
     class SuccessAction <<value>>
@@ -62,6 +67,9 @@ classDiagram
     class ValueMode
     class Workflow
     class WorkflowCollection
+    ActionCollection "1" --> "0..1" SuccessAction : holds
+    ActionCollection "1" --> "0..1" FailureAction : holds
+    ActionCollection "1" --> "0..1" Reusable : holds
     Action "1" --> "0..1" ActionKind : holds
     FailureAction "1" --> "0..*" SuccessCriterion : holds
     FailureEndAction "1" --> "0..*" SuccessCriterion : holds
@@ -92,10 +100,14 @@ classDiagram
     Components "1" --> "0..1" Interaction : holds
     GraphQlOperation "1" --> "0..1" Selector : holds
     Interaction "1" --> "0..1" InteractionMode : holds
+    OutputMap "1" --> "0..1" Expression : holds
+    OutputMap "1" --> "0..1" Selector : holds
     Parameter "1" --> "0..1" ParameterIn : holds
     Parameter "1" --> "0..1" ValueMode : holds
     Parameter "1" --> "0..1" Expression : holds
     Parameter "1" --> "0..1" Selector : holds
+    ParameterCollection "1" --> "0..1" Parameter : holds
+    ParameterCollection "1" --> "0..1" Reusable : holds
     PayloadReplacement "1" --> "0..1" Expression : holds
     PayloadReplacement "1" --> "0..1" Selector : holds
     RawDocument "1" --> "0..1" Format : holds
@@ -113,6 +125,7 @@ classDiagram
     Step "1" --> "0..1" StepTarget : holds
     Step "1" --> "0..1" StepFlow : holds
     Step "1" --> "0..1" StepIo : holds
+    StepCollection "1" --> "0..*" Step : holds
     StepFlow "1" --> "0..1" SuccessAction : holds
     StepFlow "1" --> "0..1" Reusable : holds
     StepFlow "1" --> "0..1" FailureAction : holds
@@ -127,13 +140,18 @@ classDiagram
     StepTarget "1" --> "0..1" GraphQlOperation : holds
     StepTarget "1" --> "0..1" Interaction : holds
     SuccessCriterion "1" --> "0..1" CriterionType : holds
+    Workflow "1" --> "0..1" StringList : holds
     Workflow "1" --> "0..*" Step : holds
+    Workflow "1" --> "0..1" StepCollection : holds
     Workflow "1" --> "0..1" SuccessAction : holds
     Workflow "1" --> "0..1" Reusable : holds
+    Workflow "1" --> "0..1" ActionCollection : holds
     Workflow "1" --> "0..1" FailureAction : holds
     Workflow "1" --> "0..1" Expression : holds
     Workflow "1" --> "0..1" Selector : holds
+    Workflow "1" --> "0..1" OutputMap : holds
     Workflow "1" --> "0..1" Parameter : holds
+    Workflow "1" --> "0..1" ParameterCollection : holds
     WorkflowCollection "1" --> "0..*" Workflow : holds
 ```
 

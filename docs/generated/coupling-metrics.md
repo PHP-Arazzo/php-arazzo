@@ -24,14 +24,14 @@ targets. Regenerated before every commit.
 | `contracts:Interfaces` | 20 | 367 | 35 | 4 | 0.10 |  |
 | `contracts:Observability` | 4 | 104 | 12 | 0 | 0.00 |  |
 | `contracts:Policy` | 5 | 263 | 6 | 0 | 0.00 |  |
-| `contracts:Spec` | 53 | 1568 | 54 | 2 | 0.04 |  |
+| `contracts:Spec` | 58 | 1952 | 54 | 2 | 0.04 |  |
 | `contracts:State` | 4 | 1058 | 17 | 2 | 0.11 |  |
 | `contracts:Support` | 5 | 180 | 10 | 0 | 0.00 |  |
 | `contracts:Validation` | 9 | 364 | 16 | 2 | 0.11 |  |
 | `document:Parser` | 31 | 2446 | 5 | 2 | 0.29 |  |
 | `document:Plugins` | 50 | 3062 | 0 | 7 | 1.00 |  |
 | `document:Registries` | 1 | 96 | 1 | 4 | 0.80 |  |
-| `document:Validator` | 6 | 650 | 2 | 5 | 0.71 |  |
+| `document:Validator` | 6 | 653 | 2 | 5 | 0.71 |  |
 | `(document root)` | 5 | 229 | 12 | 6 | 0.33 |  |
 | `engine:Data` | 2 | 97 | 1 | 3 | 0.75 |  |
 | `engine:Enum` | 1 | 16 | 1 | 0 | 0.00 |  |

@@ -26,7 +26,10 @@ final class StepSuccessActionParameterInRule implements ValidationRuleInterface
                 }
             }
 
-            foreach ($w->successActions as $ai => $action) {
+            foreach ($w->successActions->all() as $ai => $action) {
+                if (!$action instanceof SuccessAction && !$action instanceof Reusable) {
+                    continue;
+                }
                 $this->checkAction($action, $errors, "/workflows/{$wi}/successActions/{$ai}");
             }
         }

@@ -10,7 +10,7 @@ namespace Alama\Arazzo\Contracts\Spec;
 final readonly class StepIo
 {
     /**
-     * @param  list<Parameter|Reusable>  $parameters
+     * @param  array<Parameter|Reusable>  $parameters
      * @param  list<SuccessCriterion>  $successCriteria
      * @param  array<string,Expression|Selector|scalar|array<mixed>|null>  $outputs
      */

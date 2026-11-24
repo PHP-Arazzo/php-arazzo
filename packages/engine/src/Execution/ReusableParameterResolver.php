@@ -19,8 +19,8 @@ use Alama\Arazzo\Engine\Exceptions\ParameterResolutionException;
 final class ReusableParameterResolver
 {
     /**
-     * @param  list<Parameter|Reusable>  $parameters
-     * @return list<Parameter>
+     * @param  array<Parameter|Reusable>  $parameters
+     * @return array<Parameter>
      */
     public function resolve(array $parameters, ?ArazzoDocument $document): array
     {

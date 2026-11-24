@@ -137,7 +137,7 @@ it('never retries beyond the configured ceiling', function (): void {
         ]),
     ]);
     $workflow = $document->firstWorkflow();
-    $step = $workflow->steps[0];
+    $step = $workflow->firstStep();
 
     for ($limit = 1; $limit <= 5; $limit++) {
         $engine = new WorkflowEngine($resolver, maxRetryAttempts: $limit);

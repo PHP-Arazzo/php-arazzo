@@ -119,7 +119,7 @@ final class OaiQueueFixtureRunner extends ConformanceHarness
             workflowId: $workflow->workflowId,
             executionId: $executionId,
         );
-        $queue->dispatch(new ExecuteStepJob($workflow->steps[0], $context));
+        $queue->dispatch(new ExecuteStepJob($workflow->firstStep(), $context));
 
         try {
             while ($queued = array_shift($queue->dispatched)) {

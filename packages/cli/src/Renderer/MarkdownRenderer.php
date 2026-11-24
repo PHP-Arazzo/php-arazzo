@@ -64,7 +64,7 @@ final class MarkdownRenderer
             $out .= $workflow->description."\n\n";
         }
 
-        if ($workflow->steps === []) {
+        if ($workflow->steps->isEmpty()) {
             return $out."_no steps_\n\n";
         }
 
@@ -73,8 +73,8 @@ final class MarkdownRenderer
             $out .= $this->renderStepRow($index + 1, $step);
         }
 
-        if ($workflow->outputs !== []) {
-            $out .= $this->renderWorkflowOutputs($workflow->outputs);
+        if (!$workflow->outputs->isEmpty()) {
+            $out .= $this->renderWorkflowOutputs($workflow->outputs->all());
         }
 
         return $out."\n";
