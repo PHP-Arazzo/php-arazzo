@@ -23,7 +23,7 @@ targets. Regenerated before every commit.
 | `contracts:Interfaces` | 20 | 367 | 35 | 4 | 0.10 |  |
 | `contracts:Observability` | 4 | 104 | 12 | 0 | 0.00 |  |
 | `contracts:Policy` | 5 | 263 | 6 | 0 | 0.00 |  |
-| `contracts:Spec` | 52 | 1248 | 54 | 1 | 0.02 |  |
+| `contracts:Spec` | 52 | 1383 | 54 | 1 | 0.02 |  |
 | `contracts:State` | 4 | 1058 | 17 | 2 | 0.11 |  |
 | `contracts:Support` | 5 | 180 | 8 | 0 | 0.00 |  |
 | `contracts:Validation` | 9 | 339 | 16 | 2 | 0.11 |  |

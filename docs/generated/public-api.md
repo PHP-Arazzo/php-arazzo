@@ -175,6 +175,17 @@ this file on a commit is a public API change — review it deliberately.
 
 #### `ArazzoDocument` class
 - `public function __construct(public string $arazzo, public Info $info, public array $sourceDescriptions, public array $workflows, public Components $components, public array $specificationExtensions, public ?array $rawRoot = null, public SpecVersion $specVersion = SpecVersion::V1_0, public ?string $self = null)`
+- `public function findSource(string $name): ?SourceDescription`
+- `public function findWorkflow(?string $workflowId): ?Workflow`
+- `public function firstWorkflow(): ?Workflow`
+- `public function nonArazzoSources(): array`
+
+#### `Components` class
+- `public function __construct(public array $inputs, public array $parameters, public array $successActions, public array $failureActions, public array $interactions = [])`
+- `public function findFailureAction(string $name): ?FailureAction`
+- `public function findInteraction(string $name): ?Interaction`
+- `public function findSuccessAction(string $name): ?SuccessAction`
+- `public function resolveReusableAction(Reusable $reusable): SuccessAction|FailureAction|null`
 
 #### `GraphQlOperation` class
 - `public function __construct(public string $schema, public string $operation, /** @param array<string,mixed>|null $extensions */ ?iterable $extensions = null, public ?Selector $extensionsSelector = null)`
@@ -193,6 +204,16 @@ this file on a commit is a public API change — review it deliberately.
 
 #### `Reusable` class
 - `public function __construct(public string $reference, public mixed $value = null)`
+
+#### `Step` class
+- `public function __construct(public string $stepId, public ?string $description, public StepTarget $target, public StepFlow $flow, public StepIo $io)`
+- `public function effectiveActions(bool $criteriaMet, Workflow $workflow): array`
+- `public function isActorHandoff(): bool`
+- `public function isAsyncAction(): bool`
+- `public function isInteraction(): bool`
+- `public function isReceiveAction(): bool`
+- `public function isSubWorkflow(): bool`
+- `public function operationReference(): ?string`
 
 #### `StepExecutionOutcome` class
 - `public static function resolved(int $statusCode, array $outputs, array $responseBody, array $inputs = [], ?array $request = null, array $responseHeaders = [], ?string $rawBody = null, ?string $contentType = null, ?string $failureCategory = null): self`
@@ -215,6 +236,10 @@ this file on a commit is a public API change — review it deliberately.
 - `public static function rpc(string $rpcMethod, RpcProtocol $rpcProtocol): self`
 - `public static function workflow(string $workflowId): self`
 - `public static function wsdl(string $operationName): self`
+
+#### `Workflow` class
+- `public function __construct(public string $workflowId, public ?string $summary, public ?string $description, public ?array $inputs, public array $dependsOn, public array $steps, public array $successActions, public array $failureActions, public array $outputs, public array $parameters)`
+- `public function firstStep(): ?Step`
 
 ### `Alama\Arazzo\Contracts\Spec\Action`
 

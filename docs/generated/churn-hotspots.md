@@ -17,7 +17,7 @@ xychart-beta
     bar [52, 41, 30, 23, 20, 20, 18, 17, 16, 13, 11, 11]
 ```
 
-Analyzed 490 total file-touches across 77 modules.
+Analyzed 491 total file-touches across 77 modules.
 
 | Module | Touches | Share | LOC | Touches/KLOC |
 |---|---:|---:|---:|---:|
@@ -30,7 +30,7 @@ Analyzed 490 total file-touches across 77 modules.
 | `expression:Interfaces` | 18 | 4% | 214 | 84.1 |
 | `document:Parser` | 17 | 3% | 2,434 | 7 |
 | `contracts:Interfaces` | 16 | 3% | 387 | 41.3 |
-| `contracts:Spec` | 13 | 3% | 1,300 | 10 |
+| `contracts:Spec` | 13 | 3% | 1,435 | 9.1 |
 | `expression:Data` | 11 | 2% | 199 | 55.3 |
 | `sources:Resolver` | 11 | 2% | 629 | 17.5 |
 | `evaluation:Plugins` | 10 | 2% | 125 | 80 |
@@ -41,10 +41,10 @@ Analyzed 490 total file-touches across 77 modules.
 | `evaluation:Condition` | 7 | 1% | 1,054 | 6.6 |
 | `expression:Plugins` | 7 | 1% | 1,371 | 5.1 |
 | `protocol-http:Execution` | 7 | 1% | 946 | 7.4 |
+| `cli:Renderer` | 6 | 1% | 321 | 18.7 |
 | `protocol-rpc:Execution` | 6 | 1% | 188 | 31.9 |
 | `protocol-rpc:Normalizer` | 6 | 1% | 578 | 10.4 |
 | `runner:Events` | 6 | 1% | 187 | 32.1 |
-| `cli:Renderer` | 5 | 1% | 321 | 15.6 |
 | `contracts:Attributes` | 5 | 1% | 106 | 47.2 |
 | `contracts:Dependency` | 5 | 1% | 375 | 13.3 |
 | `engine:Runtime` | 5 | 1% | 1,844 | 2.7 |

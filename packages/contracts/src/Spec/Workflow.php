@@ -30,4 +30,17 @@ final readonly class Workflow
         public array $outputs,
         public array $parameters,
     ) {}
+
+    public function findStep(string $stepId): ?Step
+    {
+        return array_find(
+            $this->steps,
+            static fn (Step $step): bool => $step->stepId === $stepId,
+        );
+    }
+
+    public function firstStep(): ?Step
+    {
+        return $this->steps[0] ?? null;
+    }
 }
