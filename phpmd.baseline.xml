@@ -1,8 +1,5 @@
 <?xml version="1.0"?>
 <phpmd-baseline>
-  <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/cli/src/Console/Command/RunCommand.php"/>
-  <violation rule="PHPMD\Rule\CyclomaticComplexity" file="packages/cli/src/Renderer/Renderer.php" method="toMarkdown"/>
-  <violation rule="PHPMD\Rule\Design\NPathComplexity" file="packages/cli/src/Renderer/Renderer.php" method="toMarkdown"/>
   <violation rule="PHPMD\Rule\Naming\ShortMethodName" file="packages/cli/src/Renderer/Renderer.php" method="id"/>
   <violation rule="PHPMD\Rule\Naming\LongVariable" file="packages/contracts/src/Dependency/DependencyGraph.php"/>
   <violation rule="PHPMD\Rule\Naming\LongVariable" file="packages/contracts/src/Spec/ArazzoDocument.php"/>

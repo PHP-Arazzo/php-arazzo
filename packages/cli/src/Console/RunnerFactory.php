@@ -25,6 +25,11 @@ use Psr\Http\Message\RequestFactoryInterface;
  */
 final readonly class RunnerFactory
 {
+    public static function defaultDocument(): DocumentInterface
+    {
+        return Document::create();
+    }
+
     public static function create(
         ?ClientInterface $httpClient = null,
         ?RequestFactoryInterface $httpFactory = null,

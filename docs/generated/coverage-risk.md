@@ -103,7 +103,7 @@ quadrantChart
 |---|---:|---:|---:|---:|
 | `cli/Console` | 1.00 | 8 | 10 | 80% |
 | `cli/Generator` | 1.00 | 2 | 2 | 100% |
-| `cli/Renderer` | 0.50 | 6 | 1 | 100% |
+| `cli/Renderer` | 0.50 | 6 | 2 | 100% |
 | `contracts/Attributes` | 0.13 | 10 | 6 | 100% |
 | `contracts/Clock` | 0.00 | 2 | 1 | 100% |
 | `contracts/Data` | 0.17 | 5 | 2 | 100% |

@@ -6,9 +6,6 @@ namespace Alama\Arazzo\Cli\Console\Command;
 
 use Alama\Arazzo\Cli\Console\RunnerFactory;
 use Alama\Arazzo\Contracts\Exceptions\SchemaValidationException;
-use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
-use Alama\Arazzo\Contracts\Spec\Workflow;
-use Alama\Arazzo\Document\Document;
 use Alama\Arazzo\Document\DocumentInterface;
 use Alama\Arazzo\Document\Parser\Exceptions\LoaderException;
 use Alama\Arazzo\Document\Parser\Exceptions\ParserException;
@@ -44,7 +41,7 @@ final class RunCommand extends Command
         /** @var string $file */
         $file = $input->getArgument('file');
 
-        $documentFacade = $this->document ?? Document::create();
+        $documentFacade = $this->document ?? RunnerFactory::defaultDocument();
 
         try {
             $document = $documentFacade->load($file);
@@ -56,7 +53,10 @@ final class RunCommand extends Command
 
         /** @var string|null $workflowId */
         $workflowId = $input->getOption('workflow');
-        $workflow = $this->findWorkflow($document, $workflowId);
+        $workflow = array_find(
+            $document->workflows,
+            static fn ($candidate): bool => $workflowId === null || $candidate->workflowId === $workflowId,
+        );
 
         if ($workflow === null) {
             $output->writeln('<error>'.sprintf("unknown workflow '%s'", (string) $workflowId).'</error>');
@@ -98,17 +98,6 @@ final class RunCommand extends Command
         $this->renderOutput($output, $result);
 
         return $result->isSucceeded() ? Command::SUCCESS : Command::FAILURE;
-    }
-
-    private function findWorkflow(ArazzoDocument $document, ?string $workflowId): ?Workflow
-    {
-        foreach ($document->workflows as $candidate) {
-            if ($workflowId === null || $candidate->workflowId === $workflowId) {
-                return $candidate;
-            }
-        }
-
-        return null;
     }
 
     /** @return array<string, mixed>|null */

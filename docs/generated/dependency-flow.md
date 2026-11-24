@@ -21,9 +21,9 @@ cli-Console,contracts-Dependency,1
 cli-Console,contracts-Exceptions,1
 cli-Console,contracts-Interfaces,1
 cli-Console,contracts-Observability,1
-cli-Console,contracts-Spec,6
+cli-Console,contracts-Spec,4
 cli-Console,document-Parser,4
-cli-Console,document-root,8
+cli-Console,document-root,7
 cli-Console,engine-Runtime,2
 cli-Console,evaluation-root,2
 cli-Console,expression-root,1
@@ -34,7 +34,7 @@ cli-Console,runner-Store,1
 cli-Console,runner-root,9
 cli-Console,sources-root,3
 cli-Generator,contracts-Interfaces,2
-cli-Renderer,contracts-Spec,8
+cli-Renderer,contracts-Spec,12
 contracts-Attributes,contracts-Spec,5
 contracts-Attributes,contracts-Validation,1
 contracts-Data,contracts-Spec,1

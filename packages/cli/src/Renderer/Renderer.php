@@ -76,87 +76,7 @@ final class Renderer
 
     public function toMarkdown(ArazzoDocument $document): string
     {
-        $out = '# '.$document->info->title."\n\n";
-
-        if (($document->info->description ?? null) !== null) {
-            $out .= $document->info->description."\n\n";
-        }
-
-        $out .= "- arazzo: **{$document->arazzo}**\n";
-        $out .= '- version: **'.$document->info->version."**\n\n";
-
-        if ($document->sourceDescriptions !== []) {
-            $out .= "## Sources\n\n| Name | Type | URL |\n|---|---|---|\n";
-
-            foreach ($document->sourceDescriptions as $source) {
-                $out .= sprintf("| %s | %s | %s |\n", $source->name, $source->type->value, $source->url);
-            }
-
-            $out .= "\n";
-        }
-
-        foreach ($document->workflows as $workflow) {
-            $out .= "## Workflow `{$workflow->workflowId}`\n\n";
-
-            if (($workflow->summary ?? null) !== null) {
-                $out .= "_{$workflow->summary}_\n\n";
-            }
-
-            if (($workflow->description ?? null) !== null) {
-                $out .= $workflow->description."\n\n";
-            }
-
-            if ($workflow->steps === []) {
-                $out .= "_no steps_\n\n";
-
-                continue;
-            }
-
-            $out .= "| # | Step | Target | Criteria | Outputs |\n|---:|---|---|---|---|\n";
-
-            foreach ($workflow->steps as $i => $step) {
-                $criteria = [];
-
-                foreach ($step->io->successCriteria as $criterion) {
-                    $criteria[] = '`'.$criterion->condition.'`';
-                }
-
-                $outputs = [];
-
-                foreach ($step->io->outputs as $name => $expression) {
-                    $raw = is_object($expression) && property_exists($expression, 'raw')
-                        ? $expression->raw
-                        : (string) json_encode($expression);
-
-                    $outputs[] = "`{$name}` = `{$raw}`";
-                }
-
-                $out .= sprintf(
-                    "| %d | `%s` | %s | %s | %s |\n",
-                    $i + 1,
-                    $step->stepId,
-                    $this->markdownTarget($step),
-                    implode('<br/>', $criteria),
-                    implode('<br/>', $outputs),
-                );
-            }
-
-            if ($workflow->outputs !== []) {
-                $out .= "\n**Workflow outputs:**\n\n";
-
-                foreach ($workflow->outputs as $name => $expression) {
-                    $raw = is_object($expression) && property_exists($expression, 'raw')
-                        ? $expression->raw
-                        : (string) json_encode($expression);
-
-                    $out .= "- `{$name}` = `{$raw}`\n";
-                }
-            }
-
-            $out .= "\n";
-        }
-
-        return $out;
+        return (new MarkdownRenderer())->render($document);
     }
 
     /**
@@ -211,19 +131,6 @@ final class Renderer
         }
 
         return false;
-    }
-
-    private function markdownTarget(Step $step): string
-    {
-        if ($step->target->workflowId !== null) {
-            return "`→ {$step->target->workflowId}`";
-        }
-
-        if (($op = $step->target->operationPath ?? $step->target->operationId) !== null) {
-            return "`{$op}`";
-        }
-
-        return $step->target->action !== null ? "`[{$step->target->action}]`" : '—';
     }
 
     /** @return list<Workflow> */
