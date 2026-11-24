@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Contracts\Spec;
 
-use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
 use Alama\Arazzo\Contracts\Spec\Enum\SpecVersion;
 
 final readonly class ArazzoDocument
 {
     /**
-     * @param  list<SourceDescription>  $sourceDescriptions
+     * @param  list<SourceDescription>|SourceDescriptionCollection  $sourceDescriptions
      * @param  array<Workflow>|WorkflowCollection  $workflows
      * @param  array<string,mixed>  $specificationExtensions
      * @param  array<string,mixed>|null  $rawRoot
@@ -18,7 +17,7 @@ final readonly class ArazzoDocument
     public function __construct(
         public string $arazzo,
         public Info $info,
-        public array $sourceDescriptions,
+        array|SourceDescriptionCollection $sourceDescriptions,
         array|WorkflowCollection $workflows,
         public Components $components,
         public array $specificationExtensions,
@@ -26,18 +25,27 @@ final readonly class ArazzoDocument
         public SpecVersion $specVersion = SpecVersion::V1_0,
         public ?string $self = null,
     ) {
+        $this->sourceDescriptions = $sourceDescriptions instanceof SourceDescriptionCollection
+            ? $sourceDescriptions->all()
+            : $sourceDescriptions;
+        $this->sourceDescriptionsCollection = $sourceDescriptions instanceof SourceDescriptionCollection
+            ? $sourceDescriptions
+            : SourceDescriptionCollection::fromArray($sourceDescriptions);
         $this->workflows = $workflows instanceof WorkflowCollection
             ? $workflows
             : WorkflowCollection::fromArray($workflows);
     }
 
+    /** @var list<SourceDescription> */
+    public array $sourceDescriptions;
+
+    public SourceDescriptionCollection $sourceDescriptionsCollection;
+
     public WorkflowCollection $workflows;
 
     public function hasExternalSourceFor(string $workflowId): bool
     {
-        return array_any($this->sourceDescriptions, function ($sourceDesc) use ($workflowId) {
-            return $sourceDesc->type === SourceType::Arazzo && str_starts_with($workflowId, $sourceDesc->name.'.');
-        });
+        return $this->sourceDescriptionsCollection()->hasExternalSourceFor($workflowId);
     }
 
     /**
@@ -46,6 +54,14 @@ final readonly class ArazzoDocument
     public function workflowsCollection(): WorkflowCollection
     {
         return $this->workflows;
+    }
+
+    /**
+     * Strongly typed accessor to the source descriptions collection.
+     */
+    public function sourceDescriptionsCollection(): SourceDescriptionCollection
+    {
+        return $this->sourceDescriptionsCollection;
     }
 
     public function findWorkflow(?string $workflowId): ?Workflow
@@ -64,10 +80,7 @@ final readonly class ArazzoDocument
 
     public function findSource(string $name): ?SourceDescription
     {
-        return array_find(
-            $this->sourceDescriptions,
-            static fn (SourceDescription $source): bool => $source->name === $name,
-        );
+        return $this->sourceDescriptionsCollection->findSource($name);
     }
 
     /**
@@ -75,9 +88,6 @@ final readonly class ArazzoDocument
      */
     public function nonArazzoSources(): array
     {
-        return array_values(array_filter(
-            $this->sourceDescriptions,
-            static fn (SourceDescription $source): bool => $source->type !== SourceType::Arazzo,
-        ));
+        return $this->sourceDescriptionsCollection->nonArazzo()->all();
     }
 }

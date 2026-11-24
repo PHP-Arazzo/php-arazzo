@@ -40,11 +40,11 @@ final readonly class StringList implements Countable, IteratorAggregate
     }
 
     /**
-     * @return array<string>
+     * @return list<string>
      */
     public function all(): array
     {
-        return $this->values;
+        return array_values($this->values);
     }
 
     public function count(): int

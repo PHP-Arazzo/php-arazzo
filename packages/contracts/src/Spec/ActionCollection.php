@@ -37,11 +37,11 @@ final readonly class ActionCollection implements Countable, IteratorAggregate
     }
 
     /**
-     * @return array<SuccessAction|FailureAction|Reusable>
+     * @return list<SuccessAction|FailureAction|Reusable>
      */
     public function all(): array
     {
-        return $this->actions;
+        return array_values($this->actions);
     }
 
     public function count(): int

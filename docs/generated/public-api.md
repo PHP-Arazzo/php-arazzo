@@ -197,12 +197,13 @@ this file on a commit is a public API change — review it deliberately.
 - `public static function fromArray(array $actions): self`
 
 #### `ArazzoDocument` class
-- `public function __construct(public string $arazzo, public Info $info, public array $sourceDescriptions, array|WorkflowCollection $workflows, public Components $components, public array $specificationExtensions, public ?array $rawRoot = null, public SpecVersion $specVersion = SpecVersion::V1_0, public ?string $self = null)`
+- `public function __construct(public string $arazzo, public Info $info, array|SourceDescriptionCollection $sourceDescriptions, array|WorkflowCollection $workflows, public Components $components, public array $specificationExtensions, public ?array $rawRoot = null, public SpecVersion $specVersion = SpecVersion::V1_0, public ?string $self = null)`
 - `public function findSource(string $name): ?SourceDescription`
 - `public function findWorkflow(?string $workflowId): ?Workflow`
 - `public function firstWorkflow(): ?Workflow`
 - `public function hasExternalSourceFor(string $workflowId): bool`
 - `public function nonArazzoSources(): array`
+- `public function sourceDescriptionsCollection(): SourceDescriptionCollection`
 - `public function workflowsCollection(): WorkflowCollection`
 
 #### `Components` class
@@ -215,6 +216,18 @@ this file on a commit is a public API change — review it deliberately.
 - `public function isEmpty(): bool`
 - `public function resolveReusableAction(Reusable $reusable): SuccessAction|FailureAction|null`
 - `public function resolveReusableParameter(Reusable $reusable): ?Parameter`
+
+#### `CriterionCollection` class
+- `public function __construct(private array $criteria = [])`
+- `public function all(): array`
+- `public function count(): int`
+- `public function getIterator(): Traversable`
+- `public function isEmpty(): bool`
+- `public function jsonPathCriteria(): self`
+- `public function regexCriteria(): self`
+- `public function simpleCriteria(): self`
+- `public function xpathCriteria(): self`
+- `public static function fromArray(array $criteria): self`
 
 #### `GraphQlOperation` class
 - `public function __construct(public string $schema, public string $operation, /** @param array<string,mixed>|null $extensions */ ?iterable $extensions = null, public ?Selector $extensionsSelector = null)`
@@ -289,6 +302,19 @@ this file on a commit is a public API change — review it deliberately.
 - `public function isWsdl(): bool`
 - `public function scheme(): string`
 
+#### `SourceDescriptionCollection` class
+- `public function __construct(private array $sources = [])`
+- `public function all(): array`
+- `public function count(): int`
+- `public function findSource(string $name): ?SourceDescription`
+- `public function getIterator(): Traversable`
+- `public function hasExternalSourceFor(string $workflowId): bool`
+- `public function hasSource(string $name): bool`
+- `public function isEmpty(): bool`
+- `public function names(): array`
+- `public function nonArazzo(): self`
+- `public static function fromArray(array $sources): self`
+
 #### `Step` class
 - `public function __construct(public string $stepId, public ?string $description, public StepTarget $target, public StepFlow $flow, public StepIo $io)`
 - `public function allActions(Workflow $workflow): array`
@@ -336,17 +362,19 @@ this file on a commit is a public API change — review it deliberately.
 - `public static function wsdl(string $stepId, ?string $description, StepFlow $flow, StepIo $io, string $operationName): Step`
 
 #### `StepFlow` class
-- `public function __construct(public array $dependsOn = [], public ?int $timeout = null,`
+- `public function __construct(array|StringList $dependsOn = [], public ?int $timeout = null,`
 - `public function hasDependsOn(): bool`
 - `public function hasFailureActions(): bool`
 - `public function hasSuccessActions(): bool`
 - `public function hasTimeout(): bool`
+- `public function timeoutSeconds(): ?float`
 
 #### `StepIo` class
-- `public function __construct(public array $parameters = [], public ?RequestBody $requestBody = null, public array $successCriteria = [], public array $outputs = [])`
+- `public function __construct(array|ParameterCollection $parameters = [], public ?RequestBody $requestBody = null, array|CriterionCollection $successCriteria = [], array|OutputMap $outputs = [])`
 - `public function findParameter(string $name): ?Parameter`
 - `public function hasOutputs(): bool`
 - `public function hasParameter(string $name): bool`
+- `public function hasParameters(): bool`
 - `public function hasRequestBody(): bool`
 - `public function hasSuccessCriteria(): bool`
 

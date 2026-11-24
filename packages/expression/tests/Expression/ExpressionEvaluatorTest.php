@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Tests\Expression;
 
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
+use Alama\Arazzo\Contracts\Spec\Components;
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
 use Alama\Arazzo\Contracts\Spec\Expression;
+use Alama\Arazzo\Contracts\Spec\Info;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\State\ExecutionState;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
@@ -257,11 +259,14 @@ it('evaluates source descriptions', function () {
     $context = new WorkflowContext('def_1');
     $evaluator = evaluator();
 
-    $doc = (new \ReflectionClass(ArazzoDocument::class))->newInstanceWithoutConstructor();
-    $prop = new \ReflectionProperty(ArazzoDocument::class, 'sourceDescriptions');
-    $prop->setValue($doc, [
-        new SourceDescription('api', 'https://api.example.com', SourceType::Openapi),
-    ]);
+    $doc = new ArazzoDocument(
+        '1.0.0',
+        new Info('T', null, null, '1.0'),
+        [new SourceDescription('api', 'https://api.example.com', SourceType::Openapi)],
+        [],
+        new Components([], [], [], []),
+        [],
+    );
 
     expect($evaluator->evaluate(new Expression('{$sourceDescriptions.api.url}'), new EvaluationContext($context, null, $doc)))->toBe('https://api.example.com');
     expect($evaluator->evaluate(new Expression('{$sourceDescriptions.api.type}'), new EvaluationContext($context, null, $doc)))->toBe('openapi');

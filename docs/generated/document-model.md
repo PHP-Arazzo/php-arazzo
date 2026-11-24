@@ -15,6 +15,7 @@ classDiagram
     class ActionKind
     class ArazzoDocument
     class Components
+    class CriterionCollection
     class CriterionType
     class ExecutionStatus
     class Expression
@@ -45,6 +46,7 @@ classDiagram
     class RpcProtocol
     class Selector
     class SourceDescription
+    class SourceDescriptionCollection
     class SourceDocument
     class SourceType
     class SpecVersion
@@ -92,12 +94,14 @@ classDiagram
     ArazzoDocument "1" --> "0..1" Components : holds
     ArazzoDocument "1" --> "0..1" SpecVersion : holds
     ArazzoDocument "1" --> "0..*" SourceDescription : holds
+    ArazzoDocument "1" --> "0..1" SourceDescriptionCollection : holds
     ArazzoDocument "1" --> "0..*" Workflow : holds
     ArazzoDocument "1" --> "0..1" WorkflowCollection : holds
     Components "1" --> "0..1" Parameter : holds
     Components "1" --> "0..1" SuccessAction : holds
     Components "1" --> "0..1" FailureAction : holds
     Components "1" --> "0..1" Interaction : holds
+    CriterionCollection "1" --> "0..*" SuccessCriterion : holds
     GraphQlOperation "1" --> "0..1" Selector : holds
     Interaction "1" --> "0..1" InteractionMode : holds
     OutputMap "1" --> "0..1" Expression : holds
@@ -121,20 +125,26 @@ classDiagram
     Reusable "1" --> "0..1" Selector : holds
     Selector "1" --> "0..1" ExpressionType : holds
     SourceDescription "1" --> "0..1" SourceType : holds
+    SourceDescriptionCollection "1" --> "0..*" SourceDescription : holds
     SourceDocument "1" --> "0..1" SourceType : holds
     Step "1" --> "0..1" StepTarget : holds
     Step "1" --> "0..1" StepFlow : holds
     Step "1" --> "0..1" StepIo : holds
     StepCollection "1" --> "0..*" Step : holds
+    StepFlow "1" --> "0..1" StringList : holds
     StepFlow "1" --> "0..1" SuccessAction : holds
     StepFlow "1" --> "0..1" Reusable : holds
+    StepFlow "1" --> "0..1" ActionCollection : holds
     StepFlow "1" --> "0..1" FailureAction : holds
     StepIo "1" --> "0..1" RequestBody : holds
     StepIo "1" --> "0..1" Parameter : holds
     StepIo "1" --> "0..1" Reusable : holds
+    StepIo "1" --> "0..1" ParameterCollection : holds
     StepIo "1" --> "0..*" SuccessCriterion : holds
+    StepIo "1" --> "0..1" CriterionCollection : holds
     StepIo "1" --> "0..1" Expression : holds
     StepIo "1" --> "0..1" Selector : holds
+    StepIo "1" --> "0..1" OutputMap : holds
     StepTarget "1" --> "0..1" Expression : holds
     StepTarget "1" --> "0..1" RpcProtocol : holds
     StepTarget "1" --> "0..1" GraphQlOperation : holds

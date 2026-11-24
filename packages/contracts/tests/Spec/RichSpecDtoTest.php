@@ -10,8 +10,10 @@ use Alama\Arazzo\Contracts\Spec\Action\RetryAction;
 use Alama\Arazzo\Contracts\Spec\Action\SubWorkflowSuccessAction;
 use Alama\Arazzo\Contracts\Spec\Action\SuccessEndAction;
 use Alama\Arazzo\Contracts\Spec\Action\SuccessGotoAction;
+use Alama\Arazzo\Contracts\Spec\ActionCollection;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Components;
+use Alama\Arazzo\Contracts\Spec\CriterionCollection;
 use Alama\Arazzo\Contracts\Spec\Enum\CriterionType;
 use Alama\Arazzo\Contracts\Spec\Enum\ParameterIn;
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
@@ -28,12 +30,14 @@ use Alama\Arazzo\Contracts\Spec\RequestBody;
 use Alama\Arazzo\Contracts\Spec\ResolvedOperation;
 use Alama\Arazzo\Contracts\Spec\Reusable;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
+use Alama\Arazzo\Contracts\Spec\SourceDescriptionCollection;
 use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Contracts\Spec\StepCollection;
 use Alama\Arazzo\Contracts\Spec\StepFactory;
 use Alama\Arazzo\Contracts\Spec\StepFlow;
 use Alama\Arazzo\Contracts\Spec\StepIo;
 use Alama\Arazzo\Contracts\Spec\StepTarget;
+use Alama\Arazzo\Contracts\Spec\StringList;
 use Alama\Arazzo\Contracts\Spec\SuccessCriterion;
 use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Contracts\Spec\WorkflowCollection;
@@ -292,4 +296,130 @@ it('tests rich methods on Action, Parameter, Criterion, Step, and Collection DTO
         ->and($resOp->isSoap())->toBeFalse()
         ->and($resOp->isGraphql())->toBeFalse()
         ->and($resOp->isInteraction())->toBeFalse();
+});
+
+it('tests SourceDescriptionCollection, CriterionCollection, and collection constructors on StepIo, StepFlow, and ArazzoDocument', function (): void {
+    $apiSrc = new SourceDescription('api', 'https://api.example.com/openapi.json', SourceType::Openapi);
+    $arazzoSrc = new SourceDescription('subWf', './sub.arazzo.yaml', SourceType::Arazzo);
+    $wsdlSrc = new SourceDescription('soap', './service.wsdl', SourceType::Wsdl);
+
+    $srcCol = SourceDescriptionCollection::fromArray([$apiSrc, $arazzoSrc, $wsdlSrc]);
+    $emptySrcCol = SourceDescriptionCollection::empty();
+
+    expect($srcCol->count())->toBe(3)
+        ->and($srcCol->isEmpty())->toBeFalse()
+        ->and($emptySrcCol->count())->toBe(0)
+        ->and($emptySrcCol->isEmpty())->toBeTrue()
+        ->and($srcCol->all())->toBe([$apiSrc, $arazzoSrc, $wsdlSrc])
+        ->and($srcCol->findSource('api'))->toBe($apiSrc)
+        ->and($srcCol->findSource('nope'))->toBeNull()
+        ->and($srcCol->hasSource('api'))->toBeTrue()
+        ->and($srcCol->hasSource('nope'))->toBeFalse()
+        ->and($srcCol->names())->toBe(['api', 'subWf', 'soap'])
+        ->and($srcCol->hasExternalSourceFor('subWf.step1'))->toBeTrue()
+        ->and($srcCol->hasExternalSourceFor('api.step1'))->toBeFalse()
+        ->and($srcCol->hasExternalSourceFor('other.step1'))->toBeFalse();
+
+    $nonArazzo = $srcCol->nonArazzo();
+    expect($nonArazzo->count())->toBe(2)
+        ->and($nonArazzo->names())->toBe(['api', 'soap']);
+
+    $iteratedSources = [];
+    foreach ($srcCol as $source) {
+        $iteratedSources[] = $source->name;
+    }
+    expect($iteratedSources)->toBe(['api', 'subWf', 'soap']);
+
+    // CriterionCollection
+    $cSimple = new SuccessCriterion('$statusCode == 200', 'true', CriterionType::Simple);
+    $cRegex = new SuccessCriterion('$response.body', '/ok/', CriterionType::Regex);
+    $cJsonPath = new SuccessCriterion(null, '$.id', CriterionType::JsonPath);
+    $cXPath = new SuccessCriterion(null, '//item', CriterionType::XPath);
+
+    $critCol = CriterionCollection::fromArray([$cSimple, $cRegex, $cJsonPath, $cXPath]);
+    $emptyCritCol = CriterionCollection::empty();
+
+    expect($critCol->count())->toBe(4)
+        ->and($critCol->isEmpty())->toBeFalse()
+        ->and($emptyCritCol->count())->toBe(0)
+        ->and($emptyCritCol->isEmpty())->toBeTrue()
+        ->and($critCol->all())->toBe([$cSimple, $cRegex, $cJsonPath, $cXPath])
+        ->and($critCol->simpleCriteria()->all())->toBe([$cSimple])
+        ->and($critCol->regexCriteria()->all())->toBe([$cRegex])
+        ->and($critCol->jsonPathCriteria()->all())->toBe([$cJsonPath])
+        ->and($critCol->xpathCriteria()->all())->toBe([$cXPath]);
+
+    $iteratedCriteria = [];
+    foreach ($critCol as $crit) {
+        $iteratedCriteria[] = $crit->type?->value;
+    }
+    expect($iteratedCriteria)->toBe(['simple', 'regex', 'jsonpath', 'xpath']);
+
+    // StepIo with collections
+    $param = new Parameter('limit', ParameterIn::Query, 10);
+    $paramCol = ParameterCollection::fromArray([$param]);
+    $outputMap = OutputMap::fromArray(['token' => '$response.body.token']);
+
+    $stepIo = new StepIo(
+        parameters: $paramCol,
+        requestBody: null,
+        successCriteria: $critCol,
+        outputs: $outputMap,
+    );
+
+    expect($stepIo->parameters)->toBe([$param])
+        ->and($stepIo->parameterCollection)->toBe($paramCol)
+        ->and($stepIo->successCriteria)->toBe([$cSimple, $cRegex, $cJsonPath, $cXPath])
+        ->and($stepIo->criteriaCollection)->toBe($critCol)
+        ->and($stepIo->outputs)->toBe(['token' => '$response.body.token'])
+        ->and($stepIo->outputMap)->toBe($outputMap)
+        ->and($stepIo->findParameter('limit'))->toBe($param)
+        ->and($stepIo->hasParameter('limit'))->toBeTrue();
+
+    // StepFlow with collections
+    $depList = StringList::fromArray(['s0', 's1']);
+    $successAction = new SuccessEndAction('ok', []);
+    $failAction = new FailureEndAction('fail', []);
+    $actColSuccess = ActionCollection::fromArray([$successAction]);
+    $actColFail = ActionCollection::fromArray([$failAction]);
+
+    $stepFlow = new StepFlow(
+        dependsOn: $depList,
+        timeout: 3000,
+        onSuccess: $actColSuccess,
+        onFailure: $actColFail,
+        onTimeout: $actColFail,
+        onCancel: $actColFail,
+    );
+
+    expect($stepFlow->dependsOn)->toBe(['s0', 's1'])
+        ->and($stepFlow->dependsOnList)->toBe($depList)
+        ->and($stepFlow->onSuccess)->toBe([$successAction])
+        ->and($stepFlow->successActions)->toBe($actColSuccess)
+        ->and($stepFlow->onFailure)->toBe([$failAction])
+        ->and($stepFlow->failureActions)->toBe($actColFail)
+        ->and($stepFlow->onTimeout)->toBe([$failAction])
+        ->and($stepFlow->timeoutActions)->toBe($actColFail)
+        ->and($stepFlow->onCancel)->toBe([$failAction])
+        ->and($stepFlow->cancelActions)->toBe($actColFail);
+
+    // ArazzoDocument with SourceDescriptionCollection
+    $wf = new Workflow('w1', null, null, null, [], [], [], [], [], []);
+    $doc = new ArazzoDocument(
+        '1.0.0',
+        new Info('Test', null, null, '1.0'),
+        $srcCol,
+        [$wf],
+        new Components([], [], [], [], []),
+        [],
+    );
+
+    expect($doc->sourceDescriptions)->toBe([$apiSrc, $arazzoSrc, $wsdlSrc])
+        ->and($doc->sourceDescriptionsCollection)->toBe($srcCol)
+        ->and($doc->sourceDescriptionsCollection())->toBe($srcCol)
+        ->and($doc->findSource('api'))->toBe($apiSrc)
+        ->and($doc->findSource('missing'))->toBeNull()
+        ->and($doc->hasExternalSourceFor('subWf.step1'))->toBeTrue()
+        ->and($doc->hasExternalSourceFor('other.step1'))->toBeFalse()
+        ->and($doc->nonArazzoSources())->toBe([$apiSrc, $wsdlSrc]);
 });
