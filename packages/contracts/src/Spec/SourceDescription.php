@@ -40,4 +40,14 @@ final readonly class SourceDescription
 
         return (is_string($raw) && $raw !== '') ? strtolower($raw) : 'file';
     }
+
+    public function isLocal(): bool
+    {
+        return $this->scheme() === 'file';
+    }
+
+    public function isRemote(): bool
+    {
+        return in_array($this->scheme(), ['http', 'https'], true);
+    }
 }

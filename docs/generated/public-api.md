@@ -210,7 +210,11 @@ this file on a commit is a public API change — review it deliberately.
 - `public function findFailureAction(string $name): ?FailureAction`
 - `public function findInteraction(string $name): ?Interaction`
 - `public function findSuccessAction(string $name): ?SuccessAction`
+- `public function hasAction(string $name): bool`
+- `public function hasParameter(string $name): bool`
+- `public function isEmpty(): bool`
 - `public function resolveReusableAction(Reusable $reusable): SuccessAction|FailureAction|null`
+- `public function resolveReusableParameter(Reusable $reusable): ?Parameter`
 
 #### `GraphQlOperation` class
 - `public function __construct(public string $schema, public string $operation, /** @param array<string,mixed>|null $extensions */ ?iterable $extensions = null, public ?Selector $extensionsSelector = null)`
@@ -223,14 +227,31 @@ this file on a commit is a public API change — review it deliberately.
 - `public function getIterator(): Traversable`
 - `public function has(string $name): bool`
 - `public function isEmpty(): bool`
+- `public function names(): array`
 - `public static function fromArray(array $outputs): self`
+
+#### `Parameter` class
+- `public function __construct(public string $name, public ?ParameterIn $in, public mixed $value, public ?ValueMode $valueMode = null)`
+- `public function isBody(): bool`
+- `public function isCookie(): bool`
+- `public function isExpression(): bool`
+- `public function isHeader(): bool`
+- `public function isMetadata(): bool`
+- `public function isPath(): bool`
+- `public function isQuerystring(): bool`
+- `public function isSelector(): bool`
+- `public function isVariable(): bool`
 
 #### `ParameterCollection` class
 - `public function __construct(private array $parameters = [])`
 - `public function all(): array`
 - `public function count(): int`
+- `public function findByName(string $name): ?Parameter`
+- `public function forLocation(ParameterIn $in): self`
 - `public function getIterator(): Traversable`
+- `public function has(string $name): bool`
 - `public function isEmpty(): bool`
+- `public function names(): array`
 - `public static function fromArray(array $parameters): self`
 
 #### `PayloadReplacement` class
@@ -242,6 +263,11 @@ this file on a commit is a public API change — review it deliberately.
 #### `ResolvedOperation` class
 - `public function __construct(public SourceDescription $source, public NormalizedOpenApiOperation $normalized, public ?RpcProtocol $rpcProtocol = null, public ?string $operationName = null, public ?string $rpcMethod = null, public ?GraphQlOperation $graphqlOperation = null, public ?Interaction $interaction = null)`
 - `public function binding(): string`
+- `public function isGraphql(): bool`
+- `public function isHttp(): bool`
+- `public function isInteraction(): bool`
+- `public function isRpc(): bool`
+- `public function isSoap(): bool`
 
 #### `ResponseTransfer` class
 - `public function __construct(private mixed $status, private array $headers, private mixed $rawBody, private array $views = [], private array $meta = [])`
@@ -256,22 +282,33 @@ this file on a commit is a public API change — review it deliberately.
 
 #### `SourceDescription` class
 - `public function __construct(public string $name, public string $url, public SourceType $type)`
+- `public function isLocal(): bool`
 - `public function isOpenApi(): bool`
 - `public function isProtobuf(): bool`
+- `public function isRemote(): bool`
 - `public function isWsdl(): bool`
 - `public function scheme(): string`
 
 #### `Step` class
 - `public function __construct(public string $stepId, public ?string $description, public StepTarget $target, public StepFlow $flow, public StepIo $io)`
 - `public function allActions(Workflow $workflow): array`
+- `public function dependsOn(): array`
 - `public function effectiveActions(bool $criteriaMet, Workflow $workflow): array`
 - `public function hasAction(): bool`
+- `public function hasOutputs(): bool`
+- `public function hasParameters(): bool`
+- `public function hasRequestBody(): bool`
+- `public function hasSuccessCriteria(): bool`
 - `public function isActorHandoff(): bool`
 - `public function isAsyncAction(): bool`
 - `public function isInteraction(): bool`
 - `public function isReceiveAction(): bool`
 - `public function isSubWorkflow(): bool`
 - `public function operationReference(): ?string`
+- `public function outputs(): array`
+- `public function parameters(): array`
+- `public function requestBody(): ?RequestBody`
+- `public function successCriteria(): array`
 
 #### `StepCollection` class
 - `public function __construct(private array $steps = [])`
@@ -280,7 +317,9 @@ this file on a commit is a public API change — review it deliberately.
 - `public function findStep(string $stepId): ?Step`
 - `public function firstStep(): ?Step`
 - `public function getIterator(): Traversable`
+- `public function hasStep(string $stepId): bool`
 - `public function isEmpty(): bool`
+- `public function stepIds(): array`
 - `public static function fromArray(array $steps): self`
 
 #### `StepExecutionOutcome` class
@@ -298,9 +337,31 @@ this file on a commit is a public API change — review it deliberately.
 
 #### `StepFlow` class
 - `public function __construct(public array $dependsOn = [], public ?int $timeout = null,`
+- `public function hasDependsOn(): bool`
+- `public function hasFailureActions(): bool`
+- `public function hasSuccessActions(): bool`
+- `public function hasTimeout(): bool`
+
+#### `StepIo` class
+- `public function __construct(public array $parameters = [], public ?RequestBody $requestBody = null, public array $successCriteria = [], public array $outputs = [])`
+- `public function findParameter(string $name): ?Parameter`
+- `public function hasOutputs(): bool`
+- `public function hasParameter(string $name): bool`
+- `public function hasRequestBody(): bool`
+- `public function hasSuccessCriteria(): bool`
 
 #### `StepTarget` class
 - `public function __construct(public ?string $operationId = null, public ?string $operationPath = null, public ?string $workflowId = null, public ?string $action = null, public ?string $channelPath = null, public ?Expression $correlationId = null, public ?string $operationName = null, public ?string $rpcMethod = null, public ?RpcProtocol $rpcProtocol = null, public ?GraphQlOperation $graphqlOperation = null, public ?Interaction $interaction = null)`
+- `public function isAsync(): bool`
+- `public function isGraphql(): bool`
+- `public function isHttp(): bool`
+- `public function isInteraction(): bool`
+- `public function isReceive(): bool`
+- `public function isRpc(): bool`
+- `public function isSend(): bool`
+- `public function isWorkflow(): bool`
+- `public function isWsdl(): bool`
+- `public function operationReference(): ?string`
 - `public static function async(string $action, string $channelPath, ?Expression $correlationId = null): self`
 - `public static function graphql(GraphQlOperation $graphqlOperation): self`
 - `public static function interaction(Interaction $interaction): self`
@@ -317,6 +378,14 @@ this file on a commit is a public API change — review it deliberately.
 - `public function isEmpty(): bool`
 - `public static function fromArray(array $values): self`
 
+#### `SuccessCriterion` class
+- `public function __construct(public ?string $context, public string $condition, public ?CriterionType $type, public ?string $version = null)`
+- `public function hasContext(): bool`
+- `public function hasVersion(): bool`
+- `public function isJsonPath(): bool`
+- `public function isRegex(): bool`
+- `public function isXPath(): bool`
+
 #### `WorkflowCollection` class
 - `public function __construct(private array $workflows = [])`
 - `public function all(): array`
@@ -332,17 +401,30 @@ this file on a commit is a public API change — review it deliberately.
 
 ### `Alama\Arazzo\Contracts\Spec\Action`
 
+#### `Action` class
+- `public function __construct(public string $name, public ActionKind $kind)`
+- `public function isGoto(): bool`
+- `public function isInvoke(): bool`
+- `public function isRetry(): bool`
+
 #### `FailureAction` class
 - `public function __construct(string $name, ActionKind $kind, public array $criteria)`
+- `public function hasCriteria(): bool`
 
 #### `FailureEndAction` class
 - `public function __construct(string $name, array $criteria)`
 
 #### `FailureGotoAction` class
 - `public function __construct(string $name, public ?string $stepId, public ?string $workflowId, array $criteria, public array $parameters = [])`
+- `public function isStepTarget(): bool`
+- `public function isWorkflowTarget(): bool`
 
 #### `RetryAction` class
 - `public function __construct(string $name, public ?float $retryAfter, public ?int $retryLimit, public ?string $stepId, public ?string $workflowId, array $criteria)`
+- `public function hasRetryAfter(): bool`
+- `public function hasRetryLimit(): bool`
+- `public function isStepTarget(): bool`
+- `public function isWorkflowTarget(): bool`
 
 #### `SubWorkflowFailureAction` class
 - `public function __construct(string $name, public string $workflowId, public array $parameters, array $criteria, public ?string $version = null)`
@@ -352,12 +434,15 @@ this file on a commit is a public API change — review it deliberately.
 
 #### `SuccessAction` class
 - `public function __construct(string $name, ActionKind $kind, public array $criteria)`
+- `public function hasCriteria(): bool`
 
 #### `SuccessEndAction` class
 - `public function __construct(string $name, array $criteria)`
 
 #### `SuccessGotoAction` class
 - `public function __construct(string $name, public ?string $stepId, public ?string $workflowId, array $criteria, public array $parameters = [])`
+- `public function isStepTarget(): bool`
+- `public function isWorkflowTarget(): bool`
 
 ### `Alama\Arazzo\Contracts\Spec\Enum`
 

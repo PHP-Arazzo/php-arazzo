@@ -54,4 +54,30 @@ final readonly class Components
 
         return $this->findSuccessAction($name);
     }
+
+    public function resolveReusableParameter(Reusable $reusable): ?Parameter
+    {
+        $name = substr($reusable->reference, (int) strrpos($reusable->reference, '.') + 1);
+
+        return $this->findParameter($name);
+    }
+
+    public function hasParameter(string $name): bool
+    {
+        return isset($this->parameters[$name]);
+    }
+
+    public function hasAction(string $name): bool
+    {
+        return isset($this->successActions[$name]) || isset($this->failureActions[$name]);
+    }
+
+    public function isEmpty(): bool
+    {
+        return $this->inputs === []
+            && $this->parameters === []
+            && $this->successActions === []
+            && $this->failureActions === []
+            && $this->interactions === [];
+    }
 }

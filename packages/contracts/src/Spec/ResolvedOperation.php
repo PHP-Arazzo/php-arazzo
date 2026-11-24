@@ -39,4 +39,29 @@ readonly class ResolvedOperation
             SourceType::Graphql => 'graphql',
         };
     }
+
+    public function isHttp(): bool
+    {
+        return $this->binding() === 'http';
+    }
+
+    public function isRpc(): bool
+    {
+        return $this->rpcProtocol !== null;
+    }
+
+    public function isSoap(): bool
+    {
+        return $this->binding() === 'soap';
+    }
+
+    public function isGraphql(): bool
+    {
+        return $this->graphqlOperation !== null;
+    }
+
+    public function isInteraction(): bool
+    {
+        return $this->interaction !== null;
+    }
 }

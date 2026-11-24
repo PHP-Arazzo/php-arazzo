@@ -86,4 +86,61 @@ final readonly class Step
             ...$workflow->failureActions->all(),
         ];
     }
+
+    /**
+     * @return array<Parameter|Reusable>
+     */
+    public function parameters(): array
+    {
+        return $this->io->parameters;
+    }
+
+    /**
+     * @return array<string, Expression|Selector|scalar|array<mixed>|null>
+     */
+    public function outputs(): array
+    {
+        return $this->io->outputs;
+    }
+
+    /**
+     * @return list<SuccessCriterion>
+     */
+    public function successCriteria(): array
+    {
+        return $this->io->successCriteria;
+    }
+
+    public function requestBody(): ?RequestBody
+    {
+        return $this->io->requestBody;
+    }
+
+    public function hasOutputs(): bool
+    {
+        return $this->io->outputs !== [];
+    }
+
+    public function hasParameters(): bool
+    {
+        return $this->io->parameters !== [];
+    }
+
+    public function hasSuccessCriteria(): bool
+    {
+        return $this->io->successCriteria !== [];
+    }
+
+    public function hasRequestBody(): bool
+    {
+        return $this->io->requestBody !== null;
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function dependsOn(): array
+    {
+        return $this->flow->dependsOn;
+    }
 }

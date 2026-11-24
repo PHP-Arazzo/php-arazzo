@@ -36,4 +36,24 @@ final readonly class StepFlow
     {
         return $this->timeout !== null ? $this->timeout / 1000.0 : null;
     }
+
+    public function hasTimeout(): bool
+    {
+        return $this->timeout !== null || $this->timeoutDuration !== null;
+    }
+
+    public function hasDependsOn(): bool
+    {
+        return $this->dependsOn !== [];
+    }
+
+    public function hasSuccessActions(): bool
+    {
+        return $this->onSuccess !== [];
+    }
+
+    public function hasFailureActions(): bool
+    {
+        return $this->onFailure !== [];
+    }
 }

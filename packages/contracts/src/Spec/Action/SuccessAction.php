@@ -17,4 +17,9 @@ abstract readonly class SuccessAction extends Action
     ) {
         parent::__construct($name, $kind);
     }
+
+    public function hasCriteria(): bool
+    {
+        return $this->criteria !== [];
+    }
 }

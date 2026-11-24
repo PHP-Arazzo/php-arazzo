@@ -12,4 +12,24 @@ abstract readonly class Action
         public string $name,
         public ActionKind $kind,
     ) {}
+
+    public function isEnd(): bool
+    {
+        return $this->kind === ActionKind::End;
+    }
+
+    public function isGoto(): bool
+    {
+        return $this->kind === ActionKind::Goto;
+    }
+
+    public function isRetry(): bool
+    {
+        return $this->kind === ActionKind::Retry;
+    }
+
+    public function isInvoke(): bool
+    {
+        return $this->kind === ActionKind::Invoke;
+    }
 }

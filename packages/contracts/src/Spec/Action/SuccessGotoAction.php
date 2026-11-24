@@ -24,4 +24,14 @@ final readonly class SuccessGotoAction extends SuccessAction
     ) {
         parent::__construct($name, ActionKind::Goto, $criteria);
     }
+
+    public function isStepTarget(): bool
+    {
+        return $this->stepId !== null;
+    }
+
+    public function isWorkflowTarget(): bool
+    {
+        return $this->workflowId !== null;
+    }
 }

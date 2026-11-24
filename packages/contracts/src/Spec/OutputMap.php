@@ -69,4 +69,12 @@ final readonly class OutputMap implements Countable, IteratorAggregate
     {
         return new ArrayIterator($this->outputs);
     }
+
+    /**
+     * @return list<string>
+     */
+    public function names(): array
+    {
+        return array_keys($this->outputs);
+    }
 }

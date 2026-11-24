@@ -72,4 +72,20 @@ final readonly class StepCollection implements Countable, IteratorAggregate
     {
         return new ArrayIterator($this->steps);
     }
+
+    public function hasStep(string $stepId): bool
+    {
+        return $this->findStep($stepId) !== null;
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function stepIds(): array
+    {
+        return array_values(array_map(
+            static fn (Step $step): string => $step->stepId,
+            $this->steps,
+        ));
+    }
 }

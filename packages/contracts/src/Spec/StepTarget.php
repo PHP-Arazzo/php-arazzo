@@ -66,4 +66,56 @@ final readonly class StepTarget
     {
         return new self(interaction: $interaction);
     }
+
+    public function isHttp(): bool
+    {
+        return $this->operationId !== null || $this->operationPath !== null;
+    }
+
+    public function isWorkflow(): bool
+    {
+        return $this->workflowId !== null;
+    }
+
+    public function isAsync(): bool
+    {
+        return in_array($this->action, ['send', 'receive'], true);
+    }
+
+    public function isReceive(): bool
+    {
+        return $this->action === 'receive';
+    }
+
+    public function isSend(): bool
+    {
+        return $this->action === 'send';
+    }
+
+    public function isWsdl(): bool
+    {
+        return $this->operationName !== null;
+    }
+
+    public function isRpc(): bool
+    {
+        return $this->rpcMethod !== null;
+    }
+
+    public function isGraphql(): bool
+    {
+        return $this->graphqlOperation !== null;
+    }
+
+    public function isInteraction(): bool
+    {
+        return $this->interaction !== null;
+    }
+
+    public function operationReference(): ?string
+    {
+        return $this->operationName
+            ?? $this->operationId
+            ?? $this->operationPath;
+    }
 }
