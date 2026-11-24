@@ -23,6 +23,8 @@ flowchart LR
     S_Alama_Arazzo_Runner_Async_CorrelationResumer["CorrelationResumer<br/><small>runner:Async</small>"] -->|dispatches| E_CorrelationResumedEvent
     S_Alama_Arazzo_Runner_Async_StepExecutionWorker["StepExecutionWorker<br/><small>runner:Async</small>"] -->|dispatches| E_StepStartedEvent
     S_Alama_Arazzo_Runner_Sync_WorkflowExecutor["WorkflowExecutor<br/><small>runner:Sync</small>"] -->|dispatches| E_StepStartedEvent
+    S_Alama_Arazzo_Runner_Async_StepExecutionWorker["StepExecutionWorker<br/><small>runner:Async</small>"] -->|dispatches| E_StepExecutedEvent
+    S_Alama_Arazzo_Runner_Sync_WorkflowExecutor["WorkflowExecutor<br/><small>runner:Sync</small>"] -->|dispatches| E_StepExecutedEvent
     S_Alama_Arazzo_Runner_Async_StepExecutionWorker["StepExecutionWorker<br/><small>runner:Async</small>"] -->|dispatches| E_CorrelationPendingEvent
     S_Alama_Arazzo_Runner_Async_StepOutcomeHandler["StepOutcomeHandler<br/><small>runner:Async</small>"] -->|dispatches| E_CorrelationPendingEvent
     S_Alama_Arazzo_Runner_Async_StepExecutionWorker["StepExecutionWorker<br/><small>runner:Async</small>"] -->|dispatches| E_RunCompletedEvent
@@ -31,8 +33,6 @@ flowchart LR
     S_Alama_Arazzo_Runner_Async_StepExecutionWorker["StepExecutionWorker<br/><small>runner:Async</small>"] -->|dispatches| E_RunFailedEvent
     S_Alama_Arazzo_Runner_Async_StepOutcomeHandler["StepOutcomeHandler<br/><small>runner:Async</small>"] -->|dispatches| E_RunFailedEvent
     S_Alama_Arazzo_Runner_Sync_WorkflowExecutor["WorkflowExecutor<br/><small>runner:Sync</small>"] -->|dispatches| E_RunFailedEvent
-    S_Alama_Arazzo_Runner_Async_StepExecutionWorker["StepExecutionWorker<br/><small>runner:Async</small>"] -->|dispatches| E_StepExecutedEvent
-    S_Alama_Arazzo_Runner_Sync_WorkflowExecutor["WorkflowExecutor<br/><small>runner:Sync</small>"] -->|dispatches| E_StepExecutedEvent
     S_Alama_Arazzo_Runner_Async_StepExecutionWorker["StepExecutionWorker<br/><small>runner:Async</small>"] -->|dispatches| E_StepFailedEvent
     S_Alama_Arazzo_Runner_Sync_WorkflowExecutor["WorkflowExecutor<br/><small>runner:Sync</small>"] -->|dispatches| E_StepFailedEvent
     S_Alama_Arazzo_Runner_Async_StepOutcomeHandler["StepOutcomeHandler<br/><small>runner:Async</small>"] -->|dispatches| E_StepRetriedEvent

@@ -40,20 +40,11 @@
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/runner/src/Async/AsyncExecutionGraphAssembler.php"/>
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/runner/src/Async/CorrelationResumer.php"/>
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/runner/src/Async/StepExecutionWorker.php"/>
-  <violation rule="PHPMD\Rule\CyclomaticComplexity" file="packages/runner/src/Async/StepExecutionWorker.php" method="handleUnderSpan"/>
-  <violation rule="PHPMD\Rule\Design\NPathComplexity" file="packages/runner/src/Async/StepExecutionWorker.php" method="handleUnderSpan"/>
-  <violation rule="PHPMD\Rule\Design\ExcessiveMethodLength" file="packages/runner/src/Async/StepExecutionWorker.php" method="handleUnderSpan"/>
-  <violation rule="PHPMD\Rule\Design\ExcessiveClassComplexity" file="packages/runner/src/Async/StepOutcomeHandler.php"/>
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/runner/src/Async/StepOutcomeHandler.php"/>
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/runner/src/AsyncRunner.php"/>
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/runner/src/Runner.php"/>
-  <violation rule="PHPMD\Rule\Design\ExcessiveClassComplexity" file="packages/runner/src/Sync/WorkflowEngine.php"/>
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/runner/src/Sync/WorkflowEngine.php"/>
   <violation rule="PHPMD\Rule\Naming\LongVariable" file="packages/runner/src/Sync/WorkflowEngine.php"/>
-  <violation rule="PHPMD\Rule\CyclomaticComplexity" file="packages/runner/src/Sync/WorkflowEngine.php" method="transition"/>
-  <violation rule="PHPMD\Rule\Design\NPathComplexity" file="packages/runner/src/Sync/WorkflowEngine.php" method="transition"/>
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/runner/src/Sync/WorkflowExecutor.php"/>
-  <violation rule="PHPMD\Rule\CyclomaticComplexity" file="packages/runner/src/Sync/WorkflowExecutor.php" method="executeCanonically"/>
-  <violation rule="PHPMD\Rule\Design\NPathComplexity" file="packages/runner/src/Sync/WorkflowExecutor.php" method="executeCanonically"/>
   <violation rule="PHPMD\Rule\Design\CouplingBetweenObjects" file="packages/sources/src/Sources.php"/>
 </phpmd-baseline>

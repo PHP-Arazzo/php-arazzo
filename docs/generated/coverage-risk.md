@@ -40,7 +40,7 @@ quadrantChart
     document/Plugins: [1, 1]
     document/Registries: [0.8, 1]
     document/Validator: [0.714, 1]
-    engine/Data: [0.75, 0.5]
+    engine/Data: [0.75, 1]
     engine/Enum: [0, 1]
     engine/Exceptions: [0.111, 1]
     engine/Execution: [0.308, 1]
@@ -110,18 +110,18 @@ quadrantChart
 | `contracts/Dependency` | 0.33 | 6 | 3 | 100% |
 | `contracts/Discovery` | 0.00 | 3 | 3 | 100% |
 | `contracts/Exceptions` | 0.00 | 6 | 1 | 100% |
-| `contracts/Interfaces` | 0.10 | 48 | 20 | 100% |
+| `contracts/Interfaces` | 0.10 | 49 | 20 | 100% |
 | `contracts/Observability` | 0.00 | 9 | 4 | 100% |
 | `contracts/Policy` | 0.00 | 12 | 5 | 100% |
-| `contracts/Spec` | 0.02 | 290 | 52 | 100% |
-| `contracts/State` | 0.10 | 84 | 4 | 100% |
+| `contracts/Spec` | 0.02 | 291 | 52 | 100% |
+| `contracts/State` | 0.10 | 85 | 4 | 100% |
 | `contracts/Support` | 0.00 | 12 | 5 | 100% |
-| `contracts/Validation` | 0.11 | 91 | 9 | 100% |
+| `contracts/Validation` | 0.11 | 92 | 9 | 100% |
 | `document/Parser` | 0.29 | 63 | 31 | 100% |
 | `document/Plugins` | 1.00 | 52 | 50 | 100% |
 | `document/Registries` | 0.80 | 3 | 1 | 100% |
 | `document/Validator` | 0.71 | 25 | 6 | 100% |
-| `engine/Data` | 0.75 | 1 | 2 | 50% |
+| `engine/Data` | 0.75 | 2 | 2 | 100% |
 | `engine/Enum` | 0.00 | 1 | 1 | 100% |
 | `engine/Exceptions` | 0.11 | 8 | 1 | 100% |
 | `engine/Execution` | 0.31 | 14 | 10 | 100% |
@@ -160,18 +160,18 @@ quadrantChart
 | `protocol-soap/Resolver` | 1.00 | 1 | 1 | 100% |
 | `protocol-soap/Transfer` | 0.33 | 5 | 2 | 100% |
 | `protocol-soap/Validation` | 1.00 | 1 | 1 | 100% |
-| `runner/Async` | 0.96 | 16 | 5 | 100% |
-| `runner/Data` | 0.43 | 15 | 3 | 100% |
-| `runner/Events` | 0.00 | 17 | 9 | 100% |
-| `runner/Exceptions` | 0.43 | 11 | 9 | 100% |
-| `runner/Execution` | 0.86 | 23 | 12 | 100% |
+| `runner/Async` | 0.96 | 17 | 7 | 100% |
+| `runner/Data` | 0.43 | 16 | 3 | 100% |
+| `runner/Events` | 0.00 | 18 | 9 | 100% |
+| `runner/Exceptions` | 0.43 | 12 | 9 | 100% |
+| `runner/Execution` | 0.86 | 24 | 12 | 100% |
 | `runner/Plugins` | 0.82 | 6 | 1 | 100% |
-| `runner/Policy` | 0.29 | 3 | 2 | 100% |
+| `runner/Policy` | 0.29 | 4 | 2 | 100% |
 | `runner/Preflight` | 0.43 | 6 | 2 | 100% |
 | `runner/Queue` | 0.33 | 13 | 1 | 100% |
-| `runner/Registries` | 0.60 | 22 | 1 | 100% |
-| `runner/Store` | 0.60 | 17 | 2 | 100% |
-| `runner/Sync` | 0.84 | 37 | 5 | 100% |
+| `runner/Registries` | 0.60 | 23 | 1 | 100% |
+| `runner/Store` | 0.60 | 18 | 2 | 100% |
+| `runner/Sync` | 0.84 | 38 | 7 | 100% |
 | `sources/Exceptions` | 0.00 | 8 | 5 | 100% |
 | `sources/Normalizer` | 0.33 | 6 | 6 | 100% |
 | `sources/Plugins` | 1.00 | 2 | 1 | 100% |

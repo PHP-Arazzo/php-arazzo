@@ -18,8 +18,8 @@ Evans' first question: does the code speak one language?
 - **Execute**: `ExecuteStepJob`, `StepExecutedEvent` (2 types)
 - **Executor**: `AsOperationExecutorPlugin`, `AsyncApiStepExecutor`, `DefaultOpenApiExecutor`, `HttpStepExecutor` + 8 more (12 types)
 - **Invoke**: `SubWorkflowInvokeTargetResolvesRule`, `SubWorkflowInvoker` (2 types)
-- **Run**: `AsyncRunner`, `AsyncRunnerInterface`, `CliRunResult`, `CliRunner` + 13 more (17 types)
-- **Runner**: `AsyncRunner`, `AsyncRunnerInterface`, `CliRunner`, `Runner` + 4 more (8 types)
+- **Run**: `AsyncRunner`, `AsyncRunnerInterface`, `CliRunResult`, `CliRunner` + 14 more (18 types)
+- **Runner**: `AsyncRunner`, `AsyncRunnerInterface`, `CliRunner`, `Runner` + 5 more (9 types)
 
 ### parse vs load vs decode
 
@@ -40,7 +40,7 @@ Evans' first question: does the code speak one language?
 
 ### state vs status
 
-- **State**: `ExecutionState`, `FileStateStore`, `InMemoryStateStore`, `StateStoreInterface` + 4 more (8 types)
+- **State**: `ExecutionState`, `FileStateStore`, `InMemoryStateStore`, `StateStoreInterface` + 5 more (9 types)
 - **Status**: `ExecutionStatus`, `StepStatus` (2 types)
 
 ### registry vs store vs repository
@@ -52,7 +52,7 @@ Evans' first question: does the code speak one language?
 ### workflow vs process vs flow
 
 - **Flow**: `RunControlFlow`, `StepFlow` (2 types)
-- **Workflow**: `ExpressionUnresolvedWorkflowRefRule`, `ListWorkflowsCommand`, `StepNestedWorkflowExistsRule`, `StepNestedWorkflowNoCycleRule` + 30 more (34 types)
+- **Workflow**: `ExpressionUnresolvedWorkflowRefRule`, `ListWorkflowsCommand`, `StepNestedWorkflowExistsRule`, `StepNestedWorkflowNoCycleRule` + 32 more (36 types)
 
 ### render vs generate
 

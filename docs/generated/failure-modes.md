@@ -22,15 +22,15 @@ Regenerated before every commit.
 | **ExecutionError** | `AsyncExecutionGraphAssembler` <small>runner:Async</small>, `WorkflowEngine` <small>runner:Sync</small> |
 | **ExecutionException** | `RpcRequestBuilder` <small>protocol-rpc:Execution</small>, `RpcOperationExecutor` <small>protocol-rpc:Plugins</small>, `SoapRequestBuilder` <small>protocol-soap:Execution</small>, `SoapOperationExecutor` <small>protocol-soap:Plugins</small>, `StepExecutionWorker` <small>runner:Async</small>, `StepExecutor` <small>runner:Sync</small> |
 | **ExpressionSyntaxException** | `EmbeddedExpressionSplitter` <small>expression:Internal</small>, `PointerParser` <small>expression:Internal</small>, `Interpolator` <small>(expression root)</small>, `Lexer` <small>(expression root)</small> |
-| **GotoTargetNotFoundException** | `WorkflowEngine` <small>runner:Sync</small> |
+| **GotoTargetNotFoundException** | `WorkflowEngine` <small>runner:Sync</small>, `WorkflowNavigator` <small>runner:Sync</small> |
 | **InvalidArgumentException** | `SpecVersion` <small>contracts:Spec</small>, `StepTarget` <small>contracts:Spec</small>, `TypeCaster` <small>engine:Execution</small>, `CriterionEvaluatorRegistry` <small>evaluation:Registries</small>, `ExpressionEvaluatorRegistry` <small>evaluation:Registries</small>, `SelectorPluginRegistry` <small>expression:Registries</small>, `ProtoParser` <small>protocol-rpc:Normalizer</small>, `ProtoTokenCursor` <small>protocol-rpc:Normalizer</small>, `WsdlDomReader` <small>protocol-soap:Plugins</small>, `WsdlSourceNormalizer` <small>protocol-soap:Plugins</small>, `RetryPolicy` <small>engine:Runtime</small>, `OpenApi30Normalizer` <small>sources:Normalizer</small>, `OpenApiVersionDetector` <small>sources:Normalizer</small>, `OpenApiSourceNormalizer` <small>sources:Plugins</small>, `FetchPolicy` <small>sources:Policy</small> |
-| **LogicException** | `AsyncApiStepExecutor` <small>protocol-http:Plugins</small>, `StepExecutionWorker` <small>runner:Async</small>, `WorkflowExecutor` <small>runner:Sync</small> |
+| **LogicException** | `AsyncApiStepExecutor` <small>protocol-http:Plugins</small>, `StepExecutionWorker` <small>runner:Async</small> |
 | **MaxAliasesExceededException** | `YamlSecurityScanner` <small>document:Parser</small> |
 | **MaxBytesExceededException** | `NativeJsonDecoder` <small>document:Parser</small>, `SymfonyYamlDecoder` <small>document:Parser</small> |
 | **MaxDepthExceededException** | `NativeJsonDecoder` <small>document:Parser</small>, `SymfonyYamlDecoder` <small>document:Parser</small> |
 | **MaxNodesExceededException** | `NativeJsonDecoder` <small>document:Parser</small>, `SymfonyYamlDecoder` <small>document:Parser</small> |
 | **ObjectDeserializationForbiddenException** | `SymfonyYamlDecoder` <small>document:Parser</small>, `YamlSecurityScanner` <small>document:Parser</small> |
-| **PreflightFailureException** | `AsyncExecutionGraphAssembler` <small>runner:Async</small>, `StepExecutionWorker` <small>runner:Async</small>, `WorkflowExecutor` <small>runner:Sync</small> |
+| **PreflightFailureException** | `AsyncExecutionGraphAssembler` <small>runner:Async</small>, `StepExecutionWorker` <small>runner:Async</small>, `WorkflowPreflightRunner` <small>runner:Sync</small> |
 | **RuntimeException** | `CliRunner` <small>cli:Console</small>, `OpenAiClient` <small>cli:Generator</small>, `PluginInstantiator` <small>contracts:Discovery</small>, `Reusable` <small>contracts:Spec</small>, `ReusableParameterResolver` <small>engine:Execution</small>, `BuiltInCriterionEvaluator` <small>(evaluation root)</small>, `CriteriaEvaluator` <small>(evaluation root)</small>, `FilterParser` <small>expression:JsonPath</small>, `Parser` <small>expression:JsonPath</small>, `TokenCursor` <small>expression:JsonPath</small>, `OpenApiOperationResolver` <small>protocol-http:Resolver</small>, `ProtobufOperationResolver` <small>protocol-rpc:Protocol</small>, `RpcMessageCodec` <small>protocol-rpc:Protocol</small>, `SoapEnvelope` <small>protocol-soap:Execution</small>, `WsdlOperationResolver` <small>protocol-soap:Execution</small>, `OperationResolvers` <small>runner:Preflight</small>, `FileLockStrategy` <small>engine:Runtime</small>, `FileStateStore` <small>engine:Runtime</small>, `OtelSetup` <small>engine:Runtime</small>, `SourceReferenceParser` <small>sources:Normalizer</small> |
 | **SchemaValidationException** | `ResponseSchemaValidator` <small>protocol-http:Execution</small>, `XsdResponseValidator` <small>protocol-soap:Validation</small> |
 | **SelectorEvaluationException** | `ExpressionEngine` <small>(expression root)</small>, `SelectorEvaluator` <small>(expression root)</small> |
@@ -39,8 +39,8 @@ Regenerated before every commit.
 | **StepBudgetExceededException** | `WorkflowEngine` <small>runner:Sync</small> |
 | **UnresolvableReferenceException** | `DefaultSourceResolver` <small>sources:Resolver</small> |
 | **UnsupportedSerializationStyleException** | `ParameterSerializer` <small>engine:Execution</small> |
-| **WorkflowCycleException** | `WorkflowEngine` <small>runner:Sync</small> |
-| **WorkflowDepthExceededException** | `WorkflowEngine` <small>runner:Sync</small> |
+| **WorkflowCycleException** | `WorkflowNavigator` <small>runner:Sync</small> |
+| **WorkflowDepthExceededException** | `WorkflowNavigator` <small>runner:Sync</small> |
 | **ArazzoException** | _(never raised in src)_ |
 | **DecodeLimitException** | _(never raised in src)_ |
 | **DefinitionHydrationException** | _(never raised in src)_ |
@@ -97,8 +97,8 @@ Regenerated before every commit.
 | throws **MaxDepthExceededException** | `NativeJsonDecoder`, `SymfonyYamlDecoder` | — |
 | throws **MaxNodesExceededException** | `NativeJsonDecoder`, `SymfonyYamlDecoder` | — |
 | throws **StepBudgetExceededException** | `WorkflowEngine` | — |
-| throws **WorkflowCycleException** | `WorkflowEngine` | — |
-| throws **WorkflowDepthExceededException** | `WorkflowEngine` | — |
+| throws **WorkflowCycleException** | `WorkflowNavigator` | — |
+| throws **WorkflowDepthExceededException** | `WorkflowNavigator` | — |
 | const MAX_DEPTH | `InputSchemaResolver` | `16` |
 | const TERMINAL_STATES | `StepStateMachineEngine` | `[StepState::Completed, StepState::Failed, StepState::Cancelled]` |
 | prop max | `ConditionCache` | `256` |

@@ -32,7 +32,7 @@ use Alama\Arazzo\Runner\Events\StepStartedEvent;
 use Alama\Arazzo\Runner\Exceptions\PreflightFailureException;
 use Alama\Arazzo\Runner\Execution\Data\AsyncPorts;
 use Alama\Arazzo\Runner\Execution\Data\RunControlFlow;
-use Alama\Arazzo\Runner\Execution\Enum\TransitionType;
+use Alama\Arazzo\Runner\Execution\Data\Transition;
 use Alama\Arazzo\Runner\Execution\SourcePolicyResolver;
 use Alama\Arazzo\Runner\ExecutionStoreInterface;
 use Alama\Arazzo\Runner\Policy\ExecutionPolicy;
@@ -73,6 +73,8 @@ class StepExecutionWorker
 
     private ExecutionPolicy $policy;
 
+    private WorkerStateSynchronizer $synchronizer;
+
     public function __construct(
         AsyncPorts $ports,
         private EvaluationEngineInterface $evaluationEngine,
@@ -90,6 +92,7 @@ class StepExecutionWorker
         $this->logger = $controlFlow->observability->logger;
         $this->tracer = $controlFlow->observability->tracer;
         $this->clock = $controlFlow->observability->clock;
+        $this->synchronizer = new WorkerStateSynchronizer($ports->store);
     }
 
     public function handle(ExecuteStepJob $job): void
@@ -112,233 +115,249 @@ class StepExecutionWorker
 
     private function handleUnderSpan(ExecuteStepJob $job, SpanInterface $span): void
     {
-        $step = $job->step;
         $executionId = $job->context->getExecutionId();
-
         $lockKey = "execution_lock_{$executionId}";
 
-        $this->lockManager->acquire($lockKey, 30, function () use ($step, $job, $executionId, $span): void {
-            $context = $this->reconcileWithPersistedState($job->context, $executionId);
+        $this->lockManager->acquire($lockKey, 30, function () use ($job, $executionId, $span): void {
+            $context = $this->synchronizer->reconcile($job->context, $executionId);
 
             try {
-                $this->documentPreflightValidation($context);
-
-                if ($context->getStepStatus($step->stepId) === StepStatus::Succeeded) {
-                    return;
-                }
-
-                $document = $this->definitions->find($context->getDefinitionId());
-                if ($document === null) {
-                    $this->logger->error('Workflow definition not found for execution.', [
-                        'executionId' => $executionId,
-                        'definitionId' => $context->getDefinitionId(),
-                    ]);
-
-                    return;
-                }
-
-                $workflow = $this->findWorkflow($document, $context->getWorkflowId());
-                if ($workflow === null) {
-                    $this->logger->error('Workflow not found in definition for execution.', [
-                        'executionId' => $executionId,
-                        'workflowId' => $context->getWorkflowId(),
-                    ]);
-
-                    return;
-                }
-
-                $context = $context->withStepAttemptIncremented($step->stepId);
-                $attempt = $context->getStepAttempts($step->stepId);
-                $this->events->dispatch(new StepStartedEvent(
-                    $executionId,
-                    $context->getWorkflowId() ?? '',
-                    $step->stepId,
-                    $attempt,
-                    $this->clock->now(),
-                ));
-
-                $step = StepParameterMerger::merge($step, $workflow);
-
-                $executor = $this->findExecutor($step, $document);
-                if ($executor === null) {
-                    $this->failUnresolvedExecutor($step);
-                }
-
-                $sourcePolicy = (new SourcePolicyResolver())->resolveForStep($step, $document, $this->policy);
-                $outcome = $executor->execute($step, $context->withActiveSourcePolicy($sourcePolicy), $document, $executionId);
-
-                if ($outcome->suspended) {
-                    $newContext = $context->withStepStatus($step->stepId, StepStatus::Suspended);
-                    $this->store->saveState($executionId, $newContext->toArray(), $this->policy->stateTtlSeconds);
-                    $this->store->markStarted($executionId, $newContext->getDefinitionId(), $workflow->workflowId);
-                    $this->logger->info('Step suspended awaiting external correlation.', [
-                        'executionId' => $executionId,
-                        'stepId' => $step->stepId,
-                    ]);
-
-                    if ($step->target->action === 'receive' && $step->target->correlationId !== null && $step->target->channelPath !== null) {
-                        $evaluated = $this->evaluationEngine->evaluate($step->target->correlationId, new EvaluationContext($context, $step->stepId));
-                        $correlationIdValue = is_scalar($evaluated) ? (string) $evaluated : '';
-                        $this->events->dispatch(new CorrelationPendingEvent(
-                            $executionId,
-                            $context->getWorkflowId() ?? '',
-                            $step->stepId,
-                            $correlationIdValue,
-                            $step->target->channelPath,
-                            $this->clock->now(),
-                        ));
-                    }
-
-                    return;
-                }
-
-                $contextWithResult = $context->withStepResult($step->stepId, [
-                    'statusCode' => $outcome->statusCode,
-                    'request' => $outcome->request ?? [],
-                    'response' => ['statusCode' => $outcome->statusCode, 'headers' => $outcome->responseHeaders, 'body' => $outcome->responseBody],
-                    'rawBody' => $outcome->rawBody,
-                    'contentType' => $outcome->contentType,
-                    'failureCategory' => $outcome->failureCategory,
-                    'outputs' => $outcome->outputs,
-                    'inputs' => $outcome->inputs,
-                    'attempts' => $attempt,
-                ]);
-
-                $criteriaMet = $this->evaluationEngine->evaluateSuccessCriteria($step, $contextWithResult, $document);
-
-                $this->store->markStarted($executionId, $contextWithResult->getDefinitionId(), $workflow->workflowId);
-
-                $persisted = $this->store->loadState($executionId);
-                $state = $persisted !== null && isset($persisted['executionId'])
-                    ? ExecutionState::fromArray($persisted)
-                    : ExecutionState::start(
-                        $executionId,
-                        $contextWithResult->getDefinitionId(),
-                        $workflow->workflowId,
-                        $contextWithResult->getInputs(),
-                        maxSteps: $this->policy->maxSteps(),
-                        maxWorkflowDepth: $this->policy->maxWorkflowDepth(),
-                        components: $contextWithResult->getComponents(),
-                    );
-                foreach ($contextWithResult->getSteps() as $completedStepId => $completedResult) {
-                    $state = $state->withStepResult($completedStepId, self::stepRecord($completedResult));
-                }
-                $state = $state->restoreBudget($contextWithResult->getStepsSpent(), $contextWithResult->getWorkflowCallStack() ?: [$workflow->workflowId]);
-                foreach ($this->attemptsFrom($contextWithResult) as $attemptedStepId => $attempts) {
-                    while ($state->attemptFor($attemptedStepId) < $attempts - 1) {
-                        $state = $state->withStepAttempt($attemptedStepId);
-                    }
-                }
-                $record = self::stepRecord($contextWithResult->getSteps()[$step->stepId] ?? null);
-                $state = $state->withStepResult($step->stepId, $record);
-                $transition = $this->workflowEngine->transition($document, $workflow, $step, $state, $criteriaMet);
-                $nextState = $transition->state;
-                assert($nextState instanceof ExecutionState);
-                $this->store->saveState($executionId, $nextState->toContext()->toArray(), $this->policy->stateTtlSeconds);
-
-                $span->setAttribute('criteria.met', $criteriaMet);
-
-                if ($transition->isTerminal()) {
-                    $succeeded = $transition->status === 'succeeded';
-                    $span->setStatus($succeeded, $succeeded ? null : "Step '{$step->stepId}' failed criteria");
-                    $this->store->markCompleted($executionId, $succeeded ? ExecutionStatus::Succeeded : ExecutionStatus::Failed);
-
-                    if ($succeeded) {
-                        $this->events->dispatch(new RunCompletedEvent(
-                            $executionId,
-                            $transition->state->workflowId,
-                            $this->workflowEngine->evaluateWorkflowOutputs($workflow, $transition->state),
-                            $this->clock->now(),
-                        ));
-                    } else {
-                        $this->events->dispatch(new RunFailedEvent(
-                            $executionId,
-                            $transition->state->workflowId,
-                            new RuntimeException("Workflow '{$transition->state->workflowId}' failed at step '{$step->stepId}'."),
-                            $this->clock->now(),
-                        ));
-                    }
-                } elseif ($transition->type !== TransitionType::Suspend) {
-                    $targetWorkflowId = $transition->workflowId ?? $workflow->workflowId;
-                    $targetWorkflow = $this->findWorkflow($document, $targetWorkflowId);
-
-                    if ($targetWorkflow === null) {
-                        $this->logger->error('Transition targeted unknown workflow.', [
-                            'executionId' => $executionId,
-                            'workflowId' => $targetWorkflowId,
-                        ]);
-                        $this->events->dispatch(new RunFailedEvent(
-                            $executionId,
-                            $targetWorkflowId,
-                            new LogicException("Unknown workflow '{$targetWorkflowId}'."),
-                            $this->clock->now(),
-                        ));
-
-                        return;
-                    }
-
-                    $targetStep = $transition->stepId !== null
-                        ? $this->findStep($targetWorkflow, $transition->stepId)
-                        : ($targetWorkflow->steps[0] ?? null);
-
-                    if ($targetStep !== null) {
-                        $dispatchState = $transition->state;
-                        assert($dispatchState instanceof ExecutionState);
-                        $this->queueDriver->dispatch(new ExecuteStepJob($targetStep, $dispatchState->toContext()), $transition->delaySeconds);
-                    }
-                }
-
-                $this->events->dispatch(new StepExecutedEvent(
-                    $executionId,
-                    $workflow->workflowId,
-                    $step->stepId,
-                    $outcome->statusCode ?? 0,
-                    $outcome->outputs,
-                    $criteriaMet,
-                    $this->clock->now(),
-                ));
+                $this->executeUnderLock($job->step, $context, $span);
             } catch (Throwable $t) {
-                $span->recordException($t);
-                $span->setStatus(false, $t->getMessage());
-                $category = match (true) {
-                    $t instanceof PreflightFailureException => 'authoring',
-                    $t instanceof SchemaValidationException => 'schema',
-                    default => 'execution',
-                };
-                $this->logger->error('Step execution failed with exception.', [
-                    'executionId' => $executionId,
-                    'stepId' => $step->stepId,
-                    'category' => $category,
-                    'exception' => $t::class,
-                    'message' => $t->getMessage(),
-                ]);
-                $this->events->dispatch(new StepFailedEvent(
-                    $executionId,
-                    $context->getWorkflowId() ?? '',
-                    $step->stepId,
-                    $t,
-                    $this->clock->now(),
-                    $category,
-                ));
-                $this->events->dispatch(new RunFailedEvent(
-                    $executionId,
-                    $context->getWorkflowId() ?? '',
-                    $t,
-                    $this->clock->now(),
-                    $category,
-                ));
-                throw $t;
+                $this->recordStepException($job->step, $context, $span, $t);
             }
         });
     }
 
-    private function reconcileWithPersistedState(WorkflowContext $context, string $executionId): WorkflowContext
+    private function executeUnderLock(Step $step, WorkflowContext $context, SpanInterface $span): void
     {
-        $persisted = $this->store->loadState($executionId);
+        $executionId = $context->getExecutionId();
+        $this->documentPreflightValidation($context);
 
-        return $persisted === null
-            ? $context
-            : WorkflowContext::reconciled($context, $persisted, $executionId);
+        if ($context->getStepStatus($step->stepId) === StepStatus::Succeeded) {
+            return;
+        }
+
+        $resolved = $this->resolveDocumentAndWorkflow($context, $executionId);
+        if ($resolved === null) {
+            return;
+        }
+        [$document, $workflow] = $resolved;
+
+        $context = $context->withStepAttemptIncremented($step->stepId);
+        $attempt = $context->getStepAttempts($step->stepId);
+        $this->events->dispatch(new StepStartedEvent(
+            $executionId,
+            $context->getWorkflowId() ?? '',
+            $step->stepId,
+            $attempt,
+            $this->clock->now(),
+        ));
+
+        $step = StepParameterMerger::merge($step, $workflow);
+        $executor = $this->resolveExecutor($step, $document);
+        $sourcePolicy = (new SourcePolicyResolver())->resolveForStep($step, $document, $this->policy);
+        $outcome = $executor->execute($step, $context->withActiveSourcePolicy($sourcePolicy), $document, $executionId);
+
+        if ($outcome->suspended) {
+            $this->handleSuspendedStep($step, $workflow, $context);
+
+            return;
+        }
+
+        $contextWithResult = $this->synchronizer->recordStepOutcome($context, $step, $outcome, $attempt);
+        $criteriaMet = $this->evaluationEngine->evaluateSuccessCriteria($step, $contextWithResult, $document);
+        $this->store->markStarted($executionId, $contextWithResult->getDefinitionId(), $workflow->workflowId);
+
+        $state = $this->synchronizer->hydrateState($contextWithResult, $workflow, $step, $this->policy);
+        $transition = $this->workflowEngine->transition($document, $workflow, $step, $state, $criteriaMet);
+        $nextState = $transition->state;
+        assert($nextState instanceof ExecutionState);
+        $this->store->saveState($executionId, $nextState->toContext()->toArray(), $this->policy->stateTtlSeconds);
+
+        $span->setAttribute('criteria.met', $criteriaMet);
+        if (!$this->dispatchTransition($document, $workflow, $step, $transition, $span)) {
+            return;
+        }
+
+        $this->events->dispatch(new StepExecutedEvent(
+            $executionId,
+            $workflow->workflowId,
+            $step->stepId,
+            $outcome->statusCode ?? 0,
+            $outcome->outputs,
+            $criteriaMet,
+            $this->clock->now(),
+        ));
+    }
+
+    /**
+     * @return array{0: ArazzoDocument, 1: Workflow}|null
+     */
+    private function resolveDocumentAndWorkflow(WorkflowContext $context, string $executionId): ?array
+    {
+        $document = $this->definitions->find($context->getDefinitionId());
+        if ($document === null) {
+            $this->logger->error('Workflow definition not found for execution.', [
+                'executionId' => $executionId,
+                'definitionId' => $context->getDefinitionId(),
+            ]);
+
+            return null;
+        }
+
+        $workflow = $this->findWorkflow($document, $context->getWorkflowId());
+        if ($workflow === null) {
+            $this->logger->error('Workflow not found in definition for execution.', [
+                'executionId' => $executionId,
+                'workflowId' => $context->getWorkflowId(),
+            ]);
+
+            return null;
+        }
+
+        return [$document, $workflow];
+    }
+
+    private function handleSuspendedStep(Step $step, Workflow $workflow, WorkflowContext $context): void
+    {
+        $executionId = $context->getExecutionId();
+        $newContext = $context->withStepStatus($step->stepId, StepStatus::Suspended);
+        $this->store->saveState($executionId, $newContext->toArray(), $this->policy->stateTtlSeconds);
+        $this->store->markStarted($executionId, $newContext->getDefinitionId(), $workflow->workflowId);
+        $this->logger->info('Step suspended awaiting external correlation.', [
+            'executionId' => $executionId,
+            'stepId' => $step->stepId,
+        ]);
+
+        if ($step->target->action === 'receive' && $step->target->correlationId !== null && $step->target->channelPath !== null) {
+            $evaluated = $this->evaluationEngine->evaluate($step->target->correlationId, new EvaluationContext($context, $step->stepId));
+            $correlationIdValue = is_scalar($evaluated) ? (string) $evaluated : '';
+            $this->events->dispatch(new CorrelationPendingEvent(
+                $executionId,
+                $context->getWorkflowId() ?? '',
+                $step->stepId,
+                $correlationIdValue,
+                $step->target->channelPath,
+                $this->clock->now(),
+            ));
+        }
+    }
+
+    private function dispatchTransition(
+        ArazzoDocument $document,
+        Workflow $workflow,
+        Step $step,
+        Transition $transition,
+        SpanInterface $span,
+    ): bool {
+        if ($transition->isTerminal()) {
+            $this->handleTerminalTransition($workflow, $step, $transition, $span);
+
+            return true;
+        }
+
+        return $this->dispatchFollowUpStep($document, $workflow, $transition);
+    }
+
+    private function handleTerminalTransition(
+        Workflow $workflow,
+        Step $step,
+        Transition $transition,
+        SpanInterface $span,
+    ): void {
+        $executionId = $transition->state->executionId;
+        $succeeded = $transition->status === 'succeeded';
+        $span->setStatus($succeeded, $succeeded ? null : "Step '{$step->stepId}' failed criteria");
+        $this->store->markCompleted($executionId, $succeeded ? ExecutionStatus::Succeeded : ExecutionStatus::Failed);
+
+        if ($succeeded) {
+            $this->events->dispatch(new RunCompletedEvent(
+                $executionId,
+                $transition->state->workflowId,
+                $this->workflowEngine->evaluateWorkflowOutputs($workflow, $transition->state),
+                $this->clock->now(),
+            ));
+
+            return;
+        }
+
+        $this->events->dispatch(new RunFailedEvent(
+            $executionId,
+            $transition->state->workflowId,
+            new RuntimeException("Workflow '{$transition->state->workflowId}' failed at step '{$step->stepId}'."),
+            $this->clock->now(),
+        ));
+    }
+
+    private function dispatchFollowUpStep(ArazzoDocument $document, Workflow $workflow, Transition $transition): bool
+    {
+        $executionId = $transition->state->executionId;
+        $targetWorkflowId = $transition->workflowId ?? $workflow->workflowId;
+        $targetWorkflow = $this->findWorkflow($document, $targetWorkflowId);
+
+        if ($targetWorkflow === null) {
+            $this->logger->error('Transition targeted unknown workflow.', [
+                'executionId' => $executionId,
+                'workflowId' => $targetWorkflowId,
+            ]);
+            $this->events->dispatch(new RunFailedEvent(
+                $executionId,
+                $targetWorkflowId,
+                new LogicException("Unknown workflow '{$targetWorkflowId}'."),
+                $this->clock->now(),
+            ));
+
+            return false;
+        }
+
+        $targetStep = $transition->stepId !== null
+            ? $this->findStep($targetWorkflow, $transition->stepId)
+            : ($targetWorkflow->steps[0] ?? null);
+
+        if ($targetStep !== null) {
+            $dispatchState = $transition->state;
+            assert($dispatchState instanceof ExecutionState);
+            $this->queueDriver->dispatch(new ExecuteStepJob($targetStep, $dispatchState->toContext()), $transition->delaySeconds);
+        }
+
+        return true;
+    }
+
+    private function recordStepException(Step $step, WorkflowContext $context, SpanInterface $span, Throwable $exception): never
+    {
+        $executionId = $context->getExecutionId();
+        $span->recordException($exception);
+        $span->setStatus(false, $exception->getMessage());
+        $category = match (true) {
+            $exception instanceof PreflightFailureException => 'authoring',
+            $exception instanceof SchemaValidationException => 'schema',
+            default => 'execution',
+        };
+        $this->logger->error('Step execution failed with exception.', [
+            'executionId' => $executionId,
+            'stepId' => $step->stepId,
+            'category' => $category,
+            'exception' => $exception::class,
+            'message' => $exception->getMessage(),
+        ]);
+        $this->events->dispatch(new StepFailedEvent(
+            $executionId,
+            $context->getWorkflowId() ?? '',
+            $step->stepId,
+            $exception,
+            $this->clock->now(),
+            $category,
+        ));
+        $this->events->dispatch(new RunFailedEvent(
+            $executionId,
+            $context->getWorkflowId() ?? '',
+            $exception,
+            $this->clock->now(),
+            $category,
+        ));
+
+        throw $exception;
     }
 
     private function findWorkflow(ArazzoDocument $document, ?string $workflowId): ?Workflow
@@ -346,42 +365,18 @@ class StepExecutionWorker
         return array_find($document->workflows, fn ($workflow) => $workflow->workflowId === $workflowId);
     }
 
-    private function findExecutor(Step $step, ArazzoDocument $document): ?OperationExecutorPluginInterface
-    {
-        return $this->executors?->resolve($step, $document);
-    }
-
-    private function failUnresolvedExecutor(Step $step): never
+    private function resolveExecutor(Step $step, ArazzoDocument $document): OperationExecutorPluginInterface
     {
         if ($this->executors === null) {
             throw new ExecutionException('No operation executor registry configured; register a protocol executor plugin.');
         }
 
-        throw new LogicException("No OperationExecutorPluginInterface supports step '{$step->stepId}'.");
-    }
-
-    /** @return array<string, int> */
-    private function attemptsFrom(WorkflowContext $context): array
-    {
-        $attempts = [];
-        foreach ($context->getSteps() as $id => $step) {
-            $attempt = self::stepRecord($step)['attempts'] ?? null;
-            $attempts[$id] = is_scalar($attempt) ? (int) $attempt : 0;
+        $executor = $this->executors->resolve($step, $document);
+        if ($executor === null) {
+            throw new LogicException("No OperationExecutorPluginInterface supports step '{$step->stepId}'.");
         }
 
-        return $attempts;
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private static function stepRecord(mixed $record): array
-    {
-        if (!is_array($record)) {
-            return [];
-        }
-
-        return array_filter($record, static fn (mixed $key): bool => is_string($key), ARRAY_FILTER_USE_KEY);
+        return $executor;
     }
 
     private function findStep(Workflow $workflow, string $stepId): ?Step
@@ -392,9 +387,9 @@ class StepExecutionWorker
     private function documentPreflightValidation(WorkflowContext $context): void
     {
         if ($this->preflight !== null && $context->getSteps() === []) {
-            $documentForPreflight = $this->definitions->find($context->getDefinitionId());
-            if ($documentForPreflight !== null) {
-                $preflightResult = $this->preflight->validate($documentForPreflight);
+            $preflightDoc = $this->definitions->find($context->getDefinitionId());
+            if ($preflightDoc !== null) {
+                $preflightResult = $this->preflight->validate($preflightDoc);
                 if (!$preflightResult->isValid()) {
                     throw new PreflightFailureException(
                         'Preflight validation failed with '.count($preflightResult->errors).' error(s).',

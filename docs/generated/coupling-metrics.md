@@ -75,7 +75,7 @@ targets. Regenerated before every commit.
 | `protocol-soap:Resolver` | 1 | 135 | 0 | 1 | 1.00 |  |
 | `protocol-soap:Transfer` | 2 | 201 | 2 | 1 | 0.33 |  |
 | `protocol-soap:Validation` | 1 | 138 | 0 | 4 | 1.00 |  |
-| `runner:Async` | 5 | 1430 | 1 | 22 | 0.96 |  |
+| `runner:Async` | 7 | 1561 | 1 | 22 | 0.96 |  |
 | `runner:Data` | 3 | 120 | 4 | 3 | 0.43 |  |
 | `runner:Events` | 9 | 178 | 2 | 0 | 0.00 |  |
 | `runner:Exceptions` | 9 | 125 | 4 | 3 | 0.43 |  |
@@ -86,7 +86,7 @@ targets. Regenerated before every commit.
 | `runner:Queue` | 1 | 24 | 2 | 1 | 0.33 |  |
 | `runner:Registries` | 1 | 150 | 2 | 3 | 0.60 |  |
 | `runner:Store` | 2 | 136 | 2 | 3 | 0.60 |  |
-| `runner:Sync` | 5 | 970 | 4 | 21 | 0.84 | ⚠ unstable hub |
+| `runner:Sync` | 7 | 1181 | 4 | 21 | 0.84 | ⚠ unstable hub |
 | `(runner root)` | 6 | 573 | 5 | 15 | 0.75 |  |
 | `sources:Exceptions` | 5 | 60 | 2 | 0 | 0.00 |  |
 | `sources:Normalizer` | 6 | 497 | 2 | 1 | 0.33 |  |
@@ -96,7 +96,7 @@ targets. Regenerated before every commit.
 | `sources:Resolver` | 12 | 617 | 3 | 6 | 0.67 |  |
 | `(sources root)` | 2 | 339 | 3 | 9 | 0.75 |  |
 
-Total cross-module edges: **1643**
+Total cross-module edges: **1668**
 
 ## Most entangled module pairs
 
@@ -108,9 +108,9 @@ Total cross-module edges: **1643**
 | `document:Plugins` → `contracts:Attributes` | 50 |
 | `document:Plugins` → `contracts:Interfaces` | 50 |
 | `expression:Plugins` → `contracts:Validation` | 32 |
+| `runner:Async` → `contracts:Spec` | 32 |
+| `runner:Sync` → `contracts:Spec` | 30 |
 | `expression:Plugins` → `contracts:Spec` | 28 |
 | `(evaluation root)` → `contracts:Spec` | 26 |
-| `runner:Async` → `contracts:Spec` | 26 |
 | `expression:Internal` → `expression:Ast` | 23 |
-| `runner:Sync` → `contracts:Spec` | 22 |
 | `contracts:Interfaces` → `contracts:Spec` | 21 |

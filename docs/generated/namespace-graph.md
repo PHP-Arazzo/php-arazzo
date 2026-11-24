@@ -333,24 +333,24 @@ flowchart LR
     runner_Store --> contracts_Clock
     runner_Store --> contracts_Spec
     runner_Store --> runner__
-    runner_Sync --> contracts_Spec
     runner_Sync --> contracts_Dependency
+    runner_Sync --> contracts_Spec
     runner_Sync --> contracts_State
+    runner_Sync --> runner_Exceptions
     runner_Sync --> evaluation__
     runner_Sync --> expression_Data
-    runner_Sync --> runner_Exceptions
     runner_Sync --> runner_Execution
     runner_Sync --> engine_Runtime
+    runner_Sync --> contracts_Validation
+    runner_Sync --> document__
+    runner_Sync --> runner_Preflight
     runner_Sync --> contracts_Interfaces
     runner_Sync --> engine_Exceptions
     runner_Sync --> runner_Policy
     runner_Sync --> runner_Registries
-    runner_Sync --> document__
     runner_Sync --> runner_Plugins
-    runner_Sync --> runner_Preflight
     runner_Sync --> contracts_Exceptions
     runner_Sync --> contracts_Observability
-    runner_Sync --> contracts_Validation
     runner_Sync --> engine_Execution
     runner_Sync --> runner_Data
     runner_Sync --> runner_Events

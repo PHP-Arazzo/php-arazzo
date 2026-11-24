@@ -25,7 +25,7 @@ Where mutable state lives, and which of it crosses process boundaries:
 | protocol-http | 5 | 7 | 42% |
 | protocol-rpc | 5 | 12 | 29% |
 | protocol-soap | 1 | 13 | 7% |
-| runner | 27 | 26 | 51% |
+| runner | 29 | 28 | 51% |
 | core | 0 | 0 | — |
 | cli | 1 | 12 | 8% |
 

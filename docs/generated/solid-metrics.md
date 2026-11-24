@@ -117,11 +117,11 @@ Concrete types over 300 LOC:
 |---|---|---:|
 | `ExecutionContext` | `engine:Runtime` | 553 |
 | `ExecutionState` | `contracts:State` | 465 |
-| `StepOutcomeHandler` | `runner:Async` | 418 |
+| `WorkflowExecutor` | `runner:Sync` | 412 |
 | `WorkflowContext` | `contracts:State` | 410 |
-| `StepExecutionWorker` | `runner:Async` | 408 |
-| `WorkflowExecutor` | `runner:Sync` | 372 |
-| `WorkflowEngine` | `runner:Sync` | 360 |
+| `StepExecutionWorker` | `runner:Async` | 403 |
+| `StepOutcomeHandler` | `runner:Async` | 358 |
+| `WorkflowEngine` | `runner:Sync` | 313 |
 | `DefaultOpenApiExecutor` | `protocol-http:Execution` | 306 |
 
 ## Fat interfaces (ISP)

@@ -83,7 +83,7 @@ flowchart LR
         S_protocol_soap_Plugins["protocol-soap:Plugins<br/><small>899 LOC</small>"]:::unknownDomain
         S_protocol_soap_Transfer["protocol-soap:Transfer<br/><small>203 LOC</small>"]:::unknownDomain
         S_protocol_soap_Validation["protocol-soap:Validation<br/><small>139 LOC</small>"]:::unknownDomain
-        S_runner_Async["runner:Async<br/><small>1435 LOC</small>"]:::unknownDomain
+        S_runner_Async["runner:Async<br/><small>1568 LOC</small>"]:::unknownDomain
         S_runner_Data["runner:Data<br/><small>123 LOC</small>"]:::unknownDomain
         S_runner_Exceptions["runner:Exceptions<br/><small>134 LOC</small>"]:::unknownDomain
         S_runner_Execution["runner:Execution<br/><small>679 LOC</small>"]:::unknownDomain
@@ -92,7 +92,7 @@ flowchart LR
         S_runner_Preflight["runner:Preflight<br/><small>156 LOC</small>"]:::unknownDomain
         S_runner_Registries["runner:Registries<br/><small>151 LOC</small>"]:::unknownDomain
         S_runner_Store["runner:Store<br/><small>138 LOC</small>"]:::unknownDomain
-        S_runner_Sync["runner:Sync<br/><small>975 LOC</small>"]:::unknownDomain
+        S_runner_Sync["runner:Sync<br/><small>1188 LOC</small>"]:::unknownDomain
         S_sources_Exceptions["sources:Exceptions<br/><small>65 LOC</small>"]:::unknownDomain
         S_sources_Normalizer["sources:Normalizer<br/><small>503 LOC</small>"]:::unknownDomain
         S_sources_Plugins["sources:Plugins<br/><small>147 LOC</small>"]:::unknownDomain
@@ -110,7 +110,7 @@ flowchart LR
 | Core domain | 1 | 1,300 | 0 | 4% |
 | Supporting | 8 | 5,377 | 0 | 16% |
 | Generic subdomain | 6 | 1,678 | 0 | 5% |
-| Unclassified | 62 | 25,111 | 0 | 75% |
+| Unclassified | 62 | 25,457 | 0 | 75% |
 
 **Unclassified modules** — classify them in `SUBDOMAINS` or delete them:
 - `contracts:Attributes`

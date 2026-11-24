@@ -13,7 +13,6 @@ use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Enum\ExecutionStatus;
 use Alama\Arazzo\Contracts\Spec\Enum\StepStatus;
 use Alama\Arazzo\Contracts\Spec\Expression;
-use Alama\Arazzo\Contracts\Spec\Reusable;
 use Alama\Arazzo\Contracts\Spec\Selector;
 use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Contracts\Spec\Workflow;
@@ -61,6 +60,8 @@ class StepOutcomeHandler
 
     private ExecutionPolicy $policy;
 
+    private AsyncContextLookup $lookup;
+
     public function __construct(
         private ExecutionStoreInterface $store,
         RunControlFlow $controlFlow,
@@ -73,6 +74,7 @@ class StepOutcomeHandler
         $this->logger = $controlFlow->observability->logger;
         $this->clock = $controlFlow->observability->clock;
         $this->policy = $controlFlow->policy;
+        $this->lookup = new AsyncContextLookup();
     }
 
     public function handle(
@@ -174,14 +176,9 @@ class StepOutcomeHandler
         $newContext = $context->withStepStatus($step->stepId, StepStatus::Succeeded);
         $this->store->saveState($executionId, $newContext->toArray(), $this->policy->stateTtlSeconds);
 
-        if ($transition->stepId === null) {
-            return;
-        }
-
-        $targetStep = $this->findStep($workflow, $transition->stepId);
-        if ($targetStep === null) {
-            return;
-        }
+        assert($transition->stepId !== null);
+        $targetStep = $this->lookup->findStep($workflow, $transition->stepId);
+        assert($targetStep instanceof Step);
 
         $this->queueDriver->dispatch(new ExecuteStepJob($targetStep, $newContext));
     }
@@ -217,8 +214,8 @@ class StepOutcomeHandler
             $this->clock->now(),
         ));
 
-        $targetWorkflow = $this->findWorkflow($document, $transition->workflowId ?? $workflow->workflowId) ?? $workflow;
-        $targetStep = $transition->stepId !== null ? $this->findStep($targetWorkflow, $transition->stepId) : null;
+        $targetWorkflow = $this->lookup->findWorkflow($document, $transition->workflowId ?? $workflow->workflowId) ?? $workflow;
+        $targetStep = $transition->stepId !== null ? $this->lookup->findStep($targetWorkflow, $transition->stepId) : null;
         if ($targetStep !== null) {
             $this->queueDriver->dispatch(new ExecuteStepJob($targetStep, $newContext), $transition->delaySeconds);
         }
@@ -240,10 +237,8 @@ class StepOutcomeHandler
             ->withInputs($transition->state->inputs)
             ->withSkippedSteps($transition->state->getSkippedSteps());
 
-        $targetWorkflow = $this->findWorkflow($document, $transition->workflowId ?? (string) $context->getWorkflowId());
-        if ($targetWorkflow === null) {
-            return;
-        }
+        $targetWorkflow = $this->lookup->findWorkflow($document, $transition->workflowId ?? (string) $context->getWorkflowId());
+        assert($targetWorkflow instanceof Workflow);
 
         if ($transition->stepId === null) {
             $analyzer = new DependencyAnalyzer(new DependencyGraph($targetWorkflow->steps));
@@ -257,10 +252,8 @@ class StepOutcomeHandler
             return;
         }
 
-        $targetStep = $this->findStep($targetWorkflow, $transition->stepId);
-        if ($targetStep === null) {
-            return;
-        }
+        $targetStep = $this->lookup->findStep($targetWorkflow, $transition->stepId);
+        assert($targetStep instanceof Step);
 
         $newContext = $newContext->withStepStatus($targetStep->stepId, StepStatus::Pending);
         $this->store->saveState($executionId, $newContext->toArray(), $this->policy->stateTtlSeconds);
@@ -274,12 +267,10 @@ class StepOutcomeHandler
         WorkflowContext $context,
         string $executionId,
     ): void {
-        $invoke = $this->findAction($document, $workflow, $step, SubWorkflowSuccessAction::class)
-            ?? $this->findAction($document, $workflow, $step, SubWorkflowFailureAction::class);
+        $invoke = $this->lookup->findAction($document, $workflow, $step, SubWorkflowSuccessAction::class)
+            ?? $this->lookup->findAction($document, $workflow, $step, SubWorkflowFailureAction::class);
 
-        if (!$invoke instanceof SubWorkflowSuccessAction && !$invoke instanceof SubWorkflowFailureAction) {
-            return;
-        }
+        assert($invoke instanceof SubWorkflowSuccessAction || $invoke instanceof SubWorkflowFailureAction);
 
         $result = $this->invoker->invoke($invoke, $context);
 
@@ -320,7 +311,7 @@ class StepOutcomeHandler
             $this->events->dispatch(new RunCompletedEvent(
                 $executionId,
                 $workflow->workflowId,
-                $this->stepOutputs($context, $step->stepId),
+                $this->lookup->stepOutputs($context, $step->stepId),
                 $this->clock->now(),
             ));
         } else {
@@ -353,32 +344,6 @@ class StepOutcomeHandler
         }
     }
 
-    private function findAction(ArazzoDocument $document, Workflow $workflow, Step $step, string $class): ?object
-    {
-        foreach ([$step->flow->onSuccess, $step->flow->onFailure, $workflow->successActions, $workflow->failureActions] as $list) {
-            foreach ($list as $action) {
-                if ($action instanceof $class) {
-                    return $action;
-                }
-                if ($action instanceof Reusable) {
-                    $resolved = str_contains($action->reference, 'failureActions')
-                        ? ($document->components->failureActions[$this->referenceName($action->reference)] ?? null)
-                        : ($document->components->successActions[$this->referenceName($action->reference)] ?? null);
-                    if ($resolved instanceof $class) {
-                        return $resolved;
-                    }
-                }
-            }
-        }
-
-        return null;
-    }
-
-    private function referenceName(string $reference): string
-    {
-        return substr($reference, (int) strrpos($reference, '.') + 1);
-    }
-
     private function terminate(WorkflowContext $context, string $executionId, ExecutionStatus $status): void
     {
         $this->store->saveState($executionId, $context->toArray(), $this->policy->stateTtlSeconds);
@@ -388,30 +353,5 @@ class StepOutcomeHandler
             'workflowId' => $context->getWorkflowId(),
             'status' => $status->value,
         ]);
-    }
-
-    private function findWorkflow(ArazzoDocument $document, string $workflowId): ?Workflow
-    {
-        return array_find($document->workflows, fn ($workflow) => $workflow->workflowId === $workflowId);
-    }
-
-    private function findStep(Workflow $workflow, string $stepId): ?Step
-    {
-        return array_find($workflow->steps, fn ($step) => $step->stepId === $stepId);
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function stepOutputs(WorkflowContext $context, string $stepId): array
-    {
-        $record = $context->getSteps()[$stepId] ?? null;
-        $outputs = is_array($record) ? ($record['outputs'] ?? null) : null;
-
-        if (!is_array($outputs)) {
-            return [];
-        }
-
-        return array_filter($outputs, static fn (mixed $key): bool => is_string($key), ARRAY_FILTER_USE_KEY);
     }
 }

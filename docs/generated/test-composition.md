@@ -105,15 +105,15 @@ pie showData
 
 ```mermaid
 pie showData
-    title Runner — 51 test files
-    "Module-scoped": 44
+    title Runner — 52 test files
+    "Module-scoped": 45
     "Root": 7
 ```
 
 | Suite | Files | Share |
 |---|---:|---:|
-| Module-scoped | 44 | 86% |
-| Root | 7 | 14% |
+| Module-scoped | 45 | 87% |
+| Root | 7 | 13% |
 
 ## Cli package
 
