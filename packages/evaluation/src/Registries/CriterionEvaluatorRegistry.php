@@ -9,8 +9,8 @@ use Alama\Arazzo\Contracts\Discovery\PluginDiscovery;
 use Alama\Arazzo\Contracts\Interfaces\CriterionEvaluatorPluginInterface;
 use Alama\Arazzo\Contracts\Spec\Enum\CriterionType;
 use Alama\Arazzo\Contracts\Spec\SuccessCriterion;
+use Alama\Arazzo\Evaluation\Exceptions\RegistryInitializationException;
 use Alama\Arazzo\Expression\Interfaces\ExpressionEngineInterface;
-use InvalidArgumentException;
 use ReflectionClass;
 
 /**
@@ -41,7 +41,7 @@ final class CriterionEvaluatorRegistry
     {
         if (self::$instance === null) {
             if ($expression === null) {
-                throw new InvalidArgumentException('ExpressionEngineInterface is required to initialize CriterionEvaluatorRegistry.');
+                throw RegistryInitializationException::missingExpressionEngine('CriterionEvaluatorRegistry');
             }
             self::$instance = new self($expression);
         }

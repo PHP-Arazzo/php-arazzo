@@ -66,7 +66,7 @@ final class ConditionEvaluator
             return self::truthy($this->runtimeValue($node, $context));
         }
 
-        throw new ConditionSyntaxException('Unsupported condition node.');
+        throw ConditionSyntaxException::unsupportedNode();
     }
 
     /**

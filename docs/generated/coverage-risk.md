@@ -49,9 +49,10 @@ quadrantChart
     evaluation/Data: [0.4, 1]
     evaluation/Enum: [0, 1]
     evaluation/Events: [0.333, 1]
+    evaluation/Exceptions: [0.333, 0.5]
     evaluation/Interfaces: [0.6, 1]
     evaluation/Plugins: [1, 1]
-    evaluation/Registries: [0.833, 1]
+    evaluation/Registries: [0.857, 1]
     expression/Ast: [0.333, 0.8]
     expression/Data: [0.25, 1]
     expression/Enum: [0, 1]
@@ -113,11 +114,11 @@ quadrantChart
 | `contracts/Interfaces` | 0.10 | 49 | 20 | 100% |
 | `contracts/Observability` | 0.00 | 9 | 4 | 100% |
 | `contracts/Policy` | 0.00 | 12 | 5 | 100% |
-| `contracts/Spec` | 0.04 | 294 | 52 | 100% |
-| `contracts/State` | 0.10 | 85 | 4 | 100% |
+| `contracts/Spec` | 0.04 | 295 | 52 | 100% |
+| `contracts/State` | 0.10 | 86 | 4 | 100% |
 | `contracts/Support` | 0.00 | 12 | 5 | 100% |
 | `contracts/Validation` | 0.11 | 93 | 9 | 100% |
-| `document/Parser` | 0.29 | 63 | 31 | 100% |
+| `document/Parser` | 0.29 | 64 | 31 | 100% |
 | `document/Plugins` | 1.00 | 52 | 50 | 100% |
 | `document/Registries` | 0.80 | 3 | 1 | 100% |
 | `document/Validator` | 0.71 | 25 | 6 | 100% |
@@ -126,20 +127,21 @@ quadrantChart
 | `engine/Exceptions` | 0.11 | 8 | 1 | 100% |
 | `engine/Execution` | 0.31 | 14 | 10 | 100% |
 | `engine/Runtime` | 0.56 | 23 | 21 | 100% |
-| `evaluation/Condition` | 0.89 | 79 | 17 | 100% |
+| `evaluation/Condition` | 0.89 | 80 | 18 | 100% |
 | `evaluation/Data` | 0.40 | 13 | 2 | 100% |
 | `evaluation/Enum` | 0.00 | 6 | 5 | 100% |
 | `evaluation/Events` | 0.33 | 1 | 1 | 100% |
+| `evaluation/Exceptions` | 0.33 | 1 | 2 | 50% |
 | `evaluation/Interfaces` | 0.60 | 2 | 2 | 100% |
 | `evaluation/Plugins` | 1.00 | 4 | 2 | 100% |
-| `evaluation/Registries` | 0.83 | 6 | 2 | 100% |
+| `evaluation/Registries` | 0.86 | 7 | 2 | 100% |
 | `expression/Ast` | 0.33 | 12 | 15 | 80% |
-| `expression/Data` | 0.25 | 25 | 6 | 100% |
+| `expression/Data` | 0.25 | 26 | 6 | 100% |
 | `expression/Enum` | 0.00 | 8 | 2 | 100% |
 | `expression/Exceptions` | 0.08 | 19 | 4 | 100% |
 | `expression/Interfaces` | 0.33 | 24 | 4 | 100% |
 | `expression/Internal` | 0.78 | 1 | 6 | 17% |
-| `expression/JsonPath` | 0.67 | 63 | 9 | 100% |
+| `expression/JsonPath` | 0.67 | 64 | 9 | 100% |
 | `expression/Plugins` | 1.00 | 23 | 17 | 100% |
 | `expression/Policy` | 0.00 | 3 | 1 | 100% |
 | `expression/Registries` | 0.62 | 5 | 1 | 100% |

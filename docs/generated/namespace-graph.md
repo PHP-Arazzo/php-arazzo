@@ -40,6 +40,7 @@ flowchart LR
     evaluation_Data["Alama\Arazzo\Evaluation\Data"]:::coreNode
     evaluation_Enum["Alama\Arazzo\Evaluation\Enum"]:::coreNode
     evaluation_Events["Alama\Arazzo\Evaluation\Events"]:::coreNode
+    evaluation_Exceptions["Alama\Arazzo\Evaluation\Exceptions"]:::coreNode
     evaluation_Interfaces["Alama\Arazzo\Evaluation\Interfaces"]:::coreNode
     evaluation_Plugins["Alama\Arazzo\Evaluation\Plugins\Criterion"]:::coreNode
     evaluation_Registries["Alama\Arazzo\Evaluation\Registries"]:::coreNode
@@ -180,6 +181,7 @@ flowchart LR
     evaluation_Data --> evaluation_Enum
     evaluation_Data --> contracts_Spec
     evaluation_Events --> evaluation_Data
+    evaluation_Exceptions --> contracts_Support
     evaluation_Interfaces --> contracts_Spec
     evaluation_Interfaces --> evaluation_Data
     evaluation_Interfaces --> evaluation_Events
@@ -191,6 +193,7 @@ flowchart LR
     evaluation_Registries --> contracts_Discovery
     evaluation_Registries --> contracts_Interfaces
     evaluation_Registries --> contracts_Spec
+    evaluation_Registries --> evaluation_Exceptions
     evaluation_Registries --> expression_Interfaces
     evaluation__ --> contracts_Spec
     evaluation__ --> contracts_State
@@ -198,6 +201,7 @@ flowchart LR
     evaluation__ --> evaluation_Data
     evaluation__ --> evaluation_Events
     evaluation__ --> evaluation_Condition
+    evaluation__ --> evaluation_Exceptions
     evaluation__ --> expression_Data
     evaluation__ --> contracts_Interfaces
     evaluation__ --> contracts_Support

@@ -7,6 +7,7 @@ namespace Alama\Arazzo\Evaluation;
 use Alama\Arazzo\Contracts\Spec\Enum\CriterionType;
 use Alama\Arazzo\Contracts\Spec\SuccessCriterion;
 use Alama\Arazzo\Evaluation\Condition\ConditionEvaluator;
+use Alama\Arazzo\Evaluation\Exceptions\CriterionEvaluationException;
 use Alama\Arazzo\Expression\Data\EvaluationContext;
 use Alama\Arazzo\Expression\Interfaces\ExpressionEngineInterface;
 
@@ -52,10 +53,15 @@ final readonly class BuiltInCriterionEvaluator
 
     private function evaluateRegex(SuccessCriterion $criterion, mixed $root): bool
     {
-        $matched = preg_match('/'.str_replace('/', '\/', $criterion->condition).'/', self::stringify($root));
+        set_error_handler(static fn (): bool => true, E_WARNING);
+        try {
+            $matched = preg_match('/'.str_replace('/', '\/', $criterion->condition).'/', self::stringify($root));
+        } finally {
+            restore_error_handler();
+        }
 
         if ($matched === false) {
-            throw new \RuntimeException("Invalid regular expression: {$criterion->condition}");
+            throw CriterionEvaluationException::invalidRegex($criterion->condition);
         }
 
         return $matched === 1;

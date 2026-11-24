@@ -19,6 +19,7 @@ use Alama\Arazzo\Evaluation\Data\CriterionResultCollection;
 use Alama\Arazzo\Evaluation\Enum\CriterionOutcome;
 use Alama\Arazzo\Evaluation\Enum\CriterionReason;
 use Alama\Arazzo\Evaluation\Events\CriterionEvaluatedEvent;
+use Alama\Arazzo\Evaluation\Exceptions\CriterionEvaluationException;
 use Alama\Arazzo\Evaluation\Interfaces\CriteriaEvaluatorInterface;
 use Alama\Arazzo\Evaluation\Registries\CriterionEvaluatorRegistry;
 use Alama\Arazzo\Expression\Data\EvaluationContext;
@@ -69,7 +70,7 @@ class CriteriaEvaluator implements CriteriaEvaluatorInterface
     {
         // Default success behavior: an operation step without explicit criteria
         // passes on any 2xx response (community/spec-tooling convention).
-        if ($this->hasOperationTarget($step) && $step->io->successCriteria === []) {
+        if ($step->isHttpOperation() && $step->io->successCriteria === []) {
             $steps = $context->getSteps();
             $stepData = $steps[$step->stepId] ?? null;
             $response = is_array($stepData) ? ($stepData['response'] ?? null) : null;
@@ -80,7 +81,7 @@ class CriteriaEvaluator implements CriteriaEvaluatorInterface
         // A receive step succeeds by default only when a message actually
         // arrived. The resumer records that explicitly; a missing record or a
         // timeout record must not pass silently.
-        if ($step->target->action === 'receive' && $step->io->successCriteria === []) {
+        if ($step->isReceiveAction() && $step->io->successCriteria === []) {
             return self::hasReceivedMessage($context, $step->stepId);
         }
 
@@ -189,7 +190,7 @@ class CriteriaEvaluator implements CriteriaEvaluatorInterface
         }
 
         if ($type === CriterionType::Regex && $criterion->context === null) {
-            throw new \RuntimeException('A regex criterion requires a context.');
+            throw CriterionEvaluationException::regexRequiresContext();
         }
 
         return $this->criterionRoot($criterion, $context, $stepId, $document);
@@ -218,7 +219,7 @@ class CriteriaEvaluator implements CriteriaEvaluatorInterface
         );
 
         if ($root === null) {
-            throw new \RuntimeException("Criterion context '{$criterion->context}' resolved to null.");
+            throw CriterionEvaluationException::nullContext($criterion->context);
         }
 
         return $root;
@@ -231,11 +232,6 @@ class CriteriaEvaluator implements CriteriaEvaluatorInterface
         $response = is_array($stepData) ? ($stepData['response'] ?? null) : null;
 
         return is_array($response) ? ($response['body'] ?? []) : [];
-    }
-
-    private function hasOperationTarget(Step $step): bool
-    {
-        return $step->target->operationId !== null || $step->target->operationPath !== null;
     }
 
     private static function hasReceivedMessage(WorkflowContextInterface $context, string $stepId): bool

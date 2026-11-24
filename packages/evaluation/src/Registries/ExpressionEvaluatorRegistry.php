@@ -9,8 +9,8 @@ use Alama\Arazzo\Contracts\Discovery\PluginDiscovery;
 use Alama\Arazzo\Contracts\Interfaces\ExpressionEvaluatorPluginInterface;
 use Alama\Arazzo\Contracts\Spec\Enum\ExpressionType;
 use Alama\Arazzo\Contracts\Spec\Expression;
+use Alama\Arazzo\Evaluation\Exceptions\RegistryInitializationException;
 use Alama\Arazzo\Expression\Interfaces\ExpressionEngineInterface;
-use InvalidArgumentException;
 use ReflectionClass;
 
 /**
@@ -41,7 +41,7 @@ final class ExpressionEvaluatorRegistry
     {
         if (self::$instance === null) {
             if ($expression === null) {
-                throw new InvalidArgumentException('ExpressionEngineInterface is required to initialize ExpressionEvaluatorRegistry.');
+                throw RegistryInitializationException::missingExpressionEngine('ExpressionEvaluatorRegistry');
             }
             self::$instance = new self($expression);
         }

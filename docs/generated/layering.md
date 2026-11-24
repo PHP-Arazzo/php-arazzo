@@ -68,6 +68,7 @@ flowchart TB
         M_evaluation_Data["evaluation:Data"]:::node
         M_evaluation_Enum["evaluation:Enum"]:::node
         M_evaluation_Events["evaluation:Events"]:::node
+        M_evaluation_Exceptions["evaluation:Exceptions"]:::node
         M_evaluation_Interfaces["evaluation:Interfaces"]:::node
         M_evaluation_Plugins["evaluation:Plugins"]:::node
         M_evaluation_Registries["evaluation:Registries"]:::node
@@ -213,6 +214,7 @@ flowchart TB
     M_evaluation_Data --> M_contracts_Spec
     M_evaluation_Data --> M_evaluation_Enum
     M_evaluation_Events --> M_evaluation_Data
+    M_evaluation_Exceptions --> M_contracts_Support
     M_evaluation_Interfaces --> M_contracts_Spec
     M_evaluation_Interfaces --> M_evaluation_Data
     M_evaluation_Interfaces --> M_evaluation_Events
@@ -224,6 +226,7 @@ flowchart TB
     M_evaluation_Registries --> M_contracts_Discovery
     M_evaluation_Registries --> M_contracts_Interfaces
     M_evaluation_Registries --> M_contracts_Spec
+    M_evaluation_Registries --> M_evaluation_Exceptions
     M_evaluation_Registries --> M_expression_Interfaces
     M_evaluation__ --> M_contracts_Interfaces
     M_evaluation__ --> M_contracts_Spec
@@ -233,6 +236,7 @@ flowchart TB
     M_evaluation__ --> M_evaluation_Data
     M_evaluation__ --> M_evaluation_Enum
     M_evaluation__ --> M_evaluation_Events
+    M_evaluation__ --> M_evaluation_Exceptions
     M_evaluation__ --> M_evaluation_Interfaces
     M_evaluation__ --> M_evaluation_Registries
     M_evaluation__ --> M_expression_Data
@@ -552,7 +556,7 @@ flowchart TB
 | `engine` | `contracts` | 51 |
 | `engine` | `document` | 1 |
 | `engine` | `evaluation` | 1 |
-| `evaluation` | `contracts` | 62 |
+| `evaluation` | `contracts` | 63 |
 | `evaluation` | `expression` | 20 |
 | `expression` | `contracts` | 127 |
 | `protocol-http` | `contracts` | 54 |

@@ -13,7 +13,9 @@ classDiagram
     class E_InvalidArgumentException["InvalidArgumentException"]:::builtin
     class E_BaseException["BaseException"]:::builtin
     class E_ArazzoException["ArazzoException<br/><small>contracts:Support</small>"]:::domain
+    class E_ConditionLexException["ConditionLexException<br/><small>evaluation:Condition</small>"]:::domain
     class E_ConditionSyntaxException["ConditionSyntaxException<br/><small>evaluation:Condition</small>"]:::domain
+    class E_CriterionEvaluationException["CriterionEvaluationException<br/><small>evaluation:Exceptions</small>"]:::domain
     class E_CustomTagsForbiddenException["CustomTagsForbiddenException<br/><small>document:Parser</small>"]:::domain
     class E_DecodeException["DecodeException<br/><small>document:Parser</small>"]:::domain
     class E_DecodeLimitException["DecodeLimitException<br/><small>document:Parser</small>"]:::domain
@@ -36,6 +38,7 @@ classDiagram
     class E_ParserException["ParserException<br/><small>document:Parser</small>"]:::domain
     class E_PluginInstantiationException["PluginInstantiationException<br/><small>contracts:Exceptions</small>"]:::domain
     class E_PreflightFailureException["PreflightFailureException<br/><small>runner:Exceptions</small>"]:::domain
+    class E_RegistryInitializationException["RegistryInitializationException<br/><small>evaluation:Exceptions</small>"]:::domain
     class E_RunnerException["RunnerException<br/><small>runner:Exceptions</small>"]:::domain
     class E_SchemaValidationException["SchemaValidationException<br/><small>contracts:Exceptions</small>"]:::domain
     class E_SelectorEvaluationException["SelectorEvaluationException<br/><small>expression:Exceptions</small>"]:::domain
@@ -51,7 +54,9 @@ classDiagram
     class E_WorkflowCycleException["WorkflowCycleException<br/><small>runner:Exceptions</small>"]:::domain
     class E_WorkflowDepthExceededException["WorkflowDepthExceededException<br/><small>runner:Exceptions</small>"]:::domain
     E_RuntimeException <|-- E_ArazzoException
+    E_ConditionSyntaxException <|-- E_ConditionLexException
     E_ArazzoException <|-- E_ConditionSyntaxException
+    E_ArazzoException <|-- E_CriterionEvaluationException
     E_DecodeLimitException <|-- E_CustomTagsForbiddenException
     E_RuntimeException <|-- E_DecodeException
     E_DecodeException <|-- E_DecodeLimitException
@@ -74,6 +79,7 @@ classDiagram
     E_ArazzoException <|-- E_ParserException
     E_ArazzoException <|-- E_PluginInstantiationException
     E_RunnerException <|-- E_PreflightFailureException
+    E_InvalidArgumentException <|-- E_RegistryInitializationException
     E_RuntimeException <|-- E_RunnerException
     E_RuntimeException <|-- E_SchemaValidationException
     E_ArazzoException <|-- E_SelectorEvaluationException
@@ -95,7 +101,9 @@ classDiagram
 | Exception | Extends | Module |
 |---|---|---|
 | `ArazzoException` | `RuntimeException` | contracts:Support |
+| `ConditionLexException` | `ConditionSyntaxException` | evaluation:Condition |
 | `ConditionSyntaxException` | `ArazzoException` | evaluation:Condition |
+| `CriterionEvaluationException` | `ArazzoException` | evaluation:Exceptions |
 | `CustomTagsForbiddenException` | `DecodeLimitException` | document:Parser |
 | `DecodeException` | `RuntimeException` | document:Parser |
 | `DecodeLimitException` | `DecodeException` | document:Parser |
@@ -118,6 +126,7 @@ classDiagram
 | `ParserException` | `ArazzoException` | document:Parser |
 | `PluginInstantiationException` | `ArazzoException` | contracts:Exceptions |
 | `PreflightFailureException` | `RunnerException` | runner:Exceptions |
+| `RegistryInitializationException` | `InvalidArgumentException` | evaluation:Exceptions |
 | `RunnerException` | `RuntimeException` | runner:Exceptions |
 | `SchemaValidationException` | `RuntimeException` | contracts:Exceptions |
 | `SelectorEvaluationException` | `ArazzoException` | expression:Exceptions |

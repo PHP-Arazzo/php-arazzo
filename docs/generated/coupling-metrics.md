@@ -25,7 +25,7 @@ targets. Regenerated before every commit.
 | `contracts:Policy` | 5 | 263 | 6 | 0 | 0.00 |  |
 | `contracts:Spec` | 52 | 1377 | 54 | 2 | 0.04 |  |
 | `contracts:State` | 4 | 1058 | 17 | 2 | 0.11 |  |
-| `contracts:Support` | 5 | 180 | 9 | 0 | 0.00 |  |
+| `contracts:Support` | 5 | 180 | 10 | 0 | 0.00 |  |
 | `contracts:Validation` | 9 | 339 | 16 | 2 | 0.11 |  |
 | `document:Parser` | 31 | 2403 | 5 | 2 | 0.29 |  |
 | `document:Plugins` | 50 | 3068 | 0 | 7 | 1.00 |  |
@@ -38,14 +38,15 @@ targets. Regenerated before every commit.
 | `engine:Execution` | 10 | 1191 | 9 | 4 | 0.31 |  |
 | `engine:Runtime` | 21 | 1823 | 4 | 5 | 0.56 |  |
 | `(engine root)` | 2 | 192 | 0 | 3 | 1.00 |  |
-| `evaluation:Condition` | 17 | 1037 | 1 | 8 | 0.89 |  |
+| `evaluation:Condition` | 18 | 1121 | 1 | 8 | 0.89 |  |
 | `evaluation:Data` | 2 | 84 | 3 | 2 | 0.40 |  |
 | `evaluation:Enum` | 5 | 118 | 3 | 0 | 0.00 |  |
 | `evaluation:Events` | 1 | 26 | 2 | 1 | 0.33 |  |
+| `evaluation:Exceptions` | 2 | 40 | 2 | 1 | 0.33 |  |
 | `evaluation:Interfaces` | 2 | 42 | 2 | 3 | 0.60 |  |
 | `evaluation:Plugins` | 2 | 123 | 0 | 4 | 1.00 |  |
-| `evaluation:Registries` | 2 | 188 | 1 | 5 | 0.83 |  |
-| `(evaluation root)` | 6 | 820 | 12 | 13 | 0.52 |  |
+| `evaluation:Registries` | 2 | 188 | 1 | 6 | 0.86 |  |
+| `(evaluation root)` | 6 | 822 | 12 | 14 | 0.54 |  |
 | `expression:Ast` | 15 | 340 | 4 | 2 | 0.33 |  |
 | `expression:Data` | 6 | 193 | 15 | 5 | 0.25 |  |
 | `expression:Enum` | 2 | 45 | 7 | 0 | 0.00 |  |
@@ -96,7 +97,7 @@ targets. Regenerated before every commit.
 | `sources:Resolver` | 12 | 617 | 3 | 6 | 0.67 |  |
 | `(sources root)` | 2 | 339 | 3 | 9 | 0.75 |  |
 
-Total cross-module edges: **1680**
+Total cross-module edges: **1685**
 
 ## Most entangled module pairs
 

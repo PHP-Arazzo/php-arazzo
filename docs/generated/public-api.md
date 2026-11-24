@@ -579,6 +579,16 @@ this file on a commit is a public API change — review it deliberately.
 - `public function replacePayload(Step $step, array $body, ?callable $resolveValue = null, ?WorkflowContext $context = null): array;`
 - `public function resolveValue(mixed $value, WorkflowContextInterface $context, ?string $stepId = null): mixed;`
 
+### `Alama\Arazzo\Evaluation\Exceptions`
+
+#### `CriterionEvaluationException` class
+- `public static function invalidRegex(string $pattern): self`
+- `public static function nullContext(string $context): self`
+- `public static function regexRequiresContext(): self`
+
+#### `RegistryInitializationException` class
+- `public static function missingExpressionEngine(string $registryName): self`
+
 ### `Alama\Arazzo\Evaluation\Plugins\Criterion`
 
 #### `JsonPathCriterionPlugin` class

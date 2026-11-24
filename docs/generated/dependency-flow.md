@@ -102,6 +102,7 @@ evaluation-Condition,expression-root,1
 evaluation-Data,contracts-Spec,1
 evaluation-Data,evaluation-Enum,3
 evaluation-Events,evaluation-Data,1
+evaluation-Exceptions,contracts-Support,1
 evaluation-Interfaces,contracts-Spec,4
 evaluation-Interfaces,evaluation-Data,1
 evaluation-Interfaces,evaluation-Events,1
@@ -113,6 +114,7 @@ evaluation-Registries,contracts-Attributes,2
 evaluation-Registries,contracts-Discovery,2
 evaluation-Registries,contracts-Interfaces,2
 evaluation-Registries,contracts-Spec,4
+evaluation-Registries,evaluation-Exceptions,2
 evaluation-Registries,expression-Interfaces,2
 evaluation-root,contracts-Interfaces,1
 evaluation-root,contracts-Spec,26
@@ -122,6 +124,7 @@ evaluation-root,evaluation-Condition,3
 evaluation-root,evaluation-Data,4
 evaluation-root,evaluation-Enum,2
 evaluation-root,evaluation-Events,2
+evaluation-root,evaluation-Exceptions,2
 evaluation-root,evaluation-Interfaces,1
 evaluation-root,evaluation-Registries,3
 evaluation-root,expression-Data,4

@@ -55,7 +55,7 @@ final class AccessorParser
             return [$prefix, $this->parseAccessors(substr($bare, $cut))];
         }
 
-        throw new ConditionSyntaxException("Malformed runtime expression in condition: {$captured}.");
+        throw ConditionSyntaxException::malformedRuntimeExpr($captured);
     }
 
     private function isExpression(string $candidate): bool
@@ -95,7 +95,7 @@ final class AccessorParser
                 continue;
             }
 
-            throw new ConditionSyntaxException("Malformed accessor in condition runtime expression: {$rest}.");
+            throw ConditionSyntaxException::malformedAccessor($rest);
         }
 
         return $accessors;

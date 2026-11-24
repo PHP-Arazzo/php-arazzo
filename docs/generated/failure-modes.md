@@ -16,13 +16,12 @@ Regenerated before every commit.
 
 | Exception | Raised by |
 |---|---|
-| **ConditionSyntaxException** | `AccessorParser` <small>evaluation:Condition</small>, `ConditionEvaluator` <small>evaluation:Condition</small>, `Lexer` <small>evaluation:Condition</small>, `Parser` <small>evaluation:Condition</small> |
 | **CustomTagsForbiddenException** | `YamlSecurityScanner` <small>document:Parser</small> |
 | **DecodeException** | `NativeJsonDecoder` <small>document:Parser</small>, `SymfonyYamlDecoder` <small>document:Parser</small> |
 | **ExecutionError** | `AsyncExecutionGraphAssembler` <small>runner:Async</small>, `WorkflowEngine` <small>runner:Sync</small> |
 | **ExecutionException** | `RpcRequestBuilder` <small>protocol-rpc:Execution</small>, `RpcOperationExecutor` <small>protocol-rpc:Plugins</small>, `SoapRequestBuilder` <small>protocol-soap:Execution</small>, `SoapOperationExecutor` <small>protocol-soap:Plugins</small>, `StepExecutionWorker` <small>runner:Async</small>, `StepExecutor` <small>runner:Sync</small> |
 | **GotoTargetNotFoundException** | `WorkflowEngine` <small>runner:Sync</small>, `WorkflowNavigator` <small>runner:Sync</small> |
-| **InvalidArgumentException** | `TypeCaster` <small>engine:Execution</small>, `CriterionEvaluatorRegistry` <small>evaluation:Registries</small>, `ExpressionEvaluatorRegistry` <small>evaluation:Registries</small>, `ProtoParser` <small>protocol-rpc:Normalizer</small>, `ProtoTokenCursor` <small>protocol-rpc:Normalizer</small>, `WsdlDomReader` <small>protocol-soap:Plugins</small>, `WsdlSourceNormalizer` <small>protocol-soap:Plugins</small>, `RetryPolicy` <small>engine:Runtime</small>, `OpenApi30Normalizer` <small>sources:Normalizer</small>, `OpenApiVersionDetector` <small>sources:Normalizer</small>, `OpenApiSourceNormalizer` <small>sources:Plugins</small>, `FetchPolicy` <small>sources:Policy</small> |
+| **InvalidArgumentException** | `TypeCaster` <small>engine:Execution</small>, `ProtoParser` <small>protocol-rpc:Normalizer</small>, `ProtoTokenCursor` <small>protocol-rpc:Normalizer</small>, `WsdlDomReader` <small>protocol-soap:Plugins</small>, `WsdlSourceNormalizer` <small>protocol-soap:Plugins</small>, `RetryPolicy` <small>engine:Runtime</small>, `OpenApi30Normalizer` <small>sources:Normalizer</small>, `OpenApiVersionDetector` <small>sources:Normalizer</small>, `OpenApiSourceNormalizer` <small>sources:Plugins</small>, `FetchPolicy` <small>sources:Policy</small> |
 | **LogicException** | `AsyncApiStepExecutor` <small>protocol-http:Plugins</small>, `StepExecutionWorker` <small>runner:Async</small> |
 | **MaxAliasesExceededException** | `YamlSecurityScanner` <small>document:Parser</small> |
 | **MaxBytesExceededException** | `NativeJsonDecoder` <small>document:Parser</small>, `SymfonyYamlDecoder` <small>document:Parser</small> |
@@ -30,7 +29,7 @@ Regenerated before every commit.
 | **MaxNodesExceededException** | `NativeJsonDecoder` <small>document:Parser</small>, `SymfonyYamlDecoder` <small>document:Parser</small> |
 | **ObjectDeserializationForbiddenException** | `SymfonyYamlDecoder` <small>document:Parser</small>, `YamlSecurityScanner` <small>document:Parser</small> |
 | **PreflightFailureException** | `AsyncExecutionGraphAssembler` <small>runner:Async</small>, `StepExecutionWorker` <small>runner:Async</small>, `WorkflowPreflightRunner` <small>runner:Sync</small> |
-| **RuntimeException** | `CliRunner` <small>cli:Console</small>, `OpenAiClient` <small>cli:Generator</small>, `ReusableParameterResolver` <small>engine:Execution</small>, `BuiltInCriterionEvaluator` <small>(evaluation root)</small>, `CriteriaEvaluator` <small>(evaluation root)</small>, `OpenApiOperationResolver` <small>protocol-http:Resolver</small>, `ProtobufOperationResolver` <small>protocol-rpc:Protocol</small>, `RpcMessageCodec` <small>protocol-rpc:Protocol</small>, `SoapEnvelope` <small>protocol-soap:Execution</small>, `WsdlOperationResolver` <small>protocol-soap:Execution</small>, `OperationResolvers` <small>runner:Preflight</small>, `FileLockStrategy` <small>engine:Runtime</small>, `FileStateStore` <small>engine:Runtime</small>, `OtelSetup` <small>engine:Runtime</small>, `SourceReferenceParser` <small>sources:Normalizer</small> |
+| **RuntimeException** | `CliRunner` <small>cli:Console</small>, `OpenAiClient` <small>cli:Generator</small>, `ReusableParameterResolver` <small>engine:Execution</small>, `OpenApiOperationResolver` <small>protocol-http:Resolver</small>, `ProtobufOperationResolver` <small>protocol-rpc:Protocol</small>, `RpcMessageCodec` <small>protocol-rpc:Protocol</small>, `SoapEnvelope` <small>protocol-soap:Execution</small>, `WsdlOperationResolver` <small>protocol-soap:Execution</small>, `OperationResolvers` <small>runner:Preflight</small>, `FileLockStrategy` <small>engine:Runtime</small>, `FileStateStore` <small>engine:Runtime</small>, `OtelSetup` <small>engine:Runtime</small>, `SourceReferenceParser` <small>sources:Normalizer</small> |
 | **SchemaValidationException** | `ResponseSchemaValidator` <small>protocol-http:Execution</small>, `XsdResponseValidator` <small>protocol-soap:Validation</small> |
 | **SourceFetchException** | `DefaultSourceResolver` <small>sources:Resolver</small>, `HttpFetcher` <small>sources:Resolver</small>, `LocalFetcher` <small>sources:Resolver</small>, `Sources` <small>(sources root)</small> |
 | **SourceParseException** | `DefaultSourceResolver` <small>sources:Resolver</small> |
@@ -40,6 +39,9 @@ Regenerated before every commit.
 | **WorkflowCycleException** | `WorkflowNavigator` <small>runner:Sync</small> |
 | **WorkflowDepthExceededException** | `WorkflowNavigator` <small>runner:Sync</small> |
 | **ArazzoException** | _(never raised in src)_ |
+| **ConditionLexException** | _(never raised in src)_ |
+| **ConditionSyntaxException** | _(never raised in src)_ |
+| **CriterionEvaluationException** | _(never raised in src)_ |
 | **DecodeLimitException** | _(never raised in src)_ |
 | **DefinitionHydrationException** | _(never raised in src)_ |
 | **ExpressionSyntaxException** | _(never raised in src)_ |
@@ -52,6 +54,7 @@ Regenerated before every commit.
 | **NotImplementedException** | _(never raised in src)_ |
 | **ParserException** | _(never raised in src)_ |
 | **PluginInstantiationException** | _(never raised in src)_ |
+| **RegistryInitializationException** | _(never raised in src)_ |
 | **RunnerException** | _(never raised in src)_ |
 | **SelectorEvaluationException** | _(never raised in src)_ |
 | **SourceResolutionException** | _(never raised in src)_ |

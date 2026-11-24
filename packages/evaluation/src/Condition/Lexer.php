@@ -104,7 +104,7 @@ final class Lexer
         if ($condition[$i] === '{') {
             $closing = strpos($condition, '}', $i);
             if ($closing === false) {
-                throw new ConditionSyntaxException("Unterminated '{' runtime expression in condition at offset {$i}.");
+                throw ConditionLexException::unterminatedExpression($i);
             }
 
             $raw = trim(substr($condition, $i + 1, $closing - $i - 1));
@@ -115,7 +115,7 @@ final class Lexer
         }
 
         if ($raw === '' || $raw[0] !== '$') {
-            throw new ConditionSyntaxException("Malformed runtime expression in condition at offset {$i}.");
+            throw ConditionLexException::malformedExpression($i);
         }
 
         return [new Token(TokenKind::Expr, $raw, $i), $end];
@@ -136,7 +136,7 @@ final class Lexer
             return $ident;
         }
 
-        throw new ConditionSyntaxException("Unexpected character '{$condition[$i]}' in condition at offset {$i}.");
+        throw ConditionLexException::unexpectedCharacter($condition[$i], $i);
     }
 
     /**
@@ -166,7 +166,7 @@ final class Lexer
 
         while (true) {
             if ($i >= $length) {
-                throw new ConditionSyntaxException("Unterminated string literal in condition at offset {$start}.");
+                throw ConditionLexException::unterminatedString($start);
             }
 
             if ($condition[$i] === $quote) {
