@@ -29,7 +29,9 @@ use Alama\Arazzo\Runner\Events\RunFailedEvent;
 use Alama\Arazzo\Runner\Events\StepExecutedEvent;
 use Alama\Arazzo\Runner\Events\StepFailedEvent;
 use Alama\Arazzo\Runner\Events\StepStartedEvent;
+use Alama\Arazzo\Runner\Exceptions\ExecutionError;
 use Alama\Arazzo\Runner\Exceptions\PreflightFailureException;
+use Alama\Arazzo\Runner\Exceptions\UnsupportedStepException;
 use Alama\Arazzo\Runner\Execution\Data\AsyncPorts;
 use Alama\Arazzo\Runner\Execution\Data\RunControlFlow;
 use Alama\Arazzo\Runner\Execution\Data\Transition;
@@ -39,11 +41,9 @@ use Alama\Arazzo\Runner\Policy\ExecutionPolicy;
 use Alama\Arazzo\Runner\Preflight\Preflight;
 use Alama\Arazzo\Runner\Registries\OperationExecutorRegistry;
 use Alama\Arazzo\Runner\Sync\WorkflowEngine;
-use LogicException;
 use Psr\Clock\ClockInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
-use RuntimeException;
 use Throwable;
 
 /**
@@ -97,13 +97,10 @@ class StepExecutionWorker
 
     public function handle(ExecuteStepJob $job): void
     {
-        $step = $job->step;
-        $executionId = $job->context->getExecutionId();
-
         $span = $this->tracer->startSpan('arazzo.step.execute', [
-            'execution.id' => $executionId,
+            'execution.id' => $job->executionId(),
             'workflow.id' => (string) $job->context->getWorkflowId(),
-            'step.id' => $step->stepId,
+            'step.id' => $job->stepId(),
         ]);
 
         try {
@@ -115,7 +112,7 @@ class StepExecutionWorker
 
     private function handleUnderSpan(ExecuteStepJob $job, SpanInterface $span): void
     {
-        $executionId = $job->context->getExecutionId();
+        $executionId = $job->executionId();
         $lockKey = "execution_lock_{$executionId}";
 
         $this->lockManager->acquire($lockKey, 30, function () use ($job, $executionId, $span): void {
@@ -206,7 +203,7 @@ class StepExecutionWorker
             return null;
         }
 
-        $workflow = $this->findWorkflow($document, $context->getWorkflowId());
+        $workflow = $document->findWorkflow($context->getWorkflowId());
         if ($workflow === null) {
             $this->logger->error('Workflow not found in definition for execution.', [
                 'executionId' => $executionId,
@@ -230,7 +227,7 @@ class StepExecutionWorker
             'stepId' => $step->stepId,
         ]);
 
-        if ($step->target->action === 'receive' && $step->target->correlationId !== null && $step->target->channelPath !== null) {
+        if ($step->isReceiveAction() && $step->target->correlationId !== null && $step->target->channelPath !== null) {
             $evaluated = $this->evaluationEngine->evaluate($step->target->correlationId, new EvaluationContext($context, $step->stepId));
             $correlationIdValue = is_scalar($evaluated) ? (string) $evaluated : '';
             $this->events->dispatch(new CorrelationPendingEvent(
@@ -267,7 +264,7 @@ class StepExecutionWorker
         SpanInterface $span,
     ): void {
         $executionId = $transition->state->executionId;
-        $succeeded = $transition->status === 'succeeded';
+        $succeeded = $transition->isSucceeded();
         $span->setStatus($succeeded, $succeeded ? null : "Step '{$step->stepId}' failed criteria");
         $this->store->markCompleted($executionId, $succeeded ? ExecutionStatus::Succeeded : ExecutionStatus::Failed);
 
@@ -285,7 +282,7 @@ class StepExecutionWorker
         $this->events->dispatch(new RunFailedEvent(
             $executionId,
             $transition->state->workflowId,
-            new RuntimeException("Workflow '{$transition->state->workflowId}' failed at step '{$step->stepId}'."),
+            ExecutionError::workflowFailedAtStep($transition->state->workflowId, $step->stepId),
             $this->clock->now(),
         ));
     }
@@ -293,8 +290,8 @@ class StepExecutionWorker
     private function dispatchFollowUpStep(ArazzoDocument $document, Workflow $workflow, Transition $transition): bool
     {
         $executionId = $transition->state->executionId;
-        $targetWorkflowId = $transition->workflowId ?? $workflow->workflowId;
-        $targetWorkflow = $this->findWorkflow($document, $targetWorkflowId);
+        $targetWorkflowId = $transition->targetWorkflowId($workflow);
+        $targetWorkflow = $document->findWorkflow($targetWorkflowId);
 
         if ($targetWorkflow === null) {
             $this->logger->error('Transition targeted unknown workflow.', [
@@ -304,7 +301,7 @@ class StepExecutionWorker
             $this->events->dispatch(new RunFailedEvent(
                 $executionId,
                 $targetWorkflowId,
-                new LogicException("Unknown workflow '{$targetWorkflowId}'."),
+                UnsupportedStepException::unknownWorkflow($targetWorkflowId),
                 $this->clock->now(),
             ));
 
@@ -312,8 +309,8 @@ class StepExecutionWorker
         }
 
         $targetStep = $transition->stepId !== null
-            ? $this->findStep($targetWorkflow, $transition->stepId)
-            : ($targetWorkflow->steps[0] ?? null);
+            ? $targetWorkflow->findStep($transition->stepId)
+            : $targetWorkflow->firstStep();
 
         if ($targetStep !== null) {
             $dispatchState = $transition->state;
@@ -360,28 +357,18 @@ class StepExecutionWorker
         throw $exception;
     }
 
-    private function findWorkflow(ArazzoDocument $document, ?string $workflowId): ?Workflow
-    {
-        return array_find($document->workflows, fn ($workflow) => $workflow->workflowId === $workflowId);
-    }
-
     private function resolveExecutor(Step $step, ArazzoDocument $document): OperationExecutorPluginInterface
     {
         if ($this->executors === null) {
-            throw new ExecutionException('No operation executor registry configured; register a protocol executor plugin.');
+            throw ExecutionException::noExecutorRegistry();
         }
 
         $executor = $this->executors->resolve($step, $document);
         if ($executor === null) {
-            throw new LogicException("No OperationExecutorPluginInterface supports step '{$step->stepId}'.");
+            throw UnsupportedStepException::noSupportingExecutor($step->stepId);
         }
 
         return $executor;
-    }
-
-    private function findStep(Workflow $workflow, string $stepId): ?Step
-    {
-        return array_find($workflow->steps, fn ($step) => $step->stepId === $stepId);
     }
 
     private function documentPreflightValidation(WorkflowContext $context): void
@@ -391,10 +378,7 @@ class StepExecutionWorker
             if ($preflightDoc !== null) {
                 $preflightResult = $this->preflight->validate($preflightDoc);
                 if (!$preflightResult->isValid()) {
-                    throw new PreflightFailureException(
-                        'Preflight validation failed with '.count($preflightResult->errors).' error(s).',
-                        $preflightResult,
-                    );
+                    throw PreflightFailureException::fromResult($preflightResult);
                 }
             }
         }

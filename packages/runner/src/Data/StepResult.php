@@ -21,6 +21,11 @@ final readonly class StepResult
         public ?Throwable $error = null,
     ) {}
 
+    public function isFailed(): bool
+    {
+        return !$this->success;
+    }
+
     /**
      * @return array{stepId: string, success: bool, outputs: array<array-key, mixed>, error: ?string}
      */

@@ -468,6 +468,7 @@ flowchart TB
     M_runner_Preflight --> M_contracts_Spec
     M_runner_Preflight --> M_contracts_Validation
     M_runner_Preflight --> M_document__
+    M_runner_Preflight --> M_runner_Exceptions
     M_runner_Queue --> M_contracts_Interfaces
     M_runner_Registries --> M_contracts_Attributes
     M_runner_Registries --> M_contracts_Interfaces
@@ -586,7 +587,7 @@ flowchart TB
 | `protocol-soap` | `engine` | 4 |
 | `protocol-soap` | `evaluation` | 1 |
 | `protocol-soap` | `expression` | 2 |
-| `runner` | `contracts` | 180 |
+| `runner` | `contracts` | 175 |
 | `runner` | `document` | 14 |
 | `runner` | `engine` | 11 |
 | `runner` | `evaluation` | 14 |

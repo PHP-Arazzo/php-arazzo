@@ -29,50 +29,31 @@ final class WorkflowNavigator
      */
     public function resolveActions(ArazzoDocument $document, Workflow $workflow, Step $step, bool $criteriaMet): array
     {
-        $actions = $criteriaMet ? $step->flow->onSuccess : $step->flow->onFailure;
-        if ($actions === []) {
-            $actions = $criteriaMet ? $workflow->successActions : $workflow->failureActions;
-        }
         $type = $criteriaMet ? 'successActions' : 'failureActions';
 
         return array_map(
             fn (SuccessAction|FailureAction|Reusable $action): SuccessAction|FailureAction => $this->resolveAction($document, $action, $type),
-            $actions,
+            $step->effectiveActions($criteriaMet, $workflow),
         );
     }
 
     public function assertTargetExists(ArazzoDocument $document, string $workflowId, string $stepId): void
     {
-        $workflow = $this->findWorkflow($document, $workflowId);
-        if ($workflow !== null) {
-            foreach ($workflow->steps as $step) {
-                if ($step->stepId === $stepId) {
-                    return;
-                }
-            }
+        $workflow = $document->findWorkflow($workflowId);
+        if ($workflow !== null && $workflow->findStep($stepId) !== null) {
+            return;
         }
 
-        throw new GotoTargetNotFoundException("Action references unknown stepId '{$stepId}' in workflow '{$workflowId}'.");
-    }
-
-    public function findWorkflow(ArazzoDocument $document, string $workflowId): ?Workflow
-    {
-        foreach ($document->workflows as $workflow) {
-            if ($workflow->workflowId === $workflowId) {
-                return $workflow;
-            }
-        }
-
-        return null;
+        throw GotoTargetNotFoundException::unknownStep($stepId, $workflowId);
     }
 
     public function assertCanEnter(ExecutionState $state, string $workflowId): void
     {
         if (in_array($workflowId, $state->workflowCallStack, true)) {
-            throw new WorkflowCycleException("Workflow '{$workflowId}' is already on the execution call stack.");
+            throw WorkflowCycleException::detected($workflowId);
         }
         if (count($state->workflowCallStack) >= $state->maxWorkflowDepth) {
-            throw new WorkflowDepthExceededException("Execution exceeded workflow depth {$state->maxWorkflowDepth}.");
+            throw WorkflowDepthExceededException::exceeded($state->maxWorkflowDepth);
         }
     }
 
@@ -138,16 +119,16 @@ final class WorkflowNavigator
 
         $prefix = "\$components.{$type}.";
         if (!str_starts_with($action->reference, $prefix)) {
-            throw new GotoTargetNotFoundException("Reusable reference '{$action->reference}' does not target components.{$type}.");
+            throw GotoTargetNotFoundException::wrongReusableTarget($action->reference, $type);
         }
 
         $name = substr($action->reference, strlen($prefix));
         $resolved = $type === 'successActions'
-            ? ($document->components->successActions[$name] ?? null)
-            : ($document->components->failureActions[$name] ?? null);
+            ? $document->components->findSuccessAction($name)
+            : $document->components->findFailureAction($name);
 
         if ($resolved === null) {
-            throw new GotoTargetNotFoundException("Reusable reference '{$action->reference}' does not resolve.");
+            throw GotoTargetNotFoundException::unresolvableReusable($action->reference);
         }
 
         return $resolved;

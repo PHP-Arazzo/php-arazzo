@@ -13,6 +13,7 @@ use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Enum\ExecutionStatus;
 use Alama\Arazzo\Contracts\Spec\Enum\StepStatus;
 use Alama\Arazzo\Contracts\Spec\Expression;
+use Alama\Arazzo\Contracts\Spec\Reusable;
 use Alama\Arazzo\Contracts\Spec\Selector;
 use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Contracts\Spec\Workflow;
@@ -25,6 +26,7 @@ use Alama\Arazzo\Runner\Events\CorrelationPendingEvent;
 use Alama\Arazzo\Runner\Events\RunCompletedEvent;
 use Alama\Arazzo\Runner\Events\RunFailedEvent;
 use Alama\Arazzo\Runner\Events\StepRetriedEvent;
+use Alama\Arazzo\Runner\Exceptions\ExecutionError;
 use Alama\Arazzo\Runner\Execution\Data\RunControlFlow;
 use Alama\Arazzo\Runner\Execution\Data\Transition;
 use Alama\Arazzo\Runner\Execution\Enum\TransitionType;
@@ -34,7 +36,6 @@ use Alama\Arazzo\Runner\Sync\WorkflowEngine;
 use Psr\Clock\ClockInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
-use RuntimeException;
 
 /**
  * Queue/sync adapter around the canonical {@see WorkflowEngine}.
@@ -60,8 +61,6 @@ class StepOutcomeHandler
 
     private ExecutionPolicy $policy;
 
-    private AsyncContextLookup $lookup;
-
     public function __construct(
         private ExecutionStoreInterface $store,
         RunControlFlow $controlFlow,
@@ -74,7 +73,6 @@ class StepOutcomeHandler
         $this->logger = $controlFlow->observability->logger;
         $this->clock = $controlFlow->observability->clock;
         $this->policy = $controlFlow->policy;
-        $this->lookup = new AsyncContextLookup();
     }
 
     public function handle(
@@ -124,7 +122,7 @@ class StepOutcomeHandler
         WorkflowContext $context,
         string $executionId,
     ): void {
-        if (!$this->isHandoffCandidate($step)) {
+        if (!$step->isActorHandoff()) {
             return;
         }
 
@@ -149,12 +147,6 @@ class StepOutcomeHandler
         ));
     }
 
-    private function isHandoffCandidate(Step $step): bool
-    {
-        return $step->target->interaction !== null
-            || ($step->target->action === 'receive' && $step->target->channelPath !== null);
-    }
-
     private function resolveCorrelationId(Step $step, WorkflowContext $context): string
     {
         if ($step->target->correlationId === null) {
@@ -177,7 +169,7 @@ class StepOutcomeHandler
         $this->store->saveState($executionId, $newContext->toArray(), $this->policy->stateTtlSeconds);
 
         assert($transition->stepId !== null);
-        $targetStep = $this->lookup->findStep($workflow, $transition->stepId);
+        $targetStep = $workflow->findStep($transition->stepId);
         assert($targetStep instanceof Step);
 
         $this->queueDriver->dispatch(new ExecuteStepJob($targetStep, $newContext));
@@ -214,8 +206,8 @@ class StepOutcomeHandler
             $this->clock->now(),
         ));
 
-        $targetWorkflow = $this->lookup->findWorkflow($document, $transition->workflowId ?? $workflow->workflowId) ?? $workflow;
-        $targetStep = $transition->stepId !== null ? $this->lookup->findStep($targetWorkflow, $transition->stepId) : null;
+        $targetWorkflow = $document->findWorkflow($transition->targetWorkflowId($workflow)) ?? $workflow;
+        $targetStep = $transition->stepId !== null ? $targetWorkflow->findStep($transition->stepId) : null;
         if ($targetStep !== null) {
             $this->queueDriver->dispatch(new ExecuteStepJob($targetStep, $newContext), $transition->delaySeconds);
         }
@@ -237,7 +229,7 @@ class StepOutcomeHandler
             ->withInputs($transition->state->inputs)
             ->withSkippedSteps($transition->state->getSkippedSteps());
 
-        $targetWorkflow = $this->lookup->findWorkflow($document, $transition->workflowId ?? (string) $context->getWorkflowId());
+        $targetWorkflow = $document->findWorkflow($transition->workflowId ?? (string) $context->getWorkflowId());
         assert($targetWorkflow instanceof Workflow);
 
         if ($transition->stepId === null) {
@@ -252,7 +244,7 @@ class StepOutcomeHandler
             return;
         }
 
-        $targetStep = $this->lookup->findStep($targetWorkflow, $transition->stepId);
+        $targetStep = $targetWorkflow->findStep($transition->stepId);
         assert($targetStep instanceof Step);
 
         $newContext = $newContext->withStepStatus($targetStep->stepId, StepStatus::Pending);
@@ -267,8 +259,7 @@ class StepOutcomeHandler
         WorkflowContext $context,
         string $executionId,
     ): void {
-        $invoke = $this->lookup->findAction($document, $workflow, $step, SubWorkflowSuccessAction::class)
-            ?? $this->lookup->findAction($document, $workflow, $step, SubWorkflowFailureAction::class);
+        $invoke = $this->findSubWorkflowAction($document, $workflow, $step);
 
         assert($invoke instanceof SubWorkflowSuccessAction || $invoke instanceof SubWorkflowFailureAction);
 
@@ -296,7 +287,7 @@ class StepOutcomeHandler
         WorkflowContext $context,
         string $executionId,
     ): void {
-        $succeeded = ($transition->status ?? 'failed') === 'succeeded';
+        $succeeded = $transition->isSucceeded();
 
         if ($succeeded && $this->store->hasPendingCorrelations($executionId)) {
             $this->store->saveState($executionId, $context->toArray(), $this->policy->stateTtlSeconds);
@@ -311,17 +302,47 @@ class StepOutcomeHandler
             $this->events->dispatch(new RunCompletedEvent(
                 $executionId,
                 $workflow->workflowId,
-                $this->lookup->stepOutputs($context, $step->stepId),
+                $this->stepOutputs($context, $step->stepId),
                 $this->clock->now(),
             ));
         } else {
             $this->events->dispatch(new RunFailedEvent(
                 $executionId,
                 $workflow->workflowId,
-                new RuntimeException("Workflow '{$workflow->workflowId}' ended in failure at step '{$step->stepId}'"),
+                ExecutionError::workflowEndedInFailure($workflow->workflowId, $step->stepId),
                 $this->clock->now(),
             ));
         }
+    }
+
+    private function findSubWorkflowAction(
+        ArazzoDocument $document,
+        Workflow $workflow,
+        Step $step,
+    ): SubWorkflowSuccessAction|SubWorkflowFailureAction|null {
+        foreach ($step->allActions($workflow) as $action) {
+            $resolved = $action instanceof Reusable
+                ? $document->components->resolveReusableAction($action)
+                : $action;
+            if ($resolved instanceof SubWorkflowSuccessAction || $resolved instanceof SubWorkflowFailureAction) {
+                return $resolved;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function stepOutputs(WorkflowContext $context, string $stepId): array
+    {
+        $record = $context->getSteps()[$stepId] ?? null;
+        $outputs = is_array($record) ? ($record['outputs'] ?? null) : null;
+
+        return is_array($outputs)
+            ? array_filter($outputs, static fn (mixed $key): bool => is_string($key), ARRAY_FILTER_USE_KEY)
+            : [];
     }
 
     private function continueFrom(Workflow $workflow, WorkflowContext $context, string $executionId): void

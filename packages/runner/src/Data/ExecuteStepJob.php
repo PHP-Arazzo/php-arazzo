@@ -17,4 +17,14 @@ final readonly class ExecuteStepJob
         public Step $step,
         public WorkflowContext $context,
     ) {}
+
+    public function executionId(): string
+    {
+        return $this->context->getExecutionId();
+    }
+
+    public function stepId(): string
+    {
+        return $this->step->stepId;
+    }
 }

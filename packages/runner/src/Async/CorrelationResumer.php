@@ -118,7 +118,7 @@ class CorrelationResumer
 
         [$document, $workflow, $step] = $resolved;
 
-        if ($correlation->expiresAt !== null && $this->clock->now() > $correlation->expiresAt) {
+        if ($correlation->isExpiredAt($this->clock->now())) {
             $this->handleExpired($correlationId, $correlation, $resolved, $persisted, $executionId);
 
             return;
@@ -183,7 +183,7 @@ class CorrelationResumer
             return null;
         }
 
-        $workflow = is_scalar($workflowId) ? $this->findWorkflow($document, (string) $workflowId) : null;
+        $workflow = is_scalar($workflowId) ? $document->findWorkflow((string) $workflowId) : null;
         if ($workflow === null) {
             $this->logger->warning('Workflow missing on correlation resume.', [
                 'executionId' => $executionId,
@@ -193,7 +193,7 @@ class CorrelationResumer
             return null;
         }
 
-        $step = $this->findStep($workflow, $correlation->stepId);
+        $step = $workflow->findStep($correlation->stepId);
         if ($step === null) {
             $this->logger->warning('Step missing on correlation resume.', [
                 'executionId' => $executionId,
@@ -239,15 +239,5 @@ class CorrelationResumer
     private static function httpStatus(mixed $value): int
     {
         return is_int($value) ? $value : 200;
-    }
-
-    private function findWorkflow(ArazzoDocument $document, string $workflowId): ?Workflow
-    {
-        return array_find($document->workflows, fn ($workflow) => $workflow->workflowId === $workflowId);
-    }
-
-    private function findStep(Workflow $workflow, string $stepId): ?Step
-    {
-        return array_find($workflow->steps, fn ($step) => $step->stepId === $stepId);
     }
 }

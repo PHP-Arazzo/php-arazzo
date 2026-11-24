@@ -25,7 +25,7 @@ Where mutable state lives, and which of it crosses process boundaries:
 | protocol-http | 5 | 9 | 36% |
 | protocol-rpc | 5 | 16 | 24% |
 | protocol-soap | 1 | 17 | 6% |
-| runner | 29 | 28 | 51% |
+| runner | 29 | 29 | 50% |
 | core | 0 | 0 | — |
 | cli | 1 | 14 | 7% |
 
@@ -40,6 +40,7 @@ Where mutable state lives, and which of it crosses process boundaries:
 | `DecodeException` | document | `Parser/Exceptions` | `hydrate` |
 | `ParameterSerializer` | engine | `Execution` | `serialize` |
 | `ExecutionContext` | engine | `Runtime/State/Data` | `toArray`, `hydrate` |
+| `PreflightFailureException` | runner | `Exceptions` | `hydrate` |
 | `CliRunResult` | cli | `Console/Cli` | `hydrate` |
 
 ## Cross-process aggregates
@@ -53,4 +54,5 @@ Mutable types that serialize themselves or are carried by queue jobs — each ne
 - `DecoderRegistry` <small>document · `hydrate`</small>
 - `DecodeException` <small>document · `hydrate`</small>
 - `ParameterSerializer` <small>engine · `serialize`</small>
+- `PreflightFailureException` <small>runner · `hydrate`</small>
 - `ExecutionContext` <small>engine · `toArray`, `hydrate`</small>

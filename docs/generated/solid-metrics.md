@@ -93,11 +93,11 @@ quadrantChart
     runner/Async: [0.957, 0]
     runner/Data: [0.429, 0]
     runner/Events: [0, 0]
-    runner/Exceptions: [0.429, 0.111]
+    runner/Exceptions: [0.375, 0.091]
     runner/Execution: [0.857, 0]
     runner/Plugins: [0.818, 0]
     runner/Policy: [0.286, 0]
-    runner/Preflight: [0.429, 0]
+    runner/Preflight: [0.5, 0]
     runner/Queue: [0.333, 0]
     runner/Registries: [0.6, 0]
     runner/Store: [0.6, 0]
@@ -120,11 +120,11 @@ Concrete types over 300 LOC:
 |---|---|---:|
 | `ExecutionContext` | `engine:Runtime` | 553 |
 | `ExecutionState` | `contracts:State` | 465 |
-| `WorkflowExecutor` | `runner:Sync` | 412 |
 | `WorkflowContext` | `contracts:State` | 410 |
-| `StepExecutionWorker` | `runner:Async` | 403 |
-| `StepOutcomeHandler` | `runner:Async` | 358 |
-| `WorkflowEngine` | `runner:Sync` | 313 |
+| `WorkflowExecutor` | `runner:Sync` | 397 |
+| `StepExecutionWorker` | `runner:Async` | 387 |
+| `StepOutcomeHandler` | `runner:Async` | 379 |
+| `WorkflowEngine` | `runner:Sync` | 309 |
 | `DefaultOpenApiExecutor` | `protocol-http:Execution` | 306 |
 
 ## Fat interfaces (ISP)

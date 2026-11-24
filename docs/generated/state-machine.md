@@ -60,8 +60,4 @@ stateDiagram-v2
 
 ## Guards raised by transition()
 
-| Exception | Meaning |
-|---|---|
-| `ExecutionError` |  |
-| `GotoTargetNotFoundException` | goto/reusable target missing |
-| `StepBudgetExceededException` | step budget exhausted |
+_None._

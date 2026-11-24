@@ -293,8 +293,8 @@ runner-Async,contracts-Dependency,2
 runner-Async,contracts-Exceptions,1
 runner-Async,contracts-Interfaces,6
 runner-Async,contracts-Observability,3
-runner-Async,contracts-Spec,32
-runner-Async,contracts-State,10
+runner-Async,contracts-Spec,29
+runner-Async,contracts-State,9
 runner-Async,contracts-Validation,1
 runner-Async,document-root,1
 runner-Async,engine-Exceptions,2
@@ -303,7 +303,7 @@ runner-Async,evaluation-root,5
 runner-Async,expression-Data,3
 runner-Async,runner-Data,3
 runner-Async,runner-Events,11
-runner-Async,runner-Exceptions,4
+runner-Async,runner-Exceptions,7
 runner-Async,runner-Execution,14
 runner-Async,runner-Plugins,1
 runner-Async,runner-Policy,3
@@ -347,6 +347,7 @@ runner-Policy,engine-Runtime,1
 runner-Preflight,contracts-Spec,7
 runner-Preflight,contracts-Validation,3
 runner-Preflight,document-root,1
+runner-Preflight,runner-Exceptions,1
 runner-Queue,contracts-Interfaces,1
 runner-Registries,contracts-Attributes,1
 runner-Registries,contracts-Interfaces,1
@@ -369,7 +370,7 @@ runner-Sync,evaluation-root,3
 runner-Sync,expression-Data,1
 runner-Sync,runner-Data,2
 runner-Sync,runner-Events,7
-runner-Sync,runner-Exceptions,9
+runner-Sync,runner-Exceptions,10
 runner-Sync,runner-Execution,7
 runner-Sync,runner-Policy,1
 runner-Sync,runner-Preflight,4
@@ -377,7 +378,7 @@ runner-Sync,runner-Registries,2
 runner-root,contracts-Exceptions,1
 runner-root,contracts-Interfaces,10
 runner-root,contracts-Observability,4
-runner-root,contracts-Spec,8
+runner-root,contracts-Spec,7
 runner-root,contracts-Validation,2
 runner-root,document-root,8
 runner-root,evaluation-root,4

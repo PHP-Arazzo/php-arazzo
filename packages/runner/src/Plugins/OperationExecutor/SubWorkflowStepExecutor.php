@@ -45,18 +45,12 @@ final class SubWorkflowStepExecutor implements OperationExecutorPluginInterface
 
     public function supports(Step $step, ArazzoDocument $document): bool
     {
-        return $step->target->workflowId !== null && !in_array($step->target->action, ['send', 'receive'], true);
+        return $step->isSubWorkflow();
     }
 
     public function execute(Step $step, WorkflowContext $context, ArazzoDocument $document, string $executionId): StepExecutionOutcome
     {
-        $target = null;
-        foreach ($document->workflows as $workflow) {
-            if ($workflow->workflowId === $step->target->workflowId) {
-                $target = $workflow;
-                break;
-            }
-        }
+        $target = $document->findWorkflow($step->target->workflowId);
 
         if ($target === null) {
             throw ExecutionException::subWorkflowNotFound((string) $step->target->workflowId);

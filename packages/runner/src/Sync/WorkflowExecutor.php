@@ -23,6 +23,7 @@ use Alama\Arazzo\Runner\Events\StepExecutedEvent;
 use Alama\Arazzo\Runner\Events\StepFailedEvent;
 use Alama\Arazzo\Runner\Events\StepRetriedEvent;
 use Alama\Arazzo\Runner\Events\StepStartedEvent;
+use Alama\Arazzo\Runner\Exceptions\ExecutionError;
 use Alama\Arazzo\Runner\Exceptions\PreflightFailureException;
 use Alama\Arazzo\Runner\Exceptions\UnknownWorkflowException;
 use Alama\Arazzo\Runner\Execution\Data\ObservabilityContext;
@@ -32,7 +33,6 @@ use Alama\Arazzo\Runner\Preflight\Preflight;
 use Psr\Clock\ClockInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
-use RuntimeException;
 use Throwable;
 
 /**
@@ -103,7 +103,7 @@ class WorkflowExecutor
                 continue;
             }
 
-            $dependency = $this->workflow($document, $dependencyId);
+            $dependency = $document->findWorkflow($dependencyId) ?? throw UnknownWorkflowException::forId($dependencyId);
             $result = $this->executeOnce($dependency, $document, [], $handoff->toContext(), $executionId);
             $handoff = $handoff->withWorkflowData($dependencyId, ['outputs' => $result->outputs]);
             $stepResults += $result->stepResults;
@@ -117,7 +117,7 @@ class WorkflowExecutor
                 $this->events->dispatch(new RunFailedEvent(
                     $executionId,
                     $workflow->workflowId,
-                    new RuntimeException("Dependency '{$dependencyId}' failed."),
+                    ExecutionError::dependencyFailed($dependencyId),
                     $this->clock->now(),
                     'execution',
                 ));
@@ -175,7 +175,7 @@ class WorkflowExecutor
     {
         $state = $this->initialState($workflow, $inputs, $context, $executionId);
         $currentWorkflow = $workflow;
-        $stepId = $this->firstStep($workflow);
+        $stepId = $workflow->firstStep()?->stepId;
         /** @var array<string, StepResult> $results */
         $results = [];
 
@@ -189,9 +189,10 @@ class WorkflowExecutor
                 }
 
                 if ($transition->workflowId !== null && $transition->workflowId !== $currentWorkflow->workflowId) {
-                    $currentWorkflow = $this->workflow($document, $transition->workflowId);
+                    $currentWorkflow = $document->findWorkflow($transition->workflowId)
+                        ?? throw UnknownWorkflowException::forId($transition->workflowId);
                 }
-                $stepId = $transition->stepId ?? $this->firstStep($currentWorkflow);
+                $stepId = $transition->stepId ?? $currentWorkflow->firstStep()?->stepId;
             }
         } catch (Throwable $t) {
             $this->handleLoopFailure($executionId, $currentWorkflow, $t);
@@ -228,7 +229,7 @@ class WorkflowExecutor
         string $stepId,
         ExecutionState $state,
     ): array {
-        $step = array_find($workflow->steps, static fn (Step $candidate): bool => $candidate->stepId === $stepId);
+        $step = $workflow->findStep($stepId);
         assert($step instanceof Step);
 
         $attempt = $state->attemptFor($stepId) + 1;
@@ -243,7 +244,7 @@ class WorkflowExecutor
             $stepId,
             $success,
             is_array($raw['outputs'] ?? null) ? $raw['outputs'] : [],
-            $success ? null : new RuntimeException("Step '{$stepId}' failed"),
+            $success ? null : ExecutionError::stepFailed($stepId),
         );
 
         $transition = $this->workflowEngine->transition($document, $workflow, $step, $state, $success);
@@ -276,13 +277,13 @@ class WorkflowExecutor
             ));
         }
 
-        if (!$result->success) {
+        if ($result->isFailed()) {
             $category = is_string($raw['failureCategory'] ?? null) ? $raw['failureCategory'] : 'criteria';
             $this->events->dispatch(new StepFailedEvent(
                 $state->executionId,
                 $workflow->workflowId,
                 $result->stepId,
-                new RuntimeException("Step '{$result->stepId}' failed"),
+                ExecutionError::stepFailed($result->stepId),
                 $this->clock->now(),
                 $category,
             ));
@@ -312,7 +313,7 @@ class WorkflowExecutor
         ExecutionState $state,
         array $results,
     ): ExecutionResult {
-        if ($transition->status === 'failed') {
+        if ($transition->isFailed()) {
             $this->logger->warning('Workflow ended in failure.', [
                 'executionId' => $state->executionId,
                 'workflowId' => $workflow->workflowId,
@@ -321,7 +322,7 @@ class WorkflowExecutor
             $this->events->dispatch(new RunFailedEvent(
                 $state->executionId,
                 $workflow->workflowId,
-                new RuntimeException("Workflow '{$workflow->workflowId}' failed at step '{$stepId}'."),
+                ExecutionError::workflowFailedAtStep($workflow->workflowId, $stepId),
                 $this->clock->now(),
                 'criteria',
             ));
@@ -391,21 +392,5 @@ class WorkflowExecutor
         }
 
         return $state;
-    }
-
-    private function firstStep(Workflow $workflow): ?string
-    {
-        return $workflow->steps[0]->stepId ?? null;
-    }
-
-    private function workflow(ArazzoDocument $document, string $id): Workflow
-    {
-        foreach ($document->workflows as $workflow) {
-            if ($workflow->workflowId === $id) {
-                return $workflow;
-            }
-        }
-
-        throw UnknownWorkflowException::forId($id);
     }
 }

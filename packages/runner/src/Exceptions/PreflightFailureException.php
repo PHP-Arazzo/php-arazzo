@@ -16,4 +16,12 @@ final class PreflightFailureException extends RunnerException
     ) {
         parent::__construct($message, '', 'runner.preflight_failed', $previous);
     }
+
+    public static function fromResult(ValidationResult $result): self
+    {
+        return new self(
+            'Preflight validation failed with '.count($result->errors).' error(s).',
+            $result,
+        );
+    }
 }

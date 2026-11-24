@@ -50,7 +50,7 @@ final class AsyncExecutionGraphAssembler
         ?string $executionId = null,
         ?string $definitionId = null,
     ): string {
-        $workflow = $this->findWorkflow($document, $workflowId);
+        $workflow = $document->findWorkflow($workflowId) ?? throw UnknownWorkflowException::forId($workflowId);
         (new SourcePolicyResolver())->validate($document, $this->config->options->policy);
         $inputs = $this->runStartPreflight($document, $workflow, $inputs);
 
@@ -63,7 +63,7 @@ final class AsyncExecutionGraphAssembler
             ->withExecutionId($executionId)
             ->withWorkflowId($workflowId);
 
-        $firstStep = $workflow->steps[0] ?? null;
+        $firstStep = $workflow->firstStep();
         if ($firstStep !== null) {
             $this->config->ports->queueDriver->dispatch(new ExecuteStepJob($firstStep, $context));
         }
@@ -75,11 +75,11 @@ final class AsyncExecutionGraphAssembler
     {
         $persisted = $this->config->ports->store->loadState($executionId);
         if ($persisted === null) {
-            throw new ExecutionError("No persisted state for execution '{$executionId}'.", '', 'runner.state_missing');
+            throw ExecutionError::stateMissing($executionId);
         }
 
         $workflowId = is_string($persisted['workflowId'] ?? null) ? $persisted['workflowId'] : '';
-        $workflow = $this->findWorkflow($document, $workflowId);
+        $workflow = $document->findWorkflow($workflowId) ?? throw UnknownWorkflowException::forId($workflowId);
 
         $definitionId = is_string($persisted['definitionId'] ?? null) ? $persisted['definitionId'] : $workflowId;
         $this->config->ports->store->markStarted($executionId, $definitionId, $workflowId);
@@ -168,7 +168,7 @@ final class AsyncExecutionGraphAssembler
         $inputsSchema = $workflow->inputs;
         if (is_array($inputsSchema) && $inputsSchema !== []) {
             $inputResult = $this->document->validateInputs($document, $workflow->workflowId, $inputs);
-            if ($inputResult->errors !== []) {
+            if (!$inputResult->isValid()) {
                 $errors = [...$errors, ...$inputResult->errors];
                 $warnings = [...$warnings, ...$inputResult->warnings];
             } elseif ($inputResult->inputs !== []) {
@@ -184,11 +184,7 @@ final class AsyncExecutionGraphAssembler
         }
 
         if ($errors !== []) {
-            $result = new ValidationResult($document, $errors, $warnings);
-            throw new PreflightFailureException(
-                'Preflight validation failed with '.count($result->errors).' error(s).',
-                $result,
-            );
+            throw PreflightFailureException::fromResult(new ValidationResult($document, $errors, $warnings));
         }
 
         return $inputs;
@@ -201,17 +197,6 @@ final class AsyncExecutionGraphAssembler
         }
 
         return $this->config->ports->definitions->save($document, $definitionId);
-    }
-
-    private function findWorkflow(ArazzoDocument $document, string $workflowId): Workflow
-    {
-        foreach ($document->workflows as $candidate) {
-            if ($candidate->workflowId === $workflowId) {
-                return $candidate;
-            }
-        }
-
-        throw UnknownWorkflowException::forId($workflowId);
     }
 
     private function workflowEngine(): WorkflowEngine

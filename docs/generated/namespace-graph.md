@@ -340,6 +340,7 @@ flowchart LR
     runner_Policy --> engine_Runtime
     runner_Preflight --> contracts_Spec
     runner_Preflight --> document__
+    runner_Preflight --> runner_Exceptions
     runner_Preflight --> contracts_Validation
     runner_Queue --> contracts_Interfaces
     runner_Registries --> contracts_Attributes

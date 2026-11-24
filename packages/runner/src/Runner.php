@@ -7,7 +7,6 @@ namespace Alama\Arazzo\Runner;
 use Alama\Arazzo\Contracts\Interfaces\OperationExecutorPluginInterface;
 use Alama\Arazzo\Contracts\Observability\TracerInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
-use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Contracts\Validation\ValidationResult;
 use Alama\Arazzo\Document\Document;
 use Alama\Arazzo\Document\DocumentInterface;
@@ -59,7 +58,7 @@ final readonly class Runner implements RunnerInterface
         array $inputs = [],
         ?ExecutionPolicy $policy = null,
     ): ExecutionResult {
-        $workflow = $this->findWorkflow($document, $workflowId);
+        $workflow = $document->findWorkflow($workflowId) ?? throw UnknownWorkflowException::forId($workflowId);
         $effectiveOptions = $policy !== null ? $this->options->withPolicy($policy) : $this->options;
 
         (new SourcePolicyResolver())->validate($document, $effectiveOptions->policy);
@@ -77,13 +76,13 @@ final readonly class Runner implements RunnerInterface
         $validatedInputs = $inputs;
 
         if ($workflowId !== null) {
-            $workflow = $this->findWorkflow($document, $workflowId);
+            $workflow = $document->findWorkflow($workflowId) ?? throw UnknownWorkflowException::forId($workflowId);
             $inputsSchema = $workflow->inputs;
             if (is_array($inputsSchema) && $inputsSchema !== []) {
                 $inputResult = $this->document->validateInputs($document, $workflow->workflowId, $inputs);
                 $errors = [...$errors, ...$inputResult->errors];
                 $warnings = [...$warnings, ...$inputResult->warnings];
-                if ($inputResult->errors === [] && $inputResult->inputs !== []) {
+                if ($inputResult->isValid() && $inputResult->inputs !== []) {
                     $validatedInputs = $inputResult->inputs;
                 }
             }
@@ -132,16 +131,5 @@ final readonly class Runner implements RunnerInterface
     public function withClock(ClockInterface $clock): static
     {
         return new self($this->document, $this->evaluationEngine, $this->options->withClock($clock));
-    }
-
-    private function findWorkflow(ArazzoDocument $document, string $workflowId): Workflow
-    {
-        foreach ($document->workflows as $candidate) {
-            if ($candidate->workflowId === $workflowId) {
-                return $candidate;
-            }
-        }
-
-        throw UnknownWorkflowException::forId($workflowId);
     }
 }

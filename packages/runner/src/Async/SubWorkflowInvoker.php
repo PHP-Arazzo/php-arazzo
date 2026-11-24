@@ -37,13 +37,7 @@ class SubWorkflowInvoker
             throw ExecutionException::subWorkflowNotFound($action->workflowId);
         }
 
-        $target = null;
-        foreach ($document->workflows as $w) {
-            if ($w->workflowId === $action->workflowId) {
-                $target = $w;
-                break;
-            }
-        }
+        $target = $document->findWorkflow($action->workflowId);
 
         if ($target === null) {
             throw ExecutionException::subWorkflowNotFound($action->workflowId);

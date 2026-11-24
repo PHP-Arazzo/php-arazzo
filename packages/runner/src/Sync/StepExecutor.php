@@ -58,7 +58,7 @@ class StepExecutor
         $plugin = $registry->resolve($step, $document, $this->localExecutors);
 
         if ($plugin === null) {
-            throw new ExecutionException("No OperationExecutorPluginInterface supports step '{$step->stepId}'. Register a protocol executor plugin (e.g. HttpProtocol::create()->executor()).");
+            throw ExecutionException::noSupportingExecutor($step->stepId);
         }
 
         $sourcePolicy = (new SourcePolicyResolver())->resolveForStep($step, $document, $this->policy());
@@ -67,7 +67,7 @@ class StepExecutor
         $outcome = $plugin->execute($step, $scopedContext, $document, $context->getExecutionId());
 
         if ($outcome->suspended) {
-            throw new ExecutionException("Step '{$step->stepId}' suspended, which the synchronous runner cannot resume.");
+            throw ExecutionException::suspendedInSyncMode($step->stepId);
         }
 
         // Keep source credentials strictly scoped to the single plugin call.

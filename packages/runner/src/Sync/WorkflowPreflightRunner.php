@@ -36,7 +36,7 @@ final readonly class WorkflowPreflightRunner
         $inputsSchema = $workflow->inputs;
         if (is_array($inputsSchema) && $inputsSchema !== [] && $this->document !== null) {
             $inputResult = $this->document->validateInputs($document, $workflow->workflowId, $inputs);
-            if ($inputResult->errors !== []) {
+            if (!$inputResult->isValid()) {
                 $errors = [...$errors, ...$inputResult->errors];
                 $warnings = [...$warnings, ...$inputResult->warnings];
             } elseif ($inputResult->inputs !== []) {
@@ -51,11 +51,7 @@ final readonly class WorkflowPreflightRunner
         }
 
         if ($errors !== []) {
-            $result = new ValidationResult($document, $errors, $warnings);
-            throw new PreflightFailureException(
-                'Preflight validation failed with '.count($result->errors).' error(s).',
-                $result,
-            );
+            throw PreflightFailureException::fromResult(new ValidationResult($document, $errors, $warnings));
         }
 
         return $inputs;

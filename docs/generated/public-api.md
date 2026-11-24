@@ -979,6 +979,10 @@ this file on a commit is a public API change — review it deliberately.
 
 ### `Alama\Arazzo\Runner\Data`
 
+#### `ExecuteStepJob` class
+- `public function __construct(public Step $step, public WorkflowContext $context)`
+- `public function stepId(): string`
+
 #### `ExecutionResult` class
 - `public function __construct(public string $workflowId, public ExecutionStatus $status, public array $outputs = [], public array $stepResults = [], public int $stepsSpent = 0, public array $workflowCallStack = [])`
 - `public function isFailed(): bool`
@@ -986,8 +990,23 @@ this file on a commit is a public API change — review it deliberately.
 
 #### `StepResult` class
 - `public function __construct(public string $stepId, public bool $success, public array $outputs = [], public ?Throwable $error = null)`
+- `public function toArray(): array`
 
 ### `Alama\Arazzo\Runner\Exceptions`
+
+#### `ExecutionError` class
+- `public static function ambiguousActionTarget(string $actionName): self`
+- `public static function dependencyFailed(string $dependencyId): self`
+- `public static function stateMissing(string $executionId): self`
+- `public static function stepFailed(string $stepId): self`
+- `public static function workflowEndedInFailure(string $workflowId, string $stepId): self`
+- `public static function workflowFailedAtStep(string $workflowId, string $stepId): self`
+
+#### `GotoTargetNotFoundException` class
+- `public static function unknownStep(string $stepId, string $workflowId): self`
+- `public static function unknownWorkflow(string $actionName, string $workflowId): self`
+- `public static function unresolvableReusable(string $reference): self`
+- `public static function wrongReusableTarget(string $reference, string $type): self`
 
 #### `InvalidSourcePolicyException` class
 - `public static function arazzoSourceNotAddressable(string $key): self`
@@ -995,11 +1014,28 @@ this file on a commit is a public API change — review it deliberately.
 - `public static function duplicateSourceUrl(string $firstKey, string $secondKey, string $url): self`
 - `public static function unknownSource(string $key): self`
 
+#### `OperationResolutionException` class
+- `public static function unsupportedStep(string $stepId): self`
+
 #### `PreflightFailureException` class
 - `public function __construct(string $message, public readonly ValidationResult $result, ?Throwable $previous = null)`
+- `public static function fromResult(ValidationResult $result): self`
+
+#### `StepBudgetExceededException` class
+- `public static function exceeded(string $executionId, int $maxSteps): self`
 
 #### `UnknownWorkflowException` class
 - `public static function forId(string $workflowId): self`
+
+#### `UnsupportedStepException` class
+- `public static function noSupportingExecutor(string $stepId): self`
+- `public static function unknownWorkflow(string $workflowId): self`
+
+#### `WorkflowCycleException` class
+- `public static function detected(string $workflowId): self`
+
+#### `WorkflowDepthExceededException` class
+- `public static function exceeded(int $maxDepth): self`
 
 ### `Alama\Arazzo\Runner\Policy`
 

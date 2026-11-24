@@ -78,19 +78,19 @@ targets. Regenerated before every commit.
 | `protocol-soap:Resolver` | 1 | 135 | 0 | 1 | 1.00 |  |
 | `protocol-soap:Transfer` | 2 | 225 | 2 | 1 | 0.33 |  |
 | `protocol-soap:Validation` | 1 | 138 | 0 | 4 | 1.00 |  |
-| `runner:Async` | 7 | 1561 | 1 | 22 | 0.96 |  |
-| `runner:Data` | 3 | 120 | 4 | 3 | 0.43 |  |
+| `runner:Async` | 6 | 1464 | 1 | 22 | 0.96 |  |
+| `runner:Data` | 3 | 135 | 4 | 3 | 0.43 |  |
 | `runner:Events` | 9 | 178 | 2 | 0 | 0.00 |  |
-| `runner:Exceptions` | 9 | 125 | 4 | 3 | 0.43 |  |
-| `runner:Execution` | 12 | 667 | 3 | 18 | 0.86 | ⚠ unstable hub |
-| `runner:Plugins` | 1 | 85 | 2 | 9 | 0.82 |  |
+| `runner:Exceptions` | 11 | 272 | 5 | 3 | 0.38 |  |
+| `runner:Execution` | 12 | 661 | 3 | 18 | 0.86 | ⚠ unstable hub |
+| `runner:Plugins` | 1 | 79 | 2 | 9 | 0.82 |  |
 | `runner:Policy` | 2 | 122 | 5 | 2 | 0.29 |  |
-| `runner:Preflight` | 2 | 154 | 4 | 3 | 0.43 |  |
+| `runner:Preflight` | 2 | 154 | 4 | 4 | 0.50 |  |
 | `runner:Queue` | 1 | 24 | 2 | 1 | 0.33 |  |
 | `runner:Registries` | 1 | 150 | 2 | 3 | 0.60 |  |
 | `runner:Store` | 2 | 136 | 2 | 3 | 0.60 |  |
-| `runner:Sync` | 7 | 1181 | 4 | 21 | 0.84 | ⚠ unstable hub |
-| `(runner root)` | 6 | 573 | 5 | 15 | 0.75 |  |
+| `runner:Sync` | 7 | 1139 | 4 | 21 | 0.84 | ⚠ unstable hub |
+| `(runner root)` | 6 | 561 | 5 | 15 | 0.75 |  |
 | `sources:Exceptions` | 8 | 212 | 5 | 0 | 0.00 |  |
 | `sources:Normalizer` | 6 | 492 | 2 | 2 | 0.50 |  |
 | `sources:Plugins` | 1 | 146 | 0 | 6 | 1.00 |  |
@@ -111,8 +111,8 @@ Total cross-module edges: **1702**
 | `document:Plugins` → `contracts:Attributes` | 50 |
 | `document:Plugins` → `contracts:Interfaces` | 50 |
 | `expression:Plugins` → `contracts:Validation` | 32 |
-| `runner:Async` → `contracts:Spec` | 32 |
 | `runner:Sync` → `contracts:Spec` | 30 |
+| `runner:Async` → `contracts:Spec` | 29 |
 | `expression:Plugins` → `contracts:Spec` | 27 |
 | `(evaluation root)` → `contracts:Spec` | 26 |
 | `expression:Internal` → `expression:Ast` | 23 |

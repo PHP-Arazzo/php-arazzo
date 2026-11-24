@@ -45,6 +45,7 @@ classDiagram
     class E_NotImplementedException["NotImplementedException<br/><small>contracts:Support</small>"]:::domain
     class E_ObjectDeserializationForbiddenException["ObjectDeserializationForbiddenException<br/><small>document:Parser</small>"]:::domain
     class E_OpenApiResolutionException["OpenApiResolutionException<br/><small>protocol-http:Exceptions</small>"]:::domain
+    class E_OperationResolutionException["OperationResolutionException<br/><small>runner:Exceptions</small>"]:::domain
     class E_ParameterResolutionException["ParameterResolutionException<br/><small>engine:Exceptions</small>"]:::domain
     class E_ParserException["ParserException<br/><small>document:Parser</small>"]:::domain
     class E_PluginInstantiationException["PluginInstantiationException<br/><small>contracts:Exceptions</small>"]:::domain
@@ -71,6 +72,7 @@ classDiagram
     class E_UnresolvableReusableReferenceException["UnresolvableReusableReferenceException<br/><small>contracts:Exceptions</small>"]:::domain
     class E_UnsupportedSerializationStyleException["UnsupportedSerializationStyleException<br/><small>document:Parser</small>"]:::domain
     class E_UnsupportedSourceVersionException["UnsupportedSourceVersionException<br/><small>protocol-soap:Exceptions</small>"]:::domain
+    class E_UnsupportedStepException["UnsupportedStepException<br/><small>runner:Exceptions</small>"]:::domain
     class E_WorkflowCycleException["WorkflowCycleException<br/><small>runner:Exceptions</small>"]:::domain
     class E_WorkflowDepthExceededException["WorkflowDepthExceededException<br/><small>runner:Exceptions</small>"]:::domain
     class E_WsdlResolutionException["WsdlResolutionException<br/><small>protocol-soap:Exceptions</small>"]:::domain
@@ -106,6 +108,7 @@ classDiagram
     E_ArazzoException <|-- E_NotImplementedException
     E_DecodeLimitException <|-- E_ObjectDeserializationForbiddenException
     E_EngineException <|-- E_OpenApiResolutionException
+    E_RunnerException <|-- E_OperationResolutionException
     E_EngineException <|-- E_ParameterResolutionException
     E_ArazzoException <|-- E_ParserException
     E_ArazzoException <|-- E_PluginInstantiationException
@@ -132,6 +135,7 @@ classDiagram
     E_ArazzoException <|-- E_UnresolvableReusableReferenceException
     E_RuntimeException <|-- E_UnsupportedSerializationStyleException
     E_RuntimeException <|-- E_UnsupportedSourceVersionException
+    E_LogicException <|-- E_UnsupportedStepException
     E_RunnerException <|-- E_WorkflowCycleException
     E_RunnerException <|-- E_WorkflowDepthExceededException
     E_EngineException <|-- E_WsdlResolutionException
@@ -173,6 +177,7 @@ classDiagram
 | `NotImplementedException` | `ArazzoException` | contracts:Support |
 | `ObjectDeserializationForbiddenException` | `DecodeLimitException` | document:Parser |
 | `OpenApiResolutionException` | `EngineException` | protocol-http:Exceptions |
+| `OperationResolutionException` | `RunnerException` | runner:Exceptions |
 | `ParameterResolutionException` | `EngineException` | engine:Exceptions |
 | `ParserException` | `ArazzoException` | document:Parser |
 | `PluginInstantiationException` | `ArazzoException` | contracts:Exceptions |
@@ -199,6 +204,7 @@ classDiagram
 | `UnresolvableReusableReferenceException` | `ArazzoException` | contracts:Exceptions |
 | `UnsupportedSerializationStyleException` | `RuntimeException` | document:Parser |
 | `UnsupportedSourceVersionException` | `RuntimeException` | protocol-soap:Exceptions |
+| `UnsupportedStepException` | `LogicException` | runner:Exceptions |
 | `WorkflowCycleException` | `RunnerException` | runner:Exceptions |
 | `WorkflowDepthExceededException` | `RunnerException` | runner:Exceptions |
 | `WsdlResolutionException` | `EngineException` | protocol-soap:Exceptions |

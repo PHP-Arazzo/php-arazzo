@@ -86,16 +86,16 @@ flowchart LR
         S_protocol_soap_Plugins["protocol-soap:Plugins<br/><small>867 LOC</small>"]:::unknownDomain
         S_protocol_soap_Transfer["protocol-soap:Transfer<br/><small>227 LOC</small>"]:::unknownDomain
         S_protocol_soap_Validation["protocol-soap:Validation<br/><small>139 LOC</small>"]:::unknownDomain
-        S_runner_Async["runner:Async<br/><small>1568 LOC</small>"]:::unknownDomain
-        S_runner_Data["runner:Data<br/><small>123 LOC</small>"]:::unknownDomain
-        S_runner_Exceptions["runner:Exceptions<br/><small>134 LOC</small>"]:::unknownDomain
-        S_runner_Execution["runner:Execution<br/><small>679 LOC</small>"]:::unknownDomain
-        S_runner_Plugins["runner:Plugins<br/><small>86 LOC</small>"]:::unknownDomain
+        S_runner_Async["runner:Async<br/><small>1470 LOC</small>"]:::unknownDomain
+        S_runner_Data["runner:Data<br/><small>138 LOC</small>"]:::unknownDomain
+        S_runner_Exceptions["runner:Exceptions<br/><small>283 LOC</small>"]:::unknownDomain
+        S_runner_Execution["runner:Execution<br/><small>673 LOC</small>"]:::unknownDomain
+        S_runner_Plugins["runner:Plugins<br/><small>80 LOC</small>"]:::unknownDomain
         S_runner_Policy["runner:Policy<br/><small>124 LOC</small>"]:::unknownDomain
         S_runner_Preflight["runner:Preflight<br/><small>156 LOC</small>"]:::unknownDomain
         S_runner_Registries["runner:Registries<br/><small>151 LOC</small>"]:::unknownDomain
         S_runner_Store["runner:Store<br/><small>138 LOC</small>"]:::unknownDomain
-        S_runner_Sync["runner:Sync<br/><small>1188 LOC</small>"]:::unknownDomain
+        S_runner_Sync["runner:Sync<br/><small>1146 LOC</small>"]:::unknownDomain
         S_sources_Exceptions["sources:Exceptions<br/><small>220 LOC</small>"]:::unknownDomain
         S_sources_Normalizer["sources:Normalizer<br/><small>498 LOC</small>"]:::unknownDomain
         S_sources_Plugins["sources:Plugins<br/><small>147 LOC</small>"]:::unknownDomain
@@ -113,7 +113,7 @@ flowchart LR
 | Core domain | 1 | 1,495 | 0 | 4% |
 | Supporting | 8 | 5,458 | 0 | 15% |
 | Generic subdomain | 6 | 1,678 | 0 | 5% |
-| Unclassified | 65 | 26,598 | 0 | 76% |
+| Unclassified | 65 | 26,610 | 0 | 76% |
 
 **Unclassified modules** — classify them in `SUBDOMAINS` or delete them:
 - `contracts:Attributes`

@@ -16,15 +16,7 @@ Regenerated before every commit.
 
 | Exception | Raised by |
 |---|---|
-| **ExecutionError** | `AsyncExecutionGraphAssembler` <small>runner:Async</small>, `WorkflowEngine` <small>runner:Sync</small> |
-| **ExecutionException** | `StepExecutionWorker` <small>runner:Async</small>, `StepExecutor` <small>runner:Sync</small> |
-| **GotoTargetNotFoundException** | `WorkflowEngine` <small>runner:Sync</small>, `WorkflowNavigator` <small>runner:Sync</small> |
-| **LogicException** | `StepExecutionWorker` <small>runner:Async</small> |
-| **PreflightFailureException** | `AsyncExecutionGraphAssembler` <small>runner:Async</small>, `StepExecutionWorker` <small>runner:Async</small>, `WorkflowPreflightRunner` <small>runner:Sync</small> |
-| **RuntimeException** | `CliRunner` <small>cli:Console</small>, `OpenAiClient` <small>cli:Generator</small>, `OperationResolvers` <small>runner:Preflight</small> |
-| **StepBudgetExceededException** | `WorkflowEngine` <small>runner:Sync</small> |
-| **WorkflowCycleException** | `WorkflowNavigator` <small>runner:Sync</small> |
-| **WorkflowDepthExceededException** | `WorkflowNavigator` <small>runner:Sync</small> |
+| **RuntimeException** | `CliRunner` <small>cli:Console</small>, `OpenAiClient` <small>cli:Generator</small> |
 | **ArazzoException** | _(never raised in src)_ |
 | **AsyncApiStepException** | _(never raised in src)_ |
 | **ConditionLexException** | _(never raised in src)_ |
@@ -35,7 +27,10 @@ Regenerated before every commit.
 | **DecodeLimitException** | _(never raised in src)_ |
 | **DefinitionHydrationException** | _(never raised in src)_ |
 | **EngineException** | _(never raised in src)_ |
+| **ExecutionError** | _(never raised in src)_ |
+| **ExecutionException** | _(never raised in src)_ |
 | **ExpressionSyntaxException** | _(never raised in src)_ |
+| **GotoTargetNotFoundException** | _(never raised in src)_ |
 | **InvalidFetchPolicyException** | _(never raised in src)_ |
 | **InvalidOpenApiSourceException** | _(never raised in src)_ |
 | **InvalidRetryPolicyException** | _(never raised in src)_ |
@@ -55,9 +50,11 @@ Regenerated before every commit.
 | **NotImplementedException** | _(never raised in src)_ |
 | **ObjectDeserializationForbiddenException** | _(never raised in src)_ |
 | **OpenApiResolutionException** | _(never raised in src)_ |
+| **OperationResolutionException** | _(never raised in src)_ |
 | **ParameterResolutionException** | _(never raised in src)_ |
 | **ParserException** | _(never raised in src)_ |
 | **PluginInstantiationException** | _(never raised in src)_ |
+| **PreflightFailureException** | _(never raised in src)_ |
 | **ProtoSyntaxException** | _(never raised in src)_ |
 | **ProtobufResolutionException** | _(never raised in src)_ |
 | **RegistryInitializationException** | _(never raised in src)_ |
@@ -72,6 +69,7 @@ Regenerated before every commit.
 | **SourceParseException** | _(never raised in src)_ |
 | **SourceResolutionException** | _(never raised in src)_ |
 | **StateStoreException** | _(never raised in src)_ |
+| **StepBudgetExceededException** | _(never raised in src)_ |
 | **TelemetrySetupException** | _(never raised in src)_ |
 | **TypeCastException** | _(never raised in src)_ |
 | **UnknownWorkflowException** | _(never raised in src)_ |
@@ -79,6 +77,9 @@ Regenerated before every commit.
 | **UnresolvableReusableReferenceException** | _(never raised in src)_ |
 | **UnsupportedSerializationStyleException** | _(never raised in src)_ |
 | **UnsupportedSourceVersionException** | _(never raised in src)_ |
+| **UnsupportedStepException** | _(never raised in src)_ |
+| **WorkflowCycleException** | _(never raised in src)_ |
+| **WorkflowDepthExceededException** | _(never raised in src)_ |
 | **WsdlResolutionException** | _(never raised in src)_ |
 
 ## Catch sites
@@ -120,9 +121,6 @@ Regenerated before every commit.
 
 | Guard | Class | Limit expression |
 |---|---|---|
-| throws **StepBudgetExceededException** | `WorkflowEngine` | — |
-| throws **WorkflowCycleException** | `WorkflowNavigator` | — |
-| throws **WorkflowDepthExceededException** | `WorkflowNavigator` | — |
 | const MAX_DEPTH | `InputSchemaResolver` | `16` |
 | const TERMINAL_STATES | `StepStateMachineEngine` | `[StepState::Completed, StepState::Failed, StepState::Cancelled]` |
 | prop max | `ConditionCache` | `256` |

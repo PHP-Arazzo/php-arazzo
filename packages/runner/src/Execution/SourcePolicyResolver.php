@@ -6,7 +6,6 @@ namespace Alama\Arazzo\Runner\Execution;
 
 use Alama\Arazzo\Contracts\Policy\SourcePolicy;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
-use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Runner\Exceptions\InvalidSourcePolicyException;
@@ -27,7 +26,6 @@ final class SourcePolicyResolver
             return;
         }
 
-        $byName = $this->indexSources($document);
         /** @var array<string, string> $seenUrls */
         $seenUrls = [];
 
@@ -36,12 +34,12 @@ final class SourcePolicyResolver
                 throw InvalidSourcePolicyException::dottedKeyReserved($key);
             }
 
-            $source = $byName[$key] ?? null;
+            $source = $document->findSource($key);
             if ($source === null) {
                 throw InvalidSourcePolicyException::unknownSource($key);
             }
 
-            if ($source->type === SourceType::Arazzo) {
+            if ($source->isArazzo()) {
                 throw InvalidSourcePolicyException::arazzoSourceNotAddressable($key);
             }
 
@@ -65,7 +63,10 @@ final class SourcePolicyResolver
 
     private function sourceNameForStep(Step $step, ArazzoDocument $document): ?string
     {
-        $apiSources = $this->apiSourceNames($document);
+        $apiSources = array_map(
+            static fn (SourceDescription $source): string => $source->name,
+            $document->nonArazzoSources(),
+        );
 
         if ($step->target->operationPath !== null && preg_match('/^\$sourceDescriptions\.([^.#\/]+)\./', $step->target->operationPath, $matches) === 1) {
             return in_array($matches[1], $apiSources, true) ? $matches[1] : null;
@@ -82,33 +83,5 @@ final class SourcePolicyResolver
         }
 
         return count($apiSources) === 1 ? $apiSources[0] : null;
-    }
-
-    /**
-     * @return array<string, SourceDescription>
-     */
-    private function indexSources(ArazzoDocument $document): array
-    {
-        $indexed = [];
-        foreach ($document->sourceDescriptions as $source) {
-            $indexed[$source->name] = $source;
-        }
-
-        return $indexed;
-    }
-
-    /**
-     * @return list<string>
-     */
-    private function apiSourceNames(ArazzoDocument $document): array
-    {
-        $names = [];
-        foreach ($document->sourceDescriptions as $source) {
-            if ($source->type !== SourceType::Arazzo) {
-                $names[] = $source->name;
-            }
-        }
-
-        return $names;
     }
 }

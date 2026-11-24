@@ -71,7 +71,7 @@ final class WorkflowEngine
             return Transition::suspend($state->withCurrentStep($step->stepId));
         }
         if ($state->stepsSpent >= $state->maxSteps) {
-            throw new StepBudgetExceededException("Execution '{$state->executionId}' exceeded its {$state->maxSteps}-step budget.");
+            throw StepBudgetExceededException::exceeded($state->executionId, $state->maxSteps);
         }
 
         $state = $this->recordAttemptOutcome($state, $step, $criteriaMet);
@@ -224,8 +224,8 @@ final class WorkflowEngine
         SuccessGotoAction|FailureGotoAction $action,
     ): Transition {
         $targetWorkflowId = $action->workflowId ?? $workflow->workflowId;
-        if ($this->navigator->findWorkflow($document, $targetWorkflowId) === null) {
-            throw new GotoTargetNotFoundException("Goto action '{$action->name}' references unknown workflowId '{$targetWorkflowId}'.");
+        if ($document->findWorkflow($targetWorkflowId) === null) {
+            throw GotoTargetNotFoundException::unknownWorkflow($action->name, $targetWorkflowId);
         }
         if ($action->stepId !== null) {
             $this->navigator->assertTargetExists($document, $targetWorkflowId, $action->stepId);
@@ -286,11 +286,7 @@ final class WorkflowEngine
             return;
         }
         if ($action->stepId !== null && $action->workflowId !== null) {
-            throw new ExecutionError(
-                "Action '{$action->name}' declares both stepId and workflowId; they are mutually exclusive.",
-                '',
-                'ambiguous-target',
-            );
+            throw ExecutionError::ambiguousActionTarget($action->name);
         }
     }
 

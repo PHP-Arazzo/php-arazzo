@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Runner\Execution\Data;
 
+use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Contracts\State\ExecutionState;
 use Alama\Arazzo\Runner\Execution\Enum\TransitionType;
 use Alama\Arazzo\Runtime\State\Data\ExecutionContext;
@@ -55,5 +56,20 @@ final readonly class Transition
     public function isTerminal(): bool
     {
         return $this->type === TransitionType::End;
+    }
+
+    public function isSucceeded(): bool
+    {
+        return $this->status === 'succeeded';
+    }
+
+    public function isFailed(): bool
+    {
+        return $this->status === 'failed';
+    }
+
+    public function targetWorkflowId(Workflow $current): string
+    {
+        return $this->workflowId ?? $current->workflowId;
     }
 }

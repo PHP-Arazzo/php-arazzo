@@ -12,7 +12,6 @@ exceptions are omitted. Regenerated before every commit.
 ```mermaid
 flowchart TD
     subgraph G_Async["Async"]
-        Alama_Arazzo_Runner_Async_AsyncContextLookup["AsyncContextLookup"]:::service
         Alama_Arazzo_Runner_Async_AsyncExecutionGraphAssembler["AsyncExecutionGraphAssembler"]:::entry
         Alama_Arazzo_Runner_Async_CorrelationResumer["CorrelationResumer"]:::service
         Alama_Arazzo_Runner_Async_StepExecutionWorker["StepExecutionWorker"]:::service
@@ -112,7 +111,6 @@ flowchart TD
     Alama_Arazzo_Runner_Async_StepExecutionWorker --> Alama_Arazzo_Runner_Preflight_Preflight
     Alama_Arazzo_Runner_Async_StepExecutionWorker --> Alama_Arazzo_Runner_Registries_OperationExecutorRegistry
     Alama_Arazzo_Runner_Async_StepExecutionWorker --> Alama_Arazzo_Runner_Sync_WorkflowEngine
-    Alama_Arazzo_Runner_Async_StepOutcomeHandler --> Alama_Arazzo_Runner_Async_AsyncContextLookup
     Alama_Arazzo_Runner_Async_StepOutcomeHandler --> Alama_Arazzo_Runner_Async_SubWorkflowInvoker
     Alama_Arazzo_Runner_Async_StepOutcomeHandler --> Alama_Arazzo_Runner_Data_ExecuteStepJob
     Alama_Arazzo_Runner_Async_StepOutcomeHandler --> Alama_Arazzo_Runner_Events_CorrelationPendingEvent
@@ -172,11 +170,10 @@ flowchart TD
 
 | Service | Package | Depends on | Used by | Dispatches |
 |---|---|---|---|---|
-| **AsyncContextLookup** | runner | — | `StepOutcomeHandler` | — |
 | **AsyncExecutionGraphAssembler** | runner | `CorrelationResumer`, `StepExecutionWorker`, `StepOutcomeHandler`, `SubWorkflowInvoker`, `ExecuteStepJob`, `AsyncConfig`, `RunControlFlow`, `SourcePolicyResolver`, `SubWorkflowStepExecutor`, `OperationResolvers`, `Preflight`, `StepExecutor`, `WorkflowEngine`, `WorkflowExecutor` | — | — |
 | **CorrelationResumer** | runner | `StepOutcomeHandler`, `CorrelationResumedEvent`, `ObservabilityContext`, `EvaluationOutputExtractor` | `AsyncExecutionGraphAssembler` | `CorrelationResumedEvent` |
 | **StepExecutionWorker** | runner | `WorkerStateSynchronizer`, `ExecuteStepJob`, `CorrelationPendingEvent`, `RunCompletedEvent`, `RunFailedEvent`, `StepExecutedEvent`, `StepFailedEvent`, `StepStartedEvent`, `SourcePolicyResolver`, `ExecutionPolicy`, `Preflight`, `OperationExecutorRegistry`, `WorkflowEngine` | `AsyncExecutionGraphAssembler` | `CorrelationPendingEvent`, `RunCompletedEvent`, `RunFailedEvent`, `StepExecutedEvent`, `StepFailedEvent`, `StepStartedEvent` |
-| **StepOutcomeHandler** | runner | `AsyncContextLookup`, `SubWorkflowInvoker`, `ExecuteStepJob`, `CorrelationPendingEvent`, `RunCompletedEvent`, `RunFailedEvent`, `StepRetriedEvent`, `ExecutionPolicy`, `WorkflowEngine` | `AsyncExecutionGraphAssembler`, `CorrelationResumer` | `CorrelationPendingEvent`, `RunCompletedEvent`, `RunFailedEvent`, `StepRetriedEvent` |
+| **StepOutcomeHandler** | runner | `SubWorkflowInvoker`, `ExecuteStepJob`, `CorrelationPendingEvent`, `RunCompletedEvent`, `RunFailedEvent`, `StepRetriedEvent`, `ExecutionPolicy`, `WorkflowEngine` | `AsyncExecutionGraphAssembler`, `CorrelationResumer` | `CorrelationPendingEvent`, `RunCompletedEvent`, `RunFailedEvent`, `StepRetriedEvent` |
 | **SubWorkflowInvoker** | runner | `SubWorkflowResult`, `WorkflowExecutor` | `AsyncExecutionGraphAssembler`, `StepOutcomeHandler` | — |
 | **WorkerStateSynchronizer** | runner | — | `StepExecutionWorker` | — |
 | **ExecuteStepJob** | runner | — | `AsyncExecutionGraphAssembler`, `StepExecutionWorker`, `StepOutcomeHandler` | — |
