@@ -56,7 +56,7 @@ document-Parser,contracts-Support,2
 document-Plugins,contracts-Attributes,50
 document-Plugins,contracts-Dependency,1
 document-Plugins,contracts-Interfaces,50
-document-Plugins,contracts-Spec,99
+document-Plugins,contracts-Spec,98
 document-Plugins,contracts-Support,1
 document-Plugins,contracts-Validation,102
 document-Plugins,document-Validator,3

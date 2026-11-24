@@ -60,13 +60,7 @@ final readonly class Validator
     {
         $collector = new ErrorCollector();
 
-        $workflow = null;
-        foreach ($document->workflows as $candidate) {
-            if ($candidate->workflowId === $workflowId) {
-                $workflow = $candidate;
-                break;
-            }
-        }
+        $workflow = $document->findWorkflow($workflowId);
 
         if ($workflow === null) {
             return new ValidationResult($document, [

@@ -28,7 +28,7 @@ final class NativeJsonDecoder implements DecoderInterface
     {
         $byteLength = strlen($source);
         if ($byteLength > $this->policy->maxBytes) {
-            throw new MaxBytesExceededException($byteLength, $this->policy->maxBytes);
+            throw MaxBytesExceededException::exceeded($byteLength, $this->policy->maxBytes);
         }
 
         $depth = max(1, $this->policy->maxDepth);
@@ -37,9 +37,9 @@ final class NativeJsonDecoder implements DecoderInterface
             $data = json_decode($source, true, $depth, JSON_THROW_ON_ERROR);
         } catch (JsonException $e) {
             if ($e->getCode() === JSON_ERROR_DEPTH || str_contains($e->getMessage(), 'depth')) {
-                throw new MaxDepthExceededException($this->policy->maxDepth + 1, $this->policy->maxDepth, previous: $e);
+                throw MaxDepthExceededException::exceeded($this->policy->maxDepth + 1, $this->policy->maxDepth, $e);
             }
-            throw new DecodeException($e->getMessage(), 0, $e);
+            throw DecodeException::fromThrowable($e);
         }
 
         $this->assertNodes($data);
@@ -55,7 +55,7 @@ final class NativeJsonDecoder implements DecoderInterface
         $traverse = function (mixed $node) use (&$traverse, &$nodeCount, $maxNodes): void {
             $nodeCount++;
             if ($nodeCount > $maxNodes) {
-                throw new MaxNodesExceededException($nodeCount, $maxNodes);
+                throw MaxNodesExceededException::exceeded($nodeCount, $maxNodes);
             }
 
             if (is_array($node)) {

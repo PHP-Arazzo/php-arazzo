@@ -25,4 +25,9 @@ final class MaxDepthExceededException extends DecodeLimitException
             previous: $previous,
         );
     }
+
+    public static function exceeded(int $actualDepth, int $maxDepth, ?Throwable $previous = null): self
+    {
+        return new self($actualDepth, $maxDepth, previous: $previous);
+    }
 }

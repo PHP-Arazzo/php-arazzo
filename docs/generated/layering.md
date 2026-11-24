@@ -552,7 +552,7 @@ flowchart TB
 | `cli` | `protocol-http` | 1 |
 | `cli` | `runner` | 13 |
 | `cli` | `sources` | 3 |
-| `document` | `contracts` | 397 |
+| `document` | `contracts` | 396 |
 | `engine` | `contracts` | 51 |
 | `engine` | `document` | 1 |
 | `engine` | `evaluation` | 1 |

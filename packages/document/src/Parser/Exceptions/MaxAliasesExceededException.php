@@ -25,4 +25,9 @@ final class MaxAliasesExceededException extends DecodeLimitException
             previous: $previous,
         );
     }
+
+    public static function exceeded(int $actualAliases, int $maxAliases): self
+    {
+        return new self($actualAliases, $maxAliases);
+    }
 }

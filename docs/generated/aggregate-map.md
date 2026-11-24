@@ -37,6 +37,7 @@ Where mutable state lives, and which of it crosses process boundaries:
 | `WorkflowContextHydrator` | contracts | `State` | `hydrate` |
 | `WorkflowDataMap` | contracts | `State` | `hydrate` |
 | `DecoderRegistry` | document | `Parser` | `hydrate` |
+| `DecodeException` | document | `Parser/Exceptions` | `hydrate` |
 | `ParameterSerializer` | engine | `Execution` | `serialize` |
 | `ExecutionContext` | engine | `Runtime/State/Data` | `toArray`, `hydrate` |
 | `CliRunResult` | cli | `Console/Cli` | `hydrate` |
@@ -50,5 +51,6 @@ Mutable types that serialize themselves or are carried by queue jobs — each ne
 - `WorkflowContextHydrator` <small>contracts · `hydrate`</small>
 - `WorkflowDataMap` <small>contracts · `hydrate`</small>
 - `DecoderRegistry` <small>document · `hydrate`</small>
+- `DecodeException` <small>document · `hydrate`</small>
 - `ParameterSerializer` <small>engine · `serialize`</small>
 - `ExecutionContext` <small>engine · `toArray`, `hydrate`</small>

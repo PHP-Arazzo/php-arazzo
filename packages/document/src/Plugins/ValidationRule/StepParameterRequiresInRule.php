@@ -24,7 +24,7 @@ final class StepParameterRequiresInRule implements ValidationRuleInterface
             foreach ($w->steps as $si => $s) {
                 // Only HTTP operation steps require `in`; workflow steps and
                 // workflow-level parameters may pass values without it.
-                if ($s->target->operationId === null && $s->target->operationPath === null) {
+                if (!$s->isHttpOperation()) {
                     continue;
                 }
 
