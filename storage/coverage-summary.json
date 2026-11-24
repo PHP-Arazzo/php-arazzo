@@ -1,1 +1,115 @@
-{"package":"all","error":"coverage-report-all\/packages\/ not found \u2014 run make coverage first"}
+{
+    "package": "all",
+    "total": {
+        "lines_percent": 0.08,
+        "lines_covered": 8,
+        "lines_total": 9543,
+        "methods_percent": 0.36,
+        "methods_covered": 7,
+        "methods_total": 1955,
+        "classes_percent": 0,
+        "classes_covered": 0,
+        "classes_total": 405
+    },
+    "packages": {
+        "cli": {
+            "lines_percent": 0,
+            "lines_covered": 0,
+            "lines_total": 402,
+            "methods_percent": 0,
+            "methods_covered": 0,
+            "methods_total": 60,
+            "classes_percent": 0,
+            "classes_covered": 0,
+            "classes_total": 17,
+            "report": "coverage-report-all/packages/cli/index.html"
+        },
+        "contracts": {
+            "lines_percent": 0.15,
+            "lines_covered": 2,
+            "lines_total": 1340,
+            "methods_percent": 0.21,
+            "methods_covered": 1,
+            "methods_total": 476,
+            "classes_percent": 0,
+            "classes_covered": 0,
+            "classes_total": 88,
+            "report": "coverage-report-all/packages/contracts/index.html"
+        },
+        "document": {
+            "lines_percent": 0.05,
+            "lines_covered": 1,
+            "lines_total": 2074,
+            "methods_percent": 0.32,
+            "methods_covered": 1,
+            "methods_total": 316,
+            "classes_percent": 0,
+            "classes_covered": 0,
+            "classes_total": 88,
+            "report": "coverage-report-all/packages/document/index.html"
+        },
+        "engine": {
+            "lines_percent": 0,
+            "lines_covered": 0,
+            "lines_total": 1181,
+            "methods_percent": 0,
+            "methods_covered": 0,
+            "methods_total": 209,
+            "classes_percent": 0,
+            "classes_covered": 0,
+            "classes_total": 36,
+            "report": "coverage-report-all/packages/engine/index.html"
+        },
+        "evaluation": {
+            "lines_percent": 0.34,
+            "lines_covered": 2,
+            "lines_total": 588,
+            "methods_percent": 1.37,
+            "methods_covered": 2,
+            "methods_total": 146,
+            "classes_percent": 0,
+            "classes_covered": 0,
+            "classes_total": 30,
+            "report": "coverage-report-all/packages/evaluation/index.html"
+        },
+        "expression": {
+            "lines_percent": 0.06,
+            "lines_covered": 1,
+            "lines_total": 1785,
+            "methods_percent": 0.28,
+            "methods_covered": 1,
+            "methods_total": 355,
+            "classes_percent": 0,
+            "classes_covered": 0,
+            "classes_total": 69,
+            "report": "coverage-report-all/packages/expression/index.html"
+        },
+        "runner": {
+            "lines_percent": 0.06,
+            "lines_covered": 1,
+            "lines_total": 1589,
+            "methods_percent": 0.35,
+            "methods_covered": 1,
+            "methods_total": 285,
+            "classes_percent": 0,
+            "classes_covered": 0,
+            "classes_total": 57,
+            "report": "coverage-report-all/packages/runner/index.html"
+        },
+        "sources": {
+            "lines_percent": 0.17,
+            "lines_covered": 1,
+            "lines_total": 584,
+            "methods_percent": 0.93,
+            "methods_covered": 1,
+            "methods_total": 108,
+            "classes_percent": 0,
+            "classes_covered": 0,
+            "classes_total": 20,
+            "report": "coverage-report-all/packages/sources/index.html"
+        }
+    },
+    "report": "coverage-report-all/index.html",
+    "dashboard": "coverage-report-all/dashboard.html",
+    "laravel_report": "packages/laravel/coverage-report/index.html"
+}

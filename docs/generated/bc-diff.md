@@ -31,7 +31,7 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 | removed method | `DocumentInterface` | `preflightInputs` | `public function preflightInputs(ArazzoDocument $document, string $workflowId, array $inputs): ValidationResult` |
 | removed method | `DocumentInterface` | `resolveOperation` | `public function resolveOperation(Step $step, ArazzoDocument $document): ResolvedOperation` |
 
-**Additions (non-breaking):** 101
+**Additions (non-breaking):** 109
 
 | Kind | Class | Member |
 |---|---|---|
@@ -48,9 +48,12 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 | added method | `DocumentInterface` | `dispatch` |
 | added method | `DocumentInterface` | `dottedKeyReserved` |
 | added method | `DocumentInterface` | `duplicateSourceUrl` |
+| added method | `DocumentInterface` | `errorMessage` |
 | added method | `DocumentInterface` | `exceeded` |
+| added method | `DocumentInterface` | `executedStepIds` |
 | added method | `DocumentInterface` | `executor` |
 | added method | `DocumentInterface` | `extractContext` |
+| added method | `DocumentInterface` | `failedStep` |
 | added method | `DocumentInterface` | `find` |
 | added method | `DocumentInterface` | `findCorrelation` |
 | added method | `DocumentInterface` | `for` |
@@ -60,7 +63,10 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 | added method | `DocumentInterface` | `get` |
 | added method | `DocumentInterface` | `handleStep` |
 | added method | `DocumentInterface` | `has` |
+| added method | `DocumentInterface` | `hasError` |
+| added method | `DocumentInterface` | `hasOutput` |
 | added method | `DocumentInterface` | `hasPendingCorrelations` |
+| added method | `DocumentInterface` | `hasStepResult` |
 | added method | `DocumentInterface` | `injectContext` |
 | added method | `DocumentInterface` | `invalidBackoffMultiplier` |
 | added method | `DocumentInterface` | `isCancelled` |
@@ -77,6 +83,7 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 | added method | `DocumentInterface` | `maxWorkflowDepth` |
 | added method | `DocumentInterface` | `noSupportingExecutor` |
 | added method | `DocumentInterface` | `nonPositiveMaxAttempts` |
+| added method | `DocumentInterface` | `output` |
 | added method | `DocumentInterface` | `outputExtractor` |
 | added method | `DocumentInterface` | `register` |
 | added method | `DocumentInterface` | `reset` |
@@ -94,6 +101,7 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 | added method | `DocumentInterface` | `statusOf` |
 | added method | `DocumentInterface` | `stepFailed` |
 | added method | `DocumentInterface` | `stepId` |
+| added method | `DocumentInterface` | `stepResult` |
 | added method | `DocumentInterface` | `toArray` |
 | added method | `DocumentInterface` | `unknownSource` |
 | added method | `DocumentInterface` | `unknownStep` |
