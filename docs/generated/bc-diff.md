@@ -31,7 +31,7 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 | removed method | `DocumentInterface` | `preflightInputs` | `public function preflightInputs(ArazzoDocument $document, string $workflowId, array $inputs): ValidationResult` |
 | removed method | `DocumentInterface` | `resolveOperation` | `public function resolveOperation(Step $step, ArazzoDocument $document): ResolvedOperation` |
 
-**Additions (non-breaking):** 82
+**Additions (non-breaking):** 85
 
 | Kind | Class | Member |
 |---|---|---|
@@ -58,8 +58,11 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 | added method | `DocumentInterface` | `hasPendingCorrelations` |
 | added method | `DocumentInterface` | `injectContext` |
 | added method | `DocumentInterface` | `invalidBackoffMultiplier` |
+| added method | `DocumentInterface` | `isCancelled` |
 | added method | `DocumentInterface` | `isExhausted` |
 | added method | `DocumentInterface` | `isFailed` |
+| added method | `DocumentInterface` | `isGuardFailed` |
+| added method | `DocumentInterface` | `isTimedOut` |
 | added method | `DocumentInterface` | `loadFromJson` |
 | added method | `DocumentInterface` | `loadFromYaml` |
 | added method | `DocumentInterface` | `loadState` |

@@ -6,13 +6,11 @@ namespace Alama\Arazzo\Protocol\Soap\Execution;
 
 use Alama\Arazzo\Contracts\Interfaces\SourceFetcherInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
-use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
 use Alama\Arazzo\Contracts\Spec\ResolvedOperation;
-use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Document\OperationResolverInterface;
+use Alama\Arazzo\Protocol\Soap\Exceptions\WsdlResolutionException;
 use Alama\Arazzo\Protocol\Soap\Plugins\SourceNormalizer\WsdlSourceNormalizer;
-use RuntimeException;
 
 /**
  * OperationResolverInterface over a described WSDL source (plan F4.2).
@@ -55,13 +53,13 @@ final class WsdlOperationResolver implements OperationResolverInterface
     {
         $reference = self::operationReference($step, $document);
         if ($reference === null) {
-            throw new RuntimeException("Step '{$step->stepId}' does not reference a WSDL source.");
+            throw WsdlResolutionException::notWsdlStep($step->stepId);
         }
 
         [$sourceName, $operationReference] = $reference;
-        $source = self::findSource($document, $sourceName);
+        $source = $document->findSource($sourceName);
         if ($source === null) {
-            throw new RuntimeException("Source '{$sourceName}' not found in the document.");
+            throw WsdlResolutionException::sourceNotFound($sourceName);
         }
 
         $raw = $this->fetcher->fetch($source->url, getcwd() ?: '');
@@ -69,7 +67,7 @@ final class WsdlOperationResolver implements OperationResolverInterface
 
         $resolved = $index[$operationReference] ?? null;
         if ($resolved === null) {
-            throw new RuntimeException("WSDL operation '{$operationReference}' not found in source '{$sourceName}'.");
+            throw WsdlResolutionException::operationNotFound($operationReference, $sourceName);
         }
 
         return $resolved;
@@ -84,7 +82,7 @@ final class WsdlOperationResolver implements OperationResolverInterface
      */
     public static function operationReference(Step $step, ArazzoDocument $document): ?array
     {
-        if ($step->target->action !== null) {
+        if ($step->hasAction()) {
             return null;
         }
 
@@ -107,10 +105,7 @@ final class WsdlOperationResolver implements OperationResolverInterface
             $sourceName = $matches[1];
             $reference = $matches[2];
         } else {
-            $nonArazzo = array_values(array_filter(
-                $document->sourceDescriptions,
-                static fn (SourceDescription $source): bool => $source->type !== SourceType::Arazzo,
-            ));
+            $nonArazzo = $document->nonArazzoSources();
             if (count($nonArazzo) !== 1) {
                 return null;
             }
@@ -119,19 +114,8 @@ final class WsdlOperationResolver implements OperationResolverInterface
             $reference = $operationReference;
         }
 
-        $source = self::findSource($document, $sourceName);
+        $source = $document->findSource($sourceName);
 
-        return $source !== null && $source->type === SourceType::Wsdl ? [$sourceName, $reference] : null;
-    }
-
-    private static function findSource(ArazzoDocument $document, string $sourceName): ?SourceDescription
-    {
-        foreach ($document->sourceDescriptions as $candidate) {
-            if ($candidate->name === $sourceName) {
-                return $candidate;
-            }
-        }
-
-        return null;
+        return $source !== null && $source->isWsdl() ? [$sourceName, $reference] : null;
     }
 }

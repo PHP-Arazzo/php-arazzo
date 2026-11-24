@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Protocol\Soap\Plugins\SourceNormalizer;
 
+use Alama\Arazzo\Protocol\Soap\Exceptions\InvalidWsdlDocumentException;
 use DOMDocument;
 use DOMElement;
 use DOMNode;
 use DOMXPath;
-use InvalidArgumentException;
 
 /**
  * Low-level WSDL DOM loader, namespace-aware element traversal, and inline
@@ -35,7 +35,7 @@ final class WsdlDomReader
         }
 
         if (!$loaded) {
-            throw new InvalidArgumentException('Failed to parse source content as XML.');
+            throw InvalidWsdlDocumentException::invalidXml();
         }
 
         return $dom;

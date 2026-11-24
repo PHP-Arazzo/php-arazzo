@@ -375,13 +375,14 @@ flowchart TB
     M_protocol_rpc_Transfer --> M_contracts_Interfaces
     M_protocol_rpc_Transfer --> M_contracts_Spec
     M_protocol_rpc_Transfer --> M_protocol_rpc_Protocol
+    M_protocol_soap_Exceptions --> M_engine_Exceptions
     M_protocol_soap_Execution --> M_contracts_Interfaces
     M_protocol_soap_Execution --> M_contracts_Spec
     M_protocol_soap_Execution --> M_contracts_State
     M_protocol_soap_Execution --> M_document__
-    M_protocol_soap_Execution --> M_engine_Exceptions
     M_protocol_soap_Execution --> M_engine_Execution
     M_protocol_soap_Execution --> M_evaluation__
+    M_protocol_soap_Execution --> M_protocol_soap_Exceptions
     M_protocol_soap_Execution --> M_protocol_soap_Plugins
     M_protocol_soap_Execution --> M_protocol_soap_Transfer
     M_protocol_soap_Plugins --> M_contracts_Attributes
@@ -392,8 +393,6 @@ flowchart TB
     M_protocol_soap_Plugins --> M_contracts_State
     M_protocol_soap_Plugins --> M_contracts_Validation
     M_protocol_soap_Plugins --> M_document__
-    M_protocol_soap_Plugins --> M_engine_Exceptions
-    M_protocol_soap_Plugins --> M_expression_Enum
     M_protocol_soap_Plugins --> M_expression_Exceptions
     M_protocol_soap_Plugins --> M_expression_Interfaces
     M_protocol_soap_Plugins --> M_protocol_soap_Exceptions
@@ -578,11 +577,11 @@ flowchart TB
 | `protocol-rpc` | `document` | 2 |
 | `protocol-rpc` | `engine` | 4 |
 | `protocol-rpc` | `evaluation` | 1 |
-| `protocol-soap` | `contracts` | 50 |
+| `protocol-soap` | `contracts` | 46 |
 | `protocol-soap` | `document` | 2 |
-| `protocol-soap` | `engine` | 3 |
+| `protocol-soap` | `engine` | 4 |
 | `protocol-soap` | `evaluation` | 1 |
-| `protocol-soap` | `expression` | 3 |
+| `protocol-soap` | `expression` | 2 |
 | `runner` | `contracts` | 180 |
 | `runner` | `document` | 14 |
 | `runner` | `engine` | 11 |

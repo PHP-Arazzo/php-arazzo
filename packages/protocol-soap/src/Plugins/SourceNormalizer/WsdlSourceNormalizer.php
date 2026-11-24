@@ -11,10 +11,10 @@ use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
 use Alama\Arazzo\Contracts\Spec\NormalizedOpenApiOperation;
 use Alama\Arazzo\Contracts\Spec\ResolvedOperation;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
+use Alama\Arazzo\Protocol\Soap\Exceptions\InvalidWsdlDocumentException;
 use Alama\Arazzo\Protocol\Soap\Exceptions\UnsupportedSourceVersionException;
 use DOMDocument;
 use DOMElement;
-use InvalidArgumentException;
 
 /**
  * Turns a described WSDL 1.1 source + raw content into a ResolvedOperation index.
@@ -75,7 +75,7 @@ final class WsdlSourceNormalizer implements SourceNormalizerInterface
         }
 
         if ($root->namespaceURI !== self::WSDL_NS || $root->localName !== 'definitions') {
-            throw new InvalidArgumentException('Source content is not a WSDL 1.1 document.');
+            throw InvalidWsdlDocumentException::notWsdl11();
         }
 
         return $this->buildIndex($dom, $root, $source);

@@ -17,13 +17,12 @@ Regenerated before every commit.
 | Exception | Raised by |
 |---|---|
 | **ExecutionError** | `AsyncExecutionGraphAssembler` <small>runner:Async</small>, `WorkflowEngine` <small>runner:Sync</small> |
-| **ExecutionException** | `RpcRequestBuilder` <small>protocol-rpc:Execution</small>, `RpcOperationExecutor` <small>protocol-rpc:Plugins</small>, `SoapRequestBuilder` <small>protocol-soap:Execution</small>, `SoapOperationExecutor` <small>protocol-soap:Plugins</small>, `StepExecutionWorker` <small>runner:Async</small>, `StepExecutor` <small>runner:Sync</small> |
+| **ExecutionException** | `RpcRequestBuilder` <small>protocol-rpc:Execution</small>, `RpcOperationExecutor` <small>protocol-rpc:Plugins</small>, `StepExecutionWorker` <small>runner:Async</small>, `StepExecutor` <small>runner:Sync</small> |
 | **GotoTargetNotFoundException** | `WorkflowEngine` <small>runner:Sync</small>, `WorkflowNavigator` <small>runner:Sync</small> |
-| **InvalidArgumentException** | `ProtoParser` <small>protocol-rpc:Normalizer</small>, `ProtoTokenCursor` <small>protocol-rpc:Normalizer</small>, `WsdlDomReader` <small>protocol-soap:Plugins</small>, `WsdlSourceNormalizer` <small>protocol-soap:Plugins</small> |
+| **InvalidArgumentException** | `ProtoParser` <small>protocol-rpc:Normalizer</small>, `ProtoTokenCursor` <small>protocol-rpc:Normalizer</small> |
 | **LogicException** | `StepExecutionWorker` <small>runner:Async</small> |
 | **PreflightFailureException** | `AsyncExecutionGraphAssembler` <small>runner:Async</small>, `StepExecutionWorker` <small>runner:Async</small>, `WorkflowPreflightRunner` <small>runner:Sync</small> |
-| **RuntimeException** | `CliRunner` <small>cli:Console</small>, `OpenAiClient` <small>cli:Generator</small>, `ProtobufOperationResolver` <small>protocol-rpc:Protocol</small>, `RpcMessageCodec` <small>protocol-rpc:Protocol</small>, `SoapEnvelope` <small>protocol-soap:Execution</small>, `WsdlOperationResolver` <small>protocol-soap:Execution</small>, `OperationResolvers` <small>runner:Preflight</small> |
-| **SchemaValidationException** | `XsdResponseValidator` <small>protocol-soap:Validation</small> |
+| **RuntimeException** | `CliRunner` <small>cli:Console</small>, `OpenAiClient` <small>cli:Generator</small>, `ProtobufOperationResolver` <small>protocol-rpc:Protocol</small>, `RpcMessageCodec` <small>protocol-rpc:Protocol</small>, `OperationResolvers` <small>runner:Preflight</small> |
 | **StepBudgetExceededException** | `WorkflowEngine` <small>runner:Sync</small> |
 | **WorkflowCycleException** | `WorkflowNavigator` <small>runner:Sync</small> |
 | **WorkflowDepthExceededException** | `WorkflowNavigator` <small>runner:Sync</small> |
@@ -46,6 +45,7 @@ Regenerated before every commit.
 | **InvalidSourceReferenceException** | _(never raised in src)_ |
 | **InvalidSpecVersionException** | _(never raised in src)_ |
 | **InvalidStepTargetException** | _(never raised in src)_ |
+| **InvalidWsdlDocumentException** | _(never raised in src)_ |
 | **JsonPathSyntaxException** | _(never raised in src)_ |
 | **LoaderException** | _(never raised in src)_ |
 | **LockException** | _(never raised in src)_ |
@@ -61,7 +61,10 @@ Regenerated before every commit.
 | **PluginInstantiationException** | _(never raised in src)_ |
 | **RegistryInitializationException** | _(never raised in src)_ |
 | **RunnerException** | _(never raised in src)_ |
+| **SchemaValidationException** | _(never raised in src)_ |
 | **SelectorEvaluationException** | _(never raised in src)_ |
+| **SoapEnvelopeException** | _(never raised in src)_ |
+| **SoapExecutionException** | _(never raised in src)_ |
 | **SourceFetchException** | _(never raised in src)_ |
 | **SourceParseException** | _(never raised in src)_ |
 | **SourceResolutionException** | _(never raised in src)_ |
@@ -73,6 +76,7 @@ Regenerated before every commit.
 | **UnresolvableReusableReferenceException** | _(never raised in src)_ |
 | **UnsupportedSerializationStyleException** | _(never raised in src)_ |
 | **UnsupportedSourceVersionException** | _(never raised in src)_ |
+| **WsdlResolutionException** | _(never raised in src)_ |
 
 ## Catch sites
 

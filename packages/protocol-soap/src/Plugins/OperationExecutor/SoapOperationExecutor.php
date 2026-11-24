@@ -17,7 +17,7 @@ use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Contracts\Spec\StepExecutionOutcome;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
 use Alama\Arazzo\Document\OperationResolverInterface;
-use Alama\Arazzo\Engine\Exceptions\ExecutionException;
+use Alama\Arazzo\Protocol\Soap\Exceptions\SoapExecutionException;
 use Alama\Arazzo\Protocol\Soap\Execution\SoapFaultMapper;
 use Alama\Arazzo\Protocol\Soap\Execution\SoapRequestBuilder;
 use Alama\Arazzo\Protocol\Soap\Transfer\SoapResponseTransfer;
@@ -95,7 +95,7 @@ final class SoapOperationExecutor implements OperationExecutorPluginInterface
 
     public function supports(Step $step, ArazzoDocument $document): bool
     {
-        return $step->target->action === null && $this->operationResolver->supportsStep($step, $document);
+        return !$step->hasAction() && $this->operationResolver->supportsStep($step, $document);
     }
 
     public function execute(Step $step, WorkflowContext $context, ArazzoDocument $document, string $executionId): StepExecutionOutcome
@@ -130,10 +130,9 @@ final class SoapOperationExecutor implements OperationExecutorPluginInterface
         }
 
         $transfer = $this->responseMapper->map($response);
-        $meta = $transfer->meta();
 
-        if (isset($meta['soap.faultcode']) || isset($meta['error'])) {
-            $category = isset($meta['soap.faultcode']) ? 'soap-fault' : 'transport';
+        if ($transfer->hasFailure()) {
+            $category = $transfer->failureCategory() ?? 'transport';
             $span->setStatus(false, $category);
             $span->end();
             $this->logger->warning('SOAP operation returned fault or transport error.', [
@@ -144,7 +143,7 @@ final class SoapOperationExecutor implements OperationExecutorPluginInterface
             return $this->faultMapper->map($transfer, $category);
         }
 
-        $statusCode = is_int($transfer->status()) ? $transfer->status() : 500;
+        $statusCode = $transfer->httpStatusCode();
         $span->setAttribute('http.response.status_code', $statusCode);
         $span->setStatus(true);
         $span->end();
@@ -159,7 +158,7 @@ final class SoapOperationExecutor implements OperationExecutorPluginInterface
             outputs: [],
             responseBody: ['transfer' => $transfer],
             responseHeaders: $transfer->headers(),
-            rawBody: is_string($transfer->rawBody()) ? $transfer->rawBody() : null,
+            rawBody: $transfer->rawXmlBody(),
         );
     }
 
@@ -187,12 +186,7 @@ final class SoapOperationExecutor implements OperationExecutorPluginInterface
         try {
             return $this->operationResolver->resolve($step, $document);
         } catch (RuntimeException $e) {
-            throw new ExecutionException(
-                "SOAP resolution failed for step '{$step->stepId}': ".$e->getMessage(),
-                '/',
-                'execution.soap_resolution_failed',
-                $e,
-            );
+            throw SoapExecutionException::resolutionFailed($step->stepId, $e);
         }
     }
 }

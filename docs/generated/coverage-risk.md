@@ -42,7 +42,7 @@ quadrantChart
     document/Validator: [0.714, 1]
     engine/Data: [0.75, 1]
     engine/Enum: [0, 1]
-    engine/Exceptions: [0.083, 1]
+    engine/Exceptions: [0.091, 1]
     engine/Execution: [0.357, 1]
     engine/Runtime: [0.6, 1]
     evaluation/Condition: [0.889, 1]
@@ -75,9 +75,9 @@ quadrantChart
     protocol-rpc/Plugins: [0.929, 1]
     protocol-rpc/Protocol: [0.571, 1]
     protocol-rpc/Transfer: [0.6, 1]
-    protocol-soap/Exceptions: [0, 1]
+    protocol-soap/Exceptions: [0.333, 0.8]
     protocol-soap/Execution: [0.818, 1]
-    protocol-soap/Plugins: [0.938, 1]
+    protocol-soap/Plugins: [0.929, 1]
     protocol-soap/Resolver: [1, 1]
     protocol-soap/Transfer: [0.333, 1]
     protocol-soap/Validation: [1, 1]
@@ -115,8 +115,8 @@ quadrantChart
 | `contracts/Interfaces` | 0.10 | 50 | 20 | 100% |
 | `contracts/Observability` | 0.00 | 9 | 4 | 100% |
 | `contracts/Policy` | 0.00 | 12 | 5 | 100% |
-| `contracts/Spec` | 0.04 | 301 | 52 | 100% |
-| `contracts/State` | 0.10 | 88 | 4 | 100% |
+| `contracts/Spec` | 0.04 | 302 | 52 | 100% |
+| `contracts/State` | 0.10 | 89 | 4 | 100% |
 | `contracts/Support` | 0.00 | 13 | 5 | 100% |
 | `contracts/Validation` | 0.11 | 95 | 9 | 100% |
 | `document/Parser` | 0.29 | 65 | 31 | 100% |
@@ -125,7 +125,7 @@ quadrantChart
 | `document/Validator` | 0.71 | 26 | 6 | 100% |
 | `engine/Data` | 0.75 | 3 | 2 | 100% |
 | `engine/Enum` | 0.00 | 1 | 1 | 100% |
-| `engine/Exceptions` | 0.08 | 10 | 8 | 100% |
+| `engine/Exceptions` | 0.09 | 11 | 8 | 100% |
 | `engine/Execution` | 0.36 | 15 | 10 | 100% |
 | `engine/Runtime` | 0.60 | 25 | 21 | 100% |
 | `evaluation/Condition` | 0.89 | 83 | 18 | 100% |
@@ -158,11 +158,11 @@ quadrantChart
 | `protocol-rpc/Plugins` | 0.93 | 6 | 3 | 100% |
 | `protocol-rpc/Protocol` | 0.57 | 6 | 4 | 100% |
 | `protocol-rpc/Transfer` | 0.60 | 3 | 2 | 100% |
-| `protocol-soap/Exceptions` | 0.00 | 3 | 1 | 100% |
-| `protocol-soap/Execution` | 0.82 | 5 | 4 | 100% |
-| `protocol-soap/Plugins` | 0.94 | 7 | 5 | 100% |
+| `protocol-soap/Exceptions` | 0.33 | 4 | 5 | 80% |
+| `protocol-soap/Execution` | 0.82 | 6 | 4 | 100% |
+| `protocol-soap/Plugins` | 0.93 | 7 | 5 | 100% |
 | `protocol-soap/Resolver` | 1.00 | 1 | 1 | 100% |
-| `protocol-soap/Transfer` | 0.33 | 5 | 2 | 100% |
+| `protocol-soap/Transfer` | 0.33 | 6 | 2 | 100% |
 | `protocol-soap/Validation` | 1.00 | 1 | 1 | 100% |
 | `runner/Async` | 0.96 | 17 | 7 | 100% |
 | `runner/Data` | 0.43 | 17 | 3 | 100% |

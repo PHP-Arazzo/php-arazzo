@@ -34,6 +34,7 @@ classDiagram
     class E_InvalidSourceReferenceException["InvalidSourceReferenceException<br/><small>sources:Exceptions</small>"]:::domain
     class E_InvalidSpecVersionException["InvalidSpecVersionException<br/><small>contracts:Exceptions</small>"]:::domain
     class E_InvalidStepTargetException["InvalidStepTargetException<br/><small>contracts:Exceptions</small>"]:::domain
+    class E_InvalidWsdlDocumentException["InvalidWsdlDocumentException<br/><small>protocol-soap:Exceptions</small>"]:::domain
     class E_JsonPathSyntaxException["JsonPathSyntaxException<br/><small>expression:Exceptions</small>"]:::domain
     class E_LoaderException["LoaderException<br/><small>document:Parser</small>"]:::domain
     class E_LockException["LockException<br/><small>engine:Exceptions</small>"]:::domain
@@ -52,6 +53,8 @@ classDiagram
     class E_RunnerException["RunnerException<br/><small>runner:Exceptions</small>"]:::domain
     class E_SchemaValidationException["SchemaValidationException<br/><small>contracts:Exceptions</small>"]:::domain
     class E_SelectorEvaluationException["SelectorEvaluationException<br/><small>expression:Exceptions</small>"]:::domain
+    class E_SoapEnvelopeException["SoapEnvelopeException<br/><small>protocol-soap:Exceptions</small>"]:::domain
+    class E_SoapExecutionException["SoapExecutionException<br/><small>protocol-soap:Exceptions</small>"]:::domain
     class E_SourceFetchException["SourceFetchException<br/><small>sources:Resolver</small>"]:::domain
     class E_SourceParseException["SourceParseException<br/><small>sources:Resolver</small>"]:::domain
     class E_SourceResolutionException["SourceResolutionException<br/><small>sources:Resolver</small>"]:::domain
@@ -66,6 +69,7 @@ classDiagram
     class E_UnsupportedSourceVersionException["UnsupportedSourceVersionException<br/><small>protocol-soap:Exceptions</small>"]:::domain
     class E_WorkflowCycleException["WorkflowCycleException<br/><small>runner:Exceptions</small>"]:::domain
     class E_WorkflowDepthExceededException["WorkflowDepthExceededException<br/><small>runner:Exceptions</small>"]:::domain
+    class E_WsdlResolutionException["WsdlResolutionException<br/><small>protocol-soap:Exceptions</small>"]:::domain
     E_RuntimeException <|-- E_ArazzoException
     E_LogicException <|-- E_AsyncApiStepException
     E_ConditionSyntaxException <|-- E_ConditionLexException
@@ -87,6 +91,7 @@ classDiagram
     E_SourceResolutionException <|-- E_InvalidSourceReferenceException
     E_InvalidArgumentException <|-- E_InvalidSpecVersionException
     E_InvalidArgumentException <|-- E_InvalidStepTargetException
+    E_InvalidArgumentException <|-- E_InvalidWsdlDocumentException
     E_ArazzoException <|-- E_JsonPathSyntaxException
     E_ArazzoException <|-- E_LoaderException
     E_EngineException <|-- E_LockException
@@ -105,6 +110,8 @@ classDiagram
     E_RuntimeException <|-- E_RunnerException
     E_RuntimeException <|-- E_SchemaValidationException
     E_ArazzoException <|-- E_SelectorEvaluationException
+    E_EngineException <|-- E_SoapEnvelopeException
+    E_ExecutionException <|-- E_SoapExecutionException
     E_BaseException <|-- E_SourceFetchException
     E_BaseException <|-- E_SourceParseException
     E_RuntimeException <|-- E_SourceResolutionException
@@ -119,6 +126,7 @@ classDiagram
     E_RuntimeException <|-- E_UnsupportedSourceVersionException
     E_RunnerException <|-- E_WorkflowCycleException
     E_RunnerException <|-- E_WorkflowDepthExceededException
+    E_EngineException <|-- E_WsdlResolutionException
     classDef builtin fill:#f1f5f9,stroke:#64748b,color:#1a1a1a;
     classDef domain fill:#fce8e6,stroke:#ea4335,color:#1a1a1a;
 ```
@@ -146,6 +154,7 @@ classDiagram
 | `InvalidSourceReferenceException` | `SourceResolutionException` | sources:Exceptions |
 | `InvalidSpecVersionException` | `InvalidArgumentException` | contracts:Exceptions |
 | `InvalidStepTargetException` | `InvalidArgumentException` | contracts:Exceptions |
+| `InvalidWsdlDocumentException` | `InvalidArgumentException` | protocol-soap:Exceptions |
 | `JsonPathSyntaxException` | `ArazzoException` | expression:Exceptions |
 | `LoaderException` | `ArazzoException` | document:Parser |
 | `LockException` | `EngineException` | engine:Exceptions |
@@ -164,6 +173,8 @@ classDiagram
 | `RunnerException` | `RuntimeException` | runner:Exceptions |
 | `SchemaValidationException` | `RuntimeException` | contracts:Exceptions |
 | `SelectorEvaluationException` | `ArazzoException` | expression:Exceptions |
+| `SoapEnvelopeException` | `EngineException` | protocol-soap:Exceptions |
+| `SoapExecutionException` | `ExecutionException` | protocol-soap:Exceptions |
 | `SourceFetchException` | `BaseException` | sources:Resolver |
 | `SourceParseException` | `BaseException` | sources:Resolver |
 | `SourceResolutionException` | `RuntimeException` | sources:Resolver |
@@ -178,3 +189,4 @@ classDiagram
 | `UnsupportedSourceVersionException` | `RuntimeException` | protocol-soap:Exceptions |
 | `WorkflowCycleException` | `RunnerException` | runner:Exceptions |
 | `WorkflowDepthExceededException` | `RunnerException` | runner:Exceptions |
+| `WsdlResolutionException` | `EngineException` | protocol-soap:Exceptions |

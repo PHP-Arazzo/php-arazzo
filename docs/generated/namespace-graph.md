@@ -475,30 +475,29 @@ flowchart LR
     protocol_rpc_Transfer --> contracts_Interfaces
     protocol_rpc_Transfer --> contracts_Spec
     protocol_rpc_Transfer --> protocol_rpc_Protocol
+    protocol_soap_Exceptions --> engine_Exceptions
     protocol_soap_Execution --> contracts_Spec
     protocol_soap_Execution --> protocol_soap_Transfer
     protocol_soap_Execution --> contracts_Interfaces
     protocol_soap_Execution --> document__
+    protocol_soap_Execution --> protocol_soap_Exceptions
     protocol_soap_Execution --> protocol_soap_Plugins
     protocol_soap_Execution --> contracts_State
-    protocol_soap_Execution --> engine_Exceptions
     protocol_soap_Execution --> engine_Execution
     protocol_soap_Execution --> evaluation__
     protocol_soap_Plugins --> contracts_Attributes
     protocol_soap_Plugins --> contracts_Interfaces
     protocol_soap_Plugins --> contracts_Spec
     protocol_soap_Plugins --> contracts_Validation
-    protocol_soap_Plugins --> expression_Enum
     protocol_soap_Plugins --> expression_Exceptions
     protocol_soap_Plugins --> expression_Interfaces
     protocol_soap_Plugins --> contracts_Observability
     protocol_soap_Plugins --> contracts_Policy
     protocol_soap_Plugins --> contracts_State
     protocol_soap_Plugins --> document__
-    protocol_soap_Plugins --> engine_Exceptions
+    protocol_soap_Plugins --> protocol_soap_Exceptions
     protocol_soap_Plugins --> protocol_soap_Execution
     protocol_soap_Plugins --> protocol_soap_Transfer
-    protocol_soap_Plugins --> protocol_soap_Exceptions
     protocol_soap_Resolver --> contracts_Interfaces
     protocol_soap_Transfer --> contracts_Interfaces
     protocol_soap_Validation --> contracts_Exceptions

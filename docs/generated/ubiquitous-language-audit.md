@@ -30,7 +30,7 @@ Evans' first question: does the code speak one language?
 ### document vs definition vs spec
 
 - **Definition**: `DefinitionHydrationException`, `DefinitionRegistryInterface`, `DefinitionStoreInterface`, `InMemoryDefinitionStore` + 1 more (5 types)
-- **Document**: `ArazzoDocument`, `Document`, `DocumentArazzoVersionRule`, `DocumentInfoRequiredRule` + 6 more (10 types)
+- **Document**: `ArazzoDocument`, `Document`, `DocumentArazzoVersionRule`, `DocumentInfoRequiredRule` + 7 more (11 types)
 - **Spec**: `InvalidSpecVersionException`, `SpecVersion` (2 types)
 
 ### fetch vs resolve vs retrieve

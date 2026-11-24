@@ -65,4 +65,28 @@ final readonly class SoapResponseTransfer implements ResponseTransferInterface
     {
         return $this->meta;
     }
+
+    public function hasFailure(): bool
+    {
+        return isset($this->meta['soap.faultcode']) || isset($this->meta['error']);
+    }
+
+    public function failureCategory(): ?string
+    {
+        if (isset($this->meta['soap.faultcode'])) {
+            return 'soap-fault';
+        }
+
+        return isset($this->meta['error']) ? 'transport' : null;
+    }
+
+    public function httpStatusCode(): int
+    {
+        return is_int($this->status) ? $this->status : 500;
+    }
+
+    public function rawXmlBody(): ?string
+    {
+        return is_string($this->rawBody) ? $this->rawBody : null;
+    }
 }

@@ -17,7 +17,7 @@ xychart-beta
     bar [53, 41, 30, 23, 21, 20, 18, 18, 17, 16, 12, 12]
 ```
 
-Analyzed 527 total file-touches across 79 modules.
+Analyzed 530 total file-touches across 79 modules.
 
 | Module | Touches | Share | LOC | Touches/KLOC |
 |---|---:|---:|---:|---:|
@@ -33,17 +33,17 @@ Analyzed 527 total file-touches across 79 modules.
 | `contracts:Interfaces` | 16 | 3% | 387 | 41.3 |
 | `expression:Data` | 12 | 2% | 247 | 48.6 |
 | `sources:Resolver` | 12 | 2% | 624 | 19.2 |
-| `engine:Execution` | 10 | 2% | 1,204 | 8.3 |
+| `engine:Execution` | 11 | 2% | 1,204 | 9.1 |
 | `evaluation:Plugins` | 10 | 2% | 125 | 80 |
 | `evaluation:Registries` | 10 | 2% | 190 | 52.6 |
 | `evaluation:Condition` | 9 | 2% | 1,149 | 7.8 |
 | `expression:Plugins` | 9 | 2% | 1,341 | 6.7 |
-| `protocol-soap:Execution` | 9 | 2% | 484 | 18.6 |
+| `protocol-soap:Execution` | 9 | 2% | 444 | 20.3 |
 | `protocol-http:Execution` | 8 | 2% | 946 | 8.5 |
 | `contracts:State` | 7 | 1% | 1,062 | 6.6 |
+| `engine:Runtime` | 7 | 1% | 1,870 | 3.7 |
 | `expression:Internal` | 7 | 1% | 896 | 7.8 |
 | `cli:Renderer` | 6 | 1% | 321 | 18.7 |
-| `engine:Runtime` | 6 | 1% | 1,870 | 3.2 |
 | `expression:Registries` | 6 | 1% | 113 | 53.1 |
 | `protocol-rpc:Execution` | 6 | 1% | 188 | 31.9 |
 | `protocol-rpc:Normalizer` | 6 | 1% | 578 | 10.4 |
@@ -65,14 +65,14 @@ Analyzed 527 total file-touches across 79 modules.
 | `contracts:Support` | 3 | 1% | 185 | 16.2 |
 | `contracts:Validation` | 3 | 1% | 373 | 8 |
 | `document:Registries` | 3 | 1% | 97 | 30.9 |
+| `engine:Data` | 3 | 1% | 99 | 30.3 |
 | `evaluation:Interfaces` | 3 | 1% | 44 | 68.2 |
 | `protocol-http:Resolver` | 3 | 1% | 307 | 9.8 |
 | `protocol-rpc:Protocol` | 3 | 1% | 514 | 5.8 |
-| `protocol-soap:Plugins` | 3 | 1% | 899 | 3.3 |
+| `protocol-soap:Plugins` | 3 | 1% | 867 | 3.5 |
 | `runner:Exceptions` | 3 | 1% | 134 | 22.4 |
 | `sources:Registries` | 3 | 1% | 81 | 37 |
 | `document:Plugins` | 2 | 0% | 3,112 | 0.6 |
-| `engine:Data` | 2 | 0% | 99 | 20.2 |
 | `engine:Enum` | 2 | 0% | 17 | 117.6 |
 | `engine:Exceptions` | 2 | 0% | 222 | 9 |
 | `evaluation:Enum` | 2 | 0% | 123 | 16.3 |
@@ -93,9 +93,9 @@ Analyzed 527 total file-touches across 79 modules.
 | `protocol-http:Exceptions` | 1 | 0% | 95 | 10.5 |
 | `protocol-http:Policy` | 1 | 0% | 43 | 23.3 |
 | `protocol-rpc:Transfer` | 1 | 0% | 219 | 4.6 |
-| `protocol-soap:Exceptions` | 1 | 0% | 16 | 62.5 |
+| `protocol-soap:Exceptions` | 1 | 0% | 152 | 6.6 |
 | `protocol-soap:Resolver` | 1 | 0% | 136 | 7.4 |
-| `protocol-soap:Transfer` | 1 | 0% | 203 | 4.9 |
+| `protocol-soap:Transfer` | 1 | 0% | 227 | 4.4 |
 | `runner:Data` | 1 | 0% | 123 | 8.1 |
 | `runner:Queue` | 1 | 0% | 25 | 40 |
 | `runner:Registries` | 1 | 0% | 151 | 6.6 |
