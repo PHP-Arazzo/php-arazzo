@@ -15,6 +15,8 @@ classDiagram
     class E_BaseException["BaseException"]:::builtin
     class E_ArazzoException["ArazzoException<br/><small>contracts:Support</small>"]:::domain
     class E_AsyncApiStepException["AsyncApiStepException<br/><small>protocol-http:Exceptions</small>"]:::domain
+    class E_CliException["CliException<br/><small>cli:Exceptions</small>"]:::domain
+    class E_CliExecutionException["CliExecutionException<br/><small>cli:Exceptions</small>"]:::domain
     class E_ConditionLexException["ConditionLexException<br/><small>evaluation:Condition</small>"]:::domain
     class E_ConditionSyntaxException["ConditionSyntaxException<br/><small>evaluation:Condition</small>"]:::domain
     class E_CriterionEvaluationException["CriterionEvaluationException<br/><small>evaluation:Exceptions</small>"]:::domain
@@ -25,6 +27,7 @@ classDiagram
     class E_EngineException["EngineException<br/><small>engine:Exceptions</small>"]:::domain
     class E_ExecutionException["ExecutionException<br/><small>engine:Exceptions</small>"]:::domain
     class E_ExpressionSyntaxException["ExpressionSyntaxException<br/><small>expression:Exceptions</small>"]:::domain
+    class E_GeneratorApiException["GeneratorApiException<br/><small>cli:Exceptions</small>"]:::domain
     class E_GotoTargetNotFoundException["GotoTargetNotFoundException<br/><small>runner:Exceptions</small>"]:::domain
     class E_InvalidFetchPolicyException["InvalidFetchPolicyException<br/><small>sources:Exceptions</small>"]:::domain
     class E_InvalidOpenApiSourceException["InvalidOpenApiSourceException<br/><small>sources:Exceptions</small>"]:::domain
@@ -78,6 +81,8 @@ classDiagram
     class E_WsdlResolutionException["WsdlResolutionException<br/><small>protocol-soap:Exceptions</small>"]:::domain
     E_RuntimeException <|-- E_ArazzoException
     E_LogicException <|-- E_AsyncApiStepException
+    E_RuntimeException <|-- E_CliException
+    E_CliException <|-- E_CliExecutionException
     E_ConditionSyntaxException <|-- E_ConditionLexException
     E_ArazzoException <|-- E_ConditionSyntaxException
     E_ArazzoException <|-- E_CriterionEvaluationException
@@ -88,6 +93,7 @@ classDiagram
     E_RuntimeException <|-- E_EngineException
     E_EngineException <|-- E_ExecutionException
     E_ArazzoException <|-- E_ExpressionSyntaxException
+    E_CliException <|-- E_GeneratorApiException
     E_RunnerException <|-- E_GotoTargetNotFoundException
     E_InvalidArgumentException <|-- E_InvalidFetchPolicyException
     E_InvalidArgumentException <|-- E_InvalidOpenApiSourceException
@@ -147,6 +153,8 @@ classDiagram
 |---|---|---|
 | `ArazzoException` | `RuntimeException` | contracts:Support |
 | `AsyncApiStepException` | `LogicException` | protocol-http:Exceptions |
+| `CliException` | `RuntimeException` | cli:Exceptions |
+| `CliExecutionException` | `CliException` | cli:Exceptions |
 | `ConditionLexException` | `ConditionSyntaxException` | evaluation:Condition |
 | `ConditionSyntaxException` | `ArazzoException` | evaluation:Condition |
 | `CriterionEvaluationException` | `ArazzoException` | evaluation:Exceptions |
@@ -157,6 +165,7 @@ classDiagram
 | `EngineException` | `RuntimeException` | engine:Exceptions |
 | `ExecutionException` | `EngineException` | engine:Exceptions |
 | `ExpressionSyntaxException` | `ArazzoException` | expression:Exceptions |
+| `GeneratorApiException` | `CliException` | cli:Exceptions |
 | `GotoTargetNotFoundException` | `RunnerException` | runner:Exceptions |
 | `InvalidFetchPolicyException` | `InvalidArgumentException` | sources:Exceptions |
 | `InvalidOpenApiSourceException` | `InvalidArgumentException` | sources:Exceptions |

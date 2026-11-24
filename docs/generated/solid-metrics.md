@@ -24,6 +24,7 @@ quadrantChart
     quadrant-3 Modular building blocks
     quadrant-4 Zone of pain
     cli/Console: [1, 0]
+    cli/Exceptions: [0.333, 0.333]
     cli/Generator: [1, 0]
     cli/Renderer: [0.5, 0]
     contracts/Attributes: [0.133, 0]
@@ -46,7 +47,7 @@ quadrantChart
     document/_: [0.333, 0.4]
     engine/Data: [0.75, 0]
     engine/Enum: [0, 0]
-    engine/Exceptions: [0.1, 0.125]
+    engine/Exceptions: [0.091, 0.125]
     engine/Execution: [0.357, 0]
     engine/Runtime: [0.6, 0.19]
     engine/_: [1, 0.5]

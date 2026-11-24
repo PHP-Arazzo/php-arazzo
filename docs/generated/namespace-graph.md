@@ -10,6 +10,7 @@ and `packages/laravel/src`. Regenerated before every commit.
 ```mermaid
 flowchart LR
     cli_Console["Alama\Arazzo\Cli\Console\Command"]:::coreNode
+    cli_Exceptions["Alama\Arazzo\Cli\Exceptions"]:::coreNode
     cli_Generator["Alama\Arazzo\Cli\Generator"]:::coreNode
     cli_Renderer["Alama\Arazzo\Cli\Renderer"]:::coreNode
     contracts_Attributes["Alama\Arazzo\Contracts\Attributes"]:::coreNode
@@ -385,6 +386,7 @@ flowchart LR
     runner__ --> runner_Preflight
     runner__ --> runner_Sync
     runner__ --> runner_Async
+    cli_Console --> cli_Exceptions
     cli_Console --> contracts_Interfaces
     cli_Console --> contracts_Observability
     cli_Console --> contracts_Spec
@@ -404,6 +406,8 @@ flowchart LR
     cli_Console --> contracts_Exceptions
     cli_Console --> expression__
     cli_Console --> protocol_http__
+    cli_Exceptions --> engine_Exceptions
+    cli_Generator --> cli_Exceptions
     cli_Generator --> contracts_Interfaces
     cli_Renderer --> contracts_Spec
     protocol_http_Exceptions --> engine_Exceptions

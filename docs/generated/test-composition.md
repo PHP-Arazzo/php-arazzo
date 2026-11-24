@@ -119,15 +119,15 @@ pie showData
 
 ```mermaid
 pie showData
-    title Cli — 11 test files
-    "Module-scoped": 10
+    title Cli — 12 test files
+    "Module-scoped": 11
     "Root": 1
 ```
 
 | Suite | Files | Share |
 |---|---:|---:|
-| Module-scoped | 10 | 91% |
-| Root | 1 | 9% |
+| Module-scoped | 11 | 92% |
+| Root | 1 | 8% |
 
 ## Protocol-http package
 

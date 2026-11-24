@@ -18,9 +18,9 @@ flowchart LR
         S_contracts_Spec["contracts:Spec<br/><small>1495 LOC</small>"]:::coreDomain
     end
     subgraph S_supporting["Supporting"]
-        S_cli_Console["cli:Console<br/><small>797 LOC</small>"]:::supportingDomain
+        S_cli_Console["cli:Console<br/><small>791 LOC</small>"]:::supportingDomain
         S_cli_Generator["cli:Generator<br/><small>141 LOC</small>"]:::supportingDomain
-        S_cli_Renderer["cli:Renderer<br/><small>321 LOC</small>"]:::supportingDomain
+        S_cli_Renderer["cli:Renderer<br/><small>317 LOC</small>"]:::supportingDomain
         S_document_Parser["document:Parser<br/><small>2476 LOC</small>"]:::supportingDomain
         S_document_Validator["document:Validator<br/><small>656 LOC</small>"]:::supportingDomain
         S_protocol_http_Resolver["protocol-http:Resolver<br/><small>307 LOC</small>"]:::supportingDomain
@@ -36,6 +36,7 @@ flowchart LR
         S_runner_Queue["runner:Queue<br/><small>25 LOC</small>"]:::genericDomain
     end
     subgraph S_unclassified["Unclassified"]
+        S_cli_Exceptions["cli:Exceptions<br/><small>51 LOC</small>"]:::unknownDomain
         S_contracts_Attributes["contracts:Attributes<br/><small>106 LOC</small>"]:::unknownDomain
         S_contracts_Clock["contracts:Clock<br/><small>20 LOC</small>"]:::unknownDomain
         S_contracts_Data["contracts:Data<br/><small>155 LOC</small>"]:::unknownDomain
@@ -111,11 +112,12 @@ flowchart LR
 | Subdomain | Modules | Core pkg LOC | Laravel pkg LOC | Share |
 |---|---:|---:|---:|---:|
 | Core domain | 1 | 1,495 | 0 | 4% |
-| Supporting | 8 | 5,458 | 0 | 15% |
+| Supporting | 8 | 5,448 | 0 | 15% |
 | Generic subdomain | 6 | 1,678 | 0 | 5% |
-| Unclassified | 65 | 26,610 | 0 | 76% |
+| Unclassified | 66 | 26,661 | 0 | 76% |
 
 **Unclassified modules** — classify them in `SUBDOMAINS` or delete them:
+- `cli:Exceptions`
 - `contracts:Attributes`
 - `contracts:Clock`
 - `contracts:Data`

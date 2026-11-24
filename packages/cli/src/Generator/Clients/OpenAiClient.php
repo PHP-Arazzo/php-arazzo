@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Cli\Generator\Clients;
 
+use Alama\Arazzo\Cli\Exceptions\GeneratorApiException;
 use Alama\Arazzo\Contracts\Interfaces\AiClientInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
-use RuntimeException;
 
 /**
  * @internal stays out of the advertised contract; not part of the public API surface
@@ -54,7 +54,7 @@ class OpenAiClient implements AiClientInterface
             // The reason phrase stands in for a missing or unstringifiable error payload.
             $detail = is_scalar($message) ? (string) $message : $response->getReasonPhrase();
 
-            throw new RuntimeException('API Error: '.$detail);
+            throw GeneratorApiException::apiError($detail);
         }
 
         $data = json_decode($responseBody, true);

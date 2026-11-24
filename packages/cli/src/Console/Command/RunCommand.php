@@ -53,10 +53,9 @@ final class RunCommand extends Command
 
         /** @var string|null $workflowId */
         $workflowId = $input->getOption('workflow');
-        $workflow = array_find(
-            $document->workflows,
-            static fn ($candidate): bool => $workflowId === null || $candidate->workflowId === $workflowId,
-        );
+        $workflow = $workflowId !== null
+            ? $document->findWorkflow($workflowId)
+            : $document->firstWorkflow();
 
         if ($workflow === null) {
             $output->writeln('<error>'.sprintf("unknown workflow '%s'", (string) $workflowId).'</error>');

@@ -31,20 +31,24 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 | removed method | `DocumentInterface` | `preflightInputs` | `public function preflightInputs(ArazzoDocument $document, string $workflowId, array $inputs): ValidationResult` |
 | removed method | `DocumentInterface` | `resolveOperation` | `public function resolveOperation(Step $step, ArazzoDocument $document): ResolvedOperation` |
 
-**Additions (non-breaking):** 85
+**Additions (non-breaking):** 101
 
 | Kind | Class | Member |
 |---|---|---|
 | added method | `DocumentInterface` | `all` |
+| added method | `DocumentInterface` | `ambiguousActionTarget` |
 | added method | `DocumentInterface` | `arazzoSourceNotAddressable` |
 | added method | `DocumentInterface` | `calculateDelay` |
 | added method | `DocumentInterface` | `consumeCorrelation` |
 | added method | `DocumentInterface` | `create` |
 | added method | `DocumentInterface` | `default` |
 | added method | `DocumentInterface` | `deleteState` |
+| added method | `DocumentInterface` | `dependencyFailed` |
+| added method | `DocumentInterface` | `detected` |
 | added method | `DocumentInterface` | `dispatch` |
 | added method | `DocumentInterface` | `dottedKeyReserved` |
 | added method | `DocumentInterface` | `duplicateSourceUrl` |
+| added method | `DocumentInterface` | `exceeded` |
 | added method | `DocumentInterface` | `executor` |
 | added method | `DocumentInterface` | `extractContext` |
 | added method | `DocumentInterface` | `find` |
@@ -52,6 +56,7 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 | added method | `DocumentInterface` | `for` |
 | added method | `DocumentInterface` | `forId` |
 | added method | `DocumentInterface` | `forVersion` |
+| added method | `DocumentInterface` | `fromResult` |
 | added method | `DocumentInterface` | `get` |
 | added method | `DocumentInterface` | `handleStep` |
 | added method | `DocumentInterface` | `has` |
@@ -70,6 +75,7 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 | added method | `DocumentInterface` | `markStarted` |
 | added method | `DocumentInterface` | `maxSteps` |
 | added method | `DocumentInterface` | `maxWorkflowDepth` |
+| added method | `DocumentInterface` | `noSupportingExecutor` |
 | added method | `DocumentInterface` | `nonPositiveMaxAttempts` |
 | added method | `DocumentInterface` | `outputExtractor` |
 | added method | `DocumentInterface` | `register` |
@@ -84,9 +90,16 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 | added method | `DocumentInterface` | `snapshot` |
 | added method | `DocumentInterface` | `sourcePolicy` |
 | added method | `DocumentInterface` | `start` |
+| added method | `DocumentInterface` | `stateMissing` |
 | added method | `DocumentInterface` | `statusOf` |
+| added method | `DocumentInterface` | `stepFailed` |
+| added method | `DocumentInterface` | `stepId` |
 | added method | `DocumentInterface` | `toArray` |
 | added method | `DocumentInterface` | `unknownSource` |
+| added method | `DocumentInterface` | `unknownStep` |
+| added method | `DocumentInterface` | `unknownWorkflow` |
+| added method | `DocumentInterface` | `unresolvableReusable` |
+| added method | `DocumentInterface` | `unsupportedStep` |
 | added method | `DocumentInterface` | `validateInputs` |
 | added method | `DocumentInterface` | `withAllowCustomTags` |
 | added method | `DocumentInterface` | `withAllowObjectDeserialization` |
@@ -120,3 +133,6 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 | added method | `DocumentInterface` | `withStrictValidation` |
 | added method | `DocumentInterface` | `withTracer` |
 | added method | `DocumentInterface` | `withYamlPolicy` |
+| added method | `DocumentInterface` | `workflowEndedInFailure` |
+| added method | `DocumentInterface` | `workflowFailedAtStep` |
+| added method | `DocumentInterface` | `wrongReusableTarget` |

@@ -12,21 +12,21 @@ same corner every week" signal that static structure graphs cannot show.
 ```mermaid
 xychart-beta
     title "Edit churn per module (git touches)"
-    x-axis ["document:Validator", "cli:Console", "runner:Execution", "runner:Async", "sources:Normalizer", "runner:Sync", "document:Parser", "expression:Interfaces", "contracts:Spec", "contracts:Interfaces", "expression:Data", "sources:Resolver"]
+    x-axis ["document:Validator", "cli:Console", "runner:Execution", "runner:Async", "runner:Sync", "sources:Normalizer", "document:Parser", "expression:Interfaces", "contracts:Spec", "contracts:Interfaces", "expression:Data", "sources:Resolver"]
     y-axis "Touches" 0 --> 70
-    bar [53, 41, 30, 23, 21, 20, 18, 18, 17, 16, 12, 12]
+    bar [53, 41, 31, 24, 21, 21, 18, 18, 17, 16, 12, 12]
 ```
 
-Analyzed 541 total file-touches across 80 modules.
+Analyzed 548 total file-touches across 81 modules.
 
 | Module | Touches | Share | LOC | Touches/KLOC |
 |---|---:|---:|---:|---:|
 | `document:Validator` | 53 | 10% | 656 | 80.8 |
-| `cli:Console` | 41 | 8% | 797 | 51.4 |
-| `runner:Execution` | 30 | 6% | 673 | 44.6 |
-| `runner:Async` | 23 | 4% | 1,470 | 15.6 |
+| `cli:Console` | 41 | 7% | 791 | 51.8 |
+| `runner:Execution` | 31 | 6% | 673 | 46.1 |
+| `runner:Async` | 24 | 4% | 1,470 | 16.3 |
+| `runner:Sync` | 21 | 4% | 1,146 | 18.3 |
 | `sources:Normalizer` | 21 | 4% | 498 | 42.2 |
-| `runner:Sync` | 20 | 4% | 1,146 | 17.5 |
 | `document:Parser` | 18 | 3% | 2,476 | 7.3 |
 | `expression:Interfaces` | 18 | 3% | 214 | 84.1 |
 | `contracts:Spec` | 17 | 3% | 1,495 | 11.4 |
@@ -45,9 +45,10 @@ Analyzed 541 total file-touches across 80 modules.
 | `expression:Internal` | 7 | 1% | 896 | 7.8 |
 | `protocol-rpc:Execution` | 7 | 1% | 176 | 39.8 |
 | `protocol-rpc:Normalizer` | 7 | 1% | 604 | 11.6 |
-| `cli:Renderer` | 6 | 1% | 321 | 18.7 |
+| `cli:Renderer` | 6 | 1% | 317 | 18.9 |
 | `expression:Registries` | 6 | 1% | 113 | 53.1 |
 | `runner:Events` | 6 | 1% | 187 | 32.1 |
+| `runner:Preflight` | 6 | 1% | 156 | 38.5 |
 | `contracts:Attributes` | 5 | 1% | 106 | 47.2 |
 | `contracts:Dependency` | 5 | 1% | 375 | 13.3 |
 | `evaluation:Data` | 5 | 1% | 96 | 52.1 |
@@ -55,13 +56,13 @@ Analyzed 541 total file-touches across 80 modules.
 | `expression:Xpath` | 5 | 1% | 173 | 28.9 |
 | `protocol-http:Plugins` | 5 | 1% | 336 | 14.9 |
 | `runner:Policy` | 5 | 1% | 124 | 40.3 |
-| `runner:Preflight` | 5 | 1% | 156 | 32.1 |
 | `cli:Generator` | 4 | 1% | 141 | 28.4 |
 | `expression:Enum` | 4 | 1% | 47 | 85.1 |
 | `expression:Exceptions` | 4 | 1% | 209 | 19.1 |
 | `expression:JsonPath` | 4 | 1% | 1,470 | 2.7 |
 | `protocol-rpc:Protocol` | 4 | 1% | 501 | 8 |
 | `protocol-soap:Plugins` | 4 | 1% | 867 | 4.6 |
+| `runner:Exceptions` | 4 | 1% | 283 | 14.1 |
 | `contracts:Discovery` | 3 | 1% | 416 | 7.2 |
 | `contracts:Exceptions` | 3 | 1% | 123 | 24.4 |
 | `contracts:Support` | 3 | 1% | 185 | 16.2 |
@@ -72,7 +73,7 @@ Analyzed 541 total file-touches across 80 modules.
 | `protocol-http:Resolver` | 3 | 1% | 307 | 9.8 |
 | `protocol-rpc:Plugins` | 3 | 1% | 397 | 7.6 |
 | `protocol-soap:Validation` | 3 | 1% | 139 | 21.6 |
-| `runner:Exceptions` | 3 | 1% | 283 | 10.6 |
+| `runner:Plugins` | 3 | 1% | 80 | 37.5 |
 | `sources:Registries` | 3 | 1% | 81 | 37 |
 | `document:Plugins` | 2 | 0% | 3,112 | 0.6 |
 | `engine:Enum` | 2 | 0% | 17 | 117.6 |
@@ -83,7 +84,7 @@ Analyzed 541 total file-touches across 80 modules.
 | `protocol-rpc:Transfer` | 2 | 0% | 243 | 8.2 |
 | `protocol-soap:Exceptions` | 2 | 0% | 152 | 13.2 |
 | `protocol-soap:Transfer` | 2 | 0% | 227 | 8.8 |
-| `runner:Plugins` | 2 | 0% | 80 | 25 |
+| `runner:Data` | 2 | 0% | 138 | 14.5 |
 | `sources:Exceptions` | 2 | 0% | 220 | 9.1 |
 | `sources:Plugins` | 2 | 0% | 147 | 13.6 |
 | `sources:Policy` | 2 | 0% | 125 | 16 |
@@ -97,9 +98,9 @@ Analyzed 541 total file-touches across 80 modules.
 | `protocol-http:Policy` | 1 | 0% | 43 | 23.3 |
 | `protocol-rpc:Exceptions` | 1 | 0% | 187 | 5.3 |
 | `protocol-soap:Resolver` | 1 | 0% | 136 | 7.4 |
-| `runner:Data` | 1 | 0% | 138 | 7.2 |
 | `runner:Queue` | 1 | 0% | 25 | 40 |
 | `runner:Registries` | 1 | 0% | 151 | 6.6 |
 | `runner:Store` | 1 | 0% | 138 | 7.2 |
+| `cli:Exceptions` | 0 | 0% | 51 | 0 |
 
 **Hotspots** (highest touches-per-KLOC with meaningful size/churn): `expression:Interfaces` (84.1), `document:Validator` (80.8), `evaluation:Plugins` (80)

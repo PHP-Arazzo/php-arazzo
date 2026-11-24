@@ -21,6 +21,7 @@ quadrantChart
     quadrant-3 Stable but untested
     quadrant-4 Untested churn
     cli/Console: [1, 0.8]
+    cli/Exceptions: [0.333, 0.333]
     cli/Generator: [1, 1]
     cli/Renderer: [0.5, 1]
     contracts/Attributes: [0.133, 1]
@@ -42,7 +43,7 @@ quadrantChart
     document/Validator: [0.714, 1]
     engine/Data: [0.75, 1]
     engine/Enum: [0, 1]
-    engine/Exceptions: [0.1, 1]
+    engine/Exceptions: [0.091, 1]
     engine/Execution: [0.357, 1]
     engine/Runtime: [0.6, 1]
     evaluation/Condition: [0.889, 1]
@@ -105,6 +106,7 @@ quadrantChart
 | Module | Instability | Test files | Src files | Density |
 |---|---:|---:|---:|---:|
 | `cli/Console` | 1.00 | 8 | 10 | 80% |
+| `cli/Exceptions` | 0.33 | 1 | 3 | 33% |
 | `cli/Generator` | 1.00 | 2 | 2 | 100% |
 | `cli/Renderer` | 0.50 | 6 | 3 | 100% |
 | `contracts/Attributes` | 0.13 | 10 | 6 | 100% |
@@ -119,14 +121,14 @@ quadrantChart
 | `contracts/Spec` | 0.04 | 303 | 52 | 100% |
 | `contracts/State` | 0.10 | 90 | 4 | 100% |
 | `contracts/Support` | 0.00 | 13 | 5 | 100% |
-| `contracts/Validation` | 0.11 | 96 | 9 | 100% |
+| `contracts/Validation` | 0.11 | 97 | 9 | 100% |
 | `document/Parser` | 0.29 | 65 | 31 | 100% |
 | `document/Plugins` | 1.00 | 52 | 50 | 100% |
 | `document/Registries` | 0.80 | 3 | 1 | 100% |
 | `document/Validator` | 0.71 | 26 | 6 | 100% |
 | `engine/Data` | 0.75 | 4 | 2 | 100% |
 | `engine/Enum` | 0.00 | 1 | 1 | 100% |
-| `engine/Exceptions` | 0.10 | 12 | 8 | 100% |
+| `engine/Exceptions` | 0.09 | 12 | 8 | 100% |
 | `engine/Execution` | 0.36 | 15 | 10 | 100% |
 | `engine/Runtime` | 0.60 | 26 | 21 | 100% |
 | `evaluation/Condition` | 0.89 | 83 | 18 | 100% |

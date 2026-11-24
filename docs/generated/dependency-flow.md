@@ -14,6 +14,7 @@ the heavier direction is drawn and the folded side is listed below the chart.
 ```mermaid
 sankey-beta
 
+cli-Console,cli-Exceptions,1
 cli-Console,cli-Renderer,1
 cli-Console,contracts-Clock,1
 cli-Console,contracts-Data,1
@@ -33,6 +34,8 @@ cli-Console,runner-Queue,1
 cli-Console,runner-Store,1
 cli-Console,runner-root,9
 cli-Console,sources-root,3
+cli-Exceptions,engine-Exceptions,1
+cli-Generator,cli-Exceptions,1
 cli-Generator,contracts-Interfaces,2
 cli-Renderer,contracts-Spec,13
 contracts-Attributes,contracts-Spec,5

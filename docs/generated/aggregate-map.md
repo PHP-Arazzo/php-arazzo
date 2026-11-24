@@ -27,7 +27,7 @@ Where mutable state lives, and which of it crosses process boundaries:
 | protocol-soap | 1 | 17 | 6% |
 | runner | 29 | 29 | 50% |
 | core | 0 | 0 | — |
-| cli | 1 | 14 | 7% |
+| cli | 1 | 17 | 6% |
 
 ## Mutable clusters
 

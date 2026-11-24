@@ -131,13 +131,9 @@ final class MermaidRenderer
             return $document->workflows;
         }
 
-        foreach ($document->workflows as $workflow) {
-            if ($workflow->workflowId === $workflowId) {
-                return [$workflow];
-            }
-        }
+        $workflow = $document->findWorkflow($workflowId);
 
-        return [];
+        return $workflow !== null ? [$workflow] : [];
     }
 
     private function esc(string $value): string

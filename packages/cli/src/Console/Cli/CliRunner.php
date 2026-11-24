@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Cli\Console\Cli;
 
+use Alama\Arazzo\Cli\Exceptions\CliExecutionException;
 use Alama\Arazzo\Contracts\Interfaces\OperationExecutorPluginInterface;
 use Alama\Arazzo\Contracts\Observability\TracerInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
@@ -15,7 +16,6 @@ use Alama\Arazzo\Runner\DefinitionStoreInterface;
 use Alama\Arazzo\Runner\ExecutionStoreInterface;
 use Alama\Arazzo\Runner\Queue\SyncQueueDriver;
 use Alama\Arazzo\Runtime\Telemetry\OtelTracer;
-use RuntimeException;
 
 /**
  * Single-process, resumable workflow runner for CLI usage.
@@ -109,7 +109,7 @@ final class CliRunner
 
         while ($this->queue->dispatched !== []) {
             if ($processed++ >= self::MAX_QUEUED_STEPS) {
-                throw new RuntimeException("CLI run '{$executionId}' exceeded ".self::MAX_QUEUED_STEPS.' queued steps; possible dispatch loop.');
+                throw CliExecutionException::maxQueuedStepsExceeded($executionId, self::MAX_QUEUED_STEPS);
             }
 
             $slot = array_shift($this->queue->dispatched);

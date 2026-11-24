@@ -124,9 +124,11 @@ flowchart TB
     end
     subgraph PKG_M_cli["cli"]
         M_cli_Console["cli:Console"]:::node
+        M_cli_Exceptions["cli:Exceptions"]:::node
         M_cli_Generator["cli:Generator"]:::node
         M_cli_Renderer["cli:Renderer"]:::node
     end
+    M_cli_Console --> M_cli_Exceptions
     M_cli_Console --> M_cli_Renderer
     M_cli_Console --> M_contracts_Clock
     M_cli_Console --> M_contracts_Data
@@ -146,6 +148,8 @@ flowchart TB
     M_cli_Console --> M_runner_Store
     M_cli_Console --> M_runner__
     M_cli_Console --> M_sources__
+    M_cli_Exceptions --> M_engine_Exceptions
+    M_cli_Generator --> M_cli_Exceptions
     M_cli_Generator --> M_contracts_Interfaces
     M_cli_Renderer --> M_contracts_Spec
     M_contracts_Attributes --> M_contracts_Spec
@@ -559,7 +563,7 @@ flowchart TB
 |---|---|---:|
 | `cli` | `contracts` | 25 |
 | `cli` | `document` | 11 |
-| `cli` | `engine` | 2 |
+| `cli` | `engine` | 3 |
 | `cli` | `evaluation` | 2 |
 | `cli` | `expression` | 1 |
 | `cli` | `protocol-http` | 1 |

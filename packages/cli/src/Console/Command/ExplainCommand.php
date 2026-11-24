@@ -32,14 +32,9 @@ final class ExplainCommand extends Command
         /** @var string|null $workflowId */
         $workflowId = $input->getOption('workflow');
 
-        $workflow = null;
-
-        foreach ($document->workflows as $candidate) {
-            if ($workflowId === null || $candidate->workflowId === $workflowId) {
-                $workflow = $candidate;
-                break;
-            }
-        }
+        $workflow = $workflowId !== null
+            ? $document->findWorkflow($workflowId)
+            : $document->firstWorkflow();
 
         if ($workflow === null) {
             $output->writeln('<error>'.sprintf("unknown workflow '%s'", (string) $workflowId).'</error>');

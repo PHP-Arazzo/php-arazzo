@@ -16,9 +16,10 @@ Regenerated before every commit.
 
 | Exception | Raised by |
 |---|---|
-| **RuntimeException** | `CliRunner` <small>cli:Console</small>, `OpenAiClient` <small>cli:Generator</small> |
 | **ArazzoException** | _(never raised in src)_ |
 | **AsyncApiStepException** | _(never raised in src)_ |
+| **CliException** | _(never raised in src)_ |
+| **CliExecutionException** | _(never raised in src)_ |
 | **ConditionLexException** | _(never raised in src)_ |
 | **ConditionSyntaxException** | _(never raised in src)_ |
 | **CriterionEvaluationException** | _(never raised in src)_ |
@@ -30,6 +31,7 @@ Regenerated before every commit.
 | **ExecutionError** | _(never raised in src)_ |
 | **ExecutionException** | _(never raised in src)_ |
 | **ExpressionSyntaxException** | _(never raised in src)_ |
+| **GeneratorApiException** | _(never raised in src)_ |
 | **GotoTargetNotFoundException** | _(never raised in src)_ |
 | **InvalidFetchPolicyException** | _(never raised in src)_ |
 | **InvalidOpenApiSourceException** | _(never raised in src)_ |

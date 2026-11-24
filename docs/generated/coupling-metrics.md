@@ -11,9 +11,10 @@ targets. Regenerated before every commit.
 
 | Module | Files | LOC | Fan-in | Fan-out | Instability | Flag |
 |---|---:|---:|---:|---:|---:|---|
-| `cli:Console` | 10 | 787 | 0 | 19 | 1.00 |  |
-| `cli:Generator` | 2 | 139 | 0 | 1 | 1.00 |  |
-| `cli:Renderer` | 3 | 318 | 1 | 1 | 0.50 |  |
+| `cli:Console` | 10 | 781 | 0 | 20 | 1.00 |  |
+| `cli:Exceptions` | 3 | 48 | 2 | 1 | 0.33 |  |
+| `cli:Generator` | 2 | 139 | 0 | 2 | 1.00 |  |
+| `cli:Renderer` | 3 | 314 | 1 | 1 | 0.50 |  |
 | `contracts:Attributes` | 6 | 100 | 13 | 2 | 0.13 |  |
 | `contracts:Clock` | 1 | 19 | 4 | 0 | 0.00 |  |
 | `contracts:Data` | 2 | 153 | 5 | 1 | 0.17 |  |
@@ -34,7 +35,7 @@ targets. Regenerated before every commit.
 | `(document root)` | 5 | 229 | 12 | 6 | 0.33 |  |
 | `engine:Data` | 2 | 97 | 1 | 3 | 0.75 |  |
 | `engine:Enum` | 1 | 16 | 1 | 0 | 0.00 |  |
-| `engine:Exceptions` | 8 | 214 | 9 | 1 | 0.10 |  |
+| `engine:Exceptions` | 8 | 214 | 10 | 1 | 0.09 |  |
 | `engine:Execution` | 10 | 1194 | 9 | 5 | 0.36 |  |
 | `engine:Runtime` | 21 | 1849 | 4 | 6 | 0.60 |  |
 | `(engine root)` | 2 | 192 | 0 | 3 | 1.00 |  |
@@ -99,7 +100,7 @@ targets. Regenerated before every commit.
 | `sources:Resolver` | 12 | 612 | 3 | 6 | 0.67 |  |
 | `(sources root)` | 2 | 339 | 3 | 9 | 0.75 |  |
 
-Total cross-module edges: **1702**
+Total cross-module edges: **1705**
 
 ## Most entangled module pairs
 
