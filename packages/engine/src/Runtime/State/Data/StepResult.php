@@ -99,6 +99,16 @@ final readonly class StepResult
         );
     }
 
+    public function isSucceeded(): bool
+    {
+        return $this->status === StepStatus::Succeeded;
+    }
+
+    public function isFailed(): bool
+    {
+        return $this->status === StepStatus::Failed;
+    }
+
     /**
      * @return array<string, mixed>
      */

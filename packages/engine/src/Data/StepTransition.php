@@ -50,4 +50,19 @@ final readonly class StepTransition
     {
         return new self($from, StepState::Failed, $reason, StepTransitionType::Timeout, $actions);
     }
+
+    public function isGuardFailed(): bool
+    {
+        return $this->type === StepTransitionType::GuardFailed;
+    }
+
+    public function isCancelled(): bool
+    {
+        return $this->type === StepTransitionType::Cancelled;
+    }
+
+    public function isTimedOut(): bool
+    {
+        return $this->type === StepTransitionType::Timeout;
+    }
 }

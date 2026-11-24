@@ -823,9 +823,16 @@ this file on a commit is a public API change — review it deliberately.
 
 #### `StepTransition` class
 - `public function __construct(public StepState $from, public StepState $to, public string $reason, public StepTransitionType $type = StepTransitionType::Enter, public array $actions = [])`
+- `public function isCancelled(): bool`
+- `public function isGuardFailed(): bool`
+- `public function isTimedOut(): bool`
 - `public static function cancelled(StepState $from, string $reason, array $actions): self`
 - `public static function guardFailed(StepState $from, string $reason): self`
 - `public static function timedOut(StepState $from, string $reason, array $actions): self`
+
+#### `Transition` class
+- `public function __construct(public ExecutionState $state, public string $status, public ?string $workflowId = null)`
+- `public function isFailed(): bool`
 
 ### `Alama\Arazzo\Engine\Enum`
 

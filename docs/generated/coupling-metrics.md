@@ -32,11 +32,11 @@ targets. Regenerated before every commit.
 | `document:Registries` | 1 | 96 | 1 | 4 | 0.80 |  |
 | `document:Validator` | 6 | 650 | 2 | 5 | 0.71 |  |
 | `(document root)` | 5 | 229 | 12 | 6 | 0.33 |  |
-| `engine:Data` | 2 | 72 | 1 | 3 | 0.75 |  |
+| `engine:Data` | 2 | 97 | 1 | 3 | 0.75 |  |
 | `engine:Enum` | 1 | 16 | 1 | 0 | 0.00 |  |
 | `engine:Exceptions` | 8 | 214 | 11 | 1 | 0.08 |  |
-| `engine:Execution` | 10 | 1189 | 9 | 5 | 0.36 |  |
-| `engine:Runtime` | 21 | 1824 | 4 | 6 | 0.60 |  |
+| `engine:Execution` | 10 | 1194 | 9 | 5 | 0.36 |  |
+| `engine:Runtime` | 21 | 1849 | 4 | 6 | 0.60 |  |
 | `(engine root)` | 2 | 192 | 0 | 3 | 1.00 |  |
 | `evaluation:Condition` | 18 | 1131 | 1 | 8 | 0.89 |  |
 | `evaluation:Data` | 2 | 94 | 3 | 2 | 0.40 |  |

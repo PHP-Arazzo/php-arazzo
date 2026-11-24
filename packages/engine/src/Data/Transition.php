@@ -16,4 +16,14 @@ final readonly class Transition
         public string $status,
         public ?string $workflowId = null,
     ) {}
+
+    public function isSucceeded(): bool
+    {
+        return $this->status === 'succeeded';
+    }
+
+    public function isFailed(): bool
+    {
+        return $this->status === 'failed';
+    }
 }

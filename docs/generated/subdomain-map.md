@@ -48,11 +48,11 @@ flowchart LR
         S_contracts_Validation["contracts:Validation<br/><small>373 LOC</small>"]:::unknownDomain
         S_document_Plugins["document:Plugins<br/><small>3112 LOC</small>"]:::unknownDomain
         S_document_Registries["document:Registries<br/><small>97 LOC</small>"]:::unknownDomain
-        S_engine_Data["engine:Data<br/><small>74 LOC</small>"]:::unknownDomain
+        S_engine_Data["engine:Data<br/><small>99 LOC</small>"]:::unknownDomain
         S_engine_Enum["engine:Enum<br/><small>17 LOC</small>"]:::unknownDomain
         S_engine_Exceptions["engine:Exceptions<br/><small>222 LOC</small>"]:::unknownDomain
-        S_engine_Execution["engine:Execution<br/><small>1199 LOC</small>"]:::unknownDomain
-        S_engine_Runtime["engine:Runtime<br/><small>1845 LOC</small>"]:::unknownDomain
+        S_engine_Execution["engine:Execution<br/><small>1204 LOC</small>"]:::unknownDomain
+        S_engine_Runtime["engine:Runtime<br/><small>1870 LOC</small>"]:::unknownDomain
         S_evaluation_Condition["evaluation:Condition<br/><small>1149 LOC</small>"]:::unknownDomain
         S_evaluation_Data["evaluation:Data<br/><small>96 LOC</small>"]:::unknownDomain
         S_evaluation_Enum["evaluation:Enum<br/><small>123 LOC</small>"]:::unknownDomain
@@ -112,7 +112,7 @@ flowchart LR
 | Core domain | 1 | 1,495 | 0 | 4% |
 | Supporting | 8 | 5,458 | 0 | 16% |
 | Generic subdomain | 6 | 1,678 | 0 | 5% |
-| Unclassified | 64 | 26,268 | 0 | 75% |
+| Unclassified | 64 | 26,323 | 0 | 75% |
 
 **Unclassified modules** — classify them in `SUBDOMAINS` or delete them:
 - `contracts:Attributes`

@@ -33,4 +33,14 @@ final readonly class Budget
     {
         return $this->currentDepth() < $this->maxWorkflowDepth;
     }
+
+    public function isExhausted(): bool
+    {
+        return $this->stepsSpent >= $this->maxSteps;
+    }
+
+    public function isOnCallStack(string $workflowId): bool
+    {
+        return in_array($workflowId, $this->workflowCallStack, true);
+    }
 }
