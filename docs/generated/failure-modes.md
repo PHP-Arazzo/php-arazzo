@@ -19,15 +19,12 @@ Regenerated before every commit.
 | **ExecutionError** | `AsyncExecutionGraphAssembler` <small>runner:Async</small>, `WorkflowEngine` <small>runner:Sync</small> |
 | **ExecutionException** | `RpcRequestBuilder` <small>protocol-rpc:Execution</small>, `RpcOperationExecutor` <small>protocol-rpc:Plugins</small>, `SoapRequestBuilder` <small>protocol-soap:Execution</small>, `SoapOperationExecutor` <small>protocol-soap:Plugins</small>, `StepExecutionWorker` <small>runner:Async</small>, `StepExecutor` <small>runner:Sync</small> |
 | **GotoTargetNotFoundException** | `WorkflowEngine` <small>runner:Sync</small>, `WorkflowNavigator` <small>runner:Sync</small> |
-| **InvalidArgumentException** | `TypeCaster` <small>engine:Execution</small>, `ProtoParser` <small>protocol-rpc:Normalizer</small>, `ProtoTokenCursor` <small>protocol-rpc:Normalizer</small>, `WsdlDomReader` <small>protocol-soap:Plugins</small>, `WsdlSourceNormalizer` <small>protocol-soap:Plugins</small>, `RetryPolicy` <small>engine:Runtime</small>, `OpenApi30Normalizer` <small>sources:Normalizer</small>, `OpenApiVersionDetector` <small>sources:Normalizer</small>, `OpenApiSourceNormalizer` <small>sources:Plugins</small>, `FetchPolicy` <small>sources:Policy</small> |
+| **InvalidArgumentException** | `TypeCaster` <small>engine:Execution</small>, `ProtoParser` <small>protocol-rpc:Normalizer</small>, `ProtoTokenCursor` <small>protocol-rpc:Normalizer</small>, `WsdlDomReader` <small>protocol-soap:Plugins</small>, `WsdlSourceNormalizer` <small>protocol-soap:Plugins</small>, `RetryPolicy` <small>engine:Runtime</small> |
 | **LogicException** | `AsyncApiStepExecutor` <small>protocol-http:Plugins</small>, `StepExecutionWorker` <small>runner:Async</small> |
 | **PreflightFailureException** | `AsyncExecutionGraphAssembler` <small>runner:Async</small>, `StepExecutionWorker` <small>runner:Async</small>, `WorkflowPreflightRunner` <small>runner:Sync</small> |
-| **RuntimeException** | `CliRunner` <small>cli:Console</small>, `OpenAiClient` <small>cli:Generator</small>, `ReusableParameterResolver` <small>engine:Execution</small>, `OpenApiOperationResolver` <small>protocol-http:Resolver</small>, `ProtobufOperationResolver` <small>protocol-rpc:Protocol</small>, `RpcMessageCodec` <small>protocol-rpc:Protocol</small>, `SoapEnvelope` <small>protocol-soap:Execution</small>, `WsdlOperationResolver` <small>protocol-soap:Execution</small>, `OperationResolvers` <small>runner:Preflight</small>, `FileLockStrategy` <small>engine:Runtime</small>, `FileStateStore` <small>engine:Runtime</small>, `OtelSetup` <small>engine:Runtime</small>, `SourceReferenceParser` <small>sources:Normalizer</small> |
+| **RuntimeException** | `CliRunner` <small>cli:Console</small>, `OpenAiClient` <small>cli:Generator</small>, `ReusableParameterResolver` <small>engine:Execution</small>, `OpenApiOperationResolver` <small>protocol-http:Resolver</small>, `ProtobufOperationResolver` <small>protocol-rpc:Protocol</small>, `RpcMessageCodec` <small>protocol-rpc:Protocol</small>, `SoapEnvelope` <small>protocol-soap:Execution</small>, `WsdlOperationResolver` <small>protocol-soap:Execution</small>, `OperationResolvers` <small>runner:Preflight</small>, `FileLockStrategy` <small>engine:Runtime</small>, `FileStateStore` <small>engine:Runtime</small>, `OtelSetup` <small>engine:Runtime</small> |
 | **SchemaValidationException** | `ResponseSchemaValidator` <small>protocol-http:Execution</small>, `XsdResponseValidator` <small>protocol-soap:Validation</small> |
-| **SourceFetchException** | `DefaultSourceResolver` <small>sources:Resolver</small>, `HttpFetcher` <small>sources:Resolver</small>, `LocalFetcher` <small>sources:Resolver</small>, `Sources` <small>(sources root)</small> |
-| **SourceParseException** | `DefaultSourceResolver` <small>sources:Resolver</small> |
 | **StepBudgetExceededException** | `WorkflowEngine` <small>runner:Sync</small> |
-| **UnresolvableReferenceException** | `DefaultSourceResolver` <small>sources:Resolver</small> |
 | **UnsupportedSerializationStyleException** | `ParameterSerializer` <small>engine:Execution</small> |
 | **WorkflowCycleException** | `WorkflowNavigator` <small>runner:Sync</small> |
 | **WorkflowDepthExceededException** | `WorkflowNavigator` <small>runner:Sync</small> |
@@ -40,8 +37,11 @@ Regenerated before every commit.
 | **DecodeLimitException** | _(never raised in src)_ |
 | **DefinitionHydrationException** | _(never raised in src)_ |
 | **ExpressionSyntaxException** | _(never raised in src)_ |
+| **InvalidFetchPolicyException** | _(never raised in src)_ |
+| **InvalidOpenApiSourceException** | _(never raised in src)_ |
 | **InvalidSelectorPluginException** | _(never raised in src)_ |
 | **InvalidSourcePolicyException** | _(never raised in src)_ |
+| **InvalidSourceReferenceException** | _(never raised in src)_ |
 | **InvalidSpecVersionException** | _(never raised in src)_ |
 | **InvalidStepTargetException** | _(never raised in src)_ |
 | **JsonPathSyntaxException** | _(never raised in src)_ |
@@ -57,8 +57,11 @@ Regenerated before every commit.
 | **RegistryInitializationException** | _(never raised in src)_ |
 | **RunnerException** | _(never raised in src)_ |
 | **SelectorEvaluationException** | _(never raised in src)_ |
+| **SourceFetchException** | _(never raised in src)_ |
+| **SourceParseException** | _(never raised in src)_ |
 | **SourceResolutionException** | _(never raised in src)_ |
 | **UnknownWorkflowException** | _(never raised in src)_ |
+| **UnresolvableReferenceException** | _(never raised in src)_ |
 | **UnresolvableReusableReferenceException** | _(never raised in src)_ |
 | **UnsupportedSourceVersionException** | _(never raised in src)_ |
 

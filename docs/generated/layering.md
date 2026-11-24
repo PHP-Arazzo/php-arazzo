@@ -503,11 +503,14 @@ flowchart TB
     M_runner__ --> M_runner_Preflight
     M_runner__ --> M_runner_Sync
     M_sources_Normalizer --> M_contracts_Spec
+    M_sources_Normalizer --> M_sources_Exceptions
     M_sources_Plugins --> M_contracts_Attributes
     M_sources_Plugins --> M_contracts_Interfaces
     M_sources_Plugins --> M_contracts_Spec
+    M_sources_Plugins --> M_sources_Exceptions
     M_sources_Plugins --> M_sources_Normalizer
     M_sources_Plugins --> M_sources_Resolver
+    M_sources_Policy --> M_sources_Exceptions
     M_sources_Registries --> M_contracts_Attributes
     M_sources_Registries --> M_contracts_Discovery
     M_sources_Registries --> M_contracts_Interfaces
@@ -579,7 +582,7 @@ flowchart TB
 | `runner` | `engine` | 11 |
 | `runner` | `evaluation` | 14 |
 | `runner` | `expression` | 8 |
-| `sources` | `contracts` | 48 |
+| `sources` | `contracts` | 47 |
 | `sources` | `document` | 3 |
 
 ## Module-level detail

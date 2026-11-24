@@ -233,12 +233,15 @@ flowchart LR
     document__ --> contracts_Validation
     document__ --> document_Parser
     document__ --> document_Validator
+    sources_Normalizer --> sources_Exceptions
     sources_Normalizer --> contracts_Spec
     sources_Plugins --> contracts_Attributes
     sources_Plugins --> contracts_Interfaces
     sources_Plugins --> contracts_Spec
+    sources_Plugins --> sources_Exceptions
     sources_Plugins --> sources_Normalizer
     sources_Plugins --> sources_Resolver
+    sources_Policy --> sources_Exceptions
     sources_Registries --> contracts_Attributes
     sources_Registries --> contracts_Discovery
     sources_Registries --> contracts_Interfaces

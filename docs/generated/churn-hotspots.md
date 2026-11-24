@@ -14,10 +14,10 @@ xychart-beta
     title "Edit churn per module (git touches)"
     x-axis ["document:Validator", "cli:Console", "runner:Execution", "runner:Async", "runner:Sync", "sources:Normalizer", "document:Parser", "expression:Interfaces", "contracts:Interfaces", "contracts:Spec", "expression:Data", "sources:Resolver"]
     y-axis "Touches" 0 --> 70
-    bar [53, 41, 30, 23, 20, 20, 18, 18, 16, 15, 11, 11]
+    bar [53, 41, 30, 23, 20, 20, 18, 18, 16, 16, 11, 11]
 ```
 
-Analyzed 507 total file-touches across 78 modules.
+Analyzed 508 total file-touches across 78 modules.
 
 | Module | Touches | Share | LOC | Touches/KLOC |
 |---|---:|---:|---:|---:|
@@ -26,13 +26,13 @@ Analyzed 507 total file-touches across 78 modules.
 | `runner:Execution` | 30 | 6% | 679 | 44.2 |
 | `runner:Async` | 23 | 5% | 1,568 | 14.7 |
 | `runner:Sync` | 20 | 4% | 1,188 | 16.8 |
-| `sources:Normalizer` | 20 | 4% | 503 | 39.8 |
+| `sources:Normalizer` | 20 | 4% | 498 | 40.2 |
 | `document:Parser` | 18 | 4% | 2,476 | 7.3 |
 | `expression:Interfaces` | 18 | 4% | 214 | 84.1 |
 | `contracts:Interfaces` | 16 | 3% | 387 | 41.3 |
-| `contracts:Spec` | 15 | 3% | 1,452 | 10.3 |
+| `contracts:Spec` | 16 | 3% | 1,452 | 11 |
 | `expression:Data` | 11 | 2% | 199 | 55.3 |
-| `sources:Resolver` | 11 | 2% | 629 | 17.5 |
+| `sources:Resolver` | 11 | 2% | 624 | 17.6 |
 | `evaluation:Plugins` | 10 | 2% | 125 | 80 |
 | `evaluation:Registries` | 10 | 2% | 190 | 52.6 |
 | `engine:Execution` | 9 | 2% | 1,201 | 7.5 |
@@ -96,7 +96,7 @@ Analyzed 507 total file-touches across 78 modules.
 | `runner:Queue` | 1 | 0% | 25 | 40 |
 | `runner:Registries` | 1 | 0% | 151 | 6.6 |
 | `runner:Store` | 1 | 0% | 138 | 7.2 |
-| `sources:Exceptions` | 1 | 0% | 65 | 15.4 |
+| `sources:Exceptions` | 1 | 0% | 220 | 4.5 |
 | `sources:Plugins` | 1 | 0% | 147 | 6.8 |
 | `sources:Policy` | 1 | 0% | 125 | 8 |
 

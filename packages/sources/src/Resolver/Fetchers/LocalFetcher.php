@@ -21,7 +21,7 @@ final class LocalFetcher implements SourceFetcher
         $content = is_file($path) ? @file_get_contents($path) : false;
 
         if ($content === false) {
-            throw new SourceFetchException("Failed to read local file: {$path}");
+            throw SourceFetchException::fileReadFailed($path);
         }
 
         return $content;

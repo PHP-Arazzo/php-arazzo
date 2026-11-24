@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Sources\Policy;
 
-use InvalidArgumentException;
+use Alama\Arazzo\Sources\Exceptions\InvalidFetchPolicyException;
 
 /**
  * Immutable policy controlling source fetching limits, timeouts, allowed URI
@@ -37,15 +37,15 @@ final readonly class FetchPolicy
         public bool $strictReachability = self::DEFAULT_STRICT_REACHABILITY,
     ) {
         if ($connectTimeout <= 0.0) {
-            throw new InvalidArgumentException('FetchPolicy connectTimeout must be greater than 0.');
+            throw InvalidFetchPolicyException::nonPositiveConnectTimeout();
         }
 
         if ($timeout <= 0.0) {
-            throw new InvalidArgumentException('FetchPolicy timeout must be greater than 0.');
+            throw InvalidFetchPolicyException::nonPositiveTimeout();
         }
 
         if ($maxBytes < 1) {
-            throw new InvalidArgumentException('FetchPolicy maxBytes must be at least 1.');
+            throw InvalidFetchPolicyException::nonPositiveMaxBytes();
         }
 
         $this->allowedSchemes = array_values(array_unique(array_map(

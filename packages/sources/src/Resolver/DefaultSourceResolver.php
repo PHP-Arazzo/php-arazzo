@@ -138,10 +138,7 @@ final class DefaultSourceResolver implements SourceResolver
         }
 
         if (isset($this->resolving[$source->name])) {
-            throw new UnresolvableReferenceException(
-                "Circular reference detected when resolving source '{$source->name}'",
-                $source->name,
-            );
+            throw UnresolvableReferenceException::circularReference($source->name);
         }
 
         $this->resolving[$source->name] = true;
@@ -163,7 +160,7 @@ final class DefaultSourceResolver implements SourceResolver
 
         $fetcher = $this->fetchers[$scheme] ?? null;
         if ($fetcher === null) {
-            throw new SourceFetchException("No fetcher configured for scheme '{$scheme}'.");
+            throw SourceFetchException::noFetcherForScheme($scheme);
         }
 
         $content = $fetcher->fetch($source->url, $basePath);
@@ -187,11 +184,11 @@ final class DefaultSourceResolver implements SourceResolver
         try {
             $decoded = Decoders::for($format, $this->decodePolicy)->decode($content);
         } catch (Throwable $e) {
-            throw new SourceParseException("Failed to parse source '{$sourceName}': ".$e->getMessage(), 0, $e);
+            throw SourceParseException::parseFailed($sourceName, $e);
         }
 
         if (!is_array($decoded)) {
-            throw new SourceParseException("Parsed document for '{$sourceName}' must be an array.");
+            throw SourceParseException::rootMustBeArray($sourceName);
         }
 
         /** @var array<string, mixed> $decoded */

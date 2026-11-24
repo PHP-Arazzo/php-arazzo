@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Sources\Normalizer;
 
-use InvalidArgumentException;
+use Alama\Arazzo\Sources\Exceptions\InvalidOpenApiSourceException;
 
 /**
  * @internal stays out of the advertised contract; not part of the public API surface
@@ -30,6 +30,6 @@ class OpenApiVersionDetector
             }
         }
 
-        throw new InvalidArgumentException('Unsupported or missing OpenAPI/Swagger version in document.');
+        throw InvalidOpenApiSourceException::unsupportedVersion();
     }
 }

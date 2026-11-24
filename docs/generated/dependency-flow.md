@@ -379,12 +379,15 @@ runner-root,runner-Data,4
 runner-root,runner-Exceptions,9
 runner-root,runner-Policy,4
 runner-root,runner-Preflight,2
-sources-Normalizer,contracts-Spec,6
+sources-Normalizer,contracts-Spec,5
+sources-Normalizer,sources-Exceptions,3
 sources-Plugins,contracts-Attributes,1
 sources-Plugins,contracts-Interfaces,1
 sources-Plugins,contracts-Spec,4
+sources-Plugins,sources-Exceptions,1
 sources-Plugins,sources-Normalizer,4
 sources-Plugins,sources-Resolver,1
+sources-Policy,sources-Exceptions,1
 sources-Registries,contracts-Attributes,1
 sources-Registries,contracts-Discovery,1
 sources-Registries,contracts-Interfaces,1

@@ -125,7 +125,7 @@ final readonly class Sources implements SourcesInterface
                 if ($this->policy->strictReachability) {
                     throw $e instanceof SourceResolutionException
                         ? $e
-                        : new SourceFetchException("Failed to resolve source '{$source->name}': {$e->getMessage()}", 0, $e);
+                        : SourceFetchException::resolutionFailed($source->name, $e);
                 }
             }
         }
@@ -216,7 +216,7 @@ final readonly class Sources implements SourcesInterface
                 'allowed_schemes' => $this->policy->allowedSchemes,
             ]);
 
-            throw new SourceFetchException("Scheme '{$scheme}' is disallowed by FetchPolicy.");
+            throw SourceFetchException::schemeDisallowed($scheme);
         }
     }
 

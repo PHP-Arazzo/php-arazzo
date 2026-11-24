@@ -658,8 +658,40 @@ this file on a commit is a public API change — review it deliberately.
 
 ### `Alama\Arazzo\Sources\Exceptions`
 
+#### `InvalidFetchPolicyException` class
+- `public static function nonPositiveConnectTimeout(): self`
+- `public static function nonPositiveMaxBytes(): self`
+- `public static function nonPositiveTimeout(): self`
+
+#### `InvalidOpenApiSourceException` class
+- `public static function invalidJson(): self`
+- `public static function methodNotFound(string $method, string $path): self`
+- `public static function pathNotFound(string $path): self`
+- `public static function unsupportedVersion(): self`
+
+#### `InvalidSourceReferenceException` class
+- `public static function ambiguousPlainOperationId(string $opId, string $stepId): self`
+- `public static function invalidOperationId(string $stepId): self`
+- `public static function invalidOperationPath(string $stepId): self`
+- `public static function missingOperationTarget(string $stepId): self`
+
+#### `SourceFetchException` class
+- `public static function fileReadFailed(string $path): static`
+- `public static function httpConnectionFailed(string $url, Throwable $previous): static`
+- `public static function httpErrorStatus(string $url, int $statusCode): static`
+- `public static function noFetcherForScheme(string $scheme): static`
+- `public static function relativeUrlRequiresHttpBase(string $urlOrPath): static`
+- `public static function resolutionFailed(string $sourceName, Throwable $previous): static`
+- `public static function responseTooLarge(string $url, int $maxBytes): static`
+- `public static function schemeDisallowed(string $scheme): static`
+
+#### `SourceParseException` class
+- `public static function parseFailed(string $sourceName, Throwable $previous): self`
+- `public static function rootMustBeArray(string $sourceName): self`
+
 #### `UnresolvableReferenceException` class
 - `public function __construct(string $message, public readonly string $sourceName = '', public readonly string $reference = '', ?Throwable $previous = null)`
+- `public static function circularReference(string $sourceName): self`
 
 #### `UnsupportedSourceVersionException` class
 - `public static function forVersion(string $version, string $sourceName): self`

@@ -65,21 +65,21 @@ final class HttpFetcher implements SourceFetcher
                     'error' => $e->getMessage(),
                 ]);
 
-                throw new SourceFetchException("HTTP connection failed for {$url}: {$e->getMessage()}", 0, $e);
+                throw SourceFetchException::httpConnectionFailed($url, $e);
             }
 
             $statusCode = $response->getStatusCode();
             $span->setAttribute('http.response.status_code', $statusCode);
 
             if ($statusCode < 200 || $statusCode >= 300) {
-                $message = "HTTP request failed for {$url}: {$statusCode}";
-                $span->setStatus(false, $message);
+                $exception = SourceFetchException::httpErrorStatus($url, $statusCode);
+                $span->setStatus(false, $exception->getMessage());
                 $this->logger->warning('HTTP request failed while fetching source.', [
                     'url' => $url,
                     'status' => $statusCode,
                 ]);
 
-                throw new SourceFetchException($message);
+                throw $exception;
             }
 
             $body = (string) $response->getBody();
@@ -87,15 +87,15 @@ final class HttpFetcher implements SourceFetcher
             $span->setAttribute('http.response.body.size', $byteLength);
 
             if ($byteLength > $this->policy->maxBytes) {
-                $message = "HTTP response for {$url} exceeded maximum size of {$this->policy->maxBytes} bytes.";
-                $span->setStatus(false, $message);
+                $exception = SourceFetchException::responseTooLarge($url, $this->policy->maxBytes);
+                $span->setStatus(false, $exception->getMessage());
                 $this->logger->warning('HTTP source response exceeded FetchPolicy::maxBytes.', [
                     'url' => $url,
                     'bytes' => $byteLength,
                     'max_bytes' => $this->policy->maxBytes,
                 ]);
 
-                throw new SourceFetchException($message);
+                throw $exception;
             }
 
             $span->setStatus(true);
@@ -121,8 +121,6 @@ final class HttpFetcher implements SourceFetcher
             return rtrim($basePath, '/').'/'.ltrim($urlOrPath, '/');
         }
 
-        throw new SourceFetchException(
-            "Cannot resolve relative URL '{$urlOrPath}' without an HTTP or HTTPS basePath.",
-        );
+        throw SourceFetchException::relativeUrlRequiresHttpBase($urlOrPath);
     }
 }

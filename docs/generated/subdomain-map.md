@@ -25,7 +25,7 @@ flowchart LR
         S_document_Validator["document:Validator<br/><small>656 LOC</small>"]:::supportingDomain
         S_protocol_http_Resolver["protocol-http:Resolver<br/><small>317 LOC</small>"]:::supportingDomain
         S_protocol_soap_Resolver["protocol-soap:Resolver<br/><small>136 LOC</small>"]:::supportingDomain
-        S_sources_Resolver["sources:Resolver<br/><small>629 LOC</small>"]:::supportingDomain
+        S_sources_Resolver["sources:Resolver<br/><small>624 LOC</small>"]:::supportingDomain
     end
     subgraph S_generic["Generic subdomain"]
         S_contracts_State["contracts:State<br/><small>1062 LOC</small>"]:::genericDomain
@@ -94,8 +94,8 @@ flowchart LR
         S_runner_Registries["runner:Registries<br/><small>151 LOC</small>"]:::unknownDomain
         S_runner_Store["runner:Store<br/><small>138 LOC</small>"]:::unknownDomain
         S_runner_Sync["runner:Sync<br/><small>1188 LOC</small>"]:::unknownDomain
-        S_sources_Exceptions["sources:Exceptions<br/><small>65 LOC</small>"]:::unknownDomain
-        S_sources_Normalizer["sources:Normalizer<br/><small>503 LOC</small>"]:::unknownDomain
+        S_sources_Exceptions["sources:Exceptions<br/><small>220 LOC</small>"]:::unknownDomain
+        S_sources_Normalizer["sources:Normalizer<br/><small>498 LOC</small>"]:::unknownDomain
         S_sources_Plugins["sources:Plugins<br/><small>147 LOC</small>"]:::unknownDomain
         S_sources_Policy["sources:Policy<br/><small>125 LOC</small>"]:::unknownDomain
         S_sources_Registries["sources:Registries<br/><small>81 LOC</small>"]:::unknownDomain
@@ -109,9 +109,9 @@ flowchart LR
 | Subdomain | Modules | Core pkg LOC | Laravel pkg LOC | Share |
 |---|---:|---:|---:|---:|
 | Core domain | 1 | 1,452 | 0 | 4% |
-| Supporting | 8 | 5,473 | 0 | 16% |
+| Supporting | 8 | 5,468 | 0 | 16% |
 | Generic subdomain | 6 | 1,678 | 0 | 5% |
-| Unclassified | 63 | 25,779 | 0 | 75% |
+| Unclassified | 63 | 25,929 | 0 | 75% |
 
 **Unclassified modules** — classify them in `SUBDOMAINS` or delete them:
 - `contracts:Attributes`

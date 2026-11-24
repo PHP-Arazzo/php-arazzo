@@ -10,12 +10,12 @@ use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
 use Alama\Arazzo\Contracts\Spec\ResolvedOperation;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
+use Alama\Arazzo\Sources\Exceptions\InvalidOpenApiSourceException;
 use Alama\Arazzo\Sources\Normalizer\Interfaces\OpenApiNormalizerInterface;
 use Alama\Arazzo\Sources\Normalizer\OpenApi30Normalizer;
 use Alama\Arazzo\Sources\Normalizer\OpenApi31Normalizer;
 use Alama\Arazzo\Sources\Normalizer\OpenApiVersionDetector;
 use Alama\Arazzo\Sources\Resolver\Exceptions\UnsupportedSourceVersionException;
-use InvalidArgumentException;
 
 /**
  * Port (D2): turns a described source + raw content into an operation index.
@@ -58,7 +58,7 @@ final class OpenApiSourceNormalizer implements SourceNormalizerInterface
         /** @var array<string,mixed>|null $rawDocument */
         $rawDocument = json_decode($rawContent, true);
         if ($rawDocument === null) {
-            throw new InvalidArgumentException('Failed to decode source content as JSON.');
+            throw InvalidOpenApiSourceException::invalidJson();
         }
 
         $version = $this->detectVersion($rawDocument, $source);

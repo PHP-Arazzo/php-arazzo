@@ -89,15 +89,15 @@ targets. Regenerated before every commit.
 | `runner:Store` | 2 | 136 | 2 | 3 | 0.60 |  |
 | `runner:Sync` | 7 | 1181 | 4 | 21 | 0.84 | ⚠ unstable hub |
 | `(runner root)` | 6 | 573 | 5 | 15 | 0.75 |  |
-| `sources:Exceptions` | 5 | 60 | 2 | 0 | 0.00 |  |
-| `sources:Normalizer` | 6 | 497 | 2 | 1 | 0.33 |  |
-| `sources:Plugins` | 1 | 146 | 0 | 5 | 1.00 |  |
-| `sources:Policy` | 1 | 124 | 2 | 0 | 0.00 |  |
+| `sources:Exceptions` | 8 | 212 | 5 | 0 | 0.00 |  |
+| `sources:Normalizer` | 6 | 492 | 2 | 2 | 0.50 |  |
+| `sources:Plugins` | 1 | 146 | 0 | 6 | 1.00 |  |
+| `sources:Policy` | 1 | 124 | 2 | 1 | 0.33 |  |
 | `sources:Registries` | 1 | 80 | 1 | 4 | 0.80 |  |
-| `sources:Resolver` | 12 | 617 | 3 | 6 | 0.67 |  |
+| `sources:Resolver` | 12 | 612 | 3 | 6 | 0.67 |  |
 | `(sources root)` | 2 | 339 | 3 | 9 | 0.75 |  |
 
-Total cross-module edges: **1684**
+Total cross-module edges: **1688**
 
 ## Most entangled module pairs
 

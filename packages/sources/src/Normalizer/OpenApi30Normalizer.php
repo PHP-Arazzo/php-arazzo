@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Sources\Normalizer;
 
 use Alama\Arazzo\Contracts\Spec\NormalizedOpenApiOperation;
+use Alama\Arazzo\Sources\Exceptions\InvalidOpenApiSourceException;
 use Alama\Arazzo\Sources\Normalizer\Interfaces\OpenApiNormalizerInterface;
-use InvalidArgumentException;
 
 /**
  * @internal stays out of the advertised contract; not part of the public API surface
@@ -52,7 +52,7 @@ class OpenApi30Normalizer implements OpenApiNormalizerInterface
     {
         $paths = $document['paths'] ?? null;
         if (!is_array($paths) || !isset($paths[$path]) || !is_array($paths[$path])) {
-            throw new InvalidArgumentException("Path '{$path}' not found in document.");
+            throw InvalidOpenApiSourceException::pathNotFound($path);
         }
 
         /** @var array<string, mixed> */
@@ -66,7 +66,7 @@ class OpenApi30Normalizer implements OpenApiNormalizerInterface
     private function requireOperation(array $pathItem, string $path, string $method): array
     {
         if (!isset($pathItem[$method]) || !is_array($pathItem[$method])) {
-            throw new InvalidArgumentException("Method '{$method}' not found for path '{$path}'.");
+            throw InvalidOpenApiSourceException::methodNotFound($method, $path);
         }
 
         /** @var array<string, mixed> */

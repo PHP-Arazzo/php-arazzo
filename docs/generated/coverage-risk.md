@@ -93,9 +93,9 @@ quadrantChart
     runner/Store: [0.6, 1]
     runner/Sync: [0.84, 1]
     sources/Exceptions: [0, 1]
-    sources/Normalizer: [0.333, 1]
+    sources/Normalizer: [0.5, 1]
     sources/Plugins: [1, 1]
-    sources/Policy: [0, 1]
+    sources/Policy: [0.333, 1]
     sources/Registries: [0.8, 1]
     sources/Resolver: [0.667, 1]
 ```
@@ -114,7 +114,7 @@ quadrantChart
 | `contracts/Interfaces` | 0.10 | 49 | 20 | 100% |
 | `contracts/Observability` | 0.00 | 9 | 4 | 100% |
 | `contracts/Policy` | 0.00 | 12 | 5 | 100% |
-| `contracts/Spec` | 0.04 | 296 | 52 | 100% |
+| `contracts/Spec` | 0.04 | 297 | 52 | 100% |
 | `contracts/State` | 0.10 | 86 | 4 | 100% |
 | `contracts/Support` | 0.00 | 12 | 5 | 100% |
 | `contracts/Validation` | 0.11 | 93 | 9 | 100% |
@@ -174,11 +174,11 @@ quadrantChart
 | `runner/Registries` | 0.60 | 23 | 1 | 100% |
 | `runner/Store` | 0.60 | 18 | 2 | 100% |
 | `runner/Sync` | 0.84 | 38 | 7 | 100% |
-| `sources/Exceptions` | 0.00 | 8 | 5 | 100% |
-| `sources/Normalizer` | 0.33 | 6 | 6 | 100% |
-| `sources/Plugins` | 1.00 | 2 | 1 | 100% |
-| `sources/Policy` | 0.00 | 3 | 1 | 100% |
+| `sources/Exceptions` | 0.00 | 10 | 8 | 100% |
+| `sources/Normalizer` | 0.50 | 7 | 6 | 100% |
+| `sources/Plugins` | 1.00 | 3 | 1 | 100% |
+| `sources/Policy` | 0.33 | 3 | 1 | 100% |
 | `sources/Registries` | 0.80 | 5 | 1 | 100% |
-| `sources/Resolver` | 0.67 | 25 | 12 | 100% |
+| `sources/Resolver` | 0.67 | 26 | 12 | 100% |
 
 **Refactor-now list** (untested churn): `expression/Internal`
