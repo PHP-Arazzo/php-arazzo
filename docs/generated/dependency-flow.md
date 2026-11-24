@@ -102,7 +102,7 @@ evaluation-Condition,expression-Exceptions,1
 evaluation-Condition,expression-Interfaces,1
 evaluation-Condition,expression-root,1
 evaluation-Data,contracts-Spec,1
-evaluation-Data,evaluation-Enum,3
+evaluation-Data,evaluation-Enum,2
 evaluation-Events,evaluation-Data,1
 evaluation-Exceptions,contracts-Support,1
 evaluation-Interfaces,contracts-Spec,4

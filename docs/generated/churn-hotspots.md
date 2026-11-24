@@ -12,12 +12,12 @@ same corner every week" signal that static structure graphs cannot show.
 ```mermaid
 xychart-beta
     title "Edit churn per module (git touches)"
-    x-axis ["document:Validator", "cli:Console", "runner:Execution", "runner:Async", "sources:Normalizer", "runner:Sync", "document:Parser", "expression:Interfaces", "contracts:Interfaces", "contracts:Spec", "sources:Resolver", "expression:Data"]
+    x-axis ["document:Validator", "cli:Console", "runner:Execution", "runner:Async", "sources:Normalizer", "runner:Sync", "document:Parser", "expression:Interfaces", "contracts:Interfaces", "contracts:Spec", "expression:Data", "sources:Resolver"]
     y-axis "Touches" 0 --> 70
-    bar [53, 41, 30, 23, 21, 20, 18, 18, 16, 16, 12, 11]
+    bar [53, 41, 30, 23, 21, 20, 18, 18, 16, 16, 12, 12]
 ```
 
-Analyzed 520 total file-touches across 79 modules.
+Analyzed 523 total file-touches across 79 modules.
 
 | Module | Touches | Share | LOC | Touches/KLOC |
 |---|---:|---:|---:|---:|
@@ -31,19 +31,19 @@ Analyzed 520 total file-touches across 79 modules.
 | `expression:Interfaces` | 18 | 3% | 214 | 84.1 |
 | `contracts:Interfaces` | 16 | 3% | 387 | 41.3 |
 | `contracts:Spec` | 16 | 3% | 1,452 | 11 |
+| `expression:Data` | 12 | 2% | 247 | 48.6 |
 | `sources:Resolver` | 12 | 2% | 624 | 19.2 |
-| `expression:Data` | 11 | 2% | 247 | 44.5 |
 | `engine:Execution` | 10 | 2% | 1,199 | 8.3 |
 | `evaluation:Plugins` | 10 | 2% | 125 | 80 |
 | `evaluation:Registries` | 10 | 2% | 190 | 52.6 |
+| `expression:Plugins` | 9 | 2% | 1,341 | 6.7 |
 | `protocol-soap:Execution` | 9 | 2% | 484 | 18.6 |
-| `evaluation:Condition` | 8 | 2% | 1,139 | 7 |
-| `expression:Plugins` | 8 | 2% | 1,341 | 6 |
+| `evaluation:Condition` | 8 | 2% | 1,149 | 7 |
 | `protocol-http:Execution` | 8 | 2% | 946 | 8.5 |
 | `contracts:State` | 7 | 1% | 1,062 | 6.6 |
+| `expression:Internal` | 7 | 1% | 896 | 7.8 |
 | `cli:Renderer` | 6 | 1% | 321 | 18.7 |
 | `engine:Runtime` | 6 | 1% | 1,845 | 3.3 |
-| `expression:Internal` | 6 | 1% | 896 | 6.7 |
 | `expression:Registries` | 6 | 1% | 113 | 53.1 |
 | `protocol-rpc:Execution` | 6 | 1% | 188 | 31.9 |
 | `protocol-rpc:Normalizer` | 6 | 1% | 578 | 10.4 |
@@ -56,7 +56,7 @@ Analyzed 520 total file-touches across 79 modules.
 | `runner:Policy` | 5 | 1% | 124 | 40.3 |
 | `runner:Preflight` | 5 | 1% | 156 | 32.1 |
 | `cli:Generator` | 4 | 1% | 141 | 28.4 |
-| `evaluation:Data` | 4 | 1% | 86 | 46.5 |
+| `evaluation:Data` | 4 | 1% | 96 | 41.7 |
 | `expression:Enum` | 4 | 1% | 47 | 85.1 |
 | `expression:Exceptions` | 4 | 1% | 209 | 19.1 |
 | `expression:JsonPath` | 4 | 1% | 1,470 | 2.7 |

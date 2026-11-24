@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Evaluation\Data;
 
-use Alama\Arazzo\Evaluation\Enum\CriterionOutcome;
 use ArrayIterator;
 
 /**
@@ -31,13 +30,9 @@ final readonly class CriterionResultCollection
      */
     public function criteriaMet(): bool
     {
-        if ($this->results === []) {
-            return true;
-        }
+        $last = $this->last();
 
-        $lastKey = array_key_last($this->results);
-
-        return $this->results[$lastKey]->outcome === CriterionOutcome::Passed;
+        return $last === null || $last->isPassed();
     }
 
     public function count(): int

@@ -179,8 +179,8 @@ flowchart LR
     evaluation_Condition --> contracts_Support
     evaluation_Condition --> expression_Data
     evaluation_Condition --> expression_Interfaces
-    evaluation_Data --> evaluation_Enum
     evaluation_Data --> contracts_Spec
+    evaluation_Data --> evaluation_Enum
     evaluation_Events --> evaluation_Data
     evaluation_Exceptions --> contracts_Support
     evaluation_Interfaces --> contracts_Spec

@@ -11,9 +11,26 @@ use Alama\Arazzo\Evaluation\Enum\TokenKind;
  */
 final readonly class Token
 {
+    private const array TERMINAL_KINDS = [
+        TokenKind::Number,
+        TokenKind::String,
+        TokenKind::Ident,
+        TokenKind::Expr,
+    ];
+
     public function __construct(
         public TokenKind $kind,
         public string $value,
         public int $offset,
     ) {}
+
+    public function isKind(TokenKind $kind): bool
+    {
+        return $this->kind === $kind;
+    }
+
+    public function isTerminal(): bool
+    {
+        return in_array($this->kind, self::TERMINAL_KINDS, true);
+    }
 }

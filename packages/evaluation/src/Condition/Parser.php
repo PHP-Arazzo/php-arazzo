@@ -20,13 +20,6 @@ use Alama\Arazzo\Evaluation\Interfaces\ConditionNode;
  */
 final class Parser implements ParserInterface
 {
-    private const array TERMINAL_KINDS = [
-        TokenKind::Number,
-        TokenKind::String,
-        TokenKind::Ident,
-        TokenKind::Expr,
-    ];
-
     private Lexer $lexer;
 
     /** @var list<Token> */
@@ -122,11 +115,11 @@ final class Parser implements ParserInterface
             throw ConditionSyntaxException::unexpectedEnd();
         }
 
-        if ($token->kind === TokenKind::LParen) {
+        if ($token->isKind(TokenKind::LParen)) {
             return $this->parseGroup();
         }
 
-        if (in_array($token->kind, self::TERMINAL_KINDS, true)) {
+        if ($token->isTerminal()) {
             return $this->parseTerminal();
         }
 
@@ -145,7 +138,7 @@ final class Parser implements ParserInterface
         };
 
         $next = $this->peek();
-        if ($next !== null && in_array($next->kind, self::TERMINAL_KINDS, true)) {
+        if ($next !== null && $next->isTerminal()) {
             throw ConditionSyntaxException::unexpectedOperand($next->value);
         }
 
@@ -188,7 +181,7 @@ final class Parser implements ParserInterface
         $inner = $this->parseOr();
 
         $closing = $this->peek();
-        if ($closing === null || $closing->kind !== TokenKind::RParen) {
+        if ($closing === null || !$closing->isKind(TokenKind::RParen)) {
             throw ConditionSyntaxException::expectedClosingParen($closing?->value);
         }
         $this->advance();
@@ -200,7 +193,7 @@ final class Parser implements ParserInterface
     {
         $token = $this->peek();
 
-        return $token !== null && $token->kind === $kind;
+        return $token !== null && $token->isKind($kind);
     }
 
     private function peek(): ?Token
