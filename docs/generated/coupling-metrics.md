@@ -13,7 +13,7 @@ targets. Regenerated before every commit.
 |---|---:|---:|---:|---:|---:|---|
 | `cli:Console` | 10 | 787 | 0 | 19 | 1.00 |  |
 | `cli:Generator` | 2 | 139 | 0 | 1 | 1.00 |  |
-| `cli:Renderer` | 2 | 301 | 1 | 1 | 0.50 |  |
+| `cli:Renderer` | 3 | 318 | 1 | 1 | 0.50 |  |
 | `contracts:Attributes` | 6 | 100 | 13 | 2 | 0.13 |  |
 | `contracts:Clock` | 1 | 19 | 4 | 0 | 0.00 |  |
 | `contracts:Data` | 2 | 153 | 5 | 1 | 0.17 |  |
@@ -96,7 +96,7 @@ targets. Regenerated before every commit.
 | `sources:Resolver` | 12 | 617 | 3 | 6 | 0.67 |  |
 | `(sources root)` | 2 | 339 | 3 | 9 | 0.75 |  |
 
-Total cross-module edges: **1669**
+Total cross-module edges: **1670**
 
 ## Most entangled module pairs
 

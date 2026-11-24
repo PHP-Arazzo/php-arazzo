@@ -5,9 +5,3 @@ parameters:
 			identifier: arazzo.custom.maxParameterCount
 			count: 1
 			path: src/Generator/Clients/OpenAiClient.php
-
-		-
-			message: '#^Method name ''id'' length \(2\) is outside allowed range \(3\-30\)\.$#'
-			identifier: arazzo.custom.identifierLength
-			count: 1
-			path: src/Renderer/Renderer.php

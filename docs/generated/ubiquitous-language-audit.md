@@ -57,7 +57,7 @@ Evans' first question: does the code speak one language?
 ### render vs generate
 
 - **Generator**: `ArazzoGenerator` (1 types)
-- **Render**: `MarkdownRenderer`, `RenderCommand`, `Renderer` (3 types)
+- **Render**: `MarkdownRenderer`, `MermaidRenderer`, `RenderCommand`, `Renderer` (4 types)
 
 ## Homonyms (same name, multiple homes)
 

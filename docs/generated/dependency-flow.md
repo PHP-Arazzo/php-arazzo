@@ -34,7 +34,7 @@ cli-Console,runner-Store,1
 cli-Console,runner-root,9
 cli-Console,sources-root,3
 cli-Generator,contracts-Interfaces,2
-cli-Renderer,contracts-Spec,12
+cli-Renderer,contracts-Spec,13
 contracts-Attributes,contracts-Spec,5
 contracts-Attributes,contracts-Validation,1
 contracts-Data,contracts-Spec,1

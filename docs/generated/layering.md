@@ -536,7 +536,7 @@ flowchart TB
 
 | From package | To package | Refs |
 |---|---|---:|
-| `cli` | `contracts` | 24 |
+| `cli` | `contracts` | 25 |
 | `cli` | `document` | 11 |
 | `cli` | `engine` | 2 |
 | `cli` | `evaluation` | 2 |
