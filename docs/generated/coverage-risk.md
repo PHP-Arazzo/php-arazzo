@@ -42,7 +42,7 @@ quadrantChart
     document/Validator: [0.714, 1]
     engine/Data: [0.75, 1]
     engine/Enum: [0, 1]
-    engine/Exceptions: [0.091, 1]
+    engine/Exceptions: [0.083, 1]
     engine/Execution: [0.357, 1]
     engine/Runtime: [0.6, 1]
     evaluation/Condition: [0.889, 1]
@@ -65,10 +65,11 @@ quadrantChart
     expression/Registries: [0.625, 1]
     expression/Support: [0.667, 1]
     expression/Xpath: [0.5, 0.667]
+    protocol-http/Exceptions: [0.333, 0.5]
     protocol-http/Execution: [0.857, 1]
-    protocol-http/Plugins: [0.909, 1]
+    protocol-http/Plugins: [0.917, 1]
     protocol-http/Policy: [0.333, 1]
-    protocol-http/Resolver: [0.667, 1]
+    protocol-http/Resolver: [0.7, 1]
     protocol-rpc/Execution: [0.875, 1]
     protocol-rpc/Normalizer: [0, 0.143]
     protocol-rpc/Plugins: [0.929, 1]
@@ -111,11 +112,11 @@ quadrantChart
 | `contracts/Dependency` | 0.33 | 6 | 3 | 100% |
 | `contracts/Discovery` | 0.20 | 4 | 3 | 100% |
 | `contracts/Exceptions` | 0.10 | 7 | 5 | 100% |
-| `contracts/Interfaces` | 0.10 | 49 | 20 | 100% |
+| `contracts/Interfaces` | 0.10 | 50 | 20 | 100% |
 | `contracts/Observability` | 0.00 | 9 | 4 | 100% |
 | `contracts/Policy` | 0.00 | 12 | 5 | 100% |
-| `contracts/Spec` | 0.04 | 297 | 52 | 100% |
-| `contracts/State` | 0.10 | 86 | 4 | 100% |
+| `contracts/Spec` | 0.04 | 298 | 52 | 100% |
+| `contracts/State` | 0.10 | 87 | 4 | 100% |
 | `contracts/Support` | 0.00 | 13 | 5 | 100% |
 | `contracts/Validation` | 0.11 | 93 | 9 | 100% |
 | `document/Parser` | 0.29 | 65 | 31 | 100% |
@@ -124,7 +125,7 @@ quadrantChart
 | `document/Validator` | 0.71 | 26 | 6 | 100% |
 | `engine/Data` | 0.75 | 2 | 2 | 100% |
 | `engine/Enum` | 0.00 | 1 | 1 | 100% |
-| `engine/Exceptions` | 0.09 | 9 | 8 | 100% |
+| `engine/Exceptions` | 0.08 | 10 | 8 | 100% |
 | `engine/Execution` | 0.36 | 14 | 10 | 100% |
 | `engine/Runtime` | 0.60 | 24 | 21 | 100% |
 | `evaluation/Condition` | 0.89 | 81 | 18 | 100% |
@@ -147,10 +148,11 @@ quadrantChart
 | `expression/Registries` | 0.62 | 5 | 1 | 100% |
 | `expression/Support` | 0.67 | 5 | 2 | 100% |
 | `expression/Xpath` | 0.50 | 2 | 3 | 67% |
+| `protocol-http/Exceptions` | 0.33 | 1 | 2 | 50% |
 | `protocol-http/Execution` | 0.86 | 26 | 6 | 100% |
-| `protocol-http/Plugins` | 0.91 | 17 | 2 | 100% |
+| `protocol-http/Plugins` | 0.92 | 18 | 2 | 100% |
 | `protocol-http/Policy` | 0.33 | 2 | 1 | 100% |
-| `protocol-http/Resolver` | 0.67 | 19 | 3 | 100% |
+| `protocol-http/Resolver` | 0.70 | 19 | 3 | 100% |
 | `protocol-rpc/Execution` | 0.88 | 3 | 2 | 100% |
 | `protocol-rpc/Normalizer` | 0.00 | 1 | 7 | 14% |
 | `protocol-rpc/Plugins` | 0.93 | 6 | 3 | 100% |

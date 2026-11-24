@@ -10,6 +10,7 @@ use Alama\Arazzo\Contracts\Spec\ResolvedOperation;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Document\OperationResolverInterface;
+use Alama\Arazzo\Protocol\Http\Exceptions\OpenApiResolutionException;
 use Alama\Arazzo\Sources\Normalizer\OpenApi30Normalizer;
 use Alama\Arazzo\Sources\Normalizer\OpenApi31Normalizer;
 use Alama\Arazzo\Sources\Normalizer\OpenApiVersionDetector;
@@ -18,7 +19,6 @@ use Alama\Arazzo\Sources\Resolver\Exceptions\UnsupportedSourceVersionException;
 use Alama\Arazzo\Sources\Sources;
 use cebe\openapi\spec\OpenApi;
 use cebe\openapi\spec\Operation;
-use RuntimeException;
 
 /**
  * @internal stays out of the advertised contract; not part of the public API surface
@@ -74,7 +74,8 @@ class OpenApiOperationResolver implements OperationResolverInterface
         $sourceName = $target['sourceName'];
         $operationReference = $target['operationReference'];
 
-        $targetSource = $this->findSource($document, $sourceName, $step->stepId);
+        $targetSource = $document->findSource($sourceName)
+            ?? throw OpenApiResolutionException::sourceNotFound($sourceName, $step->stepId);
         $openApi = $this->loadOpenApi($targetSource, $sourceName);
         $rawDocument = $this->serializeOpenApi($openApi);
         $normalizer = $this->selectNormalizer($rawDocument, $sourceName);
@@ -84,7 +85,7 @@ class OpenApiOperationResolver implements OperationResolverInterface
             : $this->findOperationById($openApi, $operationReference);
 
         if ($located === null) {
-            throw new RuntimeException("Operation '{$operationReference}' not found in source '{$sourceName}'.");
+            throw OpenApiResolutionException::operationNotFound($operationReference, $sourceName);
         }
 
         [$foundPath, $foundMethod, $cebeOperation] = $located;
@@ -105,22 +106,11 @@ class OpenApiOperationResolver implements OperationResolverInterface
         );
     }
 
-    private function findSource(ArazzoDocument $document, string $sourceName, string $stepId): SourceDescription
-    {
-        foreach ($document->sourceDescriptions as $source) {
-            if ($source->name === $sourceName) {
-                return $source;
-            }
-        }
-
-        throw new RuntimeException("Source '{$sourceName}' not found in document for step '{$stepId}'.");
-    }
-
     private function loadOpenApi(SourceDescription $source, string $sourceName): OpenApi
     {
         $openApi = $this->loader->load($source, getcwd() ?: '');
         if (!$openApi instanceof OpenApi) {
-            throw new RuntimeException("Could not load or parse OpenAPI document for source '{$sourceName}'.");
+            throw OpenApiResolutionException::documentLoadFailed($sourceName);
         }
 
         return $openApi;
@@ -169,7 +159,7 @@ class OpenApiOperationResolver implements OperationResolverInterface
         );
 
         if (count($unescaped) < 3 || $unescaped[0] !== 'paths') {
-            throw new RuntimeException("Invalid operationPath reference '{$operationReference}'. Expected /paths/PATH/METHOD.");
+            throw OpenApiResolutionException::invalidOperationPath($operationReference);
         }
 
         $method = strtolower((string) array_pop($unescaped));

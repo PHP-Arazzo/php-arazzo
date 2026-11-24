@@ -188,6 +188,7 @@ expression-root,expression-Policy,2
 expression-root,expression-Registries,3
 expression-root,expression-Support,2
 expression-root,expression-Xpath,2
+protocol-http-Exceptions,engine-Exceptions,1
 protocol-http-Execution,contracts-Exceptions,1
 protocol-http-Execution,contracts-Interfaces,2
 protocol-http-Execution,contracts-Observability,4
@@ -208,12 +209,14 @@ protocol-http-Plugins,engine-Exceptions,1
 protocol-http-Plugins,engine-Execution,3
 protocol-http-Plugins,evaluation-root,2
 protocol-http-Plugins,expression-Data,1
+protocol-http-Plugins,protocol-http-Exceptions,1
 protocol-http-Plugins,protocol-http-Execution,1
 protocol-http-Plugins,protocol-http-Resolver,1
 protocol-http-Policy,engine-Execution,1
 protocol-http-Resolver,contracts-Interfaces,2
 protocol-http-Resolver,contracts-Spec,6
 protocol-http-Resolver,document-root,1
+protocol-http-Resolver,protocol-http-Exceptions,1
 protocol-http-Resolver,sources-Normalizer,4
 protocol-http-Resolver,sources-Resolver,1
 protocol-http-Resolver,sources-root,1

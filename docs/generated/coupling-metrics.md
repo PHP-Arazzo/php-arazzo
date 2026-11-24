@@ -34,7 +34,7 @@ targets. Regenerated before every commit.
 | `(document root)` | 5 | 229 | 12 | 6 | 0.33 |  |
 | `engine:Data` | 2 | 72 | 1 | 3 | 0.75 |  |
 | `engine:Enum` | 1 | 16 | 1 | 0 | 0.00 |  |
-| `engine:Exceptions` | 8 | 214 | 10 | 1 | 0.09 |  |
+| `engine:Exceptions` | 8 | 214 | 11 | 1 | 0.08 |  |
 | `engine:Execution` | 10 | 1189 | 9 | 5 | 0.36 |  |
 | `engine:Runtime` | 21 | 1824 | 4 | 6 | 0.60 |  |
 | `(engine root)` | 2 | 192 | 0 | 3 | 1.00 |  |
@@ -60,10 +60,11 @@ targets. Regenerated before every commit.
 | `expression:Support` | 2 | 190 | 2 | 4 | 0.67 |  |
 | `expression:Xpath` | 3 | 170 | 2 | 2 | 0.50 |  |
 | `(expression root)` | 9 | 896 | 6 | 12 | 0.67 |  |
+| `protocol-http:Exceptions` | 2 | 93 | 2 | 1 | 0.33 |  |
 | `protocol-http:Execution` | 6 | 940 | 2 | 12 | 0.86 |  |
-| `protocol-http:Plugins` | 2 | 338 | 1 | 10 | 0.91 |  |
+| `protocol-http:Plugins` | 2 | 334 | 1 | 11 | 0.92 |  |
 | `protocol-http:Policy` | 1 | 42 | 2 | 1 | 0.33 |  |
-| `protocol-http:Resolver` | 3 | 314 | 3 | 6 | 0.67 |  |
+| `protocol-http:Resolver` | 3 | 304 | 3 | 7 | 0.70 |  |
 | `(protocol-http root)` | 1 | 128 | 1 | 12 | 0.92 |  |
 | `protocol-rpc:Execution` | 2 | 186 | 1 | 7 | 0.88 |  |
 | `protocol-rpc:Normalizer` | 7 | 571 | 1 | 0 | 0.00 |  |
@@ -97,7 +98,7 @@ targets. Regenerated before every commit.
 | `sources:Resolver` | 12 | 612 | 3 | 6 | 0.67 |  |
 | `(sources root)` | 2 | 339 | 3 | 9 | 0.75 |  |
 
-Total cross-module edges: **1694**
+Total cross-module edges: **1697**
 
 ## Most entangled module pairs
 

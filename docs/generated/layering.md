@@ -99,6 +99,7 @@ flowchart TB
         M_runner__["(runner package root)"]:::node
     end
     subgraph PKG_M_protocol_http["protocol-http"]
+        M_protocol_http_Exceptions["protocol-http:Exceptions"]:::node
         M_protocol_http_Execution["protocol-http:Execution"]:::node
         M_protocol_http_Plugins["protocol-http:Plugins"]:::node
         M_protocol_http_Policy["protocol-http:Policy"]:::node
@@ -303,6 +304,7 @@ flowchart TB
     M_expression__ --> M_expression_Registries
     M_expression__ --> M_expression_Support
     M_expression__ --> M_expression_Xpath
+    M_protocol_http_Exceptions --> M_engine_Exceptions
     M_protocol_http_Execution --> M_contracts_Exceptions
     M_protocol_http_Execution --> M_contracts_Interfaces
     M_protocol_http_Execution --> M_contracts_Observability
@@ -323,12 +325,14 @@ flowchart TB
     M_protocol_http_Plugins --> M_engine_Execution
     M_protocol_http_Plugins --> M_evaluation__
     M_protocol_http_Plugins --> M_expression_Data
+    M_protocol_http_Plugins --> M_protocol_http_Exceptions
     M_protocol_http_Plugins --> M_protocol_http_Execution
     M_protocol_http_Plugins --> M_protocol_http_Resolver
     M_protocol_http_Policy --> M_engine_Execution
     M_protocol_http_Resolver --> M_contracts_Interfaces
     M_protocol_http_Resolver --> M_contracts_Spec
     M_protocol_http_Resolver --> M_document__
+    M_protocol_http_Resolver --> M_protocol_http_Exceptions
     M_protocol_http_Resolver --> M_sources_Normalizer
     M_protocol_http_Resolver --> M_sources_Resolver
     M_protocol_http_Resolver --> M_sources__
@@ -566,7 +570,7 @@ flowchart TB
 | `expression` | `contracts` | 127 |
 | `protocol-http` | `contracts` | 54 |
 | `protocol-http` | `document` | 2 |
-| `protocol-http` | `engine` | 10 |
+| `protocol-http` | `engine` | 11 |
 | `protocol-http` | `evaluation` | 6 |
 | `protocol-http` | `expression` | 7 |
 | `protocol-http` | `sources` | 8 |

@@ -20,14 +20,15 @@ Regenerated before every commit.
 | **ExecutionException** | `RpcRequestBuilder` <small>protocol-rpc:Execution</small>, `RpcOperationExecutor` <small>protocol-rpc:Plugins</small>, `SoapRequestBuilder` <small>protocol-soap:Execution</small>, `SoapOperationExecutor` <small>protocol-soap:Plugins</small>, `StepExecutionWorker` <small>runner:Async</small>, `StepExecutor` <small>runner:Sync</small> |
 | **GotoTargetNotFoundException** | `WorkflowEngine` <small>runner:Sync</small>, `WorkflowNavigator` <small>runner:Sync</small> |
 | **InvalidArgumentException** | `ProtoParser` <small>protocol-rpc:Normalizer</small>, `ProtoTokenCursor` <small>protocol-rpc:Normalizer</small>, `WsdlDomReader` <small>protocol-soap:Plugins</small>, `WsdlSourceNormalizer` <small>protocol-soap:Plugins</small> |
-| **LogicException** | `AsyncApiStepExecutor` <small>protocol-http:Plugins</small>, `StepExecutionWorker` <small>runner:Async</small> |
+| **LogicException** | `StepExecutionWorker` <small>runner:Async</small> |
 | **PreflightFailureException** | `AsyncExecutionGraphAssembler` <small>runner:Async</small>, `StepExecutionWorker` <small>runner:Async</small>, `WorkflowPreflightRunner` <small>runner:Sync</small> |
-| **RuntimeException** | `CliRunner` <small>cli:Console</small>, `OpenAiClient` <small>cli:Generator</small>, `OpenApiOperationResolver` <small>protocol-http:Resolver</small>, `ProtobufOperationResolver` <small>protocol-rpc:Protocol</small>, `RpcMessageCodec` <small>protocol-rpc:Protocol</small>, `SoapEnvelope` <small>protocol-soap:Execution</small>, `WsdlOperationResolver` <small>protocol-soap:Execution</small>, `OperationResolvers` <small>runner:Preflight</small> |
-| **SchemaValidationException** | `ResponseSchemaValidator` <small>protocol-http:Execution</small>, `XsdResponseValidator` <small>protocol-soap:Validation</small> |
+| **RuntimeException** | `CliRunner` <small>cli:Console</small>, `OpenAiClient` <small>cli:Generator</small>, `ProtobufOperationResolver` <small>protocol-rpc:Protocol</small>, `RpcMessageCodec` <small>protocol-rpc:Protocol</small>, `SoapEnvelope` <small>protocol-soap:Execution</small>, `WsdlOperationResolver` <small>protocol-soap:Execution</small>, `OperationResolvers` <small>runner:Preflight</small> |
+| **SchemaValidationException** | `XsdResponseValidator` <small>protocol-soap:Validation</small> |
 | **StepBudgetExceededException** | `WorkflowEngine` <small>runner:Sync</small> |
 | **WorkflowCycleException** | `WorkflowNavigator` <small>runner:Sync</small> |
 | **WorkflowDepthExceededException** | `WorkflowNavigator` <small>runner:Sync</small> |
 | **ArazzoException** | _(never raised in src)_ |
+| **AsyncApiStepException** | _(never raised in src)_ |
 | **ConditionLexException** | _(never raised in src)_ |
 | **ConditionSyntaxException** | _(never raised in src)_ |
 | **CriterionEvaluationException** | _(never raised in src)_ |
@@ -54,6 +55,7 @@ Regenerated before every commit.
 | **MaxNodesExceededException** | _(never raised in src)_ |
 | **NotImplementedException** | _(never raised in src)_ |
 | **ObjectDeserializationForbiddenException** | _(never raised in src)_ |
+| **OpenApiResolutionException** | _(never raised in src)_ |
 | **ParameterResolutionException** | _(never raised in src)_ |
 | **ParserException** | _(never raised in src)_ |
 | **PluginInstantiationException** | _(never raised in src)_ |

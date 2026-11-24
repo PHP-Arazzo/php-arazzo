@@ -10,9 +10,11 @@ source. Use this to decide which exception to throw or catch.
 classDiagram
     direction TB
     class E_RuntimeException["RuntimeException"]:::builtin
+    class E_LogicException["LogicException"]:::builtin
     class E_InvalidArgumentException["InvalidArgumentException"]:::builtin
     class E_BaseException["BaseException"]:::builtin
     class E_ArazzoException["ArazzoException<br/><small>contracts:Support</small>"]:::domain
+    class E_AsyncApiStepException["AsyncApiStepException<br/><small>protocol-http:Exceptions</small>"]:::domain
     class E_ConditionLexException["ConditionLexException<br/><small>evaluation:Condition</small>"]:::domain
     class E_ConditionSyntaxException["ConditionSyntaxException<br/><small>evaluation:Condition</small>"]:::domain
     class E_CriterionEvaluationException["CriterionEvaluationException<br/><small>evaluation:Exceptions</small>"]:::domain
@@ -41,6 +43,7 @@ classDiagram
     class E_MaxNodesExceededException["MaxNodesExceededException<br/><small>document:Parser</small>"]:::domain
     class E_NotImplementedException["NotImplementedException<br/><small>contracts:Support</small>"]:::domain
     class E_ObjectDeserializationForbiddenException["ObjectDeserializationForbiddenException<br/><small>document:Parser</small>"]:::domain
+    class E_OpenApiResolutionException["OpenApiResolutionException<br/><small>protocol-http:Exceptions</small>"]:::domain
     class E_ParameterResolutionException["ParameterResolutionException<br/><small>engine:Exceptions</small>"]:::domain
     class E_ParserException["ParserException<br/><small>document:Parser</small>"]:::domain
     class E_PluginInstantiationException["PluginInstantiationException<br/><small>contracts:Exceptions</small>"]:::domain
@@ -64,6 +67,7 @@ classDiagram
     class E_WorkflowCycleException["WorkflowCycleException<br/><small>runner:Exceptions</small>"]:::domain
     class E_WorkflowDepthExceededException["WorkflowDepthExceededException<br/><small>runner:Exceptions</small>"]:::domain
     E_RuntimeException <|-- E_ArazzoException
+    E_LogicException <|-- E_AsyncApiStepException
     E_ConditionSyntaxException <|-- E_ConditionLexException
     E_ArazzoException <|-- E_ConditionSyntaxException
     E_ArazzoException <|-- E_CriterionEvaluationException
@@ -92,6 +96,7 @@ classDiagram
     E_DecodeLimitException <|-- E_MaxNodesExceededException
     E_ArazzoException <|-- E_NotImplementedException
     E_DecodeLimitException <|-- E_ObjectDeserializationForbiddenException
+    E_EngineException <|-- E_OpenApiResolutionException
     E_EngineException <|-- E_ParameterResolutionException
     E_ArazzoException <|-- E_ParserException
     E_ArazzoException <|-- E_PluginInstantiationException
@@ -121,6 +126,7 @@ classDiagram
 | Exception | Extends | Module |
 |---|---|---|
 | `ArazzoException` | `RuntimeException` | contracts:Support |
+| `AsyncApiStepException` | `LogicException` | protocol-http:Exceptions |
 | `ConditionLexException` | `ConditionSyntaxException` | evaluation:Condition |
 | `ConditionSyntaxException` | `ArazzoException` | evaluation:Condition |
 | `CriterionEvaluationException` | `ArazzoException` | evaluation:Exceptions |
@@ -149,6 +155,7 @@ classDiagram
 | `MaxNodesExceededException` | `DecodeLimitException` | document:Parser |
 | `NotImplementedException` | `ArazzoException` | contracts:Support |
 | `ObjectDeserializationForbiddenException` | `DecodeLimitException` | document:Parser |
+| `OpenApiResolutionException` | `EngineException` | protocol-http:Exceptions |
 | `ParameterResolutionException` | `EngineException` | engine:Exceptions |
 | `ParserException` | `ArazzoException` | document:Parser |
 | `PluginInstantiationException` | `ArazzoException` | contracts:Exceptions |

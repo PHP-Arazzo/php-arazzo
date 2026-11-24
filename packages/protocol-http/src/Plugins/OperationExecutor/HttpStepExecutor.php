@@ -54,7 +54,7 @@ final class HttpStepExecutor implements OperationExecutorPluginInterface
 
     public function supports(Step $step, ArazzoDocument $document): bool
     {
-        return $step->target->action === null;
+        return !$step->hasAction();
     }
 
     public function execute(Step $step, WorkflowContext $context, ArazzoDocument $document, string $executionId): StepExecutionOutcome
@@ -64,9 +64,7 @@ final class HttpStepExecutor implements OperationExecutorPluginInterface
 
         $resolved = $this->operationResolver->resolve($step, $document);
         $sourcePolicy = $context->getActiveSourcePolicy();
-        $timeoutSeconds = $step->flow->timeout !== null
-            ? $step->flow->timeout / 1000
-            : $sourcePolicy?->timeoutSeconds();
+        $timeoutSeconds = $step->flow->timeoutSeconds() ?? $sourcePolicy?->timeoutSeconds();
 
         $capturedRequest = null;
         try {

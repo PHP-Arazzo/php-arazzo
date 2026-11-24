@@ -23,7 +23,7 @@ flowchart LR
         S_cli_Renderer["cli:Renderer<br/><small>321 LOC</small>"]:::supportingDomain
         S_document_Parser["document:Parser<br/><small>2476 LOC</small>"]:::supportingDomain
         S_document_Validator["document:Validator<br/><small>656 LOC</small>"]:::supportingDomain
-        S_protocol_http_Resolver["protocol-http:Resolver<br/><small>317 LOC</small>"]:::supportingDomain
+        S_protocol_http_Resolver["protocol-http:Resolver<br/><small>307 LOC</small>"]:::supportingDomain
         S_protocol_soap_Resolver["protocol-soap:Resolver<br/><small>136 LOC</small>"]:::supportingDomain
         S_sources_Resolver["sources:Resolver<br/><small>624 LOC</small>"]:::supportingDomain
     end
@@ -71,8 +71,9 @@ flowchart LR
         S_expression_Policy["expression:Policy<br/><small>37 LOC</small>"]:::unknownDomain
         S_expression_Registries["expression:Registries<br/><small>113 LOC</small>"]:::unknownDomain
         S_expression_Xpath["expression:Xpath<br/><small>173 LOC</small>"]:::unknownDomain
+        S_protocol_http_Exceptions["protocol-http:Exceptions<br/><small>95 LOC</small>"]:::unknownDomain
         S_protocol_http_Execution["protocol-http:Execution<br/><small>946 LOC</small>"]:::unknownDomain
-        S_protocol_http_Plugins["protocol-http:Plugins<br/><small>340 LOC</small>"]:::unknownDomain
+        S_protocol_http_Plugins["protocol-http:Plugins<br/><small>336 LOC</small>"]:::unknownDomain
         S_protocol_http_Policy["protocol-http:Policy<br/><small>43 LOC</small>"]:::unknownDomain
         S_protocol_rpc_Execution["protocol-rpc:Execution<br/><small>188 LOC</small>"]:::unknownDomain
         S_protocol_rpc_Normalizer["protocol-rpc:Normalizer<br/><small>578 LOC</small>"]:::unknownDomain
@@ -109,9 +110,9 @@ flowchart LR
 | Subdomain | Modules | Core pkg LOC | Laravel pkg LOC | Share |
 |---|---:|---:|---:|---:|
 | Core domain | 1 | 1,452 | 0 | 4% |
-| Supporting | 8 | 5,468 | 0 | 16% |
+| Supporting | 8 | 5,458 | 0 | 16% |
 | Generic subdomain | 6 | 1,678 | 0 | 5% |
-| Unclassified | 63 | 26,108 | 0 | 75% |
+| Unclassified | 64 | 26,199 | 0 | 75% |
 
 **Unclassified modules** — classify them in `SUBDOMAINS` or delete them:
 - `contracts:Attributes`
@@ -149,6 +150,7 @@ flowchart LR
 - `expression:Policy`
 - `expression:Registries`
 - `expression:Xpath`
+- `protocol-http:Exceptions`
 - `protocol-http:Execution`
 - `protocol-http:Plugins`
 - `protocol-http:Policy`

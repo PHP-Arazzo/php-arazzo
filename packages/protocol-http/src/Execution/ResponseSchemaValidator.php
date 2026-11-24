@@ -35,7 +35,7 @@ class ResponseSchemaValidator implements ResponseValidatorInterface
         $violations = SchemaValidator::validate($schema, $decodedBody);
 
         if ($violations !== []) {
-            throw new SchemaValidationException($step->stepId, $violations);
+            throw SchemaValidationException::forStep($step->stepId, $violations);
         }
     }
 

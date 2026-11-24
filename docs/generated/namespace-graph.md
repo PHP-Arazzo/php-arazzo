@@ -58,6 +58,7 @@ flowchart LR
     expression_Support["Alama\Arazzo\Expression\Support"]:::coreNode
     expression_Xpath["Alama\Arazzo\Expression\Xpath"]:::coreNode
     expression__["(expression package root)"]:::coreNode
+    protocol_http_Exceptions["Alama\Arazzo\Protocol\Http\Exceptions"]:::coreNode
     protocol_http_Execution["Alama\Arazzo\Protocol\Http\Execution"]:::coreNode
     protocol_http_Plugins["Alama\Arazzo\Protocol\Http\Plugins\OperationExecutor"]:::coreNode
     protocol_http_Policy["Alama\Arazzo\Protocol\Http\Policy"]:::coreNode
@@ -403,6 +404,7 @@ flowchart LR
     cli_Console --> protocol_http__
     cli_Generator --> contracts_Interfaces
     cli_Renderer --> contracts_Spec
+    protocol_http_Exceptions --> engine_Exceptions
     protocol_http_Execution --> contracts_Exceptions
     protocol_http_Execution --> contracts_Interfaces
     protocol_http_Execution --> contracts_Spec
@@ -425,10 +427,12 @@ flowchart LR
     protocol_http_Plugins --> protocol_http_Resolver
     protocol_http_Plugins --> engine_Exceptions
     protocol_http_Plugins --> expression_Data
+    protocol_http_Plugins --> protocol_http_Exceptions
     protocol_http_Policy --> engine_Execution
     protocol_http_Resolver --> contracts_Spec
     protocol_http_Resolver --> contracts_Interfaces
     protocol_http_Resolver --> document__
+    protocol_http_Resolver --> protocol_http_Exceptions
     protocol_http_Resolver --> sources_Normalizer
     protocol_http_Resolver --> sources_Resolver
     protocol_http_Resolver --> sources__
