@@ -481,9 +481,34 @@ this file on a commit is a public API change — review it deliberately.
 
 #### `ExpressionSyntaxException` class
 - `public function __construct(string $message, public readonly string $expression = '', public readonly int $offset = -1, string $path = '', string $codeId = '', ?Throwable $previous = null)`
+- `public static function atOffset(string $message, string $expression, int $offset): self`
+- `public static function emptyExpression(string $raw, int $offset): self`
+- `public static function illegalCharacter(string $character, int $offset, string $raw): self`
+- `public static function invalidEmbedded(self $cause, string $template, int $offset): self`
+- `public static function malformedEmbedded(): self`
+- `public static function missingPrefix(string $raw): self`
+- `public static function unterminatedEmbedded(string $template, int $offset): self`
+
+#### `InvalidSelectorPluginException` class
+- `public static function missingPluginInstance(): self`
+- `public static function undeterminableType(): self`
+
+#### `JsonPathSyntaxException` class
+- `public static function expectedFieldAfterCurrent(): self`
+- `public static function expectedFieldInPath(): self`
+- `public static function expectedMemberAfterDescent(): self`
+- `public static function expectedMemberAfterDot(): self`
+- `public static function expectedTokenType(string $expected, mixed $actual): self`
+- `public static function expectedTokenValue(string $type, string $expected, mixed $actual): self`
+- `public static function unexpectedEnd(): self`
+- `public static function unexpectedFilterToken(mixed $value): self`
+- `public static function unexpectedTrailingTokens(): self`
+- `public static function unsupportedBracketSelector(): self`
 
 #### `SelectorEvaluationException` class
+- `public static function atLocation(self $previous, string $location): self`
 - `public static function jsonPathBudgetExceeded(string $limitName, string $location = '/'): self`
+- `public static function noPluginRegistered(string $type, string $location = ''): self`
 - `public static function unsupportedXpathVersion(string $requested, array $supported, string $location = '/'): self`
 - `public static function xpathRequiresXml(string $pointer): self`
 

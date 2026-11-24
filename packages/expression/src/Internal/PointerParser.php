@@ -110,7 +110,7 @@ final class PointerParser
      */
     public function fail(string $message, string $raw, ?Token $at = null): never
     {
-        throw new ExpressionSyntaxException($message, $raw, $at->offset ?? strlen($raw), '', 'expr.syntax');
+        throw ExpressionSyntaxException::atOffset($message, $raw, $at->offset ?? strlen($raw));
     }
 
     private function isPointerSegmentToken(Token $token): bool

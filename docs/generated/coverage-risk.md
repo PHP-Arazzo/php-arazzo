@@ -55,13 +55,13 @@ quadrantChart
     expression/Ast: [0.333, 0.8]
     expression/Data: [0.25, 1]
     expression/Enum: [0, 1]
-    expression/Exceptions: [0.091, 1]
+    expression/Exceptions: [0.083, 1]
     expression/Interfaces: [0.333, 1]
     expression/Internal: [0.778, 0.167]
     expression/JsonPath: [0.667, 1]
     expression/Plugins: [1, 1]
     expression/Policy: [0, 1]
-    expression/Registries: [0.571, 1]
+    expression/Registries: [0.625, 1]
     expression/Support: [0.667, 1]
     expression/Xpath: [0.5, 0.667]
     protocol-http/Execution: [0.857, 1]
@@ -113,10 +113,10 @@ quadrantChart
 | `contracts/Interfaces` | 0.10 | 49 | 20 | 100% |
 | `contracts/Observability` | 0.00 | 9 | 4 | 100% |
 | `contracts/Policy` | 0.00 | 12 | 5 | 100% |
-| `contracts/Spec` | 0.04 | 293 | 52 | 100% |
+| `contracts/Spec` | 0.04 | 294 | 52 | 100% |
 | `contracts/State` | 0.10 | 85 | 4 | 100% |
 | `contracts/Support` | 0.00 | 12 | 5 | 100% |
-| `contracts/Validation` | 0.11 | 92 | 9 | 100% |
+| `contracts/Validation` | 0.11 | 93 | 9 | 100% |
 | `document/Parser` | 0.29 | 63 | 31 | 100% |
 | `document/Plugins` | 1.00 | 52 | 50 | 100% |
 | `document/Registries` | 0.80 | 3 | 1 | 100% |
@@ -136,13 +136,13 @@ quadrantChart
 | `expression/Ast` | 0.33 | 12 | 15 | 80% |
 | `expression/Data` | 0.25 | 25 | 6 | 100% |
 | `expression/Enum` | 0.00 | 8 | 2 | 100% |
-| `expression/Exceptions` | 0.09 | 18 | 2 | 100% |
-| `expression/Interfaces` | 0.33 | 23 | 4 | 100% |
+| `expression/Exceptions` | 0.08 | 19 | 4 | 100% |
+| `expression/Interfaces` | 0.33 | 24 | 4 | 100% |
 | `expression/Internal` | 0.78 | 1 | 6 | 17% |
 | `expression/JsonPath` | 0.67 | 63 | 9 | 100% |
-| `expression/Plugins` | 1.00 | 22 | 17 | 100% |
+| `expression/Plugins` | 1.00 | 23 | 17 | 100% |
 | `expression/Policy` | 0.00 | 3 | 1 | 100% |
-| `expression/Registries` | 0.57 | 4 | 1 | 100% |
+| `expression/Registries` | 0.62 | 5 | 1 | 100% |
 | `expression/Support` | 0.67 | 5 | 2 | 100% |
 | `expression/Xpath` | 0.50 | 2 | 3 | 67% |
 | `protocol-http/Execution` | 0.86 | 26 | 6 | 100% |

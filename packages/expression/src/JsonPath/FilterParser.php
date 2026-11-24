@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Expression\JsonPath;
 
-use RuntimeException;
+use Alama\Arazzo\Expression\Exceptions\JsonPathSyntaxException;
 
 /**
  * Recursive-descent parser for RFC 9535 JSONPath filter predicates (`[?...]`).
@@ -137,7 +137,7 @@ final readonly class FilterParser
             return ['kind' => 'literal', 'value' => $value === 'null' ? null : ($value === 'true')];
         }
 
-        throw new RuntimeException('Unexpected token in filter expression: '.var_export($value, true));
+        throw JsonPathSyntaxException::unexpectedFilterToken($value);
     }
 
     /**
@@ -169,7 +169,7 @@ final readonly class FilterParser
             return $expr;
         }
 
-        throw new RuntimeException('Unexpected token in filter expression: '.var_export($value, true));
+        throw JsonPathSyntaxException::unexpectedFilterToken($value);
     }
 
     /**
@@ -195,7 +195,7 @@ final readonly class FilterParser
             $this->cursor->advance();
             $nameToken = $this->cursor->current();
             if ($nameToken[0] !== 'WORD') {
-                throw new RuntimeException('Expected field name after @.');
+                throw JsonPathSyntaxException::expectedFieldAfterCurrent();
             }
             $this->cursor->advance();
 
@@ -221,7 +221,7 @@ final readonly class FilterParser
 
         $token = $this->cursor->current();
         if ($token[0] !== 'WORD') {
-            throw new RuntimeException('Expected field name in path expression');
+            throw JsonPathSyntaxException::expectedFieldInPath();
         }
 
         $this->cursor->advance();

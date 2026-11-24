@@ -37,4 +37,18 @@ final class SelectorEvaluationException extends ArazzoException
             'expression.jsonpath_budget',
         );
     }
+
+    public static function noPluginRegistered(string $type, string $location = ''): self
+    {
+        return new self(
+            "No selector plugin registered for type '{$type}'.",
+            $location,
+            'selector.no_plugin',
+        );
+    }
+
+    public static function atLocation(self $previous, string $location): self
+    {
+        return new self($previous->getMessage(), $location, $previous->codeId, $previous);
+    }
 }

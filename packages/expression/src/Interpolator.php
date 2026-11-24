@@ -96,12 +96,12 @@ final class Interpolator
         $inner = $this->extractInner($match);
 
         if ($inner === null) {
-            throw new ExpressionSyntaxException('Malformed embedded expression');
+            throw ExpressionSyntaxException::malformedEmbedded();
         }
 
         $trimmed = trim($inner);
         if ($trimmed === '') {
-            throw new ExpressionSyntaxException('Malformed embedded expression');
+            throw ExpressionSyntaxException::malformedEmbedded();
         }
 
         $bare = str_starts_with($trimmed, '$') ? $trimmed : '$'.$trimmed;

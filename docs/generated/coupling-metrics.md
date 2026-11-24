@@ -49,16 +49,16 @@ targets. Regenerated before every commit.
 | `expression:Ast` | 15 | 340 | 4 | 2 | 0.33 |  |
 | `expression:Data` | 6 | 193 | 15 | 5 | 0.25 |  |
 | `expression:Enum` | 2 | 45 | 7 | 0 | 0.00 |  |
-| `expression:Exceptions` | 2 | 62 | 10 | 1 | 0.09 |  |
+| `expression:Exceptions` | 4 | 205 | 11 | 1 | 0.08 |  |
 | `expression:Interfaces` | 4 | 210 | 12 | 6 | 0.33 |  |
-| `expression:Internal` | 6 | 915 | 2 | 7 | 0.78 |  |
+| `expression:Internal` | 6 | 902 | 2 | 7 | 0.78 |  |
 | `expression:JsonPath` | 9 | 1461 | 1 | 2 | 0.67 |  |
-| `expression:Plugins` | 17 | 1354 | 0 | 13 | 1.00 |  |
+| `expression:Plugins` | 17 | 1336 | 0 | 13 | 1.00 |  |
 | `expression:Policy` | 1 | 36 | 2 | 0 | 0.00 |  |
-| `expression:Registries` | 1 | 112 | 3 | 4 | 0.57 |  |
+| `expression:Registries` | 1 | 112 | 3 | 5 | 0.63 |  |
 | `expression:Support` | 2 | 190 | 2 | 4 | 0.67 |  |
 | `expression:Xpath` | 3 | 170 | 2 | 2 | 0.50 |  |
-| `(expression root)` | 9 | 918 | 6 | 12 | 0.67 |  |
+| `(expression root)` | 9 | 896 | 6 | 12 | 0.67 |  |
 | `protocol-http:Execution` | 6 | 940 | 2 | 12 | 0.86 |  |
 | `protocol-http:Plugins` | 2 | 338 | 1 | 10 | 0.91 |  |
 | `protocol-http:Policy` | 1 | 42 | 2 | 1 | 0.33 |  |
@@ -96,7 +96,7 @@ targets. Regenerated before every commit.
 | `sources:Resolver` | 12 | 617 | 3 | 6 | 0.67 |  |
 | `(sources root)` | 2 | 339 | 3 | 9 | 0.75 |  |
 
-Total cross-module edges: **1676**
+Total cross-module edges: **1680**
 
 ## Most entangled module pairs
 
@@ -110,7 +110,7 @@ Total cross-module edges: **1676**
 | `expression:Plugins` → `contracts:Validation` | 32 |
 | `runner:Async` → `contracts:Spec` | 32 |
 | `runner:Sync` → `contracts:Spec` | 30 |
-| `expression:Plugins` → `contracts:Spec` | 28 |
+| `expression:Plugins` → `contracts:Spec` | 27 |
 | `(evaluation root)` → `contracts:Spec` | 26 |
 | `expression:Internal` → `expression:Ast` | 23 |
 | `contracts:Interfaces` → `contracts:Spec` | 21 |

@@ -114,11 +114,7 @@ final readonly class ExpressionEngine implements ExpressionEngineInterface
         $plugin = SelectorPluginRegistry::create()->get($type);
 
         if ($plugin === null) {
-            throw new SelectorEvaluationException(
-                "No selector plugin registered for type '{$type->value}'.",
-                '',
-                'selector.no_plugin',
-            );
+            throw SelectorEvaluationException::noPluginRegistered($type->value);
         }
 
         return $plugin->evaluate($data, $expression, $version, $namespaces);

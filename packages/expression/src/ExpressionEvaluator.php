@@ -100,24 +100,16 @@ final class ExpressionEvaluator
 
     private function source(SourceRef $ast, EvaluationInputInterface $context): mixed
     {
-        $document = $context->getDocument();
-        if ($document === null) {
+        $sourceDesc = $context->getDocument()?->findSource($ast->name);
+        if ($sourceDesc === null) {
             return null;
         }
 
-        foreach ($document->sourceDescriptions as $sourceDesc) {
-            if ($sourceDesc->name !== $ast->name) {
-                continue;
-            }
-
-            return match ($ast->subPath) {
-                'url' => $sourceDesc->url,
-                'type' => $sourceDesc->type->value,
-                default => null,
-            };
-        }
-
-        return null;
+        return match ($ast->subPath) {
+            'url' => $sourceDesc->url,
+            'type' => $sourceDesc->type->value,
+            default => null,
+        };
     }
 
     /**

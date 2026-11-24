@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Expression\JsonPath;
 
-use RuntimeException;
+use Alama\Arazzo\Expression\Exceptions\JsonPathSyntaxException;
 
 /**
  * Recursive-descent parser for RFC 9535 JSONPath expressions.
@@ -50,7 +50,7 @@ final class Parser
         }
 
         if ($this->cursor->hasMore()) {
-            throw new RuntimeException('Unexpected trailing tokens in JSONPath expression');
+            throw JsonPathSyntaxException::unexpectedTrailingTokens();
         }
 
         return ['kind' => 'selector', 'steps' => $steps];
@@ -76,7 +76,7 @@ final class Parser
             return ['kind' => 'wildcard', 'child' => null];
         }
 
-        throw new RuntimeException('Expected member name after dot');
+        throw JsonPathSyntaxException::expectedMemberAfterDot();
     }
 
     /**
@@ -107,7 +107,7 @@ final class Parser
             return ['kind' => 'recursive-descent', 'child' => $inner];
         }
 
-        throw new RuntimeException('Expected member name after ..');
+        throw JsonPathSyntaxException::expectedMemberAfterDescent();
     }
 
     /**
@@ -179,7 +179,7 @@ final class Parser
             return ['kind' => 'slice', 'start' => $start, 'end' => $start + 1, 'step' => 1];
         }
 
-        throw new RuntimeException('Unsupported bracket selector');
+        throw JsonPathSyntaxException::unsupportedBracketSelector();
     }
 
     /**

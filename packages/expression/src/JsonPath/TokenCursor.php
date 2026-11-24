@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Expression\JsonPath;
 
-use RuntimeException;
+use Alama\Arazzo\Expression\Exceptions\JsonPathSyntaxException;
 
 /**
  * Mutable token stream cursor shared between JSONPath selector and filter parsers.
@@ -50,7 +50,7 @@ final class TokenCursor
     public function current(): array
     {
         if ($this->pos >= $this->tokenCount) {
-            throw new RuntimeException('Unexpected end of JSONPath expression');
+            throw JsonPathSyntaxException::unexpectedEnd();
         }
 
         return $this->tokens[$this->pos];
@@ -65,11 +65,11 @@ final class TokenCursor
     {
         $token = $this->current();
         if ($token[0] !== $type) {
-            throw new RuntimeException("Expected token {$type}, got ".var_export($token[0], true));
+            throw JsonPathSyntaxException::expectedTokenType($type, $token[0]);
         }
 
         if ($value !== null && $token[1] !== $value) {
-            throw new RuntimeException("Expected token {$type} '{$value}', got ".var_export($token[1], true));
+            throw JsonPathSyntaxException::expectedTokenValue($type, $value, $token[1]);
         }
 
         $this->pos++;

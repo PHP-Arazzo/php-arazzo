@@ -163,25 +163,12 @@ final class EmbeddedExpressionSplitter
         try {
             $this->parser->parse($expression);
         } catch (ExpressionSyntaxException $exception) {
-            throw new ExpressionSyntaxException(
-                $exception->getMessage(),
-                $template,
-                $openingOffset,
-                $exception->path,
-                $exception->codeId,
-                $exception,
-            );
+            throw ExpressionSyntaxException::invalidEmbedded($exception, $template, $openingOffset);
         }
     }
 
     private function failUnterminated(string $template, int $openingOffset): never
     {
-        throw new ExpressionSyntaxException(
-            "Unterminated embedded expression in: {$template}",
-            $template,
-            $openingOffset,
-            '',
-            'expr.syntax',
-        );
+        throw ExpressionSyntaxException::unterminatedEmbedded($template, $openingOffset);
     }
 }

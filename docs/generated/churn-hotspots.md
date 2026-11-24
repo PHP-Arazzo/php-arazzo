@@ -14,10 +14,10 @@ xychart-beta
     title "Edit churn per module (git touches)"
     x-axis ["document:Validator", "cli:Console", "runner:Execution", "runner:Async", "runner:Sync", "sources:Normalizer", "expression:Interfaces", "document:Parser", "contracts:Interfaces", "contracts:Spec", "expression:Data", "sources:Resolver"]
     y-axis "Touches" 0 --> 60
-    bar [52, 41, 30, 23, 20, 20, 18, 17, 16, 14, 11, 11]
+    bar [52, 41, 30, 23, 20, 20, 18, 17, 16, 15, 11, 11]
 ```
 
-Analyzed 492 total file-touches across 77 modules.
+Analyzed 495 total file-touches across 77 modules.
 
 | Module | Touches | Share | LOC | Touches/KLOC |
 |---|---:|---:|---:|---:|
@@ -30,7 +30,7 @@ Analyzed 492 total file-touches across 77 modules.
 | `expression:Interfaces` | 18 | 4% | 214 | 84.1 |
 | `document:Parser` | 17 | 3% | 2,434 | 7 |
 | `contracts:Interfaces` | 16 | 3% | 387 | 41.3 |
-| `contracts:Spec` | 14 | 3% | 1,429 | 9.8 |
+| `contracts:Spec` | 15 | 3% | 1,429 | 10.5 |
 | `expression:Data` | 11 | 2% | 199 | 55.3 |
 | `sources:Resolver` | 11 | 2% | 629 | 17.5 |
 | `evaluation:Plugins` | 10 | 2% | 125 | 80 |
@@ -39,7 +39,7 @@ Analyzed 492 total file-touches across 77 modules.
 | `protocol-soap:Execution` | 9 | 2% | 484 | 18.6 |
 | `contracts:State` | 7 | 1% | 1,062 | 6.6 |
 | `evaluation:Condition` | 7 | 1% | 1,054 | 6.6 |
-| `expression:Plugins` | 7 | 1% | 1,371 | 5.1 |
+| `expression:Plugins` | 7 | 1% | 1,353 | 5.2 |
 | `protocol-http:Execution` | 7 | 1% | 946 | 7.4 |
 | `cli:Renderer` | 6 | 1% | 321 | 18.7 |
 | `protocol-rpc:Execution` | 6 | 1% | 188 | 31.9 |
@@ -49,7 +49,7 @@ Analyzed 492 total file-touches across 77 modules.
 | `contracts:Dependency` | 5 | 1% | 375 | 13.3 |
 | `engine:Runtime` | 5 | 1% | 1,844 | 2.7 |
 | `expression:Ast` | 5 | 1% | 355 | 14.1 |
-| `expression:Internal` | 5 | 1% | 921 | 5.4 |
+| `expression:Internal` | 5 | 1% | 908 | 5.5 |
 | `expression:Registries` | 5 | 1% | 113 | 44.2 |
 | `expression:Xpath` | 5 | 1% | 173 | 28.9 |
 | `runner:Policy` | 5 | 1% | 124 | 40.3 |
@@ -58,17 +58,17 @@ Analyzed 492 total file-touches across 77 modules.
 | `evaluation:Data` | 4 | 1% | 86 | 46.5 |
 | `expression:Enum` | 4 | 1% | 47 | 85.1 |
 | `protocol-http:Plugins` | 4 | 1% | 340 | 11.8 |
+| `contracts:Discovery` | 3 | 1% | 416 | 7.2 |
+| `contracts:Exceptions` | 3 | 1% | 123 | 24.4 |
 | `contracts:Support` | 3 | 1% | 185 | 16.2 |
 | `document:Registries` | 3 | 1% | 97 | 30.9 |
 | `evaluation:Interfaces` | 3 | 1% | 44 | 68.2 |
-| `expression:Exceptions` | 3 | 1% | 64 | 46.9 |
+| `expression:Exceptions` | 3 | 1% | 209 | 14.4 |
 | `expression:JsonPath` | 3 | 1% | 1,470 | 2 |
 | `protocol-rpc:Protocol` | 3 | 1% | 514 | 5.8 |
 | `protocol-soap:Plugins` | 3 | 1% | 899 | 3.3 |
 | `runner:Exceptions` | 3 | 1% | 134 | 22.4 |
 | `sources:Registries` | 3 | 1% | 81 | 37 |
-| `contracts:Discovery` | 2 | 0% | 416 | 4.8 |
-| `contracts:Exceptions` | 2 | 0% | 123 | 16.3 |
 | `contracts:Validation` | 2 | 0% | 348 | 5.7 |
 | `engine:Data` | 2 | 0% | 74 | 27 |
 | `engine:Enum` | 2 | 0% | 17 | 117.6 |

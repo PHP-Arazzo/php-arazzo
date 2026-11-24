@@ -7,8 +7,8 @@ namespace Alama\Arazzo\Expression\Registries;
 use Alama\Arazzo\Contracts\Attributes\AsSelectorPlugin;
 use Alama\Arazzo\Contracts\Discovery\PluginDiscovery;
 use Alama\Arazzo\Contracts\Spec\Enum\ExpressionType;
+use Alama\Arazzo\Expression\Exceptions\InvalidSelectorPluginException;
 use Alama\Arazzo\Expression\Interfaces\SelectorPluginInterface;
-use InvalidArgumentException;
 use ReflectionClass;
 
 /**
@@ -57,7 +57,7 @@ final class SelectorPluginRegistry
         } else {
             $type = $typeOrPlugin;
             if ($plugin === null) {
-                throw new InvalidArgumentException('Plugin must be provided when registering by ExpressionType.');
+                throw InvalidSelectorPluginException::missingPluginInstance();
             }
         }
 
@@ -107,6 +107,6 @@ final class SelectorPluginRegistry
             }
         }
 
-        throw new InvalidArgumentException('Cannot determine ExpressionType for selector plugin: missing #[AsSelectorPlugin] attribute or supports() matching.');
+        throw InvalidSelectorPluginException::undeterminableType();
     }
 }

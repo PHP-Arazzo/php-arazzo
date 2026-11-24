@@ -133,7 +133,7 @@ expression-Data,contracts-Spec,3
 expression-Data,contracts-Validation,1
 expression-Data,expression-Enum,2
 expression-Data,expression-Exceptions,1
-expression-Exceptions,contracts-Support,2
+expression-Exceptions,contracts-Support,3
 expression-Interfaces,contracts-Spec,8
 expression-Interfaces,expression-Ast,1
 expression-Interfaces,expression-Data,3
@@ -147,10 +147,10 @@ expression-Internal,expression-Enum,3
 expression-Internal,expression-Exceptions,2
 expression-Internal,expression-Interfaces,2
 expression-JsonPath,expression-Data,3
-expression-JsonPath,expression-Exceptions,1
+expression-JsonPath,expression-Exceptions,4
 expression-Plugins,contracts-Attributes,17
 expression-Plugins,contracts-Interfaces,14
-expression-Plugins,contracts-Spec,28
+expression-Plugins,contracts-Spec,27
 expression-Plugins,contracts-Validation,32
 expression-Plugins,expression-Data,3
 expression-Plugins,expression-Enum,10
@@ -164,6 +164,7 @@ expression-Plugins,expression-root,14
 expression-Registries,contracts-Attributes,1
 expression-Registries,contracts-Discovery,1
 expression-Registries,contracts-Spec,1
+expression-Registries,expression-Exceptions,1
 expression-Support,contracts-Spec,6
 expression-Support,contracts-Validation,2
 expression-Support,expression-Ast,1

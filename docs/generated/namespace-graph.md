@@ -131,8 +131,8 @@ flowchart LR
     expression_Internal --> contracts_Spec
     expression_Internal --> expression_Interfaces
     expression_Internal --> expression__
-    expression_JsonPath --> expression_Data
     expression_JsonPath --> expression_Exceptions
+    expression_JsonPath --> expression_Data
     expression_Plugins --> contracts_Attributes
     expression_Plugins --> contracts_Interfaces
     expression_Plugins --> contracts_Spec
@@ -149,6 +149,7 @@ flowchart LR
     expression_Registries --> contracts_Attributes
     expression_Registries --> contracts_Discovery
     expression_Registries --> contracts_Spec
+    expression_Registries --> expression_Exceptions
     expression_Registries --> expression_Interfaces
     expression_Support --> expression_Ast
     expression_Support --> contracts_Spec

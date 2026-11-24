@@ -277,6 +277,7 @@ flowchart TB
     M_expression_Registries --> M_contracts_Attributes
     M_expression_Registries --> M_contracts_Discovery
     M_expression_Registries --> M_contracts_Spec
+    M_expression_Registries --> M_expression_Exceptions
     M_expression_Registries --> M_expression_Interfaces
     M_expression_Support --> M_contracts_Spec
     M_expression_Support --> M_contracts_Validation

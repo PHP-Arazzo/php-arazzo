@@ -28,7 +28,7 @@ final class Lexer
         [$inner, $base] = $this->unwrap($raw);
 
         if ($inner === '') {
-            throw new ExpressionSyntaxException("Empty expression: {$raw}", $raw, $base, '', 'expr.syntax');
+            throw ExpressionSyntaxException::emptyExpression($raw, $base);
         }
 
         $tokens = [];
@@ -59,10 +59,7 @@ final class Lexer
                 continue;
             }
 
-            throw new ExpressionSyntaxException(
-                "Illegal character '{$character}' at offset {$absoluteOffset} in expression: {$raw}",
-                $raw, $absoluteOffset, '', 'expr.syntax',
-            );
+            throw ExpressionSyntaxException::illegalCharacter($character, $absoluteOffset, $raw);
         }
 
         return $tokens;
@@ -90,10 +87,7 @@ final class Lexer
             return [substr($raw, 1), 1];
         }
 
-        throw new ExpressionSyntaxException(
-            "Expression must start with $ or be wrapped in {\$...}: {$raw}",
-            $raw, 0, '', 'expr.syntax',
-        );
+        throw ExpressionSyntaxException::missingPrefix($raw);
     }
 
     private function singleCharacterKind(string $character): ?TokenKind

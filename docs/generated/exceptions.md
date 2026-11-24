@@ -21,9 +21,11 @@ classDiagram
     class E_ExecutionException["ExecutionException<br/><small>engine:Exceptions</small>"]:::domain
     class E_ExpressionSyntaxException["ExpressionSyntaxException<br/><small>expression:Exceptions</small>"]:::domain
     class E_GotoTargetNotFoundException["GotoTargetNotFoundException<br/><small>runner:Exceptions</small>"]:::domain
+    class E_InvalidSelectorPluginException["InvalidSelectorPluginException<br/><small>expression:Exceptions</small>"]:::domain
     class E_InvalidSourcePolicyException["InvalidSourcePolicyException<br/><small>runner:Exceptions</small>"]:::domain
     class E_InvalidSpecVersionException["InvalidSpecVersionException<br/><small>contracts:Exceptions</small>"]:::domain
     class E_InvalidStepTargetException["InvalidStepTargetException<br/><small>contracts:Exceptions</small>"]:::domain
+    class E_JsonPathSyntaxException["JsonPathSyntaxException<br/><small>expression:Exceptions</small>"]:::domain
     class E_LoaderException["LoaderException<br/><small>document:Parser</small>"]:::domain
     class E_MaxAliasesExceededException["MaxAliasesExceededException<br/><small>document:Parser</small>"]:::domain
     class E_MaxBytesExceededException["MaxBytesExceededException<br/><small>document:Parser</small>"]:::domain
@@ -57,9 +59,11 @@ classDiagram
     E_ArazzoException <|-- E_ExecutionException
     E_ArazzoException <|-- E_ExpressionSyntaxException
     E_RunnerException <|-- E_GotoTargetNotFoundException
+    E_InvalidArgumentException <|-- E_InvalidSelectorPluginException
     E_RunnerException <|-- E_InvalidSourcePolicyException
     E_InvalidArgumentException <|-- E_InvalidSpecVersionException
     E_InvalidArgumentException <|-- E_InvalidStepTargetException
+    E_ArazzoException <|-- E_JsonPathSyntaxException
     E_ArazzoException <|-- E_LoaderException
     E_DecodeLimitException <|-- E_MaxAliasesExceededException
     E_DecodeLimitException <|-- E_MaxBytesExceededException
@@ -99,9 +103,11 @@ classDiagram
 | `ExecutionException` | `ArazzoException` | engine:Exceptions |
 | `ExpressionSyntaxException` | `ArazzoException` | expression:Exceptions |
 | `GotoTargetNotFoundException` | `RunnerException` | runner:Exceptions |
+| `InvalidSelectorPluginException` | `InvalidArgumentException` | expression:Exceptions |
 | `InvalidSourcePolicyException` | `RunnerException` | runner:Exceptions |
 | `InvalidSpecVersionException` | `InvalidArgumentException` | contracts:Exceptions |
 | `InvalidStepTargetException` | `InvalidArgumentException` | contracts:Exceptions |
+| `JsonPathSyntaxException` | `ArazzoException` | expression:Exceptions |
 | `LoaderException` | `ArazzoException` | document:Parser |
 | `MaxAliasesExceededException` | `DecodeLimitException` | document:Parser |
 | `MaxBytesExceededException` | `DecodeLimitException` | document:Parser |
