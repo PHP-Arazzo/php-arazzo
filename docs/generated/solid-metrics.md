@@ -136,6 +136,7 @@ Contracts declaring more than 7 methods:
 |---|---:|
 | `AsyncRunnerInterface` <small>runner</small> | 16 |
 | `ExpressionEngineInterface` <small>expression</small> | 14 |
+| `EvaluationInputInterface` <small>expression</small> | 12 |
 | `SourcesInterface` <small>sources</small> | 10 |
 | `RunnerInterface` <small>runner</small> | 9 |
 | `ExecutionStoreInterface` <small>runner</small> | 9 |

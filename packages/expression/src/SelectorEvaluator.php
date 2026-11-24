@@ -30,12 +30,7 @@ final class SelectorEvaluator
                 new EvaluationContext($wf, $stepId),
             );
         } else {
-            $steps = $wf->getSteps();
-            $stepData = $steps[$stepId] ?? null;
-            $response = is_array($stepData) ? ($stepData['response'] ?? null) : null;
-            $body = is_array($response) ? ($response['body'] ?? []) : [];
-
-            $root = is_array($body) ? $body : [];
+            $root = (new EvaluationContext($wf, $stepId))->defaultRootBody();
         }
 
         $plugin = $this->plugins->get($sel->type);

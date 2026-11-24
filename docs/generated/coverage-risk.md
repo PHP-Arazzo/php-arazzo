@@ -118,8 +118,8 @@ quadrantChart
 | `contracts/Interfaces` | 0.10 | 50 | 20 | 100% |
 | `contracts/Observability` | 0.00 | 9 | 4 | 100% |
 | `contracts/Policy` | 0.00 | 12 | 5 | 100% |
-| `contracts/Spec` | 0.04 | 303 | 52 | 100% |
-| `contracts/State` | 0.10 | 90 | 4 | 100% |
+| `contracts/Spec` | 0.04 | 304 | 52 | 100% |
+| `contracts/State` | 0.10 | 91 | 4 | 100% |
 | `contracts/Support` | 0.00 | 13 | 5 | 100% |
 | `contracts/Validation` | 0.11 | 97 | 9 | 100% |
 | `document/Parser` | 0.29 | 65 | 31 | 100% |
@@ -131,7 +131,7 @@ quadrantChart
 | `engine/Exceptions` | 0.09 | 12 | 8 | 100% |
 | `engine/Execution` | 0.36 | 15 | 10 | 100% |
 | `engine/Runtime` | 0.60 | 26 | 21 | 100% |
-| `evaluation/Condition` | 0.89 | 83 | 18 | 100% |
+| `evaluation/Condition` | 0.89 | 84 | 18 | 100% |
 | `evaluation/Data` | 0.40 | 14 | 2 | 100% |
 | `evaluation/Enum` | 0.00 | 8 | 5 | 100% |
 | `evaluation/Events` | 0.33 | 1 | 1 | 100% |
@@ -140,7 +140,7 @@ quadrantChart
 | `evaluation/Plugins` | 1.00 | 4 | 2 | 100% |
 | `evaluation/Registries` | 0.86 | 7 | 2 | 100% |
 | `expression/Ast` | 0.33 | 12 | 15 | 80% |
-| `expression/Data` | 0.25 | 28 | 6 | 100% |
+| `expression/Data` | 0.25 | 29 | 6 | 100% |
 | `expression/Enum` | 0.00 | 10 | 2 | 100% |
 | `expression/Exceptions` | 0.08 | 19 | 4 | 100% |
 | `expression/Interfaces` | 0.33 | 24 | 4 | 100% |

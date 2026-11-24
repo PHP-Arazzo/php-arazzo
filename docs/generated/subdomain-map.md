@@ -62,11 +62,11 @@ flowchart LR
         S_evaluation_Plugins["evaluation:Plugins<br/><small>125 LOC</small>"]:::unknownDomain
         S_evaluation_Registries["evaluation:Registries<br/><small>190 LOC</small>"]:::unknownDomain
         S_expression_Ast["expression:Ast<br/><small>355 LOC</small>"]:::unknownDomain
-        S_expression_Data["expression:Data<br/><small>247 LOC</small>"]:::unknownDomain
+        S_expression_Data["expression:Data<br/><small>439 LOC</small>"]:::unknownDomain
         S_expression_Enum["expression:Enum<br/><small>47 LOC</small>"]:::unknownDomain
         S_expression_Exceptions["expression:Exceptions<br/><small>209 LOC</small>"]:::unknownDomain
-        S_expression_Interfaces["expression:Interfaces<br/><small>214 LOC</small>"]:::unknownDomain
-        S_expression_Internal["expression:Internal<br/><small>896 LOC</small>"]:::unknownDomain
+        S_expression_Interfaces["expression:Interfaces<br/><small>252 LOC</small>"]:::unknownDomain
+        S_expression_Internal["expression:Internal<br/><small>885 LOC</small>"]:::unknownDomain
         S_expression_JsonPath["expression:JsonPath<br/><small>1470 LOC</small>"]:::unknownDomain
         S_expression_Plugins["expression:Plugins<br/><small>1341 LOC</small>"]:::unknownDomain
         S_expression_Policy["expression:Policy<br/><small>37 LOC</small>"]:::unknownDomain
@@ -114,7 +114,7 @@ flowchart LR
 | Core domain | 1 | 1,495 | 0 | 4% |
 | Supporting | 8 | 5,448 | 0 | 15% |
 | Generic subdomain | 6 | 1,678 | 0 | 5% |
-| Unclassified | 66 | 26,661 | 0 | 76% |
+| Unclassified | 66 | 26,880 | 0 | 76% |
 
 **Unclassified modules** — classify them in `SUBDOMAINS` or delete them:
 - `cli:Exceptions`

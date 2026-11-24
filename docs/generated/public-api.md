@@ -498,8 +498,17 @@ this file on a commit is a public API change — review it deliberately.
 
 #### `EvaluationContext` class
 - `public function __construct(public WorkflowContextInterface $workflowContext, public ?string $currentStepId = null, public ?ArazzoDocument $document = null)`
+- `public function defaultRootBody(): array`
 - `public function getCurrentStepId(): ?string`
 - `public function getDocument(): ?ArazzoDocument`
+- `public function httpMetaForStep(string $stepId, string $field): mixed`
+- `public function requestBodyForStep(string $stepId): array`
+- `public function responseBodyForStep(string $stepId): array`
+- `public function stepInputs(string $stepId): array`
+- `public function stepOutputs(string $stepId): array`
+- `public function stepRequest(string $stepId): ?array`
+- `public function stepResponse(string $stepId): ?array`
+- `public function stepResponseHeader(string $stepId, string $name): ?string`
 
 #### `ExpressionReference` class
 - `public function __construct(public ReferenceKind $kind, public ?string $target = null, public ?string $part = null, public ?string $name = null, public ?string $httpPart = null, public ?string $jsonPointer = null)`
@@ -548,9 +557,18 @@ this file on a commit is a public API change — review it deliberately.
 ### `Alama\Arazzo\Expression\Interfaces`
 
 #### `EvaluationInputInterface` interface
+- `public function defaultRootBody(): array;`
 - `public function getCurrentStepId(): ?string;`
 - `public function getDocument(): ?ArazzoDocument;`
 - `public function getWorkflowContext(): WorkflowContextInterface;`
+- `public function httpMetaForStep(string $stepId, string $field): mixed;`
+- `public function requestBodyForStep(string $stepId): array;`
+- `public function responseBodyForStep(string $stepId): array;`
+- `public function stepInputs(string $stepId): array;`
+- `public function stepOutputs(string $stepId): array;`
+- `public function stepRequest(string $stepId): ?array;`
+- `public function stepResponse(string $stepId): ?array;`
+- `public function stepResponseHeader(string $stepId, string $name): ?string;`
 
 #### `ExpressionEngineInterface` interface
 - `public function evaluate(Expression $expression, EvaluationInputInterface $context): mixed;`

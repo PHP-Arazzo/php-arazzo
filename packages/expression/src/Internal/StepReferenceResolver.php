@@ -57,8 +57,12 @@ final readonly class StepReferenceResolver
     private function output(OutputRef $ast, EvaluationInputInterface $context): mixed
     {
         $stepId = $context->getCurrentStepId();
-        $stepData = $stepId !== null ? ($context->getWorkflowContext()->getSteps()[$stepId] ?? null) : null;
-        $output = is_array($stepData) ? ($this->values->map($stepData, 'outputs')[$ast->name] ?? null) : null;
+        if ($stepId === null) {
+            return null;
+        }
+
+        $outputs = $context->stepOutputs($stepId);
+        $output = $outputs[$ast->name] ?? null;
 
         return $this->values->withPointer($output, $ast->jsonPointer);
     }
@@ -70,53 +74,33 @@ final readonly class StepReferenceResolver
             return null;
         }
 
-        $stepData = $context->getWorkflowContext()->getSteps()[$stepId] ?? null;
-        if (!is_array($stepData)) {
-            return null;
-        }
-
-        $response = $this->values->map($stepData, 'response');
-        $request = $this->values->map($stepData, 'request');
-
-        $fields = [
-            'statusCode' => $response['statusCode'] ?? null,
-            'method' => $request['method'] ?? null,
-            'url' => $request['url'] ?? null,
-        ];
-
-        return $fields[$ast->field] ?? null;
+        return $context->httpMetaForStep($stepId, $ast->field);
     }
 
     private function step(StepRef $ast, EvaluationInputInterface $context): mixed
     {
         $targetStepId = $ast->stepId ?? $context->getCurrentStepId();
-        $rawStepData = $context->getWorkflowContext()->getSteps()[$targetStepId] ?? null;
-        if (!is_array($rawStepData)) {
+        if ($targetStepId === null) {
             return null;
         }
 
-        /** @var array<string, mixed> $stepData */
-        $stepData = $rawStepData;
-
-        return $this->part($ast->part, $stepData);
+        return $this->part($ast->part, $context, $targetStepId);
     }
 
-    /** @param array<string, mixed> $stepData */
-    private function part(StepPart $part, array $stepData): mixed
+    private function part(StepPart $part, EvaluationInputInterface $context, string $stepId): mixed
     {
         return match (true) {
-            $part instanceof RequestPart => $this->requestPart($part, $stepData),
-            $part instanceof ResponsePart => $this->responsePart($part, $stepData),
-            $part instanceof OutputPart => $this->outputsPart($part, $stepData),
-            $part instanceof InputPart => $this->values->map($stepData, 'inputs')[$part->name] ?? null,
+            $part instanceof RequestPart => $this->requestPart($part, $context, $stepId),
+            $part instanceof ResponsePart => $this->responsePart($part, $context, $stepId),
+            $part instanceof OutputPart => $this->outputsPart($part, $context, $stepId),
+            $part instanceof InputPart => $context->stepInputs($stepId)[$part->name] ?? null,
             default => null,
         };
     }
 
-    /** @param array<string, mixed> $stepData */
-    private function outputsPart(OutputPart $part, array $stepData): mixed
+    private function outputsPart(OutputPart $part, EvaluationInputInterface $context, string $stepId): mixed
     {
-        $outputs = $this->values->map($stepData, 'outputs');
+        $outputs = $context->stepOutputs($stepId);
 
         return $this->values->withPointer(
             $part->name === null ? $outputs : ($outputs[$part->name] ?? null),
@@ -124,30 +108,35 @@ final readonly class StepReferenceResolver
         );
     }
 
-    /** @param array<string, mixed> $stepData */
-    private function requestPart(RequestPart $part, array $stepData): mixed
+    private function requestPart(RequestPart $part, EvaluationInputInterface $context, string $stepId): mixed
     {
-        $request = is_array($stepData['request'] ?? null) ? $stepData['request'] : [];
+        $request = $context->stepRequest($stepId);
+        if ($request === null) {
+            return null;
+        }
 
         return match ($part->httpPart) {
-            'header' => $this->values->map($request, 'headers')[$part->headerName] ?? null,
-            'query' => $this->values->map($request, 'query')[$part->headerName] ?? null,
-            'path' => $this->values->map($request, 'path')[$part->headerName] ?? null,
+            'header' => $this->headerAt($request, 'headers', $part->headerName),
+            'query' => $this->headerAt($request, 'query', $part->headerName),
+            'path' => $this->headerAt($request, 'path', $part->headerName),
             'body' => $this->values->body($request['body'] ?? null, $part->jsonPointer),
             default => null,
         };
     }
 
-    /** @param array<string, mixed> $stepData */
-    private function responsePart(ResponsePart $part, array $stepData): mixed
+    private function responsePart(ResponsePart $part, EvaluationInputInterface $context, string $stepId): mixed
     {
-        $response = is_array($stepData['response'] ?? null) ? $stepData['response'] : [];
+        $response = $context->stepResponse($stepId);
+        if ($response === null) {
+            return null;
+        }
+
         if ($part->httpPart === 'statusCode') {
             return $response['statusCode'] ?? null;
         }
 
         return match ($part->httpPart) {
-            'header' => $this->values->map($response, 'headers')[$part->headerName] ?? null,
+            'header' => $this->headerAt($response, 'headers', $part->headerName),
             'body' => $this->values->body($response['body'] ?? null, $part->jsonPointer),
             default => null,
         };
@@ -156,31 +145,31 @@ final readonly class StepReferenceResolver
     private function message(MessageRef $ast, EvaluationInputInterface $context): mixed
     {
         $stepId = $context->getCurrentStepId();
-        $stepData = $stepId !== null ? ($context->getWorkflowContext()->getSteps()[$stepId] ?? null) : null;
-        $response = is_array($stepData) ? ($stepData['response'] ?? null) : null;
-
-        if ($ast->part === 'header') {
-            return $this->header($response, (string) $ast->name);
+        if ($stepId === null) {
+            return null;
         }
 
-        $body = is_array($response) ? ($response['body'] ?? []) : [];
+        if ($ast->part === 'header') {
+            return $context->stepResponseHeader($stepId, (string) $ast->name);
+        }
+
+        $body = $context->responseBodyForStep($stepId);
 
         return $this->values->withPointer($body, $ast->jsonPointer);
     }
 
-    private function header(mixed $response, string $name): ?string
+    /** @param array<mixed, mixed> $data */
+    private function headerAt(array $data, string $key, ?string $name): mixed
     {
-        $headers = is_array($response) ? ($response['headers'] ?? []) : [];
-        if (!is_array($headers)) {
+        if ($name === null) {
             return null;
         }
 
-        foreach ($headers as $key => $value) {
-            if (is_string($key) && strcasecmp($key, $name) === 0 && is_scalar($value)) {
-                return (string) $value;
-            }
+        $value = $data[$key] ?? null;
+        if (!is_array($value)) {
+            return null;
         }
 
-        return null;
+        return $value[$name] ?? null;
     }
 }
