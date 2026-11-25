@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Runner\Sync;
 
 use Alama\Arazzo\Contracts\Spec\Workflow;
+use Alama\Arazzo\Contracts\Spec\WorkflowCollection;
 
 /**
  * Plans workflow-level `dependsOn` execution in one query.
@@ -27,8 +28,7 @@ final class WorkflowDependencyResolver
     /** @var list<string> */
     private array $order = [];
 
-    /** @param list<Workflow> $workflows */
-    public function __construct(array $workflows)
+    public function __construct(WorkflowCollection $workflows)
     {
         foreach ($workflows as $workflow) {
             $this->byId[$workflow->workflowId] = $workflow;

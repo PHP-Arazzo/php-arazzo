@@ -1,18 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Method analyze has too high cyclomatic complexity \(16\)\. Maximum allowed is 10\.$#'
-			identifier: arazzo.custom.cyclomaticComplexity
-			count: 1
-			path: src/Dependency/DependencyGraph.php
-
-		-
-			message: '#^Method fromStep has too high cyclomatic complexity \(12\)\. Maximum allowed is 10\.$#'
-			identifier: arazzo.custom.cyclomaticComplexity
-			count: 1
-			path: src/Dependency/ImplicitDependencies.php
-
-		-
 			message: '#^Method __construct has too many parameters \(6\)\. Maximum allowed is 5\.$#'
 			identifier: arazzo.custom.maxParameterCount
 			count: 1
@@ -109,7 +97,7 @@ parameters:
 			path: src/Spec/Workflow.php
 
 		-
-			message: '#^Class ExecutionState has too many methods \(29\)\. Maximum allowed is 20\.$#'
+			message: '#^Class ExecutionState has too many methods \(36\)\. Maximum allowed is 20\.$#'
 			identifier: arazzo.custom.maxMethodCount
 			count: 1
 			path: src/State/ExecutionState.php
@@ -133,20 +121,14 @@ parameters:
 			path: src/State/ExecutionState.php
 
 		-
-			message: '#^Class WorkflowContext has too many methods \(32\)\. Maximum allowed is 20\.$#'
+			message: '#^Class WorkflowContext has too many methods \(47\)\. Maximum allowed is 20\.$#'
 			identifier: arazzo.custom.maxMethodCount
 			count: 1
 			path: src/State/WorkflowContext.php
 
 		-
-			message: '#^Method __construct has too many parameters \(11\)\. Maximum allowed is 5\.$#'
+			message: '#^Method __construct has too many parameters \(12\)\. Maximum allowed is 5\.$#'
 			identifier: arazzo.custom.maxParameterCount
-			count: 1
-			path: src/State/WorkflowContext.php
-
-		-
-			message: '#^Method fromPersisted has too high cyclomatic complexity \(11\)\. Maximum allowed is 10\.$#'
-			identifier: arazzo.custom.cyclomaticComplexity
 			count: 1
 			path: src/State/WorkflowContext.php
 

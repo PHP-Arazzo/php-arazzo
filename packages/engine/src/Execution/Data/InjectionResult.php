@@ -16,4 +16,9 @@ final readonly class InjectionResult
         public ?string $key = null,
         public ?string $header = null,
     ) {}
+
+    public function wasInjected(): bool
+    {
+        return $this->key !== null;
+    }
 }

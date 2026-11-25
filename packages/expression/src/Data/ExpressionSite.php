@@ -12,6 +12,8 @@ use Alama\Arazzo\Contracts\Validation\WorkflowSymbols;
  */
 final readonly class ExpressionSite
 {
+    private const RUNTIME_HTTP_CONTEXTS = ['criteria', 'outputs', 'onSuccess', 'onFailure'];
+
     /**
      * @param  'parameters'|'requestBody'|'criteria'|'outputs'|'onSuccess'|'onFailure'|'wf.parameters'|'wf.outputs'|'components'  $context
      */
@@ -22,4 +24,9 @@ final readonly class ExpressionSite
         public ?string $currentStepId,
         public string $context,
     ) {}
+
+    public function allowsRuntimeHttpReference(): bool
+    {
+        return in_array($this->context, self::RUNTIME_HTTP_CONTEXTS, true);
+    }
 }

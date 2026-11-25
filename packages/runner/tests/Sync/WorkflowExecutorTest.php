@@ -6,6 +6,7 @@ namespace Alama\Arazzo\Tests\Execution;
 
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Components;
+use Alama\Arazzo\Contracts\Spec\Enum\ExecutionStatus;
 use Alama\Arazzo\Contracts\Spec\Enum\ParameterIn;
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
 use Alama\Arazzo\Contracts\Spec\Expression;
@@ -23,6 +24,7 @@ use Alama\Arazzo\Expression\ExpressionEngine;
 use Alama\Arazzo\Protocol\Http\Execution\DefaultOpenApiExecutor;
 use Alama\Arazzo\Protocol\Http\Execution\ResponseSchemaValidator;
 use Alama\Arazzo\Protocol\Http\Execution\StepOutputExtractor;
+use Alama\Arazzo\Protocol\Http\Plugins\OperationExecutor\HttpStepExecutor;
 use Alama\Arazzo\Protocol\Http\Resolver\OpenApiOperationResolver;
 use Alama\Arazzo\Runner\Sync\StepExecutor;
 use Alama\Arazzo\Runner\Sync\WorkflowEngine;
@@ -503,13 +505,14 @@ it('executes a workflow end-to-end', function () {
     $schemaValidator = new ResponseSchemaValidator($operations);
 
     $openApiExecutor = new DefaultOpenApiExecutor($httpClient, $requestFactory);
-    $stepExecutor = new StepExecutor($openApiExecutor, $operations, $engine, $outputExtractor, $schemaValidator);
+    $httpPlugin = new HttpStepExecutor($openApiExecutor, $operations, $engine, $outputExtractor, $schemaValidator);
+    $stepExecutor = new StepExecutor($engine, localExecutors: [$httpPlugin]);
 
     $workflowExecutor = new WorkflowExecutor($stepExecutor, new WorkflowEngine(new TestEvaluationEngine()));
 
     $result = $workflowExecutor->execute($workflow, $doc, ['customerId' => 12345]);
 
-    expect($result->status)->toBe('succeeded');
+    expect($result->status)->toBe(ExecutionStatus::Succeeded);
     expect($result->stepResults['create-ride']->success)->toBeTrue();
     expect($result->stepResults['create-ride']->outputs['rideId'])->toBe(99);
     expect($httpClient->requests)->toHaveCount(1);

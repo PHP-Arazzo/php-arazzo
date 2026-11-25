@@ -7,7 +7,6 @@ namespace Alama\Arazzo\Document\Plugins\ValidationRule;
 use Alama\Arazzo\Contracts\Attributes\AsValidationRulePlugin;
 use Alama\Arazzo\Contracts\Interfaces\ValidationRuleInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
-use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
 use Alama\Arazzo\Contracts\Validation\ErrorCollector;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
 
@@ -88,14 +87,9 @@ final class StepOperationIdResolvesRule implements ValidationRuleInterface
 
     private function singleNonArazoSource(ArazzoDocument $doc): ?string
     {
-        $names = [];
-        foreach ($doc->sourceDescriptions as $source) {
-            if ($source->type !== SourceType::Arazzo) {
-                $names[] = $source->name;
-            }
-        }
+        $sources = $doc->nonArazzoSources();
 
-        return count($names) === 1 ? $names[0] : null;
+        return count($sources) === 1 ? $sources[0]->name : null;
     }
 
     public function code(): string

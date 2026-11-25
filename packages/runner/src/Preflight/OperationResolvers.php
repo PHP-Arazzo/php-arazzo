@@ -8,8 +8,11 @@ use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\ResolvedOperation;
 use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Document\OperationResolverInterface;
-use RuntimeException;
+use Alama\Arazzo\Runner\Exceptions\OperationResolutionException;
 
+/**
+ * @internal stays out of the advertised contract; not part of the public API surface
+ */
 final readonly class OperationResolvers
 {
     /**
@@ -27,7 +30,7 @@ final readonly class OperationResolvers
             }
         }
 
-        throw new RuntimeException("No operation resolver supports step '{$step->stepId}'.");
+        throw OperationResolutionException::unsupportedStep($step->stepId);
     }
 
     public function supports(Step $step, ArazzoDocument $document): bool

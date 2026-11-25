@@ -20,7 +20,7 @@ final class ActionReusableRefResolvesRule implements ValidationRuleInterface
     public function check(ArazzoDocument $doc, SymbolTable $symbols, ErrorCollector $errors): void
     {
         foreach ($doc->workflows as $wi => $w) {
-            $this->checkList($w->parameters, 'parameters', $symbols, $errors, "/workflows/{$wi}/parameters");
+            $this->checkList($w->parameters->all(), 'parameters', $symbols, $errors, "/workflows/{$wi}/parameters");
 
             foreach ($w->steps as $si => $s) {
                 $this->checkList($s->io->parameters, 'parameters', $symbols, $errors, "/workflows/{$wi}/steps/{$si}/parameters");
@@ -30,7 +30,7 @@ final class ActionReusableRefResolvesRule implements ValidationRuleInterface
         }
     }
 
-    /** @param list<mixed> $items */
+    /** @param array<mixed> $items */
     private function checkList(array $items, string $componentType, SymbolTable $symbols, ErrorCollector $errors, string $base): void
     {
         foreach ($items as $i => $item) {

@@ -71,6 +71,16 @@ final readonly class SymbolTable
         return new self($workflows, $sources, $components, $ops);
     }
 
+    public function hasWorkflow(string $workflowId): bool
+    {
+        return isset($this->workflows[$workflowId]);
+    }
+
+    public function hasSource(string $name): bool
+    {
+        return isset($this->sourceDescriptions[$name]);
+    }
+
     /**
      * @param  array<array-key,mixed>  $arr
      * @return array<string,true>
@@ -117,7 +127,7 @@ final readonly class SymbolTable
         }
 
         $outputs = [];
-        foreach (array_keys($wf->outputs) as $k) {
+        foreach (array_keys($wf->outputs->all()) as $k) {
             $outputs[$k] = true;
         }
 

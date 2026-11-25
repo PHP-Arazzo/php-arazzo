@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Cli\Console\Cli;
 
 use Alama\Arazzo\Contracts\Spec\Enum\ExecutionStatus;
-use Alama\Arazzo\Runtime\State\Interfaces\ExecutionRegistryInterface;
+use Alama\Arazzo\Runner\ExecutionStoreInterface;
+use Alama\Arazzo\Runner\Store\InMemoryExecutionStore;
 
 /**
- * Terminal snapshot of a CLI run: the registry status at drain end, plus
+ * Terminal snapshot of a CLI run: the store status at drain end, plus
  * whether steps remain suspended (resume-worthy).
  *
  * @internal stays out of the advertised contract; not part of the public API surface
@@ -21,13 +22,13 @@ final class CliRunResult
         public readonly bool $suspended,
     ) {}
 
-    public static function fromStatus(string $executionId, ExecutionRegistryInterface $registry): self
+    public static function fromStore(string $executionId, ExecutionStoreInterface $store): self
     {
-        $status = null;
-
-        if ($registry instanceof InProcessExecutionRegistry) {
-            $status = $registry->statusOf($executionId);
-        }
+        $status = match (true) {
+            $store instanceof CliExecutionStore,
+            $store instanceof InMemoryExecutionStore => $store->statusOf($executionId),
+            default => null,
+        };
 
         return new self(
             executionId: $executionId,

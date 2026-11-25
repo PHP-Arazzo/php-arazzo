@@ -25,4 +25,9 @@ final class MaxNodesExceededException extends DecodeLimitException
             previous: $previous,
         );
     }
+
+    public static function exceeded(int $actualNodes, int $maxNodes): self
+    {
+        return new self($actualNodes, $maxNodes);
+    }
 }

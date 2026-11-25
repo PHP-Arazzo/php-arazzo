@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Components;
+use Alama\Arazzo\Contracts\Spec\Enum\ExecutionStatus;
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
 use Alama\Arazzo\Contracts\Spec\Info;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
@@ -11,36 +12,32 @@ use Alama\Arazzo\Contracts\Spec\StepFactory;
 use Alama\Arazzo\Contracts\Spec\StepFlow;
 use Alama\Arazzo\Contracts\Spec\StepIo;
 use Alama\Arazzo\Contracts\Spec\Workflow;
-use Alama\Arazzo\Document\Document;
-use Alama\Arazzo\Evaluation\EvaluationEngine;
-use Alama\Arazzo\Expression\ExpressionEngine;
-use Alama\Arazzo\Protocol\Http\Resolver\OpenApiOperationResolver;
-use Alama\Arazzo\Runner\RunnerFacade;
-use Alama\Arazzo\Runner\RunnerFacadeInterface;
-use Alama\Arazzo\Tests\Support\FakeOpenApiExecutor;
-use Alama\Arazzo\Tests\Support\FakeOutputExtractor;
-use Alama\Arazzo\Tests\Support\FakeResponseValidator;
+use Alama\Arazzo\Protocol\Http\HttpProtocol;
+use Alama\Arazzo\Runner\Data\ExecutionResult;
+use Alama\Arazzo\Runner\Registries\OperationExecutorRegistry;
+use Alama\Arazzo\Runner\Runner;
+use Alama\Arazzo\Runner\RunnerInterface;
+use GuzzleHttp\Psr7\HttpFactory;
 use GuzzleHttp\Psr7\Response;
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
-function runnerFacadeWithFakes(): RunnerFacade
+function runnerWithHttpFake(): RunnerInterface
 {
-    $seams = [
-        'openApiExecutor' => new FakeOpenApiExecutor(
-            new Response(200, ['Content-Type' => 'application/json'], '{"pets":[{"id":1,"name":"Rex"}]}'),
-        ),
-        'outputExtractor' => new FakeOutputExtractor(),
-        'schemaValidator' => new FakeResponseValidator(),
-    ];
+    $client = new class() implements ClientInterface
+    {
+        public function sendRequest(RequestInterface $request): ResponseInterface
+        {
+            return new Response(200, ['Content-Type' => 'application/json'], '{"pets":[{"id":1,"name":"Rex"}]}');
+        }
+    };
 
-    return new RunnerFacade(
-        Document::create(),
-        OpenApiOperationResolver::create(),
-        new EvaluationEngine(expression: new ExpressionEngine()),
-        new ExpressionEngine(), // inspector
-        $seams['openApiExecutor'],
-        $seams['outputExtractor'],
-        $seams['schemaValidator'],
-    );
+    $http = HttpProtocol::create($client, new HttpFactory());
+
+    return Runner::create()
+        ->withExecutor($http->executor(strictValidation: false))
+        ->withOperationResolver($http->resolver());
 }
 
 function runnerFixtureDocument(): ArazzoDocument
@@ -55,27 +52,30 @@ function runnerFixtureDocument(): ArazzoDocument
     );
 }
 
-it('exposes the enriched runner facade entry point', function () {
-    $runner = runnerFacadeWithFakes();
-    expect($runner)->toBeInstanceOf(RunnerFacadeInterface::class);
+afterEach(function (): void {
+    OperationExecutorRegistry::reset();
 });
 
-it('runs a workflow whose operation resolves through the document face', function () {
-    $result = runnerFacadeWithFakes()->run(runnerFixtureDocument(), 'find');
-    expect($result['status'])->toBe('succeeded');
+it('exposes the RunnerInterface entry point', function (): void {
+    $runner = runnerWithHttpFake();
+    expect($runner)->toBeInstanceOf(RunnerInterface::class);
 });
 
-it('keeps the run output shape stable for existing consumers', function () {
-    $result = runnerFacadeWithFakes()->run(runnerFixtureDocument(), 'find');
-    expect(array_keys($result))->toBe(['workflowId', 'status', 'outputs', 'stepsSpent', 'workflowCallStack']);
+it('runs a workflow whose operation resolves through HttpProtocol', function (): void {
+    $result = runnerWithHttpFake()->run(runnerFixtureDocument(), 'find');
+
+    expect($result)->toBeInstanceOf(ExecutionResult::class)
+        ->and($result->status)->toBe(ExecutionStatus::Succeeded)
+        ->and($result->isSucceeded())->toBeTrue();
 });
 
-it('execute exposes per-step verdicts for cli and laravel consumers', function () {
-    $result = runnerFacadeWithFakes()->execute(runnerFixtureDocument(), 'find');
+it('exposes typed per-step verdicts and a serializable array representation', function (): void {
+    $result = runnerWithHttpFake()->run(runnerFixtureDocument(), 'find');
+    $array = $result->toArray();
 
-    expect($result['status'])->toBe('succeeded')
-        ->and($result['steps'])->toBeArray()
-        ->and(array_keys($result['steps']))->toBe(['list'])
-        ->and($result['steps']['list']['success'])->toBeTrue()
-        ->and($result['steps']['list']['outputs'])->toBeArray();
+    expect(array_keys($array))->toBe(['workflowId', 'status', 'outputs', 'stepsSpent', 'workflowCallStack', 'steps'])
+        ->and($array['status'])->toBe('succeeded')
+        ->and(array_keys($array['steps']))->toBe(['list'])
+        ->and($array['steps']['list']['success'])->toBeTrue()
+        ->and($array['steps']['list']['outputs'])->toBeArray();
 });

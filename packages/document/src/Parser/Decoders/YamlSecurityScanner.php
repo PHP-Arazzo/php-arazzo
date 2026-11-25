@@ -51,7 +51,7 @@ final class YamlSecurityScanner
         $clean = $this->stripStringsAndComments($source);
 
         if (!$policy->yaml->allowObjectDeserialization && preg_match('/!php\/(?:object|const)/i', $clean)) {
-            throw new ObjectDeserializationForbiddenException();
+            throw ObjectDeserializationForbiddenException::detected();
         }
 
         if (!$policy->yaml->allowCustomTags) {
@@ -76,7 +76,7 @@ final class YamlSecurityScanner
         $count = count($aliases);
 
         if ($count > $maxAliases) {
-            throw new MaxAliasesExceededException($count, $maxAliases);
+            throw MaxAliasesExceededException::exceeded($count, $maxAliases);
         }
 
         return $aliases;
@@ -137,7 +137,7 @@ final class YamlSecurityScanner
 
         $getExpansion = function (string $anchor) use (&$getExpansion, &$memo, &$visiting, $anchorAliases, $maxAliases): int {
             if (isset($visiting[$anchor])) {
-                throw new MaxAliasesExceededException($maxAliases + 1, $maxAliases);
+                throw MaxAliasesExceededException::exceeded($maxAliases + 1, $maxAliases);
             }
             if (isset($memo[$anchor])) {
                 return $memo[$anchor];
@@ -150,7 +150,7 @@ final class YamlSecurityScanner
             foreach ($aliases as $ref) {
                 $total += 1 + $getExpansion($ref);
                 if ($total > $maxAliases) {
-                    throw new MaxAliasesExceededException($total, $maxAliases);
+                    throw MaxAliasesExceededException::exceeded($total, $maxAliases);
                 }
             }
 
@@ -168,7 +168,7 @@ final class YamlSecurityScanner
         foreach ($topLevelAliases as $ref) {
             $totalExpanded += 1 + $getExpansion($ref);
             if ($totalExpanded > $maxAliases) {
-                throw new MaxAliasesExceededException($totalExpanded, $maxAliases);
+                throw MaxAliasesExceededException::exceeded($totalExpanded, $maxAliases);
             }
         }
     }
@@ -183,7 +183,7 @@ final class YamlSecurityScanner
             if (preg_match('/^!!(?:str|int|float|bool|seq|map|null|binary|timestamp)$/i', $tag)) {
                 continue;
             }
-            throw new CustomTagsForbiddenException($tag);
+            throw CustomTagsForbiddenException::forTag($tag);
         }
     }
 }

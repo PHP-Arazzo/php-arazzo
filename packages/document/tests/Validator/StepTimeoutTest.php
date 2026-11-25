@@ -40,7 +40,7 @@ function timeoutDoc(string $arazzoVersion): ArazzoDocument
 }
 
 it('parses timeout in milliseconds on steps', function (): void {
-    expect(timeoutDoc('1.1.0')->workflows[0]->steps[0]->flow->timeout)->toBe(4500);
+    expect(timeoutDoc('1.1.0')->firstWorkflow()->firstStep()->flow->timeout)->toBe(4500);
 });
 
 it('flags timeout on 1.0 documents and non-positive values', function (): void {

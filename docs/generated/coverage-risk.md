@@ -20,143 +20,171 @@ quadrantChart
     quadrant-2 Solid & stable
     quadrant-3 Stable but untested
     quadrant-4 Untested churn
-    cli/Console: [1, 0.75]
+    cli/Console: [1, 0.8]
+    cli/Exceptions: [0.333, 0.333]
     cli/Generator: [1, 1]
     cli/Renderer: [0.5, 1]
     contracts/Attributes: [0.133, 1]
+    contracts/Clock: [0, 1]
     contracts/Data: [0.167, 1]
     contracts/Dependency: [0.333, 1]
-    contracts/Discovery: [0, 1]
-    contracts/Exceptions: [0, 1]
-    contracts/Interfaces: [0.108, 1]
-    contracts/Spec: [0.019, 1]
-    contracts/State: [0.053, 1]
+    contracts/Discovery: [0.2, 1]
+    contracts/Exceptions: [0.1, 1]
+    contracts/Interfaces: [0.103, 1]
+    contracts/Observability: [0, 1]
+    contracts/Policy: [0, 1]
+    contracts/Spec: [0.036, 1]
+    contracts/State: [0.105, 1]
     contracts/Support: [0, 1]
-    contracts/Validation: [0.125, 1]
-    document/Parser: [0.333, 1]
+    contracts/Validation: [0.111, 1]
+    document/Parser: [0.286, 1]
     document/Plugins: [1, 1]
     document/Registries: [0.8, 1]
     document/Validator: [0.714, 1]
     engine/Data: [0.75, 1]
     engine/Enum: [0, 1]
-    engine/Exceptions: [0.1, 1]
-    engine/Execution: [0.364, 1]
-    engine/Runtime: [0.375, 1]
+    engine/Exceptions: [0.091, 1]
+    engine/Execution: [0.357, 1]
+    engine/Runtime: [0.6, 1]
     evaluation/Condition: [0.889, 1]
     evaluation/Data: [0.4, 1]
     evaluation/Enum: [0, 1]
     evaluation/Events: [0.333, 1]
-    evaluation/Interfaces: [0.6, 0.5]
+    evaluation/Exceptions: [0.333, 0.5]
+    evaluation/Interfaces: [0.6, 1]
     evaluation/Plugins: [1, 1]
-    evaluation/Registries: [0.833, 1]
-    expression/Ast: [0.333, 0.733]
-    expression/Data: [0.263, 1]
+    evaluation/Registries: [0.857, 1]
+    expression/Ast: [0.333, 0.8]
+    expression/Data: [0.25, 1]
     expression/Enum: [0, 1]
-    expression/Exceptions: [0.091, 1]
-    expression/Interfaces: [0.294, 1]
-    expression/Internal: [0.75, 0.333]
+    expression/Exceptions: [0.083, 1]
+    expression/Interfaces: [0.333, 1]
+    expression/Internal: [0.778, 0.167]
     expression/JsonPath: [0.667, 1]
     expression/Plugins: [1, 1]
-    expression/Registries: [0.571, 1]
+    expression/Policy: [0, 1]
+    expression/Registries: [0.625, 1]
     expression/Support: [0.667, 1]
     expression/Xpath: [0.5, 0.667]
-    protocol-http/Execution: [0.692, 1]
-    protocol-http/Plugins: [1, 1]
-    protocol-http/Resolver: [0.5, 1]
+    protocol-http/Exceptions: [0.333, 0.5]
+    protocol-http/Execution: [0.857, 1]
+    protocol-http/Plugins: [0.917, 1]
+    protocol-http/Policy: [0.333, 1]
+    protocol-http/Resolver: [0.7, 1]
+    protocol-rpc/Exceptions: [0.2, 0.25]
     protocol-rpc/Execution: [0.875, 1]
-    protocol-rpc/Normalizer: [0, 0.2]
-    protocol-rpc/Plugins: [0.917, 1]
-    protocol-rpc/Protocol: [0.571, 1]
+    protocol-rpc/Normalizer: [0.5, 0.286]
+    protocol-rpc/Plugins: [0.929, 1]
+    protocol-rpc/Protocol: [0.625, 1]
     protocol-rpc/Transfer: [0.6, 1]
-    protocol-soap/Exceptions: [0, 1]
+    protocol-soap/Exceptions: [0.333, 0.8]
     protocol-soap/Execution: [0.818, 1]
     protocol-soap/Plugins: [0.929, 1]
     protocol-soap/Resolver: [1, 1]
     protocol-soap/Transfer: [0.333, 1]
     protocol-soap/Validation: [1, 1]
-    runner/Async: [0.9, 1]
-    runner/Events: [0.167, 1]
-    runner/Exceptions: [0.333, 1]
-    runner/Execution: [0.714, 1]
-    runner/Interfaces: [1, 0]
+    runner/Async: [0.957, 1]
+    runner/Data: [0.429, 1]
+    runner/Events: [0, 1]
+    runner/Exceptions: [0.375, 1]
+    runner/Execution: [0.857, 1]
     runner/Plugins: [0.818, 1]
-    runner/Preflight: [0.429, 1]
+    runner/Policy: [0.286, 1]
+    runner/Preflight: [0.5, 1]
+    runner/Queue: [0.333, 1]
+    runner/Registries: [0.6, 1]
+    runner/Store: [0.6, 1]
     runner/Sync: [0.84, 1]
     sources/Exceptions: [0, 1]
-    sources/Normalizer: [0.333, 1]
+    sources/Normalizer: [0.5, 1]
     sources/Plugins: [1, 1]
+    sources/Policy: [0.333, 1]
     sources/Registries: [0.8, 1]
-    sources/Resolver: [0.571, 1]
+    sources/Resolver: [0.667, 1]
 ```
 
 | Module | Instability | Test files | Src files | Density |
 |---|---:|---:|---:|---:|
-| `cli/Console` | 1.00 | 9 | 12 | 75% |
+| `cli/Console` | 1.00 | 8 | 10 | 80% |
+| `cli/Exceptions` | 0.33 | 1 | 3 | 33% |
 | `cli/Generator` | 1.00 | 2 | 2 | 100% |
-| `cli/Renderer` | 0.50 | 7 | 1 | 100% |
+| `cli/Renderer` | 0.50 | 6 | 3 | 100% |
 | `contracts/Attributes` | 0.13 | 10 | 6 | 100% |
+| `contracts/Clock` | 0.00 | 2 | 1 | 100% |
 | `contracts/Data` | 0.17 | 5 | 2 | 100% |
 | `contracts/Dependency` | 0.33 | 6 | 3 | 100% |
-| `contracts/Discovery` | 0.00 | 3 | 3 | 100% |
-| `contracts/Exceptions` | 0.00 | 5 | 1 | 100% |
-| `contracts/Interfaces` | 0.11 | 49 | 21 | 100% |
-| `contracts/Spec` | 0.02 | 288 | 52 | 100% |
-| `contracts/State` | 0.05 | 83 | 3 | 100% |
-| `contracts/Support` | 0.00 | 11 | 5 | 100% |
-| `contracts/Validation` | 0.12 | 91 | 9 | 100% |
-| `document/Parser` | 0.33 | 60 | 24 | 100% |
+| `contracts/Discovery` | 0.20 | 4 | 3 | 100% |
+| `contracts/Exceptions` | 0.10 | 7 | 5 | 100% |
+| `contracts/Interfaces` | 0.10 | 51 | 20 | 100% |
+| `contracts/Observability` | 0.00 | 9 | 4 | 100% |
+| `contracts/Policy` | 0.00 | 12 | 5 | 100% |
+| `contracts/Spec` | 0.04 | 306 | 60 | 100% |
+| `contracts/State` | 0.10 | 92 | 4 | 100% |
+| `contracts/Support` | 0.00 | 13 | 5 | 100% |
+| `contracts/Validation` | 0.11 | 97 | 9 | 100% |
+| `document/Parser` | 0.29 | 65 | 31 | 100% |
 | `document/Plugins` | 1.00 | 52 | 50 | 100% |
 | `document/Registries` | 0.80 | 3 | 1 | 100% |
-| `document/Validator` | 0.71 | 25 | 6 | 100% |
-| `engine/Data` | 0.75 | 2 | 2 | 100% |
+| `document/Validator` | 0.71 | 26 | 6 | 100% |
+| `engine/Data` | 0.75 | 5 | 2 | 100% |
 | `engine/Enum` | 0.00 | 1 | 1 | 100% |
-| `engine/Exceptions` | 0.10 | 5 | 1 | 100% |
-| `engine/Execution` | 0.36 | 12 | 8 | 100% |
-| `engine/Runtime` | 0.38 | 31 | 19 | 100% |
-| `evaluation/Condition` | 0.89 | 77 | 17 | 100% |
-| `evaluation/Data` | 0.40 | 16 | 2 | 100% |
-| `evaluation/Enum` | 0.00 | 6 | 5 | 100% |
+| `engine/Exceptions` | 0.09 | 12 | 8 | 100% |
+| `engine/Execution` | 0.36 | 15 | 10 | 100% |
+| `engine/Runtime` | 0.60 | 27 | 21 | 100% |
+| `evaluation/Condition` | 0.89 | 84 | 18 | 100% |
+| `evaluation/Data` | 0.40 | 14 | 2 | 100% |
+| `evaluation/Enum` | 0.00 | 8 | 5 | 100% |
 | `evaluation/Events` | 0.33 | 1 | 1 | 100% |
-| `evaluation/Interfaces` | 0.60 | 1 | 2 | 50% |
+| `evaluation/Exceptions` | 0.33 | 1 | 2 | 50% |
+| `evaluation/Interfaces` | 0.60 | 2 | 2 | 100% |
 | `evaluation/Plugins` | 1.00 | 4 | 2 | 100% |
-| `evaluation/Registries` | 0.83 | 6 | 2 | 100% |
-| `expression/Ast` | 0.33 | 11 | 15 | 73% |
-| `expression/Data` | 0.26 | 29 | 7 | 100% |
-| `expression/Enum` | 0.00 | 8 | 2 | 100% |
-| `expression/Exceptions` | 0.09 | 17 | 2 | 100% |
-| `expression/Interfaces` | 0.29 | 25 | 4 | 100% |
-| `expression/Internal` | 0.75 | 1 | 3 | 33% |
-| `expression/JsonPath` | 0.67 | 61 | 7 | 100% |
-| `expression/Plugins` | 1.00 | 22 | 17 | 100% |
-| `expression/Registries` | 0.57 | 4 | 1 | 100% |
+| `evaluation/Registries` | 0.86 | 7 | 2 | 100% |
+| `expression/Ast` | 0.33 | 12 | 15 | 80% |
+| `expression/Data` | 0.25 | 29 | 6 | 100% |
+| `expression/Enum` | 0.00 | 10 | 2 | 100% |
+| `expression/Exceptions` | 0.08 | 19 | 4 | 100% |
+| `expression/Interfaces` | 0.33 | 24 | 4 | 100% |
+| `expression/Internal` | 0.78 | 1 | 6 | 17% |
+| `expression/JsonPath` | 0.67 | 65 | 9 | 100% |
+| `expression/Plugins` | 1.00 | 23 | 17 | 100% |
+| `expression/Policy` | 0.00 | 3 | 1 | 100% |
+| `expression/Registries` | 0.62 | 5 | 1 | 100% |
 | `expression/Support` | 0.67 | 5 | 2 | 100% |
 | `expression/Xpath` | 0.50 | 2 | 3 | 67% |
-| `protocol-http/Execution` | 0.69 | 27 | 4 | 100% |
-| `protocol-http/Plugins` | 1.00 | 9 | 2 | 100% |
-| `protocol-http/Resolver` | 0.50 | 22 | 3 | 100% |
+| `protocol-http/Exceptions` | 0.33 | 1 | 2 | 50% |
+| `protocol-http/Execution` | 0.86 | 26 | 6 | 100% |
+| `protocol-http/Plugins` | 0.92 | 18 | 2 | 100% |
+| `protocol-http/Policy` | 0.33 | 2 | 1 | 100% |
+| `protocol-http/Resolver` | 0.70 | 19 | 3 | 100% |
+| `protocol-rpc/Exceptions` | 0.20 | 1 | 4 | 25% |
 | `protocol-rpc/Execution` | 0.88 | 3 | 2 | 100% |
-| `protocol-rpc/Normalizer` | 0.00 | 1 | 5 | 20% |
-| `protocol-rpc/Plugins` | 0.92 | 6 | 3 | 100% |
-| `protocol-rpc/Protocol` | 0.57 | 6 | 4 | 100% |
-| `protocol-rpc/Transfer` | 0.60 | 3 | 2 | 100% |
-| `protocol-soap/Exceptions` | 0.00 | 3 | 1 | 100% |
-| `protocol-soap/Execution` | 0.82 | 5 | 4 | 100% |
-| `protocol-soap/Plugins` | 0.93 | 7 | 3 | 100% |
+| `protocol-rpc/Normalizer` | 0.50 | 2 | 7 | 29% |
+| `protocol-rpc/Plugins` | 0.93 | 6 | 3 | 100% |
+| `protocol-rpc/Protocol` | 0.62 | 6 | 4 | 100% |
+| `protocol-rpc/Transfer` | 0.60 | 4 | 2 | 100% |
+| `protocol-soap/Exceptions` | 0.33 | 4 | 5 | 80% |
+| `protocol-soap/Execution` | 0.82 | 6 | 4 | 100% |
+| `protocol-soap/Plugins` | 0.93 | 7 | 5 | 100% |
 | `protocol-soap/Resolver` | 1.00 | 1 | 1 | 100% |
-| `protocol-soap/Transfer` | 0.33 | 5 | 2 | 100% |
+| `protocol-soap/Transfer` | 0.33 | 6 | 2 | 100% |
 | `protocol-soap/Validation` | 1.00 | 1 | 1 | 100% |
-| `runner/Async` | 0.90 | 15 | 7 | 100% |
-| `runner/Events` | 0.17 | 31 | 11 | 100% |
-| `runner/Exceptions` | 0.33 | 3 | 1 | 100% |
-| `runner/Execution` | 0.71 | 34 | 16 | 100% |
-| `runner/Interfaces` | 1.00 | 0 | 1 | 0% |
+| `runner/Async` | 0.96 | 17 | 6 | 100% |
+| `runner/Data` | 0.43 | 19 | 3 | 100% |
+| `runner/Events` | 0.00 | 18 | 9 | 100% |
+| `runner/Exceptions` | 0.38 | 13 | 11 | 100% |
+| `runner/Execution` | 0.86 | 27 | 12 | 100% |
 | `runner/Plugins` | 0.82 | 6 | 1 | 100% |
-| `runner/Preflight` | 0.43 | 4 | 2 | 100% |
-| `runner/Sync` | 0.84 | 35 | 5 | 100% |
-| `sources/Exceptions` | 0.00 | 8 | 5 | 100% |
-| `sources/Normalizer` | 0.33 | 6 | 5 | 100% |
-| `sources/Plugins` | 1.00 | 2 | 1 | 100% |
+| `runner/Policy` | 0.29 | 5 | 2 | 100% |
+| `runner/Preflight` | 0.50 | 7 | 2 | 100% |
+| `runner/Queue` | 0.33 | 13 | 1 | 100% |
+| `runner/Registries` | 0.60 | 23 | 1 | 100% |
+| `runner/Store` | 0.60 | 18 | 2 | 100% |
+| `runner/Sync` | 0.84 | 39 | 7 | 100% |
+| `sources/Exceptions` | 0.00 | 10 | 8 | 100% |
+| `sources/Normalizer` | 0.50 | 7 | 6 | 100% |
+| `sources/Plugins` | 1.00 | 3 | 1 | 100% |
+| `sources/Policy` | 0.33 | 3 | 1 | 100% |
 | `sources/Registries` | 0.80 | 5 | 1 | 100% |
-| `sources/Resolver` | 0.57 | 25 | 11 | 100% |
+| `sources/Resolver` | 0.67 | 26 | 12 | 100% |
 
-**Refactor-now list** (untested churn): `runner/Interfaces`
+**Refactor-now list** (untested churn): `expression/Internal`, `protocol-rpc/Normalizer`

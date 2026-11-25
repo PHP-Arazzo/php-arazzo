@@ -31,8 +31,8 @@ it('parses wsdl-step operationName', function () use ($decode): void {
             operationName: GetPet
     YAML));
 
-    expect($document->workflows[0]->steps[0]->target->operationName)->toBe('GetPet');
-    expect($document->workflows[0]->steps[0]->target->operationId)->toBeNull();
+    expect($document->firstWorkflow()->firstStep()->target->operationName)->toBe('GetPet');
+    expect($document->firstWorkflow()->firstStep()->target->operationId)->toBeNull();
 });
 
 it('parses rpc-step rpcMethod and rpcProtocol', function () use ($decode): void {
@@ -49,7 +49,7 @@ it('parses rpc-step rpcMethod and rpcProtocol', function () use ($decode): void 
             rpcProtocol: grpc
     YAML));
 
-    $step = $document->workflows[0]->steps[0];
+    $step = $document->firstWorkflow()->firstStep();
     expect($step->target->rpcMethod)->toBe('$sourceDescriptions.proto.com.acme.PetService/GetPet');
     expect($step->target->rpcProtocol)->toBe(RpcProtocol::Grpc);
 });
@@ -71,7 +71,7 @@ it('parses graphql-step graphqlOperation object', function () use ($decode): voi
                 contentType: application/json
     YAML));
 
-    $op = $document->workflows[0]->steps[0]->target->graphqlOperation;
+    $op = $document->firstWorkflow()->firstStep()->target->graphqlOperation;
     expect($op)->toBeInstanceOf(GraphQlOperation::class);
     expect($op->schema)->toBe('$sourceDescriptions.gql');
     expect($op->operation)->toBe('query GetToken { token }');
@@ -96,7 +96,7 @@ it('parses graphql-step extensionsSelector', function () use ($decode): void {
                 type: jsonpath
     YAML));
 
-    $op = $document->workflows[0]->steps[0]->target->graphqlOperation;
+    $op = $document->firstWorkflow()->firstStep()->target->graphqlOperation;
     expect($op->extensionsSelector)->toBeInstanceOf(Selector::class)
         ->and($op->extensionsSelector->selector)->toBe('$.data.token')
         ->and($op->extensionsSelector->type)->toBe(ExpressionType::JsonPath);
@@ -124,7 +124,7 @@ it('parses interaction-step interaction and components.interactions', function (
                 operationId: confirm
     YAML));
 
-    $step = $document->workflows[0]->steps[0];
+    $step = $document->firstWorkflow()->firstStep();
     expect($step->target->interaction)->not->toBeNull();
     expect($step->target->interaction->prompt)->toBe('Confirm transfer');
     expect($step->target->interaction->mode)->toBe(InteractionMode::Redirect);

@@ -15,4 +15,9 @@ class UnsupportedSerializationStyleException extends RuntimeException
     {
         parent::__construct(sprintf('Unsupported serialization style "%s" for location "%s".', $style, $location));
     }
+
+    public static function forStyle(string $style, string $location): self
+    {
+        return new self($style, $location);
+    }
 }

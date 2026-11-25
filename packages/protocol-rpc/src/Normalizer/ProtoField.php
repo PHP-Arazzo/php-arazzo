@@ -19,4 +19,17 @@ final readonly class ProtoField
         public int $number,
         public bool $repeated = false,
     ) {}
+
+    /**
+     * @return array{name: string, type: string, number: int, repeated: bool}
+     */
+    public function toArray(): array
+    {
+        return [
+            'name' => $this->name,
+            'type' => $this->type,
+            'number' => $this->number,
+            'repeated' => $this->repeated,
+        ];
+    }
 }

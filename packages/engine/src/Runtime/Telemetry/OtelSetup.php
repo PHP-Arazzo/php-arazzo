@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Runtime\Telemetry;
 
+use Alama\Arazzo\Engine\Exceptions\TelemetrySetupException;
 use ErrorException;
 use OpenTelemetry\API\Globals;
 use OpenTelemetry\API\Instrumentation\Configurator;
@@ -185,7 +186,7 @@ final class OtelSetup
         }
         $handle = fopen($path, 'ab');
         if ($handle === false) {
-            throw new \RuntimeException("Could not open OTel trace file: {$path}");
+            throw TelemetrySetupException::traceFileOpenFailed($path);
         }
 
         return self::streamExporter($handle);

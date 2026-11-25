@@ -25,4 +25,9 @@ final class CustomTagsForbiddenException extends DecodeLimitException
             previous: $previous,
         );
     }
+
+    public static function forTag(string $tag): self
+    {
+        return new self($tag);
+    }
 }

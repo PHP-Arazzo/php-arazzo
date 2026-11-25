@@ -19,7 +19,7 @@ final class StepAtLeastOneRule implements ValidationRuleInterface
     public function check(ArazzoDocument $doc, SymbolTable $symbols, ErrorCollector $errors): void
     {
         foreach ($doc->workflows as $i => $w) {
-            if ($w->steps === []) {
+            if ($w->steps->isEmpty()) {
                 $errors->error($this->code(), "workflow '{$w->workflowId}' must declare at least one step.", "/workflows/{$i}/steps");
             }
         }

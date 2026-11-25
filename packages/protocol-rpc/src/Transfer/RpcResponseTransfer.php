@@ -72,4 +72,28 @@ final readonly class RpcResponseTransfer implements ResponseTransferInterface
     {
         return $this->meta;
     }
+
+    public function hasFailure(): bool
+    {
+        return isset($this->meta['rpc.error']) || isset($this->meta['error']);
+    }
+
+    public function failureCategory(): ?string
+    {
+        if (isset($this->meta['rpc.error'])) {
+            return 'rpc-error';
+        }
+
+        return isset($this->meta['error']) ? 'transport' : null;
+    }
+
+    public function httpStatusCode(): int
+    {
+        return is_int($this->status) ? $this->status : 500;
+    }
+
+    public function rawPayload(): ?string
+    {
+        return is_string($this->rawBody) ? $this->rawBody : null;
+    }
 }

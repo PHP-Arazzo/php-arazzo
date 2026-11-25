@@ -9,10 +9,10 @@ use Alama\Arazzo\Contracts\Spec\Enum\ParameterIn;
 use Alama\Arazzo\Contracts\Spec\ResolvedOperation;
 use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
-use Alama\Arazzo\Engine\Exceptions\ExecutionException;
 use Alama\Arazzo\Engine\Execution\RequestCompiler;
 use Alama\Arazzo\Engine\Execution\ReusableParameterResolver;
 use Alama\Arazzo\Evaluation\EvaluationEngineInterface;
+use Alama\Arazzo\Protocol\Rpc\Exceptions\RpcExecutionException;
 use Alama\Arazzo\Protocol\Rpc\Protocol\RpcFieldBag;
 use Alama\Arazzo\Protocol\Rpc\Protocol\RpcMessageCodec;
 use Alama\Arazzo\Protocol\Rpc\Protocol\RpcWireProfile;
@@ -37,7 +37,7 @@ use Psr\Http\Message\StreamFactoryInterface;
  *
  * @internal stays out of the advertised contract; not part of the public API surface
  */
-final class RpcRequestBuilder
+class RpcRequestBuilder
 {
     /** @var list<string> */
     private const OVERRIDE_PARAMETERS = ['url', 'endpoint'];
@@ -57,20 +57,12 @@ final class RpcRequestBuilder
     ): RequestInterface {
         $protocol = $resolved->rpcProtocol;
         if ($protocol === null) {
-            throw new ExecutionException(
-                "RPC step '{$step->stepId}' does not declare an rpcProtocol; expected one of grpc, grpc-web, twirp, connect.",
-                '/',
-                'execution.rpc_protocol_missing',
-            );
+            throw RpcExecutionException::protocolMissing($step->stepId);
         }
 
         $bags = $resolved->normalized->requestBodies['application/protobuf'] ?? null;
         if (!is_array($bags) || !is_array($bags['requestFields'] ?? null)) {
-            throw new ExecutionException(
-                "RPC step '{$step->stepId}' has no application/protobuf request body definition.",
-                '/',
-                'execution.rpc_request_body_missing',
-            );
+            throw RpcExecutionException::requestBodyMissing($step->stepId);
         }
 
         $compiled = (new RequestCompiler($this->evaluationEngine))->compile($step, $document, $context);
@@ -78,11 +70,7 @@ final class RpcRequestBuilder
 
         $target = $this->override($inputs, 'url') ?? $this->override($inputs, 'endpoint') ?? $resolved->normalized->resolvedServerUrl;
         if ($target === null || $target === '') {
-            throw new ExecutionException(
-                "RPC step '{$step->stepId}' has no target endpoint.",
-                '/',
-                'execution.rpc_target_missing',
-            );
+            throw RpcExecutionException::targetEndpointMissing($step->stepId);
         }
 
         $metadataHeaders = $this->metadataHeaders($step, $document, $inputs);

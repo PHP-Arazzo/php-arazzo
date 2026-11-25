@@ -5,43 +5,30 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Sources\Normalizer;
 
 use Alama\Arazzo\Contracts\Spec\NormalizedOpenApiOperation;
+use Alama\Arazzo\Sources\Exceptions\InvalidOpenApiSourceException;
 use Alama\Arazzo\Sources\Normalizer\Interfaces\OpenApiNormalizerInterface;
-use InvalidArgumentException;
 
 /**
  * @internal stays out of the advertised contract; not part of the public API surface
  */
 class OpenApi30Normalizer implements OpenApiNormalizerInterface
 {
+    public function __construct(
+        private readonly OpenApiParameterNormalizer $parameterNormalizer = new OpenApiParameterNormalizer(),
+    ) {}
+
     /**
      * @param  array<string, mixed>  $document
      */
     public function normalize(array $document, string $path, string $method): NormalizedOpenApiOperation
     {
         $method = strtolower($method);
+        $pathItem = $this->requirePathItem($document, $path);
+        $operation = $this->requireOperation($pathItem, $path, $method);
 
-        if (!isset($document['paths']) || !is_array($document['paths']) || !isset($document['paths'][$path]) || !is_array($document['paths'][$path])) {
-            throw new InvalidArgumentException("Path '{$path}' not found in document.");
-        }
-        /** @var array<string, mixed> $pathItem */
-        $pathItem = $document['paths'][$path];
-
-        if (!isset($pathItem[$method]) || !is_array($pathItem[$method])) {
-            throw new InvalidArgumentException("Method '{$method}' not found for path '{$path}'.");
-        }
-        /** @var array<string, mixed> $operation */
-        $operation = $pathItem[$method];
-
-        // 1. Resolve Server URL
         $resolvedServerUrl = $this->resolveServerUrl($document, $pathItem, $operation);
-
-        // 2. Resolve Parameters
-        $parameters = $this->resolveParameters($document, $pathItem, $operation);
-
-        // 3. Resolve Request Bodies
+        $parameters = $this->parameterNormalizer->resolveParameters($document, $pathItem, $operation);
         $requestBodies = $this->resolveRequestBodies($document, $operation);
-
-        // 4. Resolve Responses
         $responses = $this->resolveResponses($operation);
 
         return new NormalizedOpenApiOperation(
@@ -59,112 +46,57 @@ class OpenApi30Normalizer implements OpenApiNormalizerInterface
 
     /**
      * @param  array<string, mixed>  $document
+     * @return array<string, mixed>
+     */
+    private function requirePathItem(array $document, string $path): array
+    {
+        $paths = $document['paths'] ?? null;
+        if (!is_array($paths) || !isset($paths[$path]) || !is_array($paths[$path])) {
+            throw InvalidOpenApiSourceException::pathNotFound($path);
+        }
+
+        /** @var array<string, mixed> */
+        return $paths[$path];
+    }
+
+    /**
+     * @param  array<string, mixed>  $pathItem
+     * @return array<string, mixed>
+     */
+    private function requireOperation(array $pathItem, string $path, string $method): array
+    {
+        if (!isset($pathItem[$method]) || !is_array($pathItem[$method])) {
+            throw InvalidOpenApiSourceException::methodNotFound($method, $path);
+        }
+
+        /** @var array<string, mixed> */
+        return $pathItem[$method];
+    }
+
+    /**
+     * @param  array<string, mixed>  $document
      * @param  array<string, mixed>  $pathItem
      * @param  array<string, mixed>  $operation
      */
     private function resolveServerUrl(array $document, array $pathItem, array $operation): ?string
     {
-        if (isset($operation['servers']) && is_array($operation['servers']) && count($operation['servers']) > 0) {
-            return is_array($operation['servers'][0]) && isset($operation['servers'][0]['url']) && is_string($operation['servers'][0]['url']) ? $operation['servers'][0]['url'] : null;
-        }
-
-        if (isset($pathItem['servers']) && is_array($pathItem['servers']) && count($pathItem['servers']) > 0) {
-            return is_array($pathItem['servers'][0]) && isset($pathItem['servers'][0]['url']) && is_string($pathItem['servers'][0]['url']) ? $pathItem['servers'][0]['url'] : null;
-        }
-
-        if (isset($document['servers']) && is_array($document['servers']) && count($document['servers']) > 0) {
-            return is_array($document['servers'][0]) && isset($document['servers'][0]['url']) && is_string($document['servers'][0]['url']) ? $document['servers'][0]['url'] : null;
+        foreach ([$operation, $pathItem, $document] as $scope) {
+            if (isset($scope['servers']) && is_array($scope['servers']) && $scope['servers'] !== []) {
+                return $this->firstServerUrl($scope['servers']);
+            }
         }
 
         return null;
     }
 
     /**
-     * @param  array<string, mixed>  $document
-     * @param  array<string, mixed>  $pathItem
-     * @param  array<string, mixed>  $operation
-     * @return array{path: array<string, array<string, mixed>>, query: array<string, array<string, mixed>>, header: array<string, array<string, mixed>>, cookie: array<string, array<string, mixed>>}
+     * @param  array<array-key, mixed>  $servers
      */
-    private function resolveParameters(array $document, array $pathItem, array $operation): array
+    private function firstServerUrl(array $servers): ?string
     {
-        /** @var array<array<string, mixed>> $pathParams */
-        $pathParams = isset($pathItem['parameters']) && is_array($pathItem['parameters']) ? $pathItem['parameters'] : [];
-        /** @var array<array<string, mixed>> $opParams */
-        $opParams = isset($operation['parameters']) && is_array($operation['parameters']) ? $operation['parameters'] : [];
+        $first = $servers[0] ?? null;
 
-        $pathParams = array_map(fn (array $p): array => $this->resolveLocalRef($document, $p), $pathParams);
-        $opParams = array_map(fn (array $p): array => $this->resolveLocalRef($document, $p), $opParams);
-
-        $merged = [];
-
-        foreach ($pathParams as $param) {
-            if (isset($param['name'], $param['in']) && is_string($param['name']) && is_string($param['in'])) {
-                $merged[$param['name'].'|'.$param['in']] = $param;
-            }
-        }
-
-        foreach ($opParams as $param) {
-            if (isset($param['name'], $param['in']) && is_string($param['name']) && is_string($param['in'])) {
-                $merged[$param['name'].'|'.$param['in']] = $param;
-            }
-        }
-
-        $grouped = [
-            'path' => [],
-            'query' => [],
-            'header' => [],
-            'cookie' => [],
-        ];
-
-        foreach ($merged as $param) {
-
-            if (isset($grouped[$param['in']])) {
-
-                $grouped[$param['in']][$param['name']] = $param;
-            }
-        }
-
-        return $grouped;
-    }
-
-    /**
-     * @param  array<string, mixed>  $document
-     * @param  array<string, mixed>  $item
-     * @return array<string, mixed>
-     */
-    private function resolveLocalRef(array $document, array $item): array
-    {
-        if (!isset($item['$ref'])) {
-            return $item;
-        }
-
-        $ref = $item['$ref'];
-
-        if (!is_string($ref) || !str_starts_with($ref, '#/')) {
-            return $item;
-        }
-
-        $pointer = substr($ref, 2);
-        $parts = explode('/', $pointer);
-
-        $current = $document;
-        foreach ($parts as $part) {
-            $part = str_replace(['~1', '~0'], ['/', '~'], $part);
-
-            if (!is_array($current) || !isset($current[$part])) {
-                return $item;
-            }
-            $current = $current[$part];
-        }
-
-        if (!is_array($current)) {
-            return $item;
-        }
-
-        $result = array_merge($current, $item);
-        unset($result['$ref']);
-
-        return $result;
+        return is_array($first) && is_string($first['url'] ?? null) ? $first['url'] : null;
     }
 
     /**
@@ -180,7 +112,7 @@ class OpenApi30Normalizer implements OpenApiNormalizerInterface
 
         /** @var array<string, mixed> $reqBody */
         $reqBody = $operation['requestBody'];
-        $requestBody = $this->resolveLocalRef($document, $reqBody);
+        $requestBody = $this->parameterNormalizer->resolveLocalRef($document, $reqBody);
 
         if (!isset($requestBody['content']) || !is_array($requestBody['content'])) {
             return [];

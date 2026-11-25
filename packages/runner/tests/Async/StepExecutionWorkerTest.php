@@ -6,15 +6,12 @@ namespace Tests\Execution;
 
 use Alama\Arazzo\Contracts\Interfaces\LockManagerInterface;
 use Alama\Arazzo\Contracts\Interfaces\OperationExecutorPluginInterface;
-use Alama\Arazzo\Contracts\Interfaces\PendingCorrelationRegistryInterface;
 use Alama\Arazzo\Contracts\Interfaces\QueueDriverInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Components;
-use Alama\Arazzo\Contracts\Spec\Enum\ExecutionStatus;
 use Alama\Arazzo\Contracts\Spec\Expression;
 use Alama\Arazzo\Contracts\Spec\Info;
 use Alama\Arazzo\Contracts\Spec\Interfaces\WorkflowContextInterface;
-use Alama\Arazzo\Contracts\Spec\PendingCorrelation;
 use Alama\Arazzo\Contracts\Spec\Selector;
 use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Contracts\Spec\StepExecutionOutcome;
@@ -26,19 +23,18 @@ use Alama\Arazzo\Contracts\State\WorkflowContext;
 use Alama\Arazzo\Evaluation\Data\CriterionResult;
 use Alama\Arazzo\Evaluation\Data\CriterionResultCollection;
 use Alama\Arazzo\Evaluation\EvaluationEngineInterface;
-use Alama\Arazzo\Events\CorrelationPendingEvent;
-use Alama\Arazzo\Events\Interfaces\EventLedgerInterface;
 use Alama\Arazzo\Expression\Data\EvaluationContext;
 use Alama\Arazzo\Expression\Interfaces\EvaluationInputInterface;
-use Alama\Arazzo\Runner\Async\ExecuteStepJob;
 use Alama\Arazzo\Runner\Async\StepExecutionWorker;
+use Alama\Arazzo\Runner\Data\ExecuteStepJob;
+use Alama\Arazzo\Runner\DefinitionStoreInterface;
+use Alama\Arazzo\Runner\Events\CorrelationPendingEvent;
+use Alama\Arazzo\Runner\Execution\Data\AsyncPorts;
+use Alama\Arazzo\Runner\Execution\Data\ObservabilityContext;
 use Alama\Arazzo\Runner\Execution\Data\RunControlFlow;
-use Alama\Arazzo\Runner\Execution\Data\RunPersistence;
-use Alama\Arazzo\Runner\OperationExecutorRegistry;
+use Alama\Arazzo\Runner\Registries\OperationExecutorRegistry;
+use Alama\Arazzo\Runner\Store\InMemoryExecutionStore;
 use Alama\Arazzo\Runner\Sync\WorkflowEngine;
-use Alama\Arazzo\Runtime\State\Interfaces\DefinitionRegistryInterface;
-use Alama\Arazzo\Runtime\State\Interfaces\ExecutionRegistryInterface;
-use Alama\Arazzo\Runtime\State\Interfaces\StateStoreInterface;
 use Closure;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
@@ -66,35 +62,6 @@ class WorkerMockLockManager implements LockManagerInterface
     }
 
     public function release(string $key): void {}
-}
-
-class WorkerMockStateStore implements StateStoreInterface
-{
-    /** @var array<string, array<string, mixed>> */
-    public array $saves = [];
-
-    /** @var array<string, int|null> */
-    public array $ttls = [];
-
-    /** @var array<string, array<string, mixed>> */
-    public array $preloaded = [];
-
-    public function save(string $executionId, array $state, ?int $ttlSeconds = null): void
-    {
-        $this->saves[$executionId] = $state;
-        $this->ttls[$executionId] = $ttlSeconds;
-    }
-
-    public function load(string $executionId): ?array
-    {
-        return $this->preloaded[$executionId] ?? $this->saves[$executionId] ?? null;
-    }
-
-    public function delete(string $executionId): void
-    {
-        unset($this->preloaded[$executionId]);
-        unset($this->saves[$executionId]);
-    }
 }
 
 class WorkerMockExpressionResolver implements EvaluationEngineInterface
@@ -168,17 +135,6 @@ class WorkerMockExpressionResolver implements EvaluationEngineInterface
     }
 }
 
-class WorkerMockEventLedger implements EventLedgerInterface
-{
-    /** @var list<array{executionId: string, eventType: string, payload: array<string, mixed>}> */
-    public array $appended = [];
-
-    public function append(string $executionId, string $eventType, array $payload): void
-    {
-        $this->appended[] = ['executionId' => $executionId, 'eventType' => $eventType, 'payload' => $payload];
-    }
-}
-
 class WorkerMockQueueDriver implements QueueDriverInterface
 {
     /** @var list<object> */
@@ -187,51 +143,6 @@ class WorkerMockQueueDriver implements QueueDriverInterface
     public function dispatch(object $job, int $delaySeconds = 0): void
     {
         $this->dispatched[] = $job;
-    }
-}
-
-class WorkerMockPendingCorrelations implements PendingCorrelationRegistryInterface
-{
-    public ?PendingCorrelation $toReturn = null;
-
-    /** @var list<string> */
-    public array $consumed = [];
-
-    public function create(string $correlationId, string $executionId, string $stepId, string $channelPath, ?int $timeoutSeconds = null): void {}
-
-    public function findByCorrelationId(string $correlationId): ?PendingCorrelation
-    {
-        return $this->toReturn;
-    }
-
-    public function consume(string $correlationId): void
-    {
-        $this->consumed[] = $correlationId;
-    }
-
-    public function existsForExecution(string $executionId): bool
-    {
-        return false;
-    }
-}
-
-class WorkerMockExecutionRegistry implements ExecutionRegistryInterface
-{
-    public function start(string $executionId, string $definitionId, string $workflowId): void {}
-
-    public function complete(string $executionId, ExecutionStatus $status): void {}
-}
-
-class WorkerMockDefinitionRegistry implements DefinitionRegistryInterface
-{
-    public function register(ArazzoDocument $document): string
-    {
-        return 'test-def';
-    }
-
-    public function get(string $definitionId): ?ArazzoDocument
-    {
-        return null;
     }
 }
 
@@ -262,16 +173,16 @@ class WorkerHandoffExpressionResolver extends WorkerMockExpressionResolver
     }
 }
 
-class WorkerHandoffDefinitionRegistry implements DefinitionRegistryInterface
+class WorkerHandoffDefinitionStore implements DefinitionStoreInterface
 {
     public function __construct(private readonly ArazzoDocument $document) {}
 
-    public function register(ArazzoDocument $document): string
+    public function save(ArazzoDocument $document, ?string $definitionId = null): string
     {
-        return 'test-def';
+        return $definitionId ?? 'test-def';
     }
 
-    public function get(string $definitionId): ?ArazzoDocument
+    public function find(string $definitionId): ?ArazzoDocument
     {
         return $this->document;
     }
@@ -301,34 +212,32 @@ class WorkerHandoffSuspendingExecutor implements OperationExecutorPluginInterfac
 }
 
 /**
- * @return array{0: StepExecutionWorker, 1: WorkerHandoffEventDispatcher, 2: WorkerMockStateStore}
+ * @return array{0: StepExecutionWorker, 1: WorkerHandoffEventDispatcher, 2: InMemoryExecutionStore}
  */
 function makeHandoffWorker(ArazzoDocument $document, WorkerHandoffExpressionResolver $resolver): array
 {
     $events = new WorkerHandoffEventDispatcher();
-    $store = new WorkerMockStateStore();
-    $executionRegistry = new WorkerMockExecutionRegistry();
+    $store = new InMemoryExecutionStore();
+    $queue = new WorkerMockQueueDriver();
 
     OperationExecutorRegistry::reset();
     $executors = OperationExecutorRegistry::create();
     $executors->register(new WorkerHandoffSuspendingExecutor());
 
-    $persistence = new RunPersistence($store, new WorkerMockEventLedger(), $executionRegistry);
-    $controlFlow = new RunControlFlow(
-        new WorkflowEngine($resolver, maxRetryAttempts: 10, retryBackoffMultiplier: 1.0),
-        new WorkerMockQueueDriver(),
-        $events,
+    $ports = new AsyncPorts(
+        store: $store,
+        definitions: new WorkerHandoffDefinitionStore($document),
+        queueDriver: $queue,
+        lockManager: new WorkerMockLockManager(),
     );
 
-    $worker = new StepExecutionWorker(
-        $persistence,
-        new WorkerMockLockManager(),
-        new WorkerHandoffDefinitionRegistry($document),
-        $resolver,
-        $executors,
-        $controlFlow,
-        86400,
+    $controlFlow = new RunControlFlow(
+        new WorkflowEngine($resolver, maxRetryAttempts: 10, retryBackoffMultiplier: 1.0),
+        $queue,
+        new ObservabilityContext(events: $events),
     );
+
+    $worker = new StepExecutionWorker($ports, $resolver, $executors, $controlFlow);
 
     return [$worker, $events, $store];
 }

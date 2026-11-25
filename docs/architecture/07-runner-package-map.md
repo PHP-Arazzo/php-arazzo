@@ -2,114 +2,108 @@
 
 ## Purpose
 
-Where execution lives and why: the package/layer model, the `Sync\`/`Async\` split inside `alama/arazzo-runner`, who owns which seam, and the arch tests that make each boundary un-crossable. This is the template a new protocol package (`protocol-soap`, `protocol-rpc`) should be read against — the composition surface is now stated once instead of being rediscovered from guard failures.
+Where execution lives and why: the package/layer model, the `Sync\`/`Async\` split inside `php-arazzo/arazzo-runner`, who owns which seam, and the arch tests that make each boundary un-crossable. See [ADR-009](../adr/ADR-009-runner-package-public-interface.md) for the runner public interface design, [ADR-010](../adr/ADR-010-monorepo-observability-and-policy-standards.md) for observability & `*Policy` standards, and [ADR-007](../adr/ADR-007-expression-package-public-interface-and-plugin-registries.md) / [ADR-008](../adr/ADR-008-plugin-attribute-naming-and-directory-convention.md) for plugin registries.
 
 ## The package model (source of truth)
 
-| Layer | Package | Created in | Depends on |
-|---|---|---|---|
-| 1 | `alama/arazzo-runtime` | E1 | contracts |
-| 1 | `alama/arazzo-events` | E2 | contracts |
-| 3 | `alama/arazzo-engine` | E4 | contracts, evaluation, runtime |
-| — | `alama/arazzo-sources` | pre-E | contracts, document, expression, cebe — hosts the spec normalizers (Option 2 re-merge, plan R2) |
-| 5+6 | `alama/arazzo-runner` (`Sync\`/`Async\` + shared at root) | F2 | contracts, document, expression, evaluation, engine, runtime, events, sources, protocol-* |
-| vertical | `alama/arazzo-protocol-http` | F1 | contracts, expression, evaluation, engine, sources (+ cebe/guzzle/PSR) — **never `runner` (DIP)** |
-| vertical | `alama/arazzo-protocol-soap` | F4 | same as http minus cebe/guzzle; transport via contracts' `HttpClientInterface` |
-| vertical | `alama/arazzo-protocol-rpc` | F5 | same as http minus illuminate; `.proto` parser stays here (spec D5 exception) |
-| host | `alama/laravel-arazzo` | pre-F | runner **facade only** — never the runner's `Sync\`/`Async\` step-execution internals (F2.2 guard) |
-| host | `alama/arazzo-cli` (in `packages/cli`) | pre-F | runner **facade only** — same F2.2 guard |
+| Layer | Package | Depends on |
+|---|---|---|
+| 0 | `php-arazzo/arazzo-contracts` | PHP + `psr/event-dispatcher` + `psr/clock` (Spec AST, `ExecutionState`, `WorkflowContext`, `Validation\*`, `Policy\{SourcePolicy, Credential}`, `Observability\{TracerInterface, SpanInterface, NullTracer}`, `Clock\SystemClock`, `Discovery\PluginDiscovery`, `Attributes\As*Plugin`, cross-package `Interfaces\*`) |
+| 1 | `php-arazzo/arazzo-expression` | contracts (+ `softcreatr/jsonpath`) |
+| 1 | `php-arazzo/arazzo-document` | contracts (+ `symfony/yaml`) |
+| 1 | `php-arazzo/arazzo-evaluation` | contracts, expression |
+| 2 | `php-arazzo/arazzo-engine` | contracts, evaluation, expression (`Alama\Arazzo\Engine\*` request pipeline helpers + `Alama\Arazzo\Runtime\*` state/policy/telemetry incl. `OtelTracer`) |
+| 2 | `php-arazzo/arazzo-sources` | contracts, document, expression (spec normalizers & fetchers, zero `cebe`) |
+| 3 | `php-arazzo/arazzo-runner` | contracts, document, expression, evaluation, engine — **protocol-agnostic, transport-free & vendor-agnostic** (zero `Protocol\*`, `Sources\*`, `GuzzleHttp`, `Psr\Http`, `cebe`, `OpenTelemetry`) |
+| vertical | `php-arazzo/arazzo-protocol-http` | contracts, document, expression, evaluation, engine, sources (+ `cebe`/`guzzle`/PSR) — **never `runner` (DIP)**; public factory `HttpProtocol` |
+| vertical | `php-arazzo/arazzo-protocol-soap` | contracts, document, expression, evaluation, engine, sources — **never `runner` (DIP)** |
+| vertical | `php-arazzo/arazzo-protocol-rpc` | contracts, document, expression, evaluation, engine, sources — **never `runner` (DIP)** |
+| host | `php-arazzo/arazzo-cli` | runner **public API only** (`Runner`, `AsyncRunner`, `ExecutionStoreInterface`, `DefinitionStoreInterface`, `Data\*`, `Policy\*`, `Store\*`, `Queue\SyncQueueDriver`, `Events\*`, `Exceptions\*`) |
+| host | `alama/laravel-arazzo` (external repo) | runner **public API only** (`RunnerInterface`, `AsyncRunnerInterface`, `ExecutionStoreInterface`, `DefinitionStoreInterface`, `Policy\*`, `OperationExecutorRegistry`, `Events\*`, `Exceptions\*`) |
 
-Dependency direction is strictly downward: every package may depend only on packages in rows above it. `runner` is the widest consumer; the vertical protocol packages sit **beside** it and feed it through seams; hosts consume only the facade.
+Dependency direction is strictly downward: `runner` never imports any `protocol-*` package; vertical protocol packages never import `runner` (DIP); hosts compose `runner` and `protocol-*` through their public facades and `OperationExecutorPluginInterface`.
 
 ```mermaid
 flowchart TB
-    subgraph L1["layer 1"]
-        RT["alama/arazzo-runtime"]
-        EV["alama/arazzo-events"]
-    end
-    RT --> CT["alama/arazzo-contracts"]
-    EV --> CT
+    CT["arazzo-contracts<br/><small>Spec, State, Policy\\SourcePolicy, Observability\\TracerInterface</small>"]
+    EX["arazzo-expression"] --> CT
+    DC["arazzo-document"] --> CT
+    EV["arazzo-evaluation"] --> EX
+    EN["arazzo-engine<br/><small>Engine\\ pipeline + Runtime\\ (OtelTracer)</small>"] --> EV
+    SO["arazzo-sources"] --> DC
 
-    SO["alama/arazzo-sources<br/><small>spec normalizers, OpenAPI path</small>"] --> CT
-    EN["alama/arazzo-engine"] --> CT
-
-    subgraph RUNNER["alama/arazzo-runner"]
+    subgraph RUNNER["arazzo-runner (protocol-agnostic & vendor-agnostic)"]
         direction TB
-        FAC["RunnerFacade / RunnerGraphBuilder<br/><small>the composition root</small>"]
+        FAC["Runner / AsyncRunner<br/><small>final readonly public facades + ExecutionPolicy</small>"]
+        PORTS["ExecutionStoreInterface / DefinitionStoreInterface"]
+        REG["Registries\\OperationExecutorRegistry"]
         SYNC["Sync\\<br/><small>WorkflowEngine, StepExecutor, queue-free</small>"]
         ASYNC["Async\\<br/><small>StepExecutionWorker, OutcomeHandler, Resumer</small>"]
         FAC --> SYNC
+        FAC --> ASYNC
         ASYNC --> SYNC
+        ASYNC --> PORTS
+        SYNC --> REG
+        ASYNC --> REG
     end
     SYNC --> EN
     ASYNC --> EN
-    RUNNER --> SO
+    FAC --> DC
 
-    PH["alama/arazzo-protocol-http<br/><small>DefaultOpenApiExecutor, executors</small>"] --> SO
-    PH -.->|"feeds seams, never imports runner"| RUNNER
+    PH["arazzo-protocol-http<br/><small>HttpProtocol, HttpStepExecutor</small>"] --> SO
+    PH -.->|"implements OperationExecutorPluginInterface"| REG
 
-    LA["alama/laravel-arazzo"] -->|"facade only"| RUNNER
-    CLI["alama/arazzo-cli"] -->|"facade only"| RUNNER
+    CLI["arazzo-cli"] -->|"public API only"| FAC
+    CLI -->|"HttpProtocol"| PH
 
     style RUNNER fill:#efe6ff,stroke:#7b1fa2;
     style PH fill:#e3f2fd,stroke:#1565c0;
-    style LA fill:#e8f5e9,stroke:#2e7d32;
     style CLI fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 ## The `Sync\`/`Async\` split
 
-F2.0 carved the live execution set out of the old flat `Execution\` namespace:
-
-| Side | Package | Enforced by |
+| Side | Classes (`@internal`) | Enforced by |
 |---|---|---|
-| `Sync\` | `WorkflowEngine`, `StepExecutor`, `SubWorkflowStepExecutor`, `ExecutionGraphFactory` | **queue-free** — must not reference `Async\` or `QueueDriverInterface` |
-| `Async\` | `StepExecutionWorker`, `StepOutcomeHandler`, `CorrelationResumer`, `SubWorkflowInvoker`, `AsyncExecutionGraphAssembler`, `ExecuteStepJob`, `ResumeCorrelationJob` | **may compose `Sync\`** — the worker drives the same workflow engine |
-| shared (root) | `RunnerFacade`, `RunnerGraphBuilder`, `AsyncExecutionGraph`, `OperationExecutorRegistry` | facade is the public face |
+| `Sync\` | `WorkflowEngine`, `WorkflowExecutor`, `StepExecutor`, `WorkflowDependencyResolver`, `ExecutionGraphFactory` | **queue-free** — must not reference `Async\` or `QueueDriverInterface` |
+| `Async\` | `StepExecutionWorker`, `StepOutcomeHandler`, `CorrelationResumer`, `SubWorkflowInvoker`, `AsyncExecutionGraphAssembler` | **may compose `Sync\`** — the worker drives the same `WorkflowEngine` |
+| public surface | `Runner`, `RunnerInterface`, `AsyncRunner`, `AsyncRunnerInterface`, `ExecutionStoreInterface`, `DefinitionStoreInterface`, `Data\{ExecutionResult, StepResult, ExecuteStepJob}`, `Policy\{ExecutionPolicy, ExecutionBudgets}`, `Store\{InMemoryExecutionStore, InMemoryDefinitionStore}`, `Queue\SyncQueueDriver`, `Registries\OperationExecutorRegistry`, `Events\*`, `Exceptions\*` | `packages/runner/tests/ArchTest.php` + `tests/Architecture/InternalApiTest.php` |
 
-Rationale: sync execution is a plain transition loop (deterministic, synchronous, testable without queues); async execution is the queue-driven loop that re-enters the same engine between jobs. Expressing async *in terms of* sync and declaring sync queue-free keeps one transition semantics instead of two parallel implementations. The `Execution\` name still exists for the folded pipeline helpers (below) — it is not a third execution engine.
-
-The facade (`RunnerGraphBuilder`) is the boundary hosts cross:
-
-- `buildAsync(AsyncGraphSeams $seams)` — full graph (needs protocol value seams; used by `laravel`).
-- `buildWorker(AsyncGraphSeams $seams)` — worker-only (no protocol seams; used by `cli` drain).
+Rationale: sync execution is a plain transition loop (deterministic, synchronous, testable without queues); async execution is the queue-driven loop that re-enters the same `WorkflowEngine` between jobs. Expressing async *in terms of* sync and declaring sync queue-free keeps one transition semantics instead of two parallel implementations.
 
 ## Who owns which seam
 
-| Seam (contracts port) | protocol-http | runner | laravel | cli |
-|---|---|---|---|---|
-| `OpenApiExecutorInterface` | `DefaultOpenApiExecutor` | consumed (nullable) | binds it | — |
-| `OutputExtractorInterface` | `StepOutputExtractor` | consumed (nullable) | binds it | — |
-| `ResponseValidatorInterface` | `ResponseSchemaValidator` | consumed (nullable) | binds it | — |
-| `HttpClientInterface` | — | consumed | `Psr18HttpClient` | throws (no transport) |
-| `LockManagerInterface` | — | consumed | `LaravelRedisLockManager` | in-process anon |
-| `StateStoreInterface` / `QueueDriverInterface` / registries / ledgers | — | owned by the graph | Laravel DB/Redis impls | in-process fakes |
+| Seam (port) | protocol-http | runner | cli / framework hosts |
+|---|---|---|---|
+| `OperationExecutorPluginInterface` | `HttpProtocol::executor()` (`HttpStepExecutor`) | consumed via `OperationExecutorRegistry` + `withExecutor()`; ships `SubWorkflowStepExecutor` | registers via `withExecutor()` or `OperationExecutorRegistry::create()` |
+| `OperationResolverInterface` | `HttpProtocol::resolver()` (`OpenApiOperationResolver`) | consumed by internal `Preflight` via `withOperationResolver()` | registers via `withOperationResolver()` |
+| `OutputExtractorInterface` | `HttpProtocol::outputExtractor()` (`StepOutputExtractor`) | defaults to internal `EvaluationOutputExtractor`; optional override on `AsyncRunner::withOutputExtractor()` | binds optional override if schema casting on webhook resume is needed |
+| `ExecutionStoreInterface` & `DefinitionStoreInterface` | — | owned by `runner` with public `Store\InMemoryExecutionStore` and `Store\InMemoryDefinitionStore` defaults | hosts bind durable DB/Redis/file stores via `withStore()` / `withDefinitions()` |
+| `QueueDriverInterface` & `LockManagerInterface` | — | `AsyncRunner::create()` defaults to public `Queue\SyncQueueDriver` and internal `InMemoryLockManager` | hosts bind durable queue/lock drivers via `withQueueDriver()` / `withLockManager()` |
+| `TracerInterface`, `LoggerInterface`, `EventDispatcherInterface`, `ClockInterface` | — | wired identically on `Runner` and `AsyncRunner` with zero-overhead defaults (`NullTracer`, `NullLogger`, `NullEventDispatcher`, `SystemClock`) | hosts bind `OtelTracer`, PSR-3 logger, PSR-14 listeners (e.g. `ExecutionHistory` / metrics), and PSR-20 clock |
 
-The tag vocabulary `ProtocolHttpRegistrar::tags()` (F2.2) is how a host registers protocol nodes **without naming the concretes** — the provider consumes the vocabulary, the host never imports `Protocol\HttpStepExecutor`/`AsyncApiStepExecutor`.
+Framework hosts discover DI-bound `#[AsOperationExecutorPlugin]` classes via `PluginDiscovery::classesWith(AsOperationExecutorPlugin::class)` (ADR-007/ADR-008) rather than hardcoded registrars.
 
 ## Arch rules that enforce the boundaries
 
 | Rule | Guard | Location |
 |---|---|---|
+| Public facades & DTOs are `final readonly` | `Runner`, `AsyncRunner`, `ExecutionResult`, `StepResult`, `ExecuteStepJob`, `ExecutionPolicy`, `ExecutionBudgets` `toBeFinal()->toBeReadonly()` | `packages/runner/tests/ArchTest.php` |
+| Runner is protocol-agnostic, transport-free & vendor-agnostic | `expect('Alama\Arazzo\Runner')->not->toUse(['Illuminate', 'cebe\openapi', 'GuzzleHttp', 'Psr\Http', 'OpenTelemetry', 'Alama\Arazzo\Protocol', 'Alama\Arazzo\Sources', 'Alama\Arazzo\Cli'])` | `packages/runner/tests/ArchTest.php` |
 | Sync is queue-free | `expect('…Runner\Sync')->not->toUse(['…Runner\Async', 'QueueDriverInterface'])` | `packages/runner/tests/ArchTest.php` |
-| Async may compose Sync | `expect('…Runner\Async')->toUse('…Runner\Sync')` | runner `ArchTest.php` |
-| Nothing below the facade depends on the facade | Sync/Async `not->toUse('RunnerFacade')` | runner `ArchTest.php` |
-| Runner does not touch cebe directly | `expect('…Runner')->not->toUse('cebe\openapi')` | runner `ArchTest.php` |
-| protocol-* must not depend on runner (**DIP**) | `expect('Alama\Arazzo\Protocol\Http')->not->toUse('Alama\Arazzo\Runner')` | `packages/protocol-http/tests/Architecture/ArchTest.php` |
-| protocol-* stays framework-free | `not->toUse('Illuminate')` | protocol-http `Architecture/ArchTest.php` |
-| Hosts may not name async execution internals | 7-symbol `not->toUse([…])` over `Alama\Arazzo\Laravel` / `Alama\Arazzo\Cli` | `packages/laravel/tests/Architecture/ArchTest.php`, `packages/cli/tests/ArchTest.php` |
-| Folded pipeline helpers stay transport-agnostic | per-class `not->toUse(['Illuminate', 'cebe\openapi', 'GuzzleHttp'])` | runner `ArchTest.php` |
+| Async may compose Sync | `expect('…Runner\Async')->toUse('…Runner\Sync')` | `packages/runner/tests/ArchTest.php` |
+| Nothing below facades depends on facades | `Sync`/`Async` `not->toUse([Runner::class, AsyncRunner::class])` | `packages/runner/tests/ArchTest.php` |
+| protocol-* must not depend on runner (**DIP**) | `expect('Alama\Arazzo\Protocol\*')->not->toUse('Alama\Arazzo\Runner')` | `packages/protocol-*/tests/Architecture/ArchTest.php` |
+| Hosts import only public runner allow-list | allow-list check over `packages/cli/src` + 7-symbol ban in `packages/cli/tests/ArchTest.php` | `tests/Architecture/InternalApiTest.php`, `packages/cli/tests/ArchTest.php` |
+| Events stay framework-agnostic & readonly | `Alama\Arazzo\Runner\Events\*` `toBeFinal()->toBeReadonly()` & `not->toUse` internals | `packages/runner/tests/Events/ArchTest.php` |
 
-Each guard was proven to bite (temporary banned import → RED → byte-exact revert) when it was introduced — an arch test that cannot fail does not protect anything.
+## Why there is no layer-2 request-pipeline package
 
-## Why there is no layer-2 package (read before re-proposing)
-
-The first draft of this phase assumed a `request-pipeline` package (Plan E3) holding `RequestCompiler`, `ParameterSerializer`, `TypeCaster`, `SchemaValidator`, `IdempotencyKeyInjector`, `StepParameterMerger`, `ReusableParameterResolver`, `InjectionResult`. That extraction was **reverted** in `c2b03fb`, and F1.2 Step 1 then **promoted the seven helpers into the engine package** — they live as `Alama\Arazzo\Engine\Execution\*` (with the `Data\InjectionResult` value object alongside them), not in a layer-2 package and not in the runner.
-
-Why that is the right home: they are transport-agnostic request-build/schema-validate/parameter-resolve helpers with no framework or transport coupling. The runner consumes them (runner → engine is a legal edge), and — critically — a future protocol package can consume them from `engine` **without importing the runner at all** (the DIP sweep and this package map's structure both hold). Shipping them as a package would force a second seam surface (`protocol-*` → pipeline → runner) for zero reuse; keeping them in the runner would make protocols reach through the layer boundary. F3's gate caught the one half-completed move — `InjectionResult` stranded in the runner while its sole consumer (`IdempotencyKeyInjector`) sat in engine — and completed it. The next reader who is tempted to re-extract should treat `c2b03fb` (fold) + F1.2 Step 1 (promote into engine) as the prior decision and re-litigate only with concrete reuse evidence.
+The seven transport-agnostic request-pipeline helpers (`RequestCompiler`, `ParameterSerializer`, `TypeCaster`, `SchemaValidator`, `IdempotencyKeyInjector`, `StepParameterMerger`, `ReusableParameterResolver`, plus `Data\InjectionResult`) live in `php-arazzo/arazzo-engine` (`Alama\Arazzo\Engine\Execution\*`), not in a separate package and not in `runner`. Both `runner` and `protocol-*` packages legally depend on `engine`, preserving the DIP boundary without introducing a redundant intermediate package.
 
 ## Evidence
 
-- [`docs/research/2026-09-26-runner-package-split-validation.md`](../research/2026-09-26-runner-package-split-validation.md) — measured dependency churn behind the `Sync\`/`Async\` split.
-- [`docs/research/2026-09-08-arazzo-protocol-spec-prs-impact.md`](../research/2026-09-08-arazzo-protocol-spec-prs-impact.md) — the spec decisions (D4/D7/D9) driving vertical protocol packages and zero-core-edit.
-- [`06 — Laravel Integration](./06-laravel-integration.md) — the host side of every seam above.
+- [ADR-009: Runner Package Public Interface and Protocol-Agnostic Execution](../adr/ADR-009-runner-package-public-interface.md)
+- [ADR-010: Monorepo Observability Tiers and `*Policy` Value-Object Standards](../adr/ADR-010-monorepo-observability-and-policy-standards.md)
+- [`docs/research/2026-09-26-runner-package-split-validation.md`](../research/2026-09-26-runner-package-split-validation.md)
+- [`docs/research/2026-09-08-arazzo-protocol-spec-prs-impact.md`](../research/2026-09-08-arazzo-protocol-spec-prs-impact.md)

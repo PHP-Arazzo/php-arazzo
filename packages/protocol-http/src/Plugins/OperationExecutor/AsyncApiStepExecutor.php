@@ -8,7 +8,6 @@ use Alama\Arazzo\Contracts\Attributes\AsOperationExecutorPlugin;
 use Alama\Arazzo\Contracts\Interfaces\HttpClientInterface;
 use Alama\Arazzo\Contracts\Interfaces\OperationExecutorPluginInterface;
 use Alama\Arazzo\Contracts\Interfaces\PendingCorrelationRegistryInterface;
-use Alama\Arazzo\Contracts\Interfaces\StepProtocolExecutorInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Enum\OperationProtocol;
 use Alama\Arazzo\Contracts\Spec\Enum\SpecVersion;
@@ -21,8 +20,8 @@ use Alama\Arazzo\Engine\Exceptions\ExecutionException;
 use Alama\Arazzo\Engine\Execution\ReusableParameterResolver;
 use Alama\Arazzo\Evaluation\EvaluationEngineInterface;
 use Alama\Arazzo\Expression\Data\EvaluationContext;
+use Alama\Arazzo\Protocol\Http\Exceptions\AsyncApiStepException;
 use JsonException;
-use LogicException;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
@@ -33,7 +32,7 @@ use Psr\Http\Message\UriInterface;
  * @internal stays out of the advertised contract; not part of the public API surface
  */
 #[AsOperationExecutorPlugin(OperationProtocol::AsyncApi)]
-final class AsyncApiStepExecutor implements OperationExecutorPluginInterface, StepProtocolExecutorInterface
+final class AsyncApiStepExecutor implements OperationExecutorPluginInterface
 {
     /**
      * Registry ordering (ascending, first supports() wins). AsyncAPI actions
@@ -63,38 +62,36 @@ final class AsyncApiStepExecutor implements OperationExecutorPluginInterface, St
 
     public function supports(Step $step, ArazzoDocument $document): bool
     {
-        return in_array($step->target->action, ['send', 'receive'], true);
+        return $step->isAsyncAction();
     }
 
     public function execute(Step $step, WorkflowContext $context, ArazzoDocument $document, string $executionId): StepExecutionOutcome
     {
         if ($document->specVersion === SpecVersion::V1_0) {
-            throw new LogicException(
-                "AsyncAPI step '{$step->stepId}' encountered under a 1.0.0 document; upgrade to arazzo: 1.1.0.",
-            );
+            throw AsyncApiStepException::unsupportedSpecVersion($step->stepId);
         }
 
         if ($step->target->action === 'send') {
             $message = $this->compileMessage($step, $context, $document);
-            $response = $this->httpClient->sendRequest($message, $step->flow->timeout !== null ? $step->flow->timeout / 1000 : null);
+            $response = $this->httpClient->sendRequest($message, $step->flow->timeoutSeconds());
 
             return StepExecutionOutcome::resolved($response->getStatusCode(), [], []);
         }
 
-        if ($step->target->action !== 'receive') {
-            throw new LogicException("Unsupported action '{$step->target->action}' for step '{$step->stepId}'.");
+        if (!$step->isReceiveAction()) {
+            throw AsyncApiStepException::unsupportedAction($step->target->action, $step->stepId);
         }
 
         if ($step->target->correlationId === null) {
-            throw new LogicException("Step '{$step->stepId}' has action 'receive' but no correlationId expression.");
+            throw AsyncApiStepException::missingCorrelationId($step->stepId);
         }
         if ($step->target->channelPath === null) {
-            throw new LogicException("Step '{$step->stepId}' has action 'receive' but no channelPath.");
+            throw AsyncApiStepException::missingReceiveChannelPath($step->stepId);
         }
 
         $correlationId = self::stringify($this->evaluationEngine->evaluate($step->target->correlationId, new EvaluationContext($context, $step->stepId, $document)));
 
-        $this->pendingCorrelations->create($correlationId, $executionId, $step->stepId, $step->target->channelPath, $step->flow->timeout !== null ? $step->flow->timeout : null);
+        $this->pendingCorrelations->create($correlationId, $executionId, $step->stepId, $step->target->channelPath, $step->flow->timeout);
 
         return StepExecutionOutcome::suspended();
     }
@@ -140,7 +137,7 @@ final class AsyncApiStepExecutor implements OperationExecutorPluginInterface, St
         try {
             $encoded = json_encode($payload, JSON_THROW_ON_ERROR);
         } catch (JsonException $e) {
-            throw new LogicException("Step '{$step->stepId}' produced an unencodable message payload: {$e->getMessage()}");
+            throw AsyncApiStepException::unencodablePayload($step->stepId, $e);
         }
 
         // Merge step parameters over any query arguments embedded in the channel URI.
@@ -163,7 +160,7 @@ final class AsyncApiStepExecutor implements OperationExecutorPluginInterface, St
     private function resolveChannelUri(Step $step): UriInterface
     {
         $channelPath = $step->target->channelPath
-            ?? throw new LogicException("Send step '{$step->stepId}' has no channelPath.");
+            ?? throw AsyncApiStepException::missingSendChannelPath($step->stepId);
 
         if (preg_match('#^https?://#i', $channelPath) !== 1) {
             throw ExecutionException::unresolvableChannelTarget($step->stepId, $channelPath);

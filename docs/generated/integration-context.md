@@ -22,15 +22,18 @@ flowchart LR
         LARAVEL --> BRIDGE
         BRIDGE --> CORE
     end
-        A_Alama_Arazzo_Runner_Execution_SyncQueueDriver["SyncQueueDriver"]:::adapter
-        A_Alama_Arazzo_Runner_Execution_SyncQueueDriver --- BRIDGE
-        A_Alama_Arazzo_Runner_Execution_SyncQueueDriver --- queue
+        A_Alama_Arazzo_Runner_Queue_SyncQueueDriver["SyncQueueDriver"]:::adapter
+        A_Alama_Arazzo_Runner_Queue_SyncQueueDriver --- BRIDGE
+        A_Alama_Arazzo_Runner_Queue_SyncQueueDriver --- queue
         A_Alama_Arazzo_Cli_Console_RunnerFactory["RunnerFactory"]:::adapter
         A_Alama_Arazzo_Cli_Console_RunnerFactory --- CORE
         A_Alama_Arazzo_Cli_Console_RunnerFactory --- net
         A_Alama_Arazzo_Cli_Generator_Clients_OpenAiClient["OpenAiClient"]:::adapter
         A_Alama_Arazzo_Cli_Generator_Clients_OpenAiClient --- CORE
         A_Alama_Arazzo_Cli_Generator_Clients_OpenAiClient --- openai
+        A_Alama_Arazzo_Protocol_Http_HttpProtocol["HttpProtocol"]:::adapter
+        A_Alama_Arazzo_Protocol_Http_HttpProtocol --- CORE
+        A_Alama_Arazzo_Protocol_Http_HttpProtocol --- net
         A_Alama_Arazzo_Sources_Resolver_DefaultSourceResolver["DefaultSourceResolver"]:::adapter
         A_Alama_Arazzo_Sources_Resolver_DefaultSourceResolver --- CORE
         A_Alama_Arazzo_Sources_Resolver_DefaultSourceResolver --- net

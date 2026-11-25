@@ -7,14 +7,12 @@ namespace Alama\Arazzo\Protocol\Soap\Plugins\ValidationRule;
 use Alama\Arazzo\Contracts\Attributes\AsValidationRulePlugin;
 use Alama\Arazzo\Contracts\Interfaces\ValidationRuleInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
-use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
 use Alama\Arazzo\Contracts\Spec\Enum\SpecVersion;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Contracts\Spec\StepTarget;
 use Alama\Arazzo\Contracts\Validation\ErrorCollector;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
-use Alama\Arazzo\Expression\Enum\ReferenceKind;
 use Alama\Arazzo\Expression\Exceptions\ExpressionSyntaxException;
 use Alama\Arazzo\Expression\Interfaces\ExpressionEngineInterface;
 
@@ -49,11 +47,11 @@ final class WsdlStepRule implements ValidationRuleInterface
 
     private function checkStep(Step $step, int $wfIndex, int $stepIndex, ArazzoDocument $doc, ErrorCollector $errors): void
     {
-        $target = $step->target;
-        if (!self::isSourceBound($target)) {
+        if ($step->operationReference() === null) {
             return;
         }
 
+        $target = $step->target;
         $source = $this->resolveSource($target, $doc);
         $pointer = "/workflows/{$wfIndex}/steps/{$stepIndex}";
 
@@ -73,7 +71,7 @@ final class WsdlStepRule implements ValidationRuleInterface
         string $pointer,
         ErrorCollector $errors,
     ): void {
-        if ($source !== null && $source->type !== SourceType::Wsdl) {
+        if ($source !== null && !$source->isWsdl()) {
             $errors->error(
                 $this->code(),
                 "Step '{$step->stepId}' uses operationName (wsdl) but references source '{$source->name}' of type {$source->type->value}. wsdl steps require a wsdl source.",
@@ -98,7 +96,7 @@ final class WsdlStepRule implements ValidationRuleInterface
         ErrorCollector $errors,
     ): void {
         // operationId / operationPath MUST NOT reference a wsdl source.
-        if ($source === null || $source->type !== SourceType::Wsdl) {
+        if ($source === null || !$source->isWsdl()) {
             return;
         }
 
@@ -114,25 +112,15 @@ final class WsdlStepRule implements ValidationRuleInterface
         );
     }
 
-    private static function isSourceBound(StepTarget $target): bool
-    {
-        return $target->operationName !== null
-            || $target->operationId !== null
-            || $target->operationPath !== null;
-    }
-
     private function resolveSource(StepTarget $target, ArazzoDocument $doc): ?SourceDescription
     {
         $name = $this->qualifiedSourceName($target) ?? $this->operationPathSourceName($target, $doc);
         if ($name !== null) {
-            return self::findSource($doc, $name);
+            return $doc->findSource($name);
         }
 
         // Fallback: a single non-arazzo source leaves no ambiguity.
-        $nonArazzo = array_values(array_filter(
-            $doc->sourceDescriptions,
-            static fn (SourceDescription $s): bool => $s->type !== SourceType::Arazzo,
-        ));
+        $nonArazzo = $doc->nonArazzoSources();
 
         return count($nonArazzo) === 1 ? $nonArazzo[0] : null;
     }
@@ -170,15 +158,12 @@ final class WsdlStepRule implements ValidationRuleInterface
         }
 
         foreach ($segments as $segment) {
-            if (!$segment->isExpression) {
+            if ($segment->isLiteral()) {
                 continue;
             }
 
             $reference = $this->engine->expressionReferences($segment->text);
-            if ($reference !== null
-                && $reference->kind === ReferenceKind::Source
-                && $reference->name === 'url'
-                && $reference->target !== null) {
+            if ($reference !== null && $reference->isSourceUrl()) {
                 return $reference->target;
             }
         }
@@ -193,17 +178,6 @@ final class WsdlStepRule implements ValidationRuleInterface
             : '/\{\$sourceDescriptions\.([A-Za-z0-9_-]+)\.url\}/';
 
         return preg_match($pattern, $operationPath, $matches) === 1 ? $matches[1] : null;
-    }
-
-    private static function findSource(ArazzoDocument $doc, string $name): ?SourceDescription
-    {
-        foreach ($doc->sourceDescriptions as $candidate) {
-            if ($candidate->name === $name) {
-                return $candidate;
-            }
-        }
-
-        return null;
     }
 
     public function code(): string

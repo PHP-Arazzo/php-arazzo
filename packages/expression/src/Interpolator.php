@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Expression;
 
-use Alama\Arazzo\Expression\Data\InterpolationOptions;
 use Alama\Arazzo\Expression\Exceptions\ExpressionSyntaxException;
+use Alama\Arazzo\Expression\Policy\InterpolationPolicy;
 
 /**
  * @internal stays out of the advertised contract; consumed by the ExpressionEngine facade.
@@ -65,17 +65,17 @@ final class Interpolator
      */
     public function interpolate(string $template, callable $resolver, array $options = []): string
     {
-        $opts = new InterpolationOptions(
+        $policy = new InterpolationPolicy(
             stringify: $options['stringify'] ?? null,
         );
 
-        return $this->interpolateWithOptions($template, $resolver, $opts);
+        return $this->interpolateWithPolicy($template, $resolver, $policy);
     }
 
-    public function interpolateWithOptions(string $template, callable $resolver, ?InterpolationOptions $options = null): string
+    public function interpolateWithPolicy(string $template, callable $resolver, ?InterpolationPolicy $policy = null): string
     {
-        $opts = $options ?? new InterpolationOptions();
-        $stringifyOpt = $opts->getStringify();
+        $effective = $policy ?? InterpolationPolicy::default();
+        $stringifyOpt = $effective->getStringify();
 
         $result = preg_replace_callback(
             self::EXPRESSION_PATTERN,
@@ -96,12 +96,12 @@ final class Interpolator
         $inner = $this->extractInner($match);
 
         if ($inner === null) {
-            throw new ExpressionSyntaxException('Malformed embedded expression');
+            throw ExpressionSyntaxException::malformedEmbedded();
         }
 
         $trimmed = trim($inner);
         if ($trimmed === '') {
-            throw new ExpressionSyntaxException('Malformed embedded expression');
+            throw ExpressionSyntaxException::malformedEmbedded();
         }
 
         $bare = str_starts_with($trimmed, '$') ? $trimmed : '$'.$trimmed;

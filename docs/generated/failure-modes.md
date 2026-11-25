@@ -16,39 +16,73 @@ Regenerated before every commit.
 
 | Exception | Raised by |
 |---|---|
-| **ConditionSyntaxException** | `AccessorParser` <small>evaluation:Condition</small>, `ConditionEvaluator` <small>evaluation:Condition</small>, `Lexer` <small>evaluation:Condition</small>, `Parser` <small>evaluation:Condition</small> |
-| **CustomTagsForbiddenException** | `YamlSecurityScanner` <small>document:Parser</small> |
-| **DecodeException** | `NativeJsonDecoder` <small>document:Parser</small>, `SymfonyYamlDecoder` <small>document:Parser</small> |
-| **ExecutionError** | `WorkflowEngine` <small>runner:Sync</small> |
-| **ExecutionException** | `RpcRequestBuilder` <small>protocol-rpc:Execution</small>, `RpcOperationExecutor` <small>protocol-rpc:Plugins</small>, `SoapRequestBuilder` <small>protocol-soap:Execution</small>, `SoapOperationExecutor` <small>protocol-soap:Plugins</small>, `AsyncExecutionGraphAssembler` <small>runner:Async</small>, `StepExecutionWorker` <small>runner:Async</small>, `RunnerGraphBuilder` <small>(runner root)</small>, `ExecutionGraphFactory` <small>runner:Sync</small>, `StepExecutor` <small>runner:Sync</small> |
-| **ExpressionSyntaxException** | `EmbeddedExpressionSplitter` <small>expression:Internal</small>, `Interpolator` <small>(expression root)</small>, `Lexer` <small>(expression root)</small>, `Parser` <small>(expression root)</small> |
-| **GotoTargetNotFoundException** | `WorkflowEngine` <small>runner:Sync</small> |
-| **InvalidArgumentException** | `SpecVersion` <small>contracts:Spec</small>, `StepTarget` <small>contracts:Spec</small>, `TypeCaster` <small>engine:Execution</small>, `CriterionEvaluatorRegistry` <small>evaluation:Registries</small>, `ExpressionEvaluatorRegistry` <small>evaluation:Registries</small>, `SelectorPluginRegistry` <small>expression:Registries</small>, `ProtoParser` <small>protocol-rpc:Normalizer</small>, `WsdlSourceNormalizer` <small>protocol-soap:Plugins</small>, `OpenApi30Normalizer` <small>sources:Normalizer</small>, `OpenApiVersionDetector` <small>sources:Normalizer</small>, `OpenApiSourceNormalizer` <small>sources:Plugins</small> |
-| **LogicException** | `AsyncApiStepExecutor` <small>protocol-http:Plugins</small>, `StepExecutionWorker` <small>runner:Async</small>, `WorkflowExecutor` <small>runner:Sync</small>, `UnifiedStepCarrier` <small>(runner root)</small> |
-| **MaxAliasesExceededException** | `YamlSecurityScanner` <small>document:Parser</small> |
-| **MaxBytesExceededException** | `NativeJsonDecoder` <small>document:Parser</small>, `SymfonyYamlDecoder` <small>document:Parser</small> |
-| **MaxDepthExceededException** | `NativeJsonDecoder` <small>document:Parser</small>, `SymfonyYamlDecoder` <small>document:Parser</small> |
-| **MaxNodesExceededException** | `NativeJsonDecoder` <small>document:Parser</small>, `SymfonyYamlDecoder` <small>document:Parser</small> |
-| **ObjectDeserializationForbiddenException** | `SymfonyYamlDecoder` <small>document:Parser</small>, `YamlSecurityScanner` <small>document:Parser</small> |
-| **PreflightFailureException** | `StepExecutionWorker` <small>runner:Async</small>, `WorkflowExecutor` <small>runner:Sync</small> |
-| **RuntimeException** | `CliRunner` <small>cli:Console</small>, `OpenAiClient` <small>cli:Generator</small>, `PluginInstantiator` <small>contracts:Discovery</small>, `Reusable` <small>contracts:Spec</small>, `ReusableParameterResolver` <small>engine:Execution</small>, `BuiltInCriterionEvaluator` <small>(evaluation root)</small>, `CriteriaEvaluator` <small>(evaluation root)</small>, `Parser` <small>expression:JsonPath</small>, `OpenApiOperationResolver` <small>protocol-http:Resolver</small>, `ProtobufOperationResolver` <small>protocol-rpc:Protocol</small>, `RpcMessageCodec` <small>protocol-rpc:Protocol</small>, `SoapEnvelope` <small>protocol-soap:Execution</small>, `WsdlOperationResolver` <small>protocol-soap:Execution</small>, `OperationResolvers` <small>runner:Preflight</small>, `RunnerFacade` <small>(runner root)</small>, `FileLockStrategy` <small>engine:Runtime</small>, `FileStateStore` <small>engine:Runtime</small>, `OtelSetup` <small>engine:Runtime</small>, `SourceReferenceParser` <small>sources:Normalizer</small> |
-| **SchemaValidationException** | `ResponseSchemaValidator` <small>protocol-http:Execution</small>, `XsdResponseValidator` <small>protocol-soap:Validation</small> |
-| **SelectorEvaluationException** | `ExpressionEngine` <small>(expression root)</small>, `SelectorEvaluator` <small>(expression root)</small> |
-| **SourceFetchException** | `DefaultSourceResolver` <small>sources:Resolver</small>, `HttpFetcher` <small>sources:Resolver</small>, `LocalFetcher` <small>sources:Resolver</small> |
-| **SourceParseException** | `DefaultSourceResolver` <small>sources:Resolver</small> |
-| **StepBudgetExceededException** | `WorkflowEngine` <small>runner:Sync</small> |
-| **UnresolvableReferenceException** | `DefaultSourceResolver` <small>sources:Resolver</small> |
-| **UnsupportedSerializationStyleException** | `ParameterSerializer` <small>engine:Execution</small> |
-| **WorkflowCycleException** | `WorkflowEngine` <small>runner:Sync</small> |
-| **WorkflowDepthExceededException** | `WorkflowEngine` <small>runner:Sync</small> |
 | **ArazzoException** | _(never raised in src)_ |
+| **AsyncApiStepException** | _(never raised in src)_ |
+| **CliException** | _(never raised in src)_ |
+| **CliExecutionException** | _(never raised in src)_ |
+| **ConditionLexException** | _(never raised in src)_ |
+| **ConditionSyntaxException** | _(never raised in src)_ |
+| **CriterionEvaluationException** | _(never raised in src)_ |
+| **CustomTagsForbiddenException** | _(never raised in src)_ |
+| **DecodeException** | _(never raised in src)_ |
 | **DecodeLimitException** | _(never raised in src)_ |
 | **DefinitionHydrationException** | _(never raised in src)_ |
+| **EngineException** | _(never raised in src)_ |
+| **ExecutionError** | _(never raised in src)_ |
+| **ExecutionException** | _(never raised in src)_ |
+| **ExpressionSyntaxException** | _(never raised in src)_ |
+| **GeneratorApiException** | _(never raised in src)_ |
+| **GotoTargetNotFoundException** | _(never raised in src)_ |
+| **InvalidFetchPolicyException** | _(never raised in src)_ |
+| **InvalidOpenApiSourceException** | _(never raised in src)_ |
+| **InvalidRetryPolicyException** | _(never raised in src)_ |
+| **InvalidSelectorPluginException** | _(never raised in src)_ |
+| **InvalidSourcePolicyException** | _(never raised in src)_ |
+| **InvalidSourceReferenceException** | _(never raised in src)_ |
+| **InvalidSpecVersionException** | _(never raised in src)_ |
+| **InvalidStepTargetException** | _(never raised in src)_ |
+| **InvalidWsdlDocumentException** | _(never raised in src)_ |
+| **JsonPathSyntaxException** | _(never raised in src)_ |
 | **LoaderException** | _(never raised in src)_ |
+| **LockException** | _(never raised in src)_ |
+| **MaxAliasesExceededException** | _(never raised in src)_ |
+| **MaxBytesExceededException** | _(never raised in src)_ |
+| **MaxDepthExceededException** | _(never raised in src)_ |
+| **MaxNodesExceededException** | _(never raised in src)_ |
 | **NotImplementedException** | _(never raised in src)_ |
+| **ObjectDeserializationForbiddenException** | _(never raised in src)_ |
+| **OpenApiResolutionException** | _(never raised in src)_ |
+| **OperationResolutionException** | _(never raised in src)_ |
+| **ParameterResolutionException** | _(never raised in src)_ |
 | **ParserException** | _(never raised in src)_ |
+| **PluginInstantiationException** | _(never raised in src)_ |
+| **PreflightFailureException** | _(never raised in src)_ |
+| **ProtoSyntaxException** | _(never raised in src)_ |
+| **ProtobufResolutionException** | _(never raised in src)_ |
+| **RegistryInitializationException** | _(never raised in src)_ |
+| **RpcCodecException** | _(never raised in src)_ |
+| **RpcExecutionException** | _(never raised in src)_ |
+| **RunnerException** | _(never raised in src)_ |
+| **SchemaValidationException** | _(never raised in src)_ |
+| **SelectorEvaluationException** | _(never raised in src)_ |
+| **SoapEnvelopeException** | _(never raised in src)_ |
+| **SoapExecutionException** | _(never raised in src)_ |
+| **SourceFetchException** | _(never raised in src)_ |
+| **SourceParseException** | _(never raised in src)_ |
 | **SourceResolutionException** | _(never raised in src)_ |
+| **StateStoreException** | _(never raised in src)_ |
+| **StepBudgetExceededException** | _(never raised in src)_ |
+| **TelemetrySetupException** | _(never raised in src)_ |
+| **TypeCastException** | _(never raised in src)_ |
+| **UnknownWorkflowException** | _(never raised in src)_ |
+| **UnresolvableReferenceException** | _(never raised in src)_ |
+| **UnresolvableReusableReferenceException** | _(never raised in src)_ |
+| **UnsupportedSerializationStyleException** | _(never raised in src)_ |
 | **UnsupportedSourceVersionException** | _(never raised in src)_ |
+| **UnsupportedStepException** | _(never raised in src)_ |
+| **WorkflowCycleException** | _(never raised in src)_ |
+| **WorkflowDepthExceededException** | _(never raised in src)_ |
+| **WsdlResolutionException** | _(never raised in src)_ |
 
 ## Catch sites
 
@@ -73,37 +107,25 @@ Regenerated before every commit.
 | `RuntimeException` | `RpcOperationExecutor` |  |
 | `RuntimeException` | `SoapOperationExecutor` |  |
 | `SchemaValidationException` | `RunCommand` |  |
-| `SchemaValidationException` | `StepExecutor` |  |
 | `SelectorEvaluationException` | `SelectorEvaluator` |  |
 | `Throwable` | `ValidateCommand` |  |
 | `Throwable` | `CriteriaEvaluator` |  |
+| `Throwable` | `DefaultOpenApiExecutor` |  |
 | `Throwable` | `HttpStepExecutor` |  |
+| `Throwable` | `CorrelationResumer` |  |
 | `Throwable` | `StepExecutionWorker` |  |
 | `Throwable` | `Preflight` |  |
-| `Throwable` | `StepExecutor` |  |
 | `Throwable` | `WorkflowExecutor` |  |
 | `Throwable` | `DefaultSourceResolver` |  |
+| `Throwable` | `Sources` |  |
 
 ## Safety interlocks
 
 | Guard | Class | Limit expression |
 |---|---|---|
-| throws **MaxAliasesExceededException** | `YamlSecurityScanner` | — |
-| throws **MaxBytesExceededException** | `NativeJsonDecoder`, `SymfonyYamlDecoder` | — |
-| throws **MaxDepthExceededException** | `NativeJsonDecoder`, `SymfonyYamlDecoder` | — |
-| throws **MaxNodesExceededException** | `NativeJsonDecoder`, `SymfonyYamlDecoder` | — |
-| throws **StepBudgetExceededException** | `WorkflowEngine` | — |
-| throws **WorkflowCycleException** | `WorkflowEngine` | — |
-| throws **WorkflowDepthExceededException** | `WorkflowEngine` | — |
-| prop maxQueuedSteps | `CliRunner` | `10_000` |
 | const MAX_DEPTH | `InputSchemaResolver` | `16` |
 | const TERMINAL_STATES | `StepStateMachineEngine` | `[StepState::Completed, StepState::Failed, StepState::Cancelled]` |
 | prop max | `ConditionCache` | `256` |
 | prop max | `AstCache` | `256` |
-| prop stateTtlSeconds | `StepExecutionWorker` | `86400` |
-| prop stateTtlSeconds | `StepOutcomeHandler` | `86400` |
-| prop stateTtlSeconds | `UnifiedStepCarrier` | `86400` |
 | prop stateTtlSeconds | `StoredWorkflowStateRepository` | `86400` |
-| const HTTP_CONNECT_TIMEOUT | `DefaultSourceResolver` | `2.0` |
-| const HTTP_REQUEST_TIMEOUT | `DefaultSourceResolver` | `5.0` |
 | prop ttlSeconds | `CachedFetcher` | `3600` |

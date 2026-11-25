@@ -39,6 +39,15 @@ if (!is_file($autoload)) {
 
 require $autoload;
 
+spl_autoload_register(function (string $class): void {
+    if (str_starts_with($class, 'Alama\\Tools\\IssueIntake\\')) {
+        $file = dirname(__DIR__, 4).'/tools/issue-intake/src/'.str_replace('\\', '/', substr($class, strlen('Alama\\Tools\\IssueIntake\\'))).'.php';
+        if (is_file($file)) {
+            require $file;
+        }
+    }
+});
+
 /** @return never */
 function fail(string $message, int $code = 2): void
 {

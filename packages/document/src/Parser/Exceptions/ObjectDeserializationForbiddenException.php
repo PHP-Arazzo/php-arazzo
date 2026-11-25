@@ -23,4 +23,9 @@ final class ObjectDeserializationForbiddenException extends DecodeLimitException
             previous: $previous,
         );
     }
+
+    public static function detected(): self
+    {
+        return new self();
+    }
 }

@@ -23,4 +23,19 @@ final readonly class CriterionResult
         public CriterionReason $reason,
         public ?string $message = null,
     ) {}
+
+    public function isPassed(): bool
+    {
+        return $this->outcome === CriterionOutcome::Passed;
+    }
+
+    public function isFailed(): bool
+    {
+        return $this->outcome === CriterionOutcome::Failed;
+    }
+
+    public function isError(): bool
+    {
+        return $this->outcome === CriterionOutcome::Error;
+    }
 }

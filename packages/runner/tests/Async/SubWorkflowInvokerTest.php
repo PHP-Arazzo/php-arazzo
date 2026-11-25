@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Alama\Arazzo\Contracts\Spec\Action\SubWorkflowSuccessAction;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Components;
+use Alama\Arazzo\Contracts\Spec\Enum\ExecutionStatus;
 use Alama\Arazzo\Contracts\Spec\Expression;
 use Alama\Arazzo\Contracts\Spec\Info;
 use Alama\Arazzo\Contracts\Spec\Workflow;
@@ -13,9 +14,9 @@ use Alama\Arazzo\Engine\Exceptions\ExecutionException;
 use Alama\Arazzo\Evaluation\EvaluationEngine;
 use Alama\Arazzo\Expression\ExpressionEngine;
 use Alama\Arazzo\Runner\Async\SubWorkflowInvoker;
-use Alama\Arazzo\Runner\Execution\Data\ExecutionResult;
+use Alama\Arazzo\Runner\Data\ExecutionResult;
 use Alama\Arazzo\Runner\Execution\Data\SubWorkflowResult;
-use Alama\Arazzo\Runner\Execution\InMemoryDefinitionRegistry;
+use Alama\Arazzo\Runner\Store\InMemoryDefinitionStore;
 use Alama\Arazzo\Runner\Sync\WorkflowExecutor;
 
 it('binds parameters, executes child workflow, returns SubWorkflowResult', function () {
@@ -41,8 +42,8 @@ it('binds parameters, executes child workflow, returns SubWorkflowResult', funct
         specificationExtensions: [],
     );
 
-    $registry = new InMemoryDefinitionRegistry();
-    $definitionId = $registry->register($document);
+    $registry = new InMemoryDefinitionStore();
+    $definitionId = $registry->save($document);
 
     $executor = Mockery::mock(WorkflowExecutor::class);
     $executor->shouldReceive('execute')
@@ -53,7 +54,7 @@ it('binds parameters, executes child workflow, returns SubWorkflowResult', funct
                 && $childCtx instanceof WorkflowContext
                 && $childCtx->parentRunId !== null;
         })
-        ->andReturn(new ExecutionResult('reconcile', 'completed', ['some_output' => 'val'], []));
+        ->andReturn(new ExecutionResult('reconcile', ExecutionStatus::Succeeded, ['some_output' => 'val'], []));
 
     $engine = new EvaluationEngine(expression: new ExpressionEngine());
 
@@ -70,7 +71,7 @@ it('binds parameters, executes child workflow, returns SubWorkflowResult', funct
     expect($result)->toBeInstanceOf(SubWorkflowResult::class)
         ->and($result->childRunId)->not->toBe($parent->getExecutionId())
         ->and($result->outputs)->toBe(['some_output' => 'val'])
-        ->and($result->status)->toBe('completed');
+        ->and($result->status)->toBe('succeeded');
 });
 
 it('throws ExecutionException when sub workflow cannot be found', function () {
@@ -83,8 +84,8 @@ it('throws ExecutionException when sub workflow cannot be found', function () {
         specificationExtensions: [],
     );
 
-    $registry = new InMemoryDefinitionRegistry();
-    $definitionId = $registry->register($document);
+    $registry = new InMemoryDefinitionStore();
+    $definitionId = $registry->save($document);
 
     $executor = Mockery::mock(WorkflowExecutor::class);
     $engine = new EvaluationEngine(expression: new ExpressionEngine());

@@ -25,4 +25,9 @@ final class MaxBytesExceededException extends DecodeLimitException
             previous: $previous,
         );
     }
+
+    public static function exceeded(int $actualBytes, int $maxBytes): self
+    {
+        return new self($actualBytes, $maxBytes);
+    }
 }

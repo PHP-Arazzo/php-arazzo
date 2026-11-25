@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Tests\Conformance;
 
+use Alama\Arazzo\Contracts\Policy\SourcePolicy;
 use Alama\Arazzo\Contracts\Spec\OpenApiPayload;
 use Alama\Arazzo\Protocol\Http\Execution\Interfaces\OpenApiExecutorInterface;
 use Alama\Arazzo\Protocol\Http\Resolver\OpenApiOperationHandle;
@@ -50,10 +51,11 @@ final class FakerOpenApiExecutor implements OpenApiExecutorInterface
         OpenApiPayload $payload,
         ?callable $requestInterceptor = null,
         ?float $timeoutSeconds = null,
+        ?SourcePolicy $sourcePolicy = null,
     ): ResponseInterface {
         // Delegate for the real dispatch (records the request), then swap
         // in a fabricated response derived from the operation's own contract.
-        $this->inner->execute($resolvedOperation, $payload, $requestInterceptor, $timeoutSeconds);
+        $this->inner->execute($resolvedOperation, $payload, $requestInterceptor, $timeoutSeconds, $sourcePolicy);
 
         [$status, $body, $rootType] = self::synthesizeResponse($resolvedOperation->operation->normalized->responses ?? []);
 

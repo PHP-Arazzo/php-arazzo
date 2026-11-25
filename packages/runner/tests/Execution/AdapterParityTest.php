@@ -4,32 +4,25 @@ declare(strict_types=1);
 
 namespace Tests\Execution;
 
+use Alama\Arazzo\Cli\Console\Cli\CliExecutionStore;
 use Alama\Arazzo\Cli\Console\Cli\CliRunner;
-use Alama\Arazzo\Contracts\Interfaces\OperationExecutorPluginInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Components;
+use Alama\Arazzo\Contracts\Spec\Enum\ExecutionStatus;
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
 use Alama\Arazzo\Contracts\Spec\Info;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Spec\SourceDocument;
-use Alama\Arazzo\Contracts\Spec\Step;
-use Alama\Arazzo\Contracts\Spec\StepExecutionOutcome;
 use Alama\Arazzo\Contracts\Spec\StepFactory;
 use Alama\Arazzo\Contracts\Spec\StepFlow;
 use Alama\Arazzo\Contracts\Spec\StepIo;
 use Alama\Arazzo\Contracts\Spec\Workflow;
-use Alama\Arazzo\Contracts\State\WorkflowContext;
 use Alama\Arazzo\Evaluation\EvaluationEngine;
 use Alama\Arazzo\Expression\ExpressionEngine;
-use Alama\Arazzo\Protocol\Http\Execution\DefaultOpenApiExecutor;
-use Alama\Arazzo\Protocol\Http\Execution\ResponseSchemaValidator;
-use Alama\Arazzo\Protocol\Http\Execution\StepOutputExtractor;
-use Alama\Arazzo\Protocol\Http\Resolver\OpenApiOperationResolver;
-use Alama\Arazzo\Runner\Execution\InMemoryDefinitionRegistry;
-use Alama\Arazzo\Runner\OperationExecutorRegistry;
-use Alama\Arazzo\Runner\Sync\StepExecutor;
-use Alama\Arazzo\Runner\Sync\WorkflowEngine;
-use Alama\Arazzo\Runner\Sync\WorkflowExecutor;
+use Alama\Arazzo\Protocol\Http\HttpProtocol;
+use Alama\Arazzo\Runner\Registries\OperationExecutorRegistry;
+use Alama\Arazzo\Runner\Runner;
+use Alama\Arazzo\Runner\Store\InMemoryDefinitionStore;
 use Alama\Arazzo\Runtime\State\FileStateStore;
 use Alama\Arazzo\Sources\Resolver\Interfaces\SourceResolver;
 use Alama\Arazzo\Sources\Sources;
@@ -39,10 +32,9 @@ use GuzzleHttp\Psr7\HttpFactory;
 use GuzzleHttp\Psr7\Response;
 
 /**
- * Parity invariant: the synchronous adapter and the queue-driven adapter
- * (drained in-process by CliRunner) produce the SAME terminal status and
- * step spend for the same document, because both share the canonical
- * WorkflowEngine and the identical step-execution stack.
+ * Parity invariant: the synchronous adapter (Runner) and the queue-driven adapter
+ * (drained in-process by CliRunner via AsyncRunner) produce the SAME terminal
+ * status and step spend for the same document.
  */
 function parityFixtures(): array
 {
@@ -67,6 +59,9 @@ function parityFixtures(): array
     $httpClient = new FakePsr18Client();
     $httpClient->enqueue(new Response(201, [], json_encode(['rideId' => 99])));
     $httpClient->enqueue(new Response(201, [], json_encode(['rideId' => 100])));
+    $httpClient->enqueue(new Response(201, [], json_encode(['rideId' => 99])));
+    $httpClient->enqueue(new Response(201, [], json_encode(['rideId' => 100])));
+
     $engine = new EvaluationEngine(expression: new ExpressionEngine());
     $sources = new Sources(new class() implements SourceResolver
     {
@@ -80,77 +75,33 @@ function parityFixtures(): array
             );
         }
     });
-    $operations = OpenApiOperationResolver::create($sources);
-    $outputExtractor = new StepOutputExtractor($operations, $engine, new ExpressionEngine());
-    $schemaValidator = new ResponseSchemaValidator($operations);
-    $stepExecutor = new StepExecutor(
-        new DefaultOpenApiExecutor($httpClient, new HttpFactory()),
-        $operations,
-        $engine,
-        $outputExtractor,
-        $schemaValidator,
-    );
 
-    // Both adapters execute steps through THIS object.
-    $protocol = new class($stepExecutor, $document) implements OperationExecutorPluginInterface
-    {
-        public function __construct(
-            private readonly StepExecutor $stepExecutor,
-            private readonly ArazzoDocument $document,
-        ) {}
+    $http = HttpProtocol::create($httpClient, new HttpFactory(), $sources, $engine, new ExpressionEngine());
 
-        public function name(): string
-        {
-            return 'parity-bridge';
-        }
-
-        public function priority(): int
-        {
-            return 0;
-        }
-
-        public function supports(Step $step, ArazzoDocument $document): bool
-        {
-            return true;
-        }
-
-        public function execute(Step $step, WorkflowContext $context, ArazzoDocument $document, string $executionId): StepExecutionOutcome
-        {
-            [$stepContext, $success] = $this->stepExecutor->execute($step, $context, $this->document);
-            $raw = $stepContext->getSteps()[$step->stepId] ?? [];
-
-            return StepExecutionOutcome::resolved(
-                is_int($raw['statusCode'] ?? null) ? $raw['statusCode'] : ($success ? 200 : 500),
-                is_array($raw['outputs'] ?? null) ? $raw['outputs'] : [],
-                [],
-                inputs: [],
-            );
-        }
-    };
-
-    return [$document, $workflow, $stepExecutor, $protocol];
+    return [$document, $http->executor(strictValidation: false)];
 }
 
 it('sync and queue-driven adapters agree on terminal status and step spend', function (): void {
-    [$document, $workflow, $stepExecutor, $protocol] = parityFixtures();
+    [$document, $httpExecutor] = parityFixtures();
 
     // --- synchronous adapter ---
-    $syncResult = (new WorkflowExecutor($stepExecutor, new WorkflowEngine(new TestEvaluationEngine())))
-        ->execute($workflow, $document, []);
+    $syncResult = Runner::create()
+        ->withExecutor($httpExecutor)
+        ->run($document, 'parity_wf', []);
 
     // --- queue-driven adapter (in-process drain) ---
-    $definitions = new InMemoryDefinitionRegistry();
-    $definitions->register($document);
+    $definitions = new InMemoryDefinitionStore();
+    $definitions->save($document);
     $cli = new CliRunner(
         evaluationEngine: new TestEvaluationEngine(),
-        stateStore: new FileStateStore(sys_get_temp_dir().'/arazzo-parity-'.bin2hex(random_bytes(4))),
+        store: new CliExecutionStore(new FileStateStore(sys_get_temp_dir().'/arazzo-parity-'.bin2hex(random_bytes(4)))),
         definitions: $definitions,
-        protocolExecutors: [$protocol],
+        protocolExecutors: [$httpExecutor],
     );
     $cliResult = $cli->run($document, 'parity_wf', [], 'parity_exec_1');
 
-    expect($syncResult->status)->toBe('succeeded')
-        ->and($cliResult->status)->toBe($syncResult->status)
+    expect($syncResult->status)->toBe(ExecutionStatus::Succeeded)
+        ->and($cliResult->status)->toBe($syncResult->status->value)
         ->and($syncResult->stepsSpent)->toBeGreaterThanOrEqual(2);
 });
 

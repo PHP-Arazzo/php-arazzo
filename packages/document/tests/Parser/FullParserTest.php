@@ -30,18 +30,18 @@ it('parses a full arazzo document', function (): void {
     expect($doc->arazzo)->toBe('1.0.0')
         ->and($doc->info->title)->toBe('Full')
         ->and($doc->sourceDescriptions[0]->type)->toBe(SourceType::Openapi)
-        ->and($doc->workflows)->toHaveCount(1);
+        ->and($doc->workflows->all())->toHaveCount(1);
 
-    $wf = $doc->workflows[0];
+    $wf = $doc->firstWorkflow();
     expect($wf->workflowId)->toBe('main')
-        ->and($wf->dependsOn)->toBe(['init'])
+        ->and($wf->dependsOn->all())->toBe(['init'])
         ->and($wf->steps)->toHaveCount(2)
-        ->and($wf->parameters[0]->name)->toBe('X-Trace')
-        ->and($wf->successActions[0])->toBeInstanceOf(SuccessEndAction::class)
-        ->and($wf->failureActions[0])->toBeInstanceOf(Reusable::class)
-        ->and($wf->outputs)->toHaveKey('user');
+        ->and($wf->parameters->all()[0]->name)->toBe('X-Trace')
+        ->and($wf->successActions->all()[0])->toBeInstanceOf(SuccessEndAction::class)
+        ->and($wf->failureActions->all()[0])->toBeInstanceOf(Reusable::class)
+        ->and($wf->outputs->all())->toHaveKey('user');
 
-    $s1 = $wf->steps[0];
+    $s1 = $wf->steps->firstStep();
     expect($s1->target->operationPath)->toBe('/users/{id}')
         ->and($s1->io->successCriteria[0]->type)->toBe(CriterionType::Simple)
         ->and($s1->io->successCriteria[0]->context)->toBe('$response.header.status')
@@ -58,7 +58,7 @@ it('parses a minimal arazzo document', function (): void {
 
     expect($doc->arazzo)->toBe('1.0.0')
         ->and($doc->info->title)->toBe('Minimal')
-        ->and($doc->workflows)->toBeArray()->toBeEmpty();
+        ->and($doc->workflows->isEmpty())->toBeTrue();
 });
 
 it('rejects missing workflows', function (): void {
@@ -86,7 +86,7 @@ it('parses AsyncAPI action/channelPath/correlationId fields on a step', function
     ];
 
     $document = (new Parser())->parse(new RawDocument($raw, 'memory://test', Format::Json));
-    $step = $document->workflows[0]->steps[0];
+    $step = $document->firstWorkflow()->steps->firstStep();
 
     expect($step->target->action)->toBe('receive');
     expect($step->target->channelPath)->toBe('channels/rides/created');
@@ -104,7 +104,7 @@ it('leaves action/channelPath/correlationId null when absent', function (): void
     ];
 
     $document = (new Parser())->parse(new RawDocument($raw, 'memory://test', Format::Json));
-    $step = $document->workflows[0]->steps[0];
+    $step = $document->firstWorkflow()->steps->firstStep();
 
     expect($step->target->action)->toBeNull();
     expect($step->target->channelPath)->toBeNull();

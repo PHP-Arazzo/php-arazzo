@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Contracts\Spec;
 
+use Alama\Arazzo\Contracts\Exceptions\InvalidStepTargetException;
 use Alama\Arazzo\Contracts\Spec\Enum\RpcProtocol;
-use InvalidArgumentException;
 
 /**
  * The operation/protocol axis of a Step (D4). Exactly one variant is set
@@ -31,9 +31,7 @@ final readonly class StepTarget
     public static function http(?string $operationId = null, ?string $operationPath = null): self
     {
         if (($operationId === null) === ($operationPath === null)) {
-            throw new InvalidArgumentException(
-                'http target requires exactly one of operationId or operationPath',
-            );
+            throw InvalidStepTargetException::httpRequiresSingleOperation();
         }
 
         return new self(operationId: $operationId, operationPath: $operationPath);
@@ -67,5 +65,57 @@ final readonly class StepTarget
     public static function interaction(Interaction $interaction): self
     {
         return new self(interaction: $interaction);
+    }
+
+    public function isHttp(): bool
+    {
+        return $this->operationId !== null || $this->operationPath !== null;
+    }
+
+    public function isWorkflow(): bool
+    {
+        return $this->workflowId !== null;
+    }
+
+    public function isAsync(): bool
+    {
+        return in_array($this->action, ['send', 'receive'], true);
+    }
+
+    public function isReceive(): bool
+    {
+        return $this->action === 'receive';
+    }
+
+    public function isSend(): bool
+    {
+        return $this->action === 'send';
+    }
+
+    public function isWsdl(): bool
+    {
+        return $this->operationName !== null;
+    }
+
+    public function isRpc(): bool
+    {
+        return $this->rpcMethod !== null;
+    }
+
+    public function isGraphql(): bool
+    {
+        return $this->graphqlOperation !== null;
+    }
+
+    public function isInteraction(): bool
+    {
+        return $this->interaction !== null;
+    }
+
+    public function operationReference(): ?string
+    {
+        return $this->operationName
+            ?? $this->operationId
+            ?? $this->operationPath;
     }
 }

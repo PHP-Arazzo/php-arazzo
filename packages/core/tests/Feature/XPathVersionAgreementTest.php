@@ -15,6 +15,7 @@ use Alama\Arazzo\Contracts\Spec\StepFlow;
 use Alama\Arazzo\Contracts\Spec\StepIo;
 use Alama\Arazzo\Contracts\Spec\SuccessCriterion;
 use Alama\Arazzo\Contracts\Spec\Workflow;
+use Alama\Arazzo\Contracts\Spec\WorkflowCollection;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
 use Alama\Arazzo\Contracts\Validation\Error;
 use Alama\Arazzo\Contracts\Validation\ValidationResult;
@@ -45,7 +46,7 @@ function xpathVersionDocument(?string $version): array
     $workflow = new Workflow('w', null, null, null, [], [$step], [], [], [], []);
 
     return [
-        new ArazzoDocument('1.0.0', new Info('T', null, null, '1'), [], [$workflow], new Components([], [], [], []), []),
+        new ArazzoDocument('1.0.0', new Info('T', null, null, '1'), [], WorkflowCollection::fromArray([$workflow]), new Components([], [], [], []), []),
         $step,
     ];
 }

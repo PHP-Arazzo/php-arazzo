@@ -8,8 +8,7 @@
         "php": "^8.4",
         "php-arazzo/arazzo-contracts": "@dev",
         "php-arazzo/arazzo-expression": "@dev",
-        "psr/event-dispatcher": "^1.0",
-        "psr/log": "^3.0"
+        "psr/event-dispatcher": "^1.0"
     },
     "require-dev": {
         "larastan/larastan": "^3.0",

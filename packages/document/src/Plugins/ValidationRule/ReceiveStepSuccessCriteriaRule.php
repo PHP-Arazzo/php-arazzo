@@ -40,7 +40,7 @@ final class ReceiveStepSuccessCriteriaRule implements ValidationRuleInterface
 
         foreach ($doc->workflows as $wi => $workflow) {
             foreach ($workflow->steps as $si => $step) {
-                if ($step->target->action !== 'receive' || $step->io->successCriteria !== []) {
+                if (!$step->isReceiveAction() || $step->io->successCriteria !== []) {
                     continue;
                 }
 

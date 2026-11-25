@@ -12,6 +12,11 @@ this file on a commit is a public API change — review it deliberately.
 
 ## contracts
 
+### `Alama\Arazzo\Contracts\Clock`
+
+#### `SystemClock` class
+- `public function now(): DateTimeImmutable`
+
 ### `Alama\Arazzo\Contracts\Data`
 
 #### `KnownOperations` class
@@ -42,6 +47,21 @@ this file on a commit is a public API change — review it deliberately.
 - `public static function instantiate(string $attributeClass, array $services = []): array`
 - `public static function overrideClasses(?array $classes): void`
 - `public static function reset(): void`
+
+### `Alama\Arazzo\Contracts\Exceptions`
+
+#### `InvalidSpecVersionException` class
+- `public static function unsupported(string $raw): self`
+
+#### `InvalidStepTargetException` class
+- `public static function httpRequiresSingleOperation(): self`
+
+#### `PluginInstantiationException` class
+- `public static function missingConstructorArguments(string $class, string $attributeClass): self`
+- `public static function nonPublicConstructor(string $class, string $attributeClass): self`
+
+#### `UnresolvableReusableReferenceException` class
+- `public static function forParameter(string $reference): self`
 
 ### `Alama\Arazzo\Contracts\Interfaces`
 
@@ -100,10 +120,6 @@ this file on a commit is a public API change — review it deliberately.
 #### `SourceResolverInterface` interface
 - `public function resolve(SourceDescription $source, string $basePath): SourceDocument;`
 
-#### `StepProtocolExecutorInterface` interface
-- `public function execute(Step $step, WorkflowContext $context, ArazzoDocument $document, string $executionId): StepExecutionOutcome;`
-- `public function supports(Step $step, ArazzoDocument $document): bool;`
-
 #### `ValidationRuleInterface` interface
 - `public function check(ArazzoDocument $doc, SymbolTable $symbols, ErrorCollector $errors, ): void;`
 - `public function code(): string;`
@@ -113,17 +129,158 @@ this file on a commit is a public API change — review it deliberately.
 - `public function load(string $executionId): ?WorkflowContextInterface;`
 - `public function save(string $executionId, WorkflowContextInterface $state): void;`
 
+### `Alama\Arazzo\Contracts\Observability`
+
+#### `NullTracer` class
+- `public function injectContext(array &$carrier): void`
+- `public function startSpan(string $name, array $attributes = []): SpanInterface`
+
+#### `SpanInterface` interface
+- `public function addEvent(string $name, array $attributes = []): void;`
+- `public function end(): void;`
+- `public function recordException(Throwable $exception): void;`
+- `public function setAttribute(string $key, string|int|float|bool $value): void;`
+- `public function setStatus(bool $ok, ?string $description = null): void;`
+
+#### `TracerInterface` interface
+- `public function extractContext(array $carrier): ?array;`
+- `public function injectContext(array &$carrier): void;`
+- `public function startSpan(string $name, array $attributes = []): SpanInterface;`
+
+### `Alama\Arazzo\Contracts\Policy`
+
+#### `Credential` class
+- `public function __debugInfo(): array`
+- `public static function apiKey(#[SensitiveParameter] string $value): self`
+- `public static function basic(string $username, #[SensitiveParameter] string $password): self`
+- `public static function bearer(#[SensitiveParameter] string $token): self`
+- `public static function oauth2(#[SensitiveParameter] string $accessToken, string $tokenType = 'Bearer'): self`
+
+#### `CredentialType` enum
+- Cases: `ApiKey`, `Basic`, `Bearer`, `OAuth2`
+
+#### `ServerTarget` class
+- `public function __construct(public ?string $url = null, public array $variables = [])`
+- `public function withUrl(?string $url): self`
+- `public function withVariables(array $variables): self`
+
+#### `SourcePolicy` class
+- `public function __construct(public ServerTarget $target = new ServerTarget(), public array $credentials = [], public array $headers = [], public SourceTransportPolicy $transport = new SourceTransportPolicy(), public array $extensions = [])`
+- `public function credential(string $schemeName): ?Credential`
+- `public function extension(string $key): mixed`
+- `public function server(): ?string`
+- `public function serverVariables(): array`
+- `public function strictValidation(): ?bool`
+- `public function timeoutSeconds(): ?float`
+- `public function withCredential(string $schemeName, Credential $credential): self`
+- `public function withExtension(string $key, mixed $value): self`
+- `public function withHeader(string $name, string $value): self`
+- `public function withHeaders(array $headers): self`
+- `public function withServer(?string $server): self`
+- `public function withServerVariables(array $variables): self`
+- `public function withStrictValidation(?bool $strictValidation): self`
+- `public function withTimeoutSeconds(?float $timeoutSeconds): self`
+
+#### `SourceTransportPolicy` class
+- `public function __construct(public ?float $timeoutSeconds = null, public ?bool $strictValidation = null)`
+- `public function withStrictValidation(?bool $strictValidation): self`
+- `public function withTimeoutSeconds(?float $timeoutSeconds): self`
+
 ### `Alama\Arazzo\Contracts\Spec`
 
+#### `ActionCollection` class
+- `public function __construct(private array $actions = [])`
+- `public function all(): array`
+- `public function count(): int`
+- `public function getIterator(): Traversable`
+- `public function isEmpty(): bool`
+- `public static function fromArray(array $actions): self`
+
 #### `ArazzoDocument` class
-- `public function __construct(public string $arazzo, public Info $info, public array $sourceDescriptions, public array $workflows, public Components $components, public array $specificationExtensions, public ?array $rawRoot = null, public SpecVersion $specVersion = SpecVersion::V1_0, public ?string $self = null)`
+- `public function __construct(public string $arazzo, public Info $info, array|SourceDescriptionCollection $sourceDescriptions, array|WorkflowCollection $workflows, public Components $components, public array $specificationExtensions, public ?array $rawRoot = null, public SpecVersion $specVersion = SpecVersion::V1_0, public ?string $self = null)`
+- `public function findSource(string $name): ?SourceDescription`
+- `public function findWorkflow(?string $workflowId): ?Workflow`
+- `public function firstWorkflow(): ?Workflow`
+- `public function hasExternalSourceFor(string $workflowId): bool`
+- `public function nonArazzoSources(): array`
+- `public function sourceDescriptionsCollection(): SourceDescriptionCollection`
+- `public function workflowsCollection(): WorkflowCollection`
+
+#### `Components` class
+- `public function __construct(public array $inputs, public array $parameters, public array $successActions, public array $failureActions, public array $interactions = [])`
+- `public function findFailureAction(string $name): ?FailureAction`
+- `public function findInteraction(string $name): ?Interaction`
+- `public function findSuccessAction(string $name): ?SuccessAction`
+- `public function hasAction(string $name): bool`
+- `public function hasParameter(string $name): bool`
+- `public function isEmpty(): bool`
+- `public function resolveReusableAction(Reusable $reusable): SuccessAction|FailureAction|null`
+- `public function resolveReusableParameter(Reusable $reusable): ?Parameter`
+
+#### `CriterionCollection` class
+- `public function __construct(private array $criteria = [])`
+- `public function all(): array`
+- `public function count(): int`
+- `public function getIterator(): Traversable`
+- `public function isEmpty(): bool`
+- `public function jsonPathCriteria(): self`
+- `public function regexCriteria(): self`
+- `public function simpleCriteria(): self`
+- `public function xpathCriteria(): self`
+- `public static function fromArray(array $criteria): self`
 
 #### `GraphQlOperation` class
 - `public function __construct(public string $schema, public string $operation, /** @param array<string,mixed>|null $extensions */ ?iterable $extensions = null, public ?Selector $extensionsSelector = null)`
 
+#### `OutputMap` class
+- `public function __construct(private array $outputs = [])`
+- `public function all(): array`
+- `public function count(): int`
+- `public function get(string $name): mixed`
+- `public function getIterator(): Traversable`
+- `public function has(string $name): bool`
+- `public function isEmpty(): bool`
+- `public function names(): array`
+- `public static function fromArray(array $outputs): self`
+
+#### `Parameter` class
+- `public function __construct(public string $name, public ?ParameterIn $in, public mixed $value, public ?ValueMode $valueMode = null)`
+- `public function isBody(): bool`
+- `public function isCookie(): bool`
+- `public function isExpression(): bool`
+- `public function isHeader(): bool`
+- `public function isMetadata(): bool`
+- `public function isPath(): bool`
+- `public function isQuerystring(): bool`
+- `public function isSelector(): bool`
+- `public function isVariable(): bool`
+
+#### `ParameterCollection` class
+- `public function __construct(private array $parameters = [])`
+- `public function all(): array`
+- `public function count(): int`
+- `public function findByName(string $name): ?Parameter`
+- `public function forLocation(ParameterIn $in): self`
+- `public function getIterator(): Traversable`
+- `public function has(string $name): bool`
+- `public function isEmpty(): bool`
+- `public function names(): array`
+- `public static function fromArray(array $parameters): self`
+
+#### `PayloadReplacement` class
+- `public function __construct(public string $target, public mixed $value, public mixed $targetSelectorType = null)`
+
+#### `PendingCorrelation` class
+- `public function __construct(public string $correlationId, public string $executionId, public string $stepId, public string $channelPath, public ?\DateTimeImmutable $expiresAt = null)`
+
 #### `ResolvedOperation` class
 - `public function __construct(public SourceDescription $source, public NormalizedOpenApiOperation $normalized, public ?RpcProtocol $rpcProtocol = null, public ?string $operationName = null, public ?string $rpcMethod = null, public ?GraphQlOperation $graphqlOperation = null, public ?Interaction $interaction = null)`
 - `public function binding(): string`
+- `public function isGraphql(): bool`
+- `public function isHttp(): bool`
+- `public function isInteraction(): bool`
+- `public function isRpc(): bool`
+- `public function isSoap(): bool`
 
 #### `ResponseTransfer` class
 - `public function __construct(private mixed $status, private array $headers, private mixed $rawBody, private array $views = [], private array $meta = [])`
@@ -135,6 +292,61 @@ this file on a commit is a public API change — review it deliberately.
 
 #### `Reusable` class
 - `public function __construct(public string $reference, public mixed $value = null)`
+
+#### `SourceDescription` class
+- `public function __construct(public string $name, public string $url, public SourceType $type)`
+- `public function isLocal(): bool`
+- `public function isOpenApi(): bool`
+- `public function isProtobuf(): bool`
+- `public function isRemote(): bool`
+- `public function isWsdl(): bool`
+- `public function scheme(): string`
+
+#### `SourceDescriptionCollection` class
+- `public function __construct(private array $sources = [])`
+- `public function all(): array`
+- `public function count(): int`
+- `public function findSource(string $name): ?SourceDescription`
+- `public function getIterator(): Traversable`
+- `public function hasExternalSourceFor(string $workflowId): bool`
+- `public function hasSource(string $name): bool`
+- `public function isEmpty(): bool`
+- `public function names(): array`
+- `public function nonArazzo(): self`
+- `public static function fromArray(array $sources): self`
+
+#### `Step` class
+- `public function __construct(public string $stepId, public ?string $description, public StepTarget $target, public StepFlow $flow, public StepIo $io)`
+- `public function allActions(Workflow $workflow): array`
+- `public function dependsOn(): array`
+- `public function effectiveActions(bool $criteriaMet, Workflow $workflow): array`
+- `public function hasAction(): bool`
+- `public function hasOutputs(): bool`
+- `public function hasParameters(): bool`
+- `public function hasRequestBody(): bool`
+- `public function hasSuccessCriteria(): bool`
+- `public function isActorHandoff(): bool`
+- `public function isAsyncAction(): bool`
+- `public function isInteraction(): bool`
+- `public function isReceiveAction(): bool`
+- `public function isSubWorkflow(): bool`
+- `public function operationReference(): ?string`
+- `public function outputs(): array`
+- `public function parameters(): array`
+- `public function requestBody(): ?RequestBody`
+- `public function successCriteria(): array`
+
+#### `StepCollection` class
+- `public function __construct(private array $steps = [])`
+- `public function all(): array`
+- `public function count(): int`
+- `public function findStep(string $stepId): ?Step`
+- `public function firstStep(): ?Step`
+- `public function getIterator(): Traversable`
+- `public function hasStep(string $stepId): bool`
+- `public function isEmpty(): bool`
+- `public function stepIds(): array`
+- `public static function fromArray(array $steps): self`
 
 #### `StepExecutionOutcome` class
 - `public static function resolved(int $statusCode, array $outputs, array $responseBody, array $inputs = [], ?array $request = null, array $responseHeaders = [], ?string $rawBody = null, ?string $contentType = null, ?string $failureCategory = null): self`
@@ -149,8 +361,35 @@ this file on a commit is a public API change — review it deliberately.
 - `public static function workflow(string $stepId, ?string $description, StepFlow $flow, StepIo $io, string $workflowId): Step`
 - `public static function wsdl(string $stepId, ?string $description, StepFlow $flow, StepIo $io, string $operationName): Step`
 
+#### `StepFlow` class
+- `public function __construct(array|StringList $dependsOn = [], public ?int $timeout = null,`
+- `public function hasDependsOn(): bool`
+- `public function hasFailureActions(): bool`
+- `public function hasSuccessActions(): bool`
+- `public function hasTimeout(): bool`
+- `public function timeoutSeconds(): ?float`
+
+#### `StepIo` class
+- `public function __construct(array|ParameterCollection $parameters = [], public ?RequestBody $requestBody = null, array|CriterionCollection $successCriteria = [], array|OutputMap $outputs = [])`
+- `public function findParameter(string $name): ?Parameter`
+- `public function hasOutputs(): bool`
+- `public function hasParameter(string $name): bool`
+- `public function hasParameters(): bool`
+- `public function hasRequestBody(): bool`
+- `public function hasSuccessCriteria(): bool`
+
 #### `StepTarget` class
 - `public function __construct(public ?string $operationId = null, public ?string $operationPath = null, public ?string $workflowId = null, public ?string $action = null, public ?string $channelPath = null, public ?Expression $correlationId = null, public ?string $operationName = null, public ?string $rpcMethod = null, public ?RpcProtocol $rpcProtocol = null, public ?GraphQlOperation $graphqlOperation = null, public ?Interaction $interaction = null)`
+- `public function isAsync(): bool`
+- `public function isGraphql(): bool`
+- `public function isHttp(): bool`
+- `public function isInteraction(): bool`
+- `public function isReceive(): bool`
+- `public function isRpc(): bool`
+- `public function isSend(): bool`
+- `public function isWorkflow(): bool`
+- `public function isWsdl(): bool`
+- `public function operationReference(): ?string`
 - `public static function async(string $action, string $channelPath, ?Expression $correlationId = null): self`
 - `public static function graphql(GraphQlOperation $graphqlOperation): self`
 - `public static function interaction(Interaction $interaction): self`
@@ -158,19 +397,62 @@ this file on a commit is a public API change — review it deliberately.
 - `public static function workflow(string $workflowId): self`
 - `public static function wsdl(string $operationName): self`
 
+#### `StringList` class
+- `public function __construct(private array $values = [])`
+- `public function all(): array`
+- `public function contains(string $value): bool`
+- `public function count(): int`
+- `public function getIterator(): Traversable`
+- `public function isEmpty(): bool`
+- `public static function fromArray(array $values): self`
+
+#### `SuccessCriterion` class
+- `public function __construct(public ?string $context, public string $condition, public ?CriterionType $type, public ?string $version = null)`
+- `public function hasContext(): bool`
+- `public function hasVersion(): bool`
+- `public function isJsonPath(): bool`
+- `public function isRegex(): bool`
+- `public function isXPath(): bool`
+
+#### `WorkflowCollection` class
+- `public function __construct(private array $workflows = [])`
+- `public function all(): array`
+- `public function allIds(): array`
+- `public function byId(): array`
+- `public function count(): int`
+- `public function findStepByWorkflow(string $stepId): ?Step`
+- `public function findWorkflow(string $workflowId): ?Workflow`
+- `public function firstWorkflow(): ?Workflow`
+- `public function getIterator(): Traversable`
+- `public function isEmpty(): bool`
+- `public static function fromArray(array $workflows): self`
+
 ### `Alama\Arazzo\Contracts\Spec\Action`
+
+#### `Action` class
+- `public function __construct(public string $name, public ActionKind $kind)`
+- `public function isGoto(): bool`
+- `public function isInvoke(): bool`
+- `public function isRetry(): bool`
 
 #### `FailureAction` class
 - `public function __construct(string $name, ActionKind $kind, public array $criteria)`
+- `public function hasCriteria(): bool`
 
 #### `FailureEndAction` class
 - `public function __construct(string $name, array $criteria)`
 
 #### `FailureGotoAction` class
 - `public function __construct(string $name, public ?string $stepId, public ?string $workflowId, array $criteria, public array $parameters = [])`
+- `public function isStepTarget(): bool`
+- `public function isWorkflowTarget(): bool`
 
 #### `RetryAction` class
 - `public function __construct(string $name, public ?float $retryAfter, public ?int $retryLimit, public ?string $stepId, public ?string $workflowId, array $criteria)`
+- `public function hasRetryAfter(): bool`
+- `public function hasRetryLimit(): bool`
+- `public function isStepTarget(): bool`
+- `public function isWorkflowTarget(): bool`
 
 #### `SubWorkflowFailureAction` class
 - `public function __construct(string $name, public string $workflowId, public array $parameters, array $criteria, public ?string $version = null)`
@@ -180,12 +462,15 @@ this file on a commit is a public API change — review it deliberately.
 
 #### `SuccessAction` class
 - `public function __construct(string $name, ActionKind $kind, public array $criteria)`
+- `public function hasCriteria(): bool`
 
 #### `SuccessEndAction` class
 - `public function __construct(string $name, array $criteria)`
 
 #### `SuccessGotoAction` class
 - `public function __construct(string $name, public ?string $stepId, public ?string $workflowId, array $criteria, public array $parameters = [])`
+- `public function isStepTarget(): bool`
+- `public function isWorkflowTarget(): bool`
 
 ### `Alama\Arazzo\Contracts\Spec\Enum`
 
@@ -237,11 +522,21 @@ this file on a commit is a public API change — review it deliberately.
 
 #### `WorkflowContextInterface` interface
 - `public function getComponents(): array;`
+- `public function getInput(string $name): mixed;`
 - `public function getInputs(): array;`
+- `public function getStepInputs(string $stepId): array;`
+- `public function getStepOutputs(string $stepId): array;`
+- `public function getStepRecord(string $stepId): ?array;`
+- `public function getStepRequest(string $stepId): ?array;`
+- `public function getStepResponse(string $stepId): ?array;`
 - `public function getStepStatus(string $stepId): ?StepStatus;`
+- `public function getStepStatusCode(string $stepId): ?int;`
 - `public function getSteps(): array;`
 - `public function getWorkflowId(): ?string;`
 - `public function getWorkflows(): array;`
+- `public function hasExecutedSteps(): bool;`
+- `public function hasInput(string $name): bool;`
+- `public function hasStep(string $stepId): bool;`
 
 ### `Alama\Arazzo\Contracts\State`
 
@@ -250,10 +545,17 @@ this file on a commit is a public API change — review it deliberately.
 - `public function attemptFor(string $stepId): int`
 - `public function enterWorkflow(string $workflowId): self`
 - `public function getSkippedSteps(): array`
+- `public function hasErrors(): bool`
+- `public function hasStepResult(string $stepId): bool`
+- `public function isFailed(): bool`
+- `public function isRunning(): bool`
+- `public function isSucceeded(): bool`
 - `public function jsonSerialize(): array`
 - `public function leaveWorkflow(): self`
 - `public function restoreBudget(int $stepsSpent, array $workflowCallStack): self`
 - `public function spendStep(): self`
+- `public function stepOutputs(string $stepId): array`
+- `public function stepResult(string $stepId): ?array`
 - `public function toArray(): array`
 - `public function toContext(): WorkflowContext`
 - `public function withCurrentStep(?string $stepId): self`
@@ -271,21 +573,36 @@ this file on a commit is a public API change — review it deliberately.
 - `public static function fromContext(WorkflowContext $context, ?int $maxSteps = null, ?int $maxWorkflowDepth = null): self`
 
 #### `WorkflowContext` class
-- `public function __construct(private string $definitionId, private array $inputs = [], private array $steps = [], private array $components = [], private ?string $workflowId = null, ?string $executionId = null, private array $workflows = [], private int $stepsSpent = 0, /** @var list<string> */ private array $workflowCallStack = [], /** @var list<string> */ private array $skippedSteps = [], public ?string $parentRunId = null)`
+- `public function __construct(private string $definitionId, private array $inputs = [], private array $steps = [], private array $components = [], private ?string $workflowId = null, ?string $executionId = null, private array $workflows = [], private int $stepsSpent = 0, /** @var list<string> */ private array $workflowCallStack = [], /** @var list<string> */ private array $skippedSteps = [], public ?string $parentRunId = null, private ?SourcePolicy $activeSourcePolicy = null)`
+- `public function getActiveSourcePolicy(): ?SourcePolicy`
 - `public function getComponents(): array`
 - `public function getDefinitionId(): string`
 - `public function getExecutionId(): string`
+- `public function getInput(string $name): mixed`
 - `public function getInputs(): array`
 - `public function getSkippedSteps(): array`
 - `public function getStepAttempts(string $stepId): int`
+- `public function getStepInputs(string $stepId): array`
+- `public function getStepOutput(string $stepId, string $key): mixed`
+- `public function getStepOutputs(string $stepId): array`
+- `public function getStepRecord(string $stepId): ?array`
+- `public function getStepRequest(string $stepId): ?array`
+- `public function getStepResponse(string $stepId): ?array`
+- `public function getStepResponseBody(string $stepId): mixed`
+- `public function getStepResponseHeader(string $stepId, string $name): ?string`
 - `public function getStepStatus(string $stepId): ?StepStatus`
+- `public function getStepStatusCode(string $stepId): ?int`
 - `public function getSteps(): array`
 - `public function getStepsSpent(): int`
 - `public function getWorkflowCallStack(): array`
 - `public function getWorkflowId(): ?string`
 - `public function getWorkflows(): array`
+- `public function hasExecutedSteps(): bool`
+- `public function hasInput(string $name): bool`
+- `public function hasStep(string $stepId): bool`
 - `public function rootScope(): array`
 - `public function toArray(): array`
+- `public function withActiveSourcePolicy(?SourcePolicy $policy): self`
 - `public function withBudget(int $stepsSpent, array $workflowCallStack): self`
 - `public function withExecutionId(string $executionId): self`
 - `public function withInput(string $name, mixed $value): self`
@@ -321,6 +638,8 @@ this file on a commit is a public API change — review it deliberately.
 
 #### `SymbolTable` class
 - `public function __construct(public array $workflows, public array $sourceDescriptions, public array $components, KnownOperations|array $knownOperations = new KnownOperations(), array $resolvedOperations = [])`
+- `public function hasSource(string $name): bool`
+- `public function hasWorkflow(string $workflowId): bool`
 - `public static function build(ArazzoDocument $doc, KnownOperations|array|null $resolvedOperations = null): self`
 
 #### `ValidationPhase` enum
@@ -332,6 +651,11 @@ this file on a commit is a public API change — review it deliberately.
 
 #### `Warning` class
 - `public function __construct(public string $code, public string $message, public string $path, public ?int $line = null, public Severity $severity = Severity::Warning)`
+
+#### `WorkflowSymbols` class
+- `public function __construct(public array $inputs, public array $parameters, public array $stepsById, public array $outputs, public array $dependsOn)`
+- `public function hasInput(string $name): bool`
+- `public function hasOutput(string $name): bool`
 
 ## expression
 
@@ -345,7 +669,7 @@ this file on a commit is a public API change — review it deliberately.
 - `public function expressionReferences(string $raw): ?ExpressionReference`
 - `public function extract(string $template): array`
 - `public function interpolate(string $template, callable $resolver, array $options = []): string`
-- `public function interpolateWithOptions(string $template, callable $resolver, ?InterpolationOptions $options = null): string`
+- `public function interpolateWithPolicy(string $template, callable $resolver, ?InterpolationPolicy $policy = null): string`
 - `public function jsonPath(string $expression, array|object $data): mixed`
 - `public function jsonPointer(array $data, ?string $pointer): mixed`
 - `public function parseEmbedded(string $raw, SpecVersion $version = SpecVersion::V1_0): array`
@@ -367,14 +691,27 @@ this file on a commit is a public API change — review it deliberately.
 
 ### `Alama\Arazzo\Expression\Data`
 
+#### `EmbeddedSegment` class
+- `public function __construct(public bool $isExpression, public string $text, public int $offset)`
+- `public function isSoleExpressionOf(string $source): bool`
+
 #### `EvaluationContext` class
 - `public function __construct(public WorkflowContextInterface $workflowContext, public ?string $currentStepId = null, public ?ArazzoDocument $document = null)`
+- `public function defaultRootBody(): array`
 - `public function getCurrentStepId(): ?string`
 - `public function getDocument(): ?ArazzoDocument`
+- `public function httpMetaForStep(string $stepId, string $field): mixed`
+- `public function requestBodyForStep(string $stepId): array`
+- `public function responseBodyForStep(string $stepId): array`
+- `public function stepInputs(string $stepId): array`
+- `public function stepOutputs(string $stepId): array`
+- `public function stepRequest(string $stepId): ?array`
+- `public function stepResponse(string $stepId): ?array`
+- `public function stepResponseHeader(string $stepId, string $name): ?string`
 
-#### `InterpolationOptions` class
-- `public function __construct(?callable $stringify = null)`
-- `public function getStringify(): ?callable`
+#### `ExpressionReference` class
+- `public function __construct(public ReferenceKind $kind, public ?string $target = null, public ?string $part = null, public ?string $name = null, public ?string $httpPart = null, public ?string $jsonPointer = null)`
+- `public function isRuntimeHttpReference(): bool`
 
 ### `Alama\Arazzo\Expression\Enum`
 
@@ -385,18 +722,52 @@ this file on a commit is a public API change — review it deliberately.
 
 #### `ExpressionSyntaxException` class
 - `public function __construct(string $message, public readonly string $expression = '', public readonly int $offset = -1, string $path = '', string $codeId = '', ?Throwable $previous = null)`
+- `public static function atOffset(string $message, string $expression, int $offset): self`
+- `public static function emptyExpression(string $raw, int $offset): self`
+- `public static function illegalCharacter(string $character, int $offset, string $raw): self`
+- `public static function invalidEmbedded(self $cause, string $template, int $offset): self`
+- `public static function malformedEmbedded(): self`
+- `public static function missingPrefix(string $raw): self`
+- `public static function unterminatedEmbedded(string $template, int $offset): self`
+
+#### `InvalidSelectorPluginException` class
+- `public static function missingPluginInstance(): self`
+- `public static function undeterminableType(): self`
+
+#### `JsonPathSyntaxException` class
+- `public static function expectedFieldAfterCurrent(): self`
+- `public static function expectedFieldInPath(): self`
+- `public static function expectedMemberAfterDescent(): self`
+- `public static function expectedMemberAfterDot(): self`
+- `public static function expectedTokenType(string $expected, mixed $actual): self`
+- `public static function expectedTokenValue(string $type, string $expected, mixed $actual): self`
+- `public static function unexpectedEnd(): self`
+- `public static function unexpectedFilterToken(mixed $value): self`
+- `public static function unexpectedTrailingTokens(): self`
+- `public static function unsupportedBracketSelector(): self`
 
 #### `SelectorEvaluationException` class
+- `public static function atLocation(self $previous, string $location): self`
 - `public static function jsonPathBudgetExceeded(string $limitName, string $location = '/'): self`
+- `public static function noPluginRegistered(string $type, string $location = ''): self`
 - `public static function unsupportedXpathVersion(string $requested, array $supported, string $location = '/'): self`
 - `public static function xpathRequiresXml(string $pointer): self`
 
 ### `Alama\Arazzo\Expression\Interfaces`
 
 #### `EvaluationInputInterface` interface
+- `public function defaultRootBody(): array;`
 - `public function getCurrentStepId(): ?string;`
 - `public function getDocument(): ?ArazzoDocument;`
 - `public function getWorkflowContext(): WorkflowContextInterface;`
+- `public function httpMetaForStep(string $stepId, string $field): mixed;`
+- `public function requestBodyForStep(string $stepId): array;`
+- `public function responseBodyForStep(string $stepId): array;`
+- `public function stepInputs(string $stepId): array;`
+- `public function stepOutputs(string $stepId): array;`
+- `public function stepRequest(string $stepId): ?array;`
+- `public function stepResponse(string $stepId): ?array;`
+- `public function stepResponseHeader(string $stepId, string $name): ?string;`
 
 #### `ExpressionEngineInterface` interface
 - `public function evaluate(Expression $expression, EvaluationInputInterface $context): mixed;`
@@ -405,7 +776,7 @@ this file on a commit is a public API change — review it deliberately.
 - `public function expressionReferences(string $raw): ?ExpressionReference;`
 - `public function extract(string $template): array;`
 - `public function interpolate(string $template, callable $resolver, array $options = []): string;`
-- `public function interpolateWithOptions(string $template, callable $resolver, ?InterpolationOptions $options = null): string;`
+- `public function interpolateWithPolicy(string $template, callable $resolver, ?InterpolationPolicy $policy = null): string;`
 - `public function jsonPath(string $expression, array|object $data): mixed;`
 - `public function jsonPointer(array $data, ?string $pointer): mixed;`
 - `public function parseEmbedded(string $raw, SpecVersion $version = SpecVersion::V1_0): array;`
@@ -418,6 +789,14 @@ this file on a commit is a public API change — review it deliberately.
 
 #### `SelectorContext` interface
 - `public function select(array $ast, array $nodes, string $path, int &$visited, int $depth = 0): array;`
+
+### `Alama\Arazzo\Expression\Policy`
+
+#### `InterpolationPolicy` class
+- `public function __construct(?callable $stringify = null)`
+- `public function getStringify(): ?Closure`
+- `public function withStringify(?callable $stringify): self`
+- `public static function default(): self`
 
 ### `Alama\Arazzo\Expression\Xpath`
 
@@ -449,6 +828,16 @@ this file on a commit is a public API change — review it deliberately.
 - `public function jsonPath(string $expression, array|object $data): mixed;`
 - `public function replacePayload(Step $step, array $body, ?callable $resolveValue = null, ?WorkflowContext $context = null): array;`
 - `public function resolveValue(mixed $value, WorkflowContextInterface $context, ?string $stepId = null): mixed;`
+
+### `Alama\Arazzo\Evaluation\Exceptions`
+
+#### `CriterionEvaluationException` class
+- `public static function invalidRegex(string $pattern): self`
+- `public static function nullContext(string $context): self`
+- `public static function regexRequiresContext(): self`
+
+#### `RegistryInitializationException` class
+- `public static function missingExpressionEngine(string $registryName): self`
 
 ### `Alama\Arazzo\Evaluation\Plugins\Criterion`
 
@@ -487,14 +876,17 @@ this file on a commit is a public API change — review it deliberately.
 ### `Alama\Arazzo\Sources`
 
 #### `Sources` class
-- `public function __construct(?SourceResolverInterface $resolver = null, array $normalizers = [], array $documents = [])`
+- `public function __construct(?SourceResolverInterface $resolver = null, array $normalizers = [], array $documents = [], ?FetchPolicy $policy = null, ?SourcesRuntimeConfig $runtime = null)`
 - `public function knownOperations(ArazzoDocument $document, string $basePath = ''): KnownOperations`
 - `public function normalizeSources(ArazzoDocument $document, string $basePath = ''): ResolvedOperationCollection`
 - `public function resolve(SourceDescription $source, string $basePath = ''): SourceDocument`
 - `public function withDocument(SourceDocument $document): static`
 - `public function withFetcher(string $scheme, SourceFetcherInterface $fetcher): static`
 - `public function withHttpClient(ClientInterface $client, ?RequestFactoryInterface $requestFactory = null): static`
+- `public function withLogger(LoggerInterface $logger): static`
 - `public function withNormalizer(SourceNormalizerInterface $normalizer): static`
+- `public function withPolicy(FetchPolicy $policy): static`
+- `public function withTracer(TracerInterface $tracer): static`
 - `public static function create(): self`
 
 #### `SourcesInterface` interface
@@ -504,15 +896,62 @@ this file on a commit is a public API change — review it deliberately.
 - `public function withDocument(SourceDocument $document): static;`
 - `public function withFetcher(string $scheme, SourceFetcherInterface $fetcher): static;`
 - `public function withHttpClient(ClientInterface $client, ?RequestFactoryInterface $requestFactory = null): static;`
+- `public function withLogger(LoggerInterface $logger): static;`
 - `public function withNormalizer(SourceNormalizerInterface $normalizer): static;`
+- `public function withPolicy(FetchPolicy $policy): static;`
+- `public function withTracer(TracerInterface $tracer): static;`
 
 ### `Alama\Arazzo\Sources\Exceptions`
 
+#### `InvalidFetchPolicyException` class
+- `public static function nonPositiveConnectTimeout(): self`
+- `public static function nonPositiveMaxBytes(): self`
+- `public static function nonPositiveTimeout(): self`
+
+#### `InvalidOpenApiSourceException` class
+- `public static function invalidJson(): self`
+- `public static function methodNotFound(string $method, string $path): self`
+- `public static function pathNotFound(string $path): self`
+- `public static function unsupportedVersion(): self`
+
+#### `InvalidSourceReferenceException` class
+- `public static function ambiguousPlainOperationId(string $opId, string $stepId): self`
+- `public static function invalidOperationId(string $stepId): self`
+- `public static function invalidOperationPath(string $stepId): self`
+- `public static function missingOperationTarget(string $stepId): self`
+
+#### `SourceFetchException` class
+- `public static function fileReadFailed(string $path): static`
+- `public static function httpConnectionFailed(string $url, Throwable $previous): static`
+- `public static function httpErrorStatus(string $url, int $statusCode): static`
+- `public static function noFetcherForScheme(string $scheme): static`
+- `public static function relativeUrlRequiresHttpBase(string $urlOrPath): static`
+- `public static function resolutionFailed(string $sourceName, Throwable $previous): static`
+- `public static function responseTooLarge(string $url, int $maxBytes): static`
+- `public static function schemeDisallowed(string $scheme): static`
+
+#### `SourceParseException` class
+- `public static function parseFailed(string $sourceName, Throwable $previous): self`
+- `public static function rootMustBeArray(string $sourceName): self`
+
 #### `UnresolvableReferenceException` class
 - `public function __construct(string $message, public readonly string $sourceName = '', public readonly string $reference = '', ?Throwable $previous = null)`
+- `public static function circularReference(string $sourceName): self`
 
 #### `UnsupportedSourceVersionException` class
 - `public static function forVersion(string $version, string $sourceName): self`
+
+### `Alama\Arazzo\Sources\Policy`
+
+#### `FetchPolicy` class
+- `public function __construct(public float $connectTimeout = self::DEFAULT_CONNECT_TIMEOUT, public float $timeout = self::DEFAULT_TIMEOUT, public int $maxBytes = self::DEFAULT_MAX_BYTES, array $allowedSchemes = self::DEFAULT_ALLOWED_SCHEMES, public bool $strictReachability = self::DEFAULT_STRICT_REACHABILITY)`
+- `public function allowsScheme(string $scheme): bool`
+- `public function withAllowedSchemes(array $schemes): self`
+- `public function withConnectTimeout(float $seconds): self`
+- `public function withMaxBytes(int $maxBytes): self`
+- `public function withStrictReachability(bool $strict = true): self`
+- `public function withTimeout(float $seconds): self`
+- `public static function default(): self`
 
 ### `Alama\Arazzo\Sources\Registries`
 
@@ -601,16 +1040,66 @@ this file on a commit is a public API change — review it deliberately.
 
 #### `StepTransition` class
 - `public function __construct(public StepState $from, public StepState $to, public string $reason, public StepTransitionType $type = StepTransitionType::Enter, public array $actions = [])`
+- `public function isCancelled(): bool`
+- `public function isGuardFailed(): bool`
+- `public function isTimedOut(): bool`
 - `public static function cancelled(StepState $from, string $reason, array $actions): self`
 - `public static function guardFailed(StepState $from, string $reason): self`
 - `public static function timedOut(StepState $from, string $reason, array $actions): self`
+
+#### `Transition` class
+- `public function __construct(public ExecutionState $state, public string $status, public ?string $workflowId = null)`
+- `public function isFailed(): bool`
 
 ### `Alama\Arazzo\Engine\Enum`
 
 #### `StepTransitionType` enum
 - Cases: `Cancelled`, `Enter`, `GuardFailed`, `Timeout`
 
+### `Alama\Arazzo\Engine\Exceptions`
+
+#### `InvalidRetryPolicyException` class
+- `public static function invalidBackoffMultiplier(): self`
+- `public static function nonPositiveMaxAttempts(): self`
+
+### `Alama\Arazzo\Runtime\Policy`
+
+#### `RetryPolicy` class
+- `public function __construct(public int $maxAttempts = self::DEFAULT_MAX_ATTEMPTS, public float $backoffMultiplier = self::DEFAULT_BACKOFF_MULTIPLIER, ?BackoffCalculatorInterface $calculator = null, ?ClockInterface $clock = null)`
+- `public function calculateDelay(RetryAction $action, Step $step, WorkflowContext $context, int $upcomingAttempt): int`
+- `public function isExhausted(int $attemptsSoFar, ?int $limit): bool`
+- `public function withBackoffMultiplier(float $multiplier): self`
+- `public function withCalculator(BackoffCalculatorInterface $calculator): self`
+- `public function withClock(ClockInterface $clock): self`
+- `public function withMaxAttempts(int $maxAttempts): self`
+- `public static function default(): self`
+
+### `Alama\Arazzo\Runtime\Telemetry`
+
+#### `OtelTracer` class
+- `public function __construct(private string $instrumentationName = 'alama.arazzo.runner', private TraceContextPropagator $propagator = new TraceContextPropagator())`
+- `public function extractContext(array $carrier): ?array`
+- `public function injectContext(array &$carrier): void`
+
 ## protocol-http
+
+### `Alama\Arazzo\Protocol\Http`
+
+#### `HttpProtocol` class
+- `public function executor(?bool $strictValidation = null, ?IdempotencyKeyInjector $idempotencyInjector = null, ): OperationExecutorPluginInterface`
+- `public function outputExtractor(): OutputExtractorInterface`
+- `public function resolver(): OperationResolverInterface`
+- `public function withLogger(LoggerInterface $logger): self`
+- `public function withPolicy(HttpPolicy $policy): self`
+- `public function withTracer(TracerInterface $tracer): self`
+- `public static function create(?ClientInterface $httpClient = null, ?RequestFactoryInterface $requestFactory = null, ?SourcesInterface $sources = null, ?EvaluationEngineInterface $evaluationEngine = null, ?ExpressionEngineInterface $expressionEngine = null, ): self`
+
+### `Alama\Arazzo\Protocol\Http\Policy`
+
+#### `HttpPolicy` class
+- `public function __construct(public bool $strictValidation = self::DEFAULT_STRICT_VALIDATION, public ?IdempotencyKeyInjector $idempotencyInjector = null)`
+- `public function withIdempotencyInjector(?IdempotencyKeyInjector $injector): self`
+- `public function withStrictValidation(bool $strictValidation = true): self`
 
 ### `Alama\Arazzo\Protocol\Http\Resolver`
 
@@ -626,28 +1115,207 @@ this file on a commit is a public API change — review it deliberately.
 
 ## runner
 
-### `RunnerFacadeInterface` interface
-- `public function execute(ArazzoDocument $document, string $workflowId, array $inputs = []): array;`
-- `public function run(ArazzoDocument $document, string $workflowId, array $inputs = []): array;`
+### `Alama\Arazzo\Runner`
 
-### `RunnerFacade` class
-- `public function __construct(DocumentInterface $documents, OpenApiOperationResolver $operationResolver, EvaluationEngineInterface $evaluationEngine,`
-- `public function execute(ArazzoDocument $document, string $workflowId, array $inputs = []): array`
-- `public function run(ArazzoDocument $document, string $workflowId, array $inputs = []): array`
+#### `AsyncRunner` class
+- `public function __construct(?DocumentInterface $document = null, ?EvaluationEngineInterface $evaluationEngine = null, ?AsyncConfig $config = null)`
+- `public function handleStep(ExecuteStepJob $job): void`
+- `public function resume(ArazzoDocument $document, string $executionId): void`
+- `public function resumeCorrelation(string $correlationId, array $response): void`
+- `public function start(ArazzoDocument $document, string $workflowId, array $inputs = [], ?string $executionId = null, ?string $definitionId = null, ): string`
+- `public function withClock(ClockInterface $clock): static`
+- `public function withDefinitions(DefinitionStoreInterface $definitions): static`
+- `public function withEventDispatcher(EventDispatcherInterface $dispatcher): static`
+- `public function withExecutor(OperationExecutorPluginInterface $executor): static`
+- `public function withLockManager(LockManagerInterface $lockManager): static`
+- `public function withLogger(LoggerInterface $logger): static`
+- `public function withOperationResolver(OperationResolverInterface $resolver): static`
+- `public function withOutputExtractor(OutputExtractorInterface $outputExtractor): static`
+- `public function withPolicy(ExecutionPolicy $policy): static`
+- `public function withQueueDriver(QueueDriverInterface $queueDriver): static`
+- `public function withStore(ExecutionStoreInterface $store): static`
+- `public function withTracer(TracerInterface $tracer): static`
+- `public static function create(): self`
+
+#### `AsyncRunnerInterface` interface
+- `public function handleStep(ExecuteStepJob $job): void;`
+- `public function resume(ArazzoDocument $document, string $executionId): void;`
+- `public function resumeCorrelation(string $correlationId, array $response): void;`
+- `public function start(ArazzoDocument $document, string $workflowId, array $inputs = [], ?string $executionId = null, ?string $definitionId = null, ): string;`
+- `public function withClock(ClockInterface $clock): static;`
+- `public function withDefinitions(DefinitionStoreInterface $definitions): static;`
+- `public function withEventDispatcher(EventDispatcherInterface $dispatcher): static;`
+- `public function withExecutor(OperationExecutorPluginInterface $executor): static;`
+- `public function withLockManager(LockManagerInterface $lockManager): static;`
+- `public function withLogger(LoggerInterface $logger): static;`
+- `public function withOperationResolver(OperationResolverInterface $resolver): static;`
+- `public function withOutputExtractor(OutputExtractorInterface $outputExtractor): static;`
+- `public function withPolicy(ExecutionPolicy $policy): static;`
+- `public function withQueueDriver(QueueDriverInterface $queueDriver): static;`
+- `public function withStore(ExecutionStoreInterface $store): static;`
+- `public function withTracer(TracerInterface $tracer): static;`
+
+#### `DefinitionStoreInterface` interface
+- `public function find(string $definitionId): ?ArazzoDocument;`
+- `public function save(ArazzoDocument $document, ?string $definitionId = null): string;`
+
+#### `ExecutionStoreInterface` interface
+- `public function consumeCorrelation(string $correlationId): void;`
+- `public function deleteState(string $executionId): void;`
+- `public function findCorrelation(string $correlationId): ?PendingCorrelation;`
+- `public function hasPendingCorrelations(string $executionId): bool;`
+- `public function loadState(string $executionId): ?array;`
+- `public function markCompleted(string $executionId, ExecutionStatus $status): void;`
+- `public function markStarted(string $executionId, string $definitionId, string $workflowId): void;`
+- `public function saveCorrelation(string $correlationId, string $executionId, string $stepId, string $channelPath, ?int $timeoutSeconds = null, ): void;`
+- `public function saveState(string $executionId, array $state, ?int $ttlSeconds = null): void;`
+
+#### `Runner` class
+- `public function __construct(?DocumentInterface $document = null, ?EvaluationEngineInterface $evaluationEngine = null, ?RunnerOptions $options = null)`
+- `public function preflight(ArazzoDocument $document, ?string $workflowId = null, array $inputs = []): ValidationResult`
+- `public function run(ArazzoDocument $document, string $workflowId, array $inputs = [], ?ExecutionPolicy $policy = null, ): ExecutionResult`
+- `public function withClock(ClockInterface $clock): static`
+- `public function withEventDispatcher(EventDispatcherInterface $dispatcher): static`
+- `public function withExecutor(OperationExecutorPluginInterface $executor): static`
+- `public function withLogger(LoggerInterface $logger): static`
+- `public function withOperationResolver(OperationResolverInterface $resolver): static`
+- `public function withPolicy(ExecutionPolicy $policy): static`
+- `public function withTracer(TracerInterface $tracer): static`
+- `public static function create(): self`
+
+#### `RunnerInterface` interface
+- `public function preflight(ArazzoDocument $document, ?string $workflowId = null, array $inputs = []): ValidationResult;`
+- `public function run(ArazzoDocument $document, string $workflowId, array $inputs = [], ?ExecutionPolicy $policy = null, ): ExecutionResult;`
+- `public function withClock(ClockInterface $clock): static;`
+- `public function withEventDispatcher(EventDispatcherInterface $dispatcher): static;`
+- `public function withExecutor(OperationExecutorPluginInterface $executor): static;`
+- `public function withLogger(LoggerInterface $logger): static;`
+- `public function withOperationResolver(OperationResolverInterface $resolver): static;`
+- `public function withPolicy(ExecutionPolicy $policy): static;`
+- `public function withTracer(TracerInterface $tracer): static;`
+
+### `Alama\Arazzo\Runner\Data`
+
+#### `ExecuteStepJob` class
+- `public function __construct(public Step $step, public WorkflowContext $context)`
+- `public function stepId(): string`
+
+#### `ExecutionResult` class
+- `public function __construct(public string $workflowId, public ExecutionStatus $status, public array $outputs = [], public array $stepResults = [], public int $stepsSpent = 0, public array $workflowCallStack = [])`
+- `public function executedStepIds(): array`
+- `public function failedStep(): ?StepResult`
+- `public function hasOutput(string $name): bool`
+- `public function hasStepResult(string $stepId): bool`
+- `public function isFailed(): bool`
+- `public function output(string $name): mixed`
+- `public function stepResult(string $stepId): ?StepResult`
+- `public function toArray(): array`
+
+#### `StepResult` class
+- `public function __construct(public string $stepId, public bool $success, public array $outputs = [], public ?Throwable $error = null)`
+- `public function errorMessage(): ?string`
+- `public function hasError(): bool`
+- `public function hasOutput(string $name): bool`
+- `public function isFailed(): bool`
+- `public function output(string $name): mixed`
+- `public function toArray(): array`
 
 ### `Alama\Arazzo\Runner\Exceptions`
 
+#### `ExecutionError` class
+- `public static function ambiguousActionTarget(string $actionName): self`
+- `public static function dependencyFailed(string $dependencyId): self`
+- `public static function stateMissing(string $executionId): self`
+- `public static function stepFailed(string $stepId): self`
+- `public static function workflowEndedInFailure(string $workflowId, string $stepId): self`
+- `public static function workflowFailedAtStep(string $workflowId, string $stepId): self`
+
+#### `GotoTargetNotFoundException` class
+- `public static function unknownStep(string $stepId, string $workflowId): self`
+- `public static function unknownWorkflow(string $actionName, string $workflowId): self`
+- `public static function unresolvableReusable(string $reference): self`
+- `public static function wrongReusableTarget(string $reference, string $type): self`
+
+#### `InvalidSourcePolicyException` class
+- `public static function arazzoSourceNotAddressable(string $key): self`
+- `public static function dottedKeyReserved(string $key): self`
+- `public static function duplicateSourceUrl(string $firstKey, string $secondKey, string $url): self`
+- `public static function unknownSource(string $key): self`
+
+#### `OperationResolutionException` class
+- `public static function unsupportedStep(string $stepId): self`
+
 #### `PreflightFailureException` class
-- `public function __construct(string $message, public readonly ValidationResult $result, ?\Throwable $previous = null)`
+- `public function __construct(string $message, public readonly ValidationResult $result, ?Throwable $previous = null)`
+- `public static function fromResult(ValidationResult $result): self`
 
-### `Alama\Arazzo\Runner\Preflight`
+#### `StepBudgetExceededException` class
+- `public static function exceeded(string $executionId, int $maxSteps): self`
 
-#### `OperationResolvers` class
-- `public function __construct(private iterable $resolvers)`
-- `public function supports(Step $step, ArazzoDocument $document): bool`
+#### `UnknownWorkflowException` class
+- `public static function forId(string $workflowId): self`
 
-#### `Preflight` class
-- `public function __construct(private OperationResolvers $resolvers, private array $supportedXPath = ['xpath-10'])`
+#### `UnsupportedStepException` class
+- `public static function noSupportingExecutor(string $stepId): self`
+- `public static function unknownWorkflow(string $workflowId): self`
+
+#### `WorkflowCycleException` class
+- `public static function detected(string $workflowId): self`
+
+#### `WorkflowDepthExceededException` class
+- `public static function exceeded(int $maxDepth): self`
+
+### `Alama\Arazzo\Runner\Policy`
+
+#### `ExecutionBudgets` class
+- `public function __construct(public int $maxSteps = self::DEFAULT_MAX_STEPS, public int $maxWorkflowDepth = self::DEFAULT_MAX_WORKFLOW_DEPTH)`
+- `public function withMaxSteps(int $maxSteps): self`
+- `public function withMaxWorkflowDepth(int $maxWorkflowDepth): self`
+
+#### `ExecutionPolicy` class
+- `public function __construct(public ExecutionBudgets $budgets = new ExecutionBudgets(), public ?RetryPolicy $retryPolicy = null, public bool $preflight = self::DEFAULT_PREFLIGHT, public int $stateTtlSeconds = self::DEFAULT_STATE_TTL_SECONDS, public array $sourcePolicies = [])`
+- `public function maxSteps(): int`
+- `public function maxWorkflowDepth(): int`
+- `public function sourcePolicy(string $sourceName): ?SourcePolicy`
+- `public function withMaxSteps(int $maxSteps): self`
+- `public function withMaxWorkflowDepth(int $maxWorkflowDepth): self`
+- `public function withPreflight(bool $enabled = true): self`
+- `public function withRetryPolicy(RetryPolicy $retryPolicy): self`
+- `public function withSourcePolicy(string $sourceName, SourcePolicy $policy): self`
+- `public function withStateTtlSeconds(int $seconds): self`
+
+### `Alama\Arazzo\Runner\Queue`
+
+#### `SyncQueueDriver` class
+- `public function dispatch(object $job, int $delaySeconds = 0): void`
+
+### `Alama\Arazzo\Runner\Registries`
+
+#### `OperationExecutorRegistry` class
+- `public function all(array $overrides = []): array`
+- `public function register(OperationExecutorPluginInterface $plugin): void`
+- `public function resolve(Step $step, ArazzoDocument $document, array $overrides = []): ?OperationExecutorPluginInterface`
+- `public function snapshot(array $overrides = []): self`
+- `public static function create(): self`
+- `public static function reset(): void`
+
+### `Alama\Arazzo\Runner\Store`
+
+#### `InMemoryDefinitionStore` class
+- `public function find(string $definitionId): ?ArazzoDocument`
+- `public function save(ArazzoDocument $document, ?string $definitionId = null): string`
+
+#### `InMemoryExecutionStore` class
+- `public function __construct(private readonly ClockInterface $clock = new SystemClock())`
+- `public function consumeCorrelation(string $correlationId): void`
+- `public function deleteState(string $executionId): void`
+- `public function findCorrelation(string $correlationId): ?PendingCorrelation`
+- `public function hasPendingCorrelations(string $executionId): bool`
+- `public function loadState(string $executionId): ?array`
+- `public function markCompleted(string $executionId, ExecutionStatus $status): void`
+- `public function markStarted(string $executionId, string $definitionId, string $workflowId): void`
+- `public function saveCorrelation(string $correlationId, string $executionId, string $stepId, string $channelPath, ?int $timeoutSeconds = null, ): void`
+- `public function statusOf(string $executionId): ?ExecutionStatus`
 
 ## cli
 
@@ -659,5 +1327,5 @@ this file on a commit is a public API change — review it deliberately.
 ### `Alama\Arazzo\Cli\Console\Command`
 
 #### `RunCommand` class
-- `public function __construct(private readonly ?RunnerFacadeInterface $runner = null, private readonly ?DocumentInterface $document = null)`
+- `public function __construct(private readonly ?RunnerInterface $runner = null, private readonly ?DocumentInterface $document = null)`
 

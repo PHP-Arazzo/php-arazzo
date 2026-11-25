@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Protocol\Http\Execution;
 
+use Alama\Arazzo\Contracts\Observability\NullTracer;
+use Alama\Arazzo\Contracts\Observability\TracerInterface;
+use Alama\Arazzo\Contracts\Policy\SourcePolicy;
+use Alama\Arazzo\Contracts\Spec\NormalizedOpenApiOperation;
 use Alama\Arazzo\Contracts\Spec\OpenApiPayload;
 use Alama\Arazzo\Engine\Execution\ParameterSerializer;
 use Alama\Arazzo\Engine\Execution\TypeCaster;
@@ -18,6 +22,8 @@ use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
+use Throwable;
 
 /**
  * @internal stays out of the advertised contract; not part of the public API surface
@@ -28,13 +34,23 @@ class DefaultOpenApiExecutor implements OpenApiExecutorInterface
 
     private readonly TypeCaster $typeCaster;
 
+    private readonly SourcePolicyApplicator $policyApplicator;
+
+    private readonly LoggerInterface $logger;
+
+    private readonly TracerInterface $tracer;
+
     public function __construct(
         private ClientInterface $httpClient,
         private RequestFactoryInterface $requestFactory,
-        private ?LoggerInterface $logger = null,
+        ?LoggerInterface $logger = null,
+        ?TracerInterface $tracer = null,
     ) {
         $this->parameterSerializer = new ParameterSerializer();
         $this->typeCaster = new TypeCaster();
+        $this->policyApplicator = new SourcePolicyApplicator();
+        $this->logger = $logger ?? new NullLogger();
+        $this->tracer = $tracer ?? new NullTracer();
     }
 
     /**
@@ -47,18 +63,46 @@ class DefaultOpenApiExecutor implements OpenApiExecutorInterface
         OpenApiPayload $payload,
         ?callable $requestInterceptor = null,
         ?float $timeoutSeconds = null,
+        ?SourcePolicy $sourcePolicy = null,
     ): ResponseInterface {
-        $openApi = $operation->openApi;
-        $normalized = $operation->operation->normalized;
+        $request = $this->buildRequest($operation, $payload, $sourcePolicy);
+        $request = $this->policyApplicator->applyToRequest($request, $operation, $sourcePolicy);
 
-        $baseUrl = '';
-        if ($openApi->servers) {
-            $baseUrl = rtrim($openApi->servers[0]->url, '/');
+        if ($requestInterceptor !== null) {
+            $intercepted = $requestInterceptor($request);
+            $request = $intercepted instanceof RequestInterface ? $intercepted : $request;
         }
 
-        $method = strtoupper($normalized->method);
-        $urlPath = $normalized->path;
+        $request = $this->injectTraceContext($request);
 
+        return $this->dispatchRequest($request, $timeoutSeconds);
+    }
+
+    private function buildRequest(
+        OpenApiOperationHandle $operation,
+        OpenApiPayload $payload,
+        ?SourcePolicy $sourcePolicy,
+    ): RequestInterface {
+        $normalized = $operation->operation->normalized;
+        $baseUrl = $this->policyApplicator->resolveBaseUrl($operation->openApi, $sourcePolicy);
+        $routed = $this->routeAutoParameters($normalized, $payload);
+
+        $path = $this->castParameters($normalized->pathParameters, $routed['path']);
+        $query = $this->castParameters($normalized->queryParameters, $routed['query']);
+        $header = $this->castParameters($normalized->headerParameters, $routed['header']);
+        $cookie = $this->castParameters($normalized->cookieParameters, $routed['cookie']);
+
+        $url = $this->serializeUrl($baseUrl, $normalized, $path, $query);
+        $request = $this->requestFactory->createRequest(strtoupper($normalized->method), $url);
+
+        return $this->applyHeadersAndBody($request, $normalized, $header, $cookie, $payload);
+    }
+
+    /**
+     * @return array{path: array<string, mixed>, query: array<string, mixed>, header: array<string, mixed>, cookie: array<string, mixed>}
+     */
+    private function routeAutoParameters(NormalizedOpenApiOperation $normalized, OpenApiPayload $payload): array
+    {
         $path = $payload->path;
         $query = $payload->query;
         $header = $payload->header;
@@ -76,39 +120,58 @@ class DefaultOpenApiExecutor implements OpenApiExecutorInterface
             }
         }
 
-        $path = $this->castParameters($normalized->pathParameters, $path);
-        $query = $this->castParameters($normalized->queryParameters, $query);
-        $header = $this->castParameters($normalized->headerParameters, $header);
-        $cookie = $this->castParameters($normalized->cookieParameters, $cookie);
+        return ['path' => $path, 'query' => $query, 'header' => $header, 'cookie' => $cookie];
+    }
+
+    /**
+     * @param  array<string, mixed>  $path
+     * @param  array<string, mixed>  $query
+     */
+    private function serializeUrl(
+        string $baseUrl,
+        NormalizedOpenApiOperation $normalized,
+        array $path,
+        array $query,
+    ): string {
+        $urlPath = $normalized->path;
 
         $serializedPath = $this->parameterSerializer->serialize('path', $normalized->pathParameters, $path);
         foreach ($serializedPath as $name => $value) {
             $style = $normalized->pathParameters[$name]['style'] ?? 'simple';
             $replacement = $style === 'simple' ? urlencode($value) : $value;
-            // matrix and label include the prefix in the serialized value,
-            // so we replace the template
             $urlPath = str_replace('{'.$name.'}', $replacement, $urlPath);
         }
 
         $url = $baseUrl.$urlPath;
 
         $serializedQuery = $this->parameterSerializer->serialize('query', $normalized->queryParameters, $query);
-        $filteredQuery = array_filter($serializedQuery, fn ($val) => $val !== '');
-        if (!empty($filteredQuery)) {
+        $filteredQuery = array_filter($serializedQuery, static fn ($val): bool => $val !== '');
+        if ($filteredQuery !== []) {
             $url .= '?'.implode('&', array_values($filteredQuery));
         }
 
-        $request = $this->requestFactory->createRequest($method, $url);
+        return $url;
+    }
 
+    /**
+     * @param  array<string, mixed>  $header
+     * @param  array<string, mixed>  $cookie
+     */
+    private function applyHeadersAndBody(
+        RequestInterface $request,
+        NormalizedOpenApiOperation $normalized,
+        array $header,
+        array $cookie,
+        OpenApiPayload $payload,
+    ): RequestInterface {
         $serializedHeader = $this->parameterSerializer->serialize('header', $normalized->headerParameters, $header);
         foreach ($serializedHeader as $k => $v) {
             $request = $request->withHeader($k, (string) $v);
         }
 
         $serializedCookie = $this->parameterSerializer->serialize('cookie', $normalized->cookieParameters, $cookie);
-        if (!empty($serializedCookie)) {
-            $cookieString = implode('; ', array_values($serializedCookie));
-            $request = $request->withHeader('Cookie', $cookieString);
+        if ($serializedCookie !== []) {
+            $request = $request->withHeader('Cookie', implode('; ', array_values($serializedCookie)));
         }
 
         if ($payload->body !== null) {
@@ -121,19 +184,65 @@ class DefaultOpenApiExecutor implements OpenApiExecutorInterface
             $request = $request->withBody(Utils::streamFor($bodyStream));
         }
 
-        if ($requestInterceptor !== null) {
-            $intercepted = $requestInterceptor($request);
-            $request = $intercepted instanceof RequestInterface ? $intercepted : $request;
+        return $request;
+    }
+
+    private function injectTraceContext(RequestInterface $request): RequestInterface
+    {
+        $carrier = [];
+        $this->tracer->injectContext($carrier);
+
+        foreach ($carrier as $header => $value) {
+            $request = $request->withHeader($header, $value);
         }
 
-        // PSR-18 cannot express per-request timeouts; delegate to Guzzle when
-        // available so declared step timeouts are actually enforced.
-        if ($timeoutSeconds !== null && $this->httpClient instanceof \GuzzleHttp\ClientInterface) {
-            // Guzzle's options stub requires non-empty header value lists.
+        return $request;
+    }
 
-            $headers = array_map(function ($values) {
-                return $values === [] ? [''] : array_values(array_map(strval(...), $values));
-            }, $request->getHeaders());
+    private function dispatchRequest(RequestInterface $request, ?float $timeoutSeconds): ResponseInterface
+    {
+        $span = $this->tracer->startSpan('arazzo.http.request', [
+            'http.request.method' => $request->getMethod(),
+            'url.full' => (string) $request->getUri(),
+        ]);
+
+        try {
+            $response = $this->sendViaClient($request, $timeoutSeconds);
+            $span->setAttribute('http.response.status_code', $response->getStatusCode());
+            $span->setStatus(true);
+
+            $this->logger->debug('Executed HTTP operation.', [
+                'method' => $request->getMethod(),
+                'url' => (string) $request->getUri(),
+                'status' => $response->getStatusCode(),
+            ]);
+
+            return $response;
+        } catch (Throwable $e) {
+            $span->recordException($e);
+            $span->setStatus(false, $e->getMessage());
+
+            $this->logger->warning('HTTP operation failed.', [
+                'method' => $request->getMethod(),
+                'url' => (string) $request->getUri(),
+                'error' => $e->getMessage(),
+            ]);
+
+            throw $e;
+        } finally {
+            $span->end();
+        }
+    }
+
+    private function sendViaClient(RequestInterface $request, ?float $timeoutSeconds): ResponseInterface
+    {
+        // PSR-18 cannot express per-request timeouts; delegate to Guzzle when
+        // available so declared step or SourcePolicy timeouts are enforced.
+        if ($timeoutSeconds !== null && $this->httpClient instanceof \GuzzleHttp\ClientInterface) {
+            $headers = array_map(
+                static fn (array $values): array => $values === [] ? [''] : array_values(array_map(strval(...), $values)),
+                $request->getHeaders(),
+            );
 
             return $this->httpClient->request(
                 $request->getMethod(),
@@ -188,7 +297,7 @@ class DefaultOpenApiExecutor implements OpenApiExecutorInterface
                 default => $value,
             };
         } catch (Exception $e) {
-            $this->logger?->warning("Failed to cast value to schema type '{$type}': {$e->getMessage()}");
+            $this->logger->warning("Failed to cast value to schema type '{$type}': {$e->getMessage()}");
 
             return $value;
         }

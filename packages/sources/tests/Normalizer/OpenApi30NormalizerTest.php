@@ -167,3 +167,31 @@ it('does not resolve responses with ref', function (): void {
         ->and($op->responses['200']['description'])->toBe('Success')
         ->and($op->responses['404']['$ref'])->toBe('#/components/responses/NotFound');
 });
+
+it('handles missing requestBody content, non-array parameter entries, and unresolvable or scalar local refs safely', function (): void {
+    $document = [
+        'components' => [
+            'parameters' => [
+                'ScalarRef' => 'not-an-array',
+            ],
+        ],
+        'paths' => [
+            '/edge' => [
+                'parameters' => [
+                    'not-an-array-param',
+                    ['$ref' => '#/components/parameters/Missing'],
+                    ['$ref' => '#/components/parameters/ScalarRef'],
+                ],
+                'post' => [
+                    'requestBody' => ['description' => 'no content key'],
+                ],
+            ],
+        ],
+    ];
+
+    $op = $this->normalizer->normalize($document, '/edge', 'post');
+
+    expect($op->requestBodies)->toBe([])
+        ->and($op->queryParameters)->toBe([])
+        ->and($op->resolvedServerUrl)->toBeNull();
+});

@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Tests\Protocol\Soap\Execution;
 
 use Alama\Arazzo\Contracts\Interfaces\HttpClientInterface;
+use Alama\Arazzo\Contracts\Observability\NullSpan;
+use Alama\Arazzo\Contracts\Observability\SpanInterface;
+use Alama\Arazzo\Contracts\Observability\TracerInterface;
+use Alama\Arazzo\Contracts\Policy\SourcePolicy;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Components;
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
@@ -22,6 +26,7 @@ use Alama\Arazzo\Contracts\Spec\StepIo;
 use Alama\Arazzo\Contracts\Spec\StepTarget;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
 use Alama\Arazzo\Document\OperationResolverInterface;
+use Alama\Arazzo\Engine\Exceptions\ExecutionException;
 use Alama\Arazzo\Evaluation\Data\CriterionResult;
 use Alama\Arazzo\Evaluation\Data\CriterionResultCollection;
 use Alama\Arazzo\Evaluation\EvaluationEngineInterface;
@@ -40,6 +45,7 @@ use GuzzleHttp\Psr7\Response;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\AbstractLogger;
 use RuntimeException;
 
 class SoapExecutorMockEngine implements EvaluationEngineInterface
@@ -330,4 +336,85 @@ it('fails with the transport category when the client throws a transport excepti
     expect($outcome->failureCategory)->toBe('transport');
     expect($outcome->responseBody['transfer'])->toBeInstanceOf(SoapResponseTransfer::class);
     expect($outcome->responseBody['transfer']->meta()['error'])->toBe('connection refused');
+});
+
+it('applies SourcePolicy headers/timeout and emits Tier-2 logs and W3C traceparent spans', function (): void {
+    $responseBody = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"><soapenv:Body><AddResponse xmlns="urn:calculator">8</AddResponse></soapenv:Body></soapenv:Envelope>';
+    $client = new SoapExecutorFakeClient(new Response(200, ['Content-Type' => 'text/xml; charset=utf-8'], $responseBody));
+
+    $logs = [];
+    $logger = new class($logs) extends AbstractLogger
+    {
+        /** @param list<string> $logs */
+        public function __construct(public array &$logs) {}
+
+        public function log($level, string|\Stringable $message, array $context = []): void
+        {
+            $this->logs[] = (string) $message;
+        }
+    };
+
+    $spans = [];
+    $tracer = new class($spans) implements TracerInterface
+    {
+        /** @param list<string> $spans */
+        public function __construct(public array &$spans) {}
+
+        public function startSpan(string $name, array $attributes = []): SpanInterface
+        {
+            $this->spans[] = $name;
+
+            return new NullSpan();
+        }
+
+        public function injectContext(array &$carrier): void
+        {
+            $carrier['traceparent'] = '00-11111111111111111111111111111111-2222222222222222-01';
+        }
+
+        public function extractContext(array $carrier): ?array
+        {
+            return null;
+        }
+    };
+
+    $executor = soapExecutor($client, new SoapExecutorFakeResolver(soapExecutorResolvedOperation()))
+        ->withLogger($logger)
+        ->withTracer($tracer);
+
+    $context = soapExecutorContext()->withActiveSourcePolicy(
+        SourcePolicy::default()
+            ->withHeader('X-Soap-Tenant', 'acme')
+            ->withHeader('SOAPAction', 'should-not-override')
+            ->withTimeoutSeconds(7.5),
+    );
+
+    $outcome = $executor->execute(soapExecutorStep(), $context, soapExecutorDocument(), 'exec-1');
+
+    expect($outcome->statusCode)->toBe(200)
+        ->and($client->lastRequest->getHeaderLine('X-Soap-Tenant'))->toBe('acme')
+        ->and($client->lastRequest->getHeaderLine('SOAPAction'))->toBe('urn:calculator:Add')
+        ->and($client->lastRequest->getHeaderLine('traceparent'))->toBe('00-11111111111111111111111111111111-2222222222222222-01')
+        ->and($spans)->toBe(['arazzo.soap.request'])
+        ->and($logs)->toContain('Executed SOAP operation.');
+});
+
+it('wraps resolver RuntimeException as ExecutionException', function (): void {
+    $failingResolver = new class() implements OperationResolverInterface
+    {
+        public function supportsStep(Step $step, ArazzoDocument $document): bool
+        {
+            return true;
+        }
+
+        public function resolve(Step $step, ArazzoDocument $document): ResolvedOperation
+        {
+            throw new RuntimeException('wsdl missing');
+        }
+    };
+
+    $executor = soapExecutor(new SoapExecutorFakeClient(new Response(200)), $failingResolver);
+
+    expect(fn () => $executor->execute(soapExecutorStep(), soapExecutorContext(), soapExecutorDocument(), 'exec-1'))
+        ->toThrow(ExecutionException::class, 'SOAP resolution failed');
 });

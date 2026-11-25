@@ -8,7 +8,6 @@ use Alama\Arazzo\Contracts\Attributes\AsOperationExecutorPlugin;
 use Alama\Arazzo\Contracts\Interfaces\OperationExecutorPluginInterface;
 use Alama\Arazzo\Contracts\Interfaces\OutputExtractorInterface;
 use Alama\Arazzo\Contracts\Interfaces\ResponseValidatorInterface;
-use Alama\Arazzo\Contracts\Interfaces\StepProtocolExecutorInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Enum\OperationProtocol;
 use Alama\Arazzo\Contracts\Spec\Step;
@@ -25,7 +24,7 @@ use Psr\Http\Message\RequestInterface as Psr7Request;
  * @internal stays out of the advertised contract; not part of the public API surface
  */
 #[AsOperationExecutorPlugin(OperationProtocol::Http)]
-final class HttpStepExecutor implements OperationExecutorPluginInterface, StepProtocolExecutorInterface
+final class HttpStepExecutor implements OperationExecutorPluginInterface
 {
     /**
      * Registry ordering (ascending, first supports() wins). HTTP steps and
@@ -39,7 +38,7 @@ final class HttpStepExecutor implements OperationExecutorPluginInterface, StepPr
         private EvaluationEngineInterface $evaluationEngine,
         private OutputExtractorInterface $outputExtractor,
         private ResponseValidatorInterface $schemaValidator,
-        private bool $strictValidationDefault = true,
+        private bool $strictDefault = true,
         private ?IdempotencyKeyInjector $injector = null,
     ) {}
 
@@ -55,7 +54,7 @@ final class HttpStepExecutor implements OperationExecutorPluginInterface, StepPr
 
     public function supports(Step $step, ArazzoDocument $document): bool
     {
-        return $step->target->action === null;
+        return !$step->hasAction();
     }
 
     public function execute(Step $step, WorkflowContext $context, ArazzoDocument $document, string $executionId): StepExecutionOutcome
@@ -64,6 +63,8 @@ final class HttpStepExecutor implements OperationExecutorPluginInterface, StepPr
         ['payload' => $payload, 'resolvedInputs' => $resolvedInputs] = $compiler->compile($step, $document, $context);
 
         $resolved = $this->operationResolver->resolve($step, $document);
+        $sourcePolicy = $context->getActiveSourcePolicy();
+        $timeoutSeconds = $step->flow->timeoutSeconds() ?? $sourcePolicy?->timeoutSeconds();
 
         $capturedRequest = null;
         try {
@@ -79,7 +80,8 @@ final class HttpStepExecutor implements OperationExecutorPluginInterface, StepPr
 
                     return $request;
                 },
-                $step->flow->timeout !== null ? $step->flow->timeout / 1000 : null,
+                $timeoutSeconds,
+                $sourcePolicy,
             );
         } catch (\Throwable $e) {
             // Transport-level failures become a synthetic 500 response so
@@ -90,7 +92,7 @@ final class HttpStepExecutor implements OperationExecutorPluginInterface, StepPr
 
         $decoded = $compiler->decodeResponse($response);
 
-        if ($this->shouldValidateSchema($step)) {
+        if ($this->shouldValidateSchema($step, $sourcePolicy?->strictValidation())) {
             $this->schemaValidator->validateResponseSchema(
                 $step,
                 $decoded['statusCode'],
@@ -124,8 +126,10 @@ final class HttpStepExecutor implements OperationExecutorPluginInterface, StepPr
         );
     }
 
-    private function shouldValidateSchema(Step $step): bool
+    private function shouldValidateSchema(Step $step, ?bool $sourceStrict = null): bool
     {
-        return $step->flow->strictValidation ?? $this->strictValidationDefault;
+        return $step->flow->strictValidation
+            ?? $sourceStrict
+            ?? $this->strictDefault;
     }
 }

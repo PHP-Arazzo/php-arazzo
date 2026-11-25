@@ -30,31 +30,22 @@ final class SelectorEvaluator
                 new EvaluationContext($wf, $stepId),
             );
         } else {
-            $steps = $wf->getSteps();
-            $stepData = $steps[$stepId] ?? null;
-            $response = is_array($stepData) ? ($stepData['response'] ?? null) : null;
-            $body = is_array($response) ? ($response['body'] ?? []) : [];
-
-            $root = is_array($body) ? $body : [];
+            $root = (new EvaluationContext($wf, $stepId))->defaultRootBody();
         }
 
         $plugin = $this->plugins->get($sel->type);
 
+        $location = 'workflows/'.($wf->getWorkflowId() ?? 'unknown').'/steps/'.$stepId;
+
         if ($plugin === null) {
-            throw new SelectorEvaluationException(
-                "No selector plugin registered for type '{$sel->type->value}'.",
-                'workflows/'.($wf->getWorkflowId() ?? 'unknown').'/steps/'.$stepId,
-                'selector.no_plugin',
-            );
+            throw SelectorEvaluationException::noPluginRegistered($sel->type->value, $location);
         }
 
         try {
             return $plugin->evaluate($root, $sel->selector, $sel->version, $sel->namespaces);
         } catch (SelectorEvaluationException $e) {
             // Enrich capability errors with the document location.
-            $location = 'workflows/'.($wf->getWorkflowId() ?? 'unknown').'/steps/'.$stepId;
-
-            throw new SelectorEvaluationException($e->getMessage(), $location, $e->codeId, $e);
+            throw SelectorEvaluationException::atLocation($e, $location);
         }
     }
 }

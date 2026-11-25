@@ -18,4 +18,54 @@ final readonly class Parameter
         public mixed $value,
         public ?ValueMode $valueMode = null,
     ) {}
+
+    public function isQuery(): bool
+    {
+        return $this->in === ParameterIn::Query;
+    }
+
+    public function isHeader(): bool
+    {
+        return $this->in === ParameterIn::Header;
+    }
+
+    public function isPath(): bool
+    {
+        return $this->in === ParameterIn::Path;
+    }
+
+    public function isBody(): bool
+    {
+        return $this->in === ParameterIn::Body;
+    }
+
+    public function isCookie(): bool
+    {
+        return $this->in === ParameterIn::Cookie;
+    }
+
+    public function isMetadata(): bool
+    {
+        return $this->in === ParameterIn::Metadata;
+    }
+
+    public function isQuerystring(): bool
+    {
+        return $this->in === ParameterIn::Querystring;
+    }
+
+    public function isVariable(): bool
+    {
+        return $this->in === ParameterIn::Variable;
+    }
+
+    public function isExpression(): bool
+    {
+        return $this->value instanceof Expression;
+    }
+
+    public function isSelector(): bool
+    {
+        return $this->value instanceof Selector;
+    }
 }

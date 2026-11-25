@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Tests\Runner\Sync;
 
+use Alama\Arazzo\Contracts\Policy\SourcePolicy;
 use Alama\Arazzo\Contracts\Spec\Action\FailureGotoAction;
 use Alama\Arazzo\Contracts\Spec\Action\RetryAction;
 use Alama\Arazzo\Contracts\Spec\Action\SuccessEndAction;
@@ -11,6 +12,7 @@ use Alama\Arazzo\Contracts\Spec\Action\SuccessGotoAction;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Components;
 use Alama\Arazzo\Contracts\Spec\Enum\CriterionType;
+use Alama\Arazzo\Contracts\Spec\Enum\ExecutionStatus;
 use Alama\Arazzo\Contracts\Spec\Enum\ParameterIn;
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
 use Alama\Arazzo\Contracts\Spec\Expression;
@@ -32,9 +34,10 @@ use Alama\Arazzo\Evaluation\EvaluationEngine;
 use Alama\Arazzo\Expression\ExpressionEngine;
 use Alama\Arazzo\Protocol\Http\Execution\Interfaces\OpenApiExecutorInterface;
 use Alama\Arazzo\Protocol\Http\Execution\StepOutputExtractor;
+use Alama\Arazzo\Protocol\Http\Plugins\OperationExecutor\HttpStepExecutor;
 use Alama\Arazzo\Protocol\Http\Resolver\OpenApiOperationHandle;
 use Alama\Arazzo\Protocol\Http\Resolver\OpenApiOperationResolver;
-use Alama\Arazzo\Runner\Execution\OperationRuntime;
+use Alama\Arazzo\Runner\Execution\Data\RunnerOptions;
 use Alama\Arazzo\Runner\Sync\ExecutionGraphFactory;
 use Alama\Arazzo\Runner\Sync\WorkflowExecutor;
 use Alama\Arazzo\Tests\Support\FakeResponseValidator;
@@ -81,14 +84,19 @@ function confExecutor(array $workflows, array $responses = []): array
 
     $engine = new EvaluationEngine(expression: new ExpressionEngine());
     $fake = new SequenceOpenApiExecutor($responses);
-
-    $executor = (new ExecutionGraphFactory(
-        new OperationRuntime($documents, $resolver),
-        $engine,
+    $httpPlugin = new HttpStepExecutor(
         $fake,
+        $resolver,
+        $engine,
         new StepOutputExtractor($resolver, $engine, new ExpressionEngine()),
         new FakeResponseValidator(),
-    ))->createWorkflowExecutor();
+    );
+
+    $options = (new RunnerOptions())
+        ->withExecutor($httpPlugin)
+        ->withOperationResolver($resolver);
+
+    $executor = (new ExecutionGraphFactory($documents, $engine, $options))->createWorkflowExecutor();
 
     return [$executor, $fake, $document];
 }
@@ -129,7 +137,7 @@ final class SequenceOpenApiExecutor implements OpenApiExecutorInterface
         $this->queue = $queue;
     }
 
-    public function execute($operation, $payload, ?callable $requestInterceptor = null, ?float $timeoutSeconds = null): ResponseInterface
+    public function execute($operation, $payload, ?callable $requestInterceptor = null, ?float $timeoutSeconds = null, ?SourcePolicy $sourcePolicy = null): ResponseInterface
     {
         $this->calls++;
         $this->payloads[] = $payload;
@@ -154,7 +162,7 @@ describe('conformance: retry semantics', function () {
 
         $result = $executor->execute($workflow, $document, []);
 
-        expect($result->status)->toBe('succeeded')
+        expect($result->status)->toBe(ExecutionStatus::Succeeded)
             ->and($fake->calls)->toBe(2, 'expected 1 initial + 1 retry for a flaky step')
             ->and($result->stepResults)->toHaveKey('fetch');
     });
@@ -174,7 +182,7 @@ describe('conformance: retry semantics', function () {
 
         $result = $executor->execute($workflow, $document, []);
 
-        expect($result->status)->toBe('failed')
+        expect($result->status)->toBe(ExecutionStatus::Failed)
             ->and($fake->calls)->toBe(3, 'expected 1 initial + 2 retries before exhaustion');
     });
 });
@@ -192,7 +200,7 @@ describe('conformance: onSuccess end/goto', function () {
 
         $result = $executor->execute($workflow, $document, []);
 
-        expect($result->status)->toBe('succeeded')
+        expect($result->status)->toBe(ExecutionStatus::Succeeded)
             ->and($fake->calls)->toBe(1, 'onSuccess end must stop after the first step')
             ->and($result->stepResults)->not->toHaveKey('b');
     });
@@ -217,7 +225,7 @@ describe('conformance: onSuccess end/goto', function () {
 
         $result = $executor->execute($workflow, $document, []);
 
-        expect($result->status)->toBe('succeeded')
+        expect($result->status)->toBe(ExecutionStatus::Succeeded)
             ->and($fake->calls)->toBe(3, 'goto target c runs before intermediate b')
             ->and($result->stepResults)->toHaveKey('a')
             ->and($result->stepResults)->toHaveKey('c')
@@ -240,7 +248,7 @@ describe('conformance: onSuccess end/goto', function () {
 
         $result = $executor->execute($workflow, $document, []);
 
-        expect($result->status)->toBe('succeeded')
+        expect($result->status)->toBe(ExecutionStatus::Succeeded)
             ->and($fake->calls)->toBe(2, 'goto skips the intermediate step: exactly 2 requests, not 3')
             ->and($result->stepResults)->toHaveKey('create')
             ->and($result->stepResults)->toHaveKey('fetch')
@@ -261,7 +269,7 @@ describe('conformance: onSuccess end/goto', function () {
 
         $result = $executor->execute($workflow, $document, []);
 
-        expect($result->status)->toBe('succeeded')
+        expect($result->status)->toBe(ExecutionStatus::Succeeded)
             ->and($fake->calls)->toBe(2, 'no HTTP request is sent for the skipped intermediate step')
             ->and($result->stepResults)->toHaveKey('create')
             ->and($result->stepResults)->toHaveKey('fetch')
@@ -285,7 +293,7 @@ describe('conformance: onFailure goto recovery', function () {
 
         $result = $executor->execute($workflow, $document, []);
 
-        expect($result->status)->toBe('succeeded', 'recovery step handles the failure')
+        expect($result->status)->toBe(ExecutionStatus::Succeeded, 'recovery step handles the failure')
             ->and($fake->calls)->toBe(2, 'failing step request + recovery step request are recorded')
             ->and($result->stepResults)->toHaveKey('a')
             ->and($result->stepResults)->toHaveKey('recover');
@@ -306,7 +314,7 @@ describe('conformance: failure short-circuit', function () {
 
         $result = $executor->execute($workflow, $document, []);
 
-        expect($result->status)->toBe('failed')
+        expect($result->status)->toBe(ExecutionStatus::Failed)
             ->and($fake->calls)->toBe(1, 'only the failing step is called')
             ->and($result->stepResults)->toHaveKey('a')
             ->and($result->stepResults)->not->toHaveKey('b');
@@ -327,7 +335,7 @@ describe('conformance: success criteria', function () {
 
         $result = $executor->execute($workflow, $document, []);
 
-        expect($result->status)->toBe('succeeded')
+        expect($result->status)->toBe(ExecutionStatus::Succeeded)
             ->and($fake->calls)->toBe(1);
     });
 
@@ -343,7 +351,7 @@ describe('conformance: success criteria', function () {
 
         $result = $executor->execute($workflow, $document, []);
 
-        expect($result->status)->toBe('failed')
+        expect($result->status)->toBe(ExecutionStatus::Failed)
             ->and($fake->calls)->toBe(1);
     });
 });
@@ -394,7 +402,7 @@ describe('conformance: workflowId child invocation', function () {
 
         $result = $executor->execute($parent, $document, []);
 
-        expect($result->status)->toBe('succeeded')
+        expect($result->status)->toBe(ExecutionStatus::Succeeded)
             ->and($fake->calls)->toBe(1, 'only the child HTTP operation is called')
             ->and($result->stepResults)->toHaveKey('call-child')
             ->and($result->stepResults['call-child']->success)->toBeTrue()
@@ -418,7 +426,7 @@ describe('conformance: $inputs.* in request bodies', function () {
 
         $result = $executor->execute($workflow, $document, ['name' => 'Rex']);
 
-        expect($result->status)->toBe('succeeded')
+        expect($result->status)->toBe(ExecutionStatus::Succeeded)
             ->and($fake->calls)->toBe(1)
             ->and($fake->payloads[0]->body)->toBe(['name' => 'Rex']);
     });
@@ -437,7 +445,7 @@ describe('conformance: $inputs.* in request bodies', function () {
 
         $result = $executor->execute($workflow, $document, ['name' => 'Rex', 'status' => 'sold']);
 
-        expect($result->status)->toBe('succeeded')
+        expect($result->status)->toBe(ExecutionStatus::Succeeded)
             ->and($fake->payloads[0]->body)->toBe(['name' => 'Rex', 'status' => 'sold']);
     });
 
@@ -486,7 +494,7 @@ describe('conformance: $inputs.* in request bodies', function () {
 
         $result = $executor->execute($parent, $document, []);
 
-        expect($result->status)->toBe('succeeded')
+        expect($result->status)->toBe(ExecutionStatus::Succeeded)
             ->and($fake->calls)->toBe(1)
             ->and($fake->payloads[0]->body)->toBe(['name' => 'Rex']);
     });

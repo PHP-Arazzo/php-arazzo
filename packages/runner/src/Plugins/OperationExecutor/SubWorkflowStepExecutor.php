@@ -6,7 +6,6 @@ namespace Alama\Arazzo\Runner\Plugins\OperationExecutor;
 
 use Alama\Arazzo\Contracts\Attributes\AsOperationExecutorPlugin;
 use Alama\Arazzo\Contracts\Interfaces\OperationExecutorPluginInterface;
-use Alama\Arazzo\Contracts\Interfaces\StepProtocolExecutorInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Enum\OperationProtocol;
 use Alama\Arazzo\Contracts\Spec\Expression;
@@ -27,16 +26,8 @@ use Alama\Arazzo\Runner\Sync\WorkflowExecutor;
  * @internal stays out of the advertised contract; not part of the public API surface
  */
 #[AsOperationExecutorPlugin(OperationProtocol::SubWorkflow)]
-final class SubWorkflowStepExecutor implements OperationExecutorPluginInterface, StepProtocolExecutorInterface
+final class SubWorkflowStepExecutor implements OperationExecutorPluginInterface
 {
-    /**
-     * Registry ordering (ascending, first supports() wins). Unlike the HTTP
-     * pair, this is NOT a disjoint claim: a workflowId target with a null
-     * action also satisfies HttpStepExecutor::supports(), so the runner-native
-     * plugin must sort before HttpStepExecutor::PLUGIN_PRIORITY (100).
-     */
-    public const PLUGIN_PRIORITY = 0;
-
     public function __construct(
         private WorkflowExecutor $executor,
         private EvaluationEngineInterface $evaluationEngine,
@@ -49,23 +40,17 @@ final class SubWorkflowStepExecutor implements OperationExecutorPluginInterface,
 
     public function priority(): int
     {
-        return self::PLUGIN_PRIORITY;
+        return 0;
     }
 
     public function supports(Step $step, ArazzoDocument $document): bool
     {
-        return $step->target->workflowId !== null && !in_array($step->target->action, ['send', 'receive'], true);
+        return $step->isSubWorkflow();
     }
 
     public function execute(Step $step, WorkflowContext $context, ArazzoDocument $document, string $executionId): StepExecutionOutcome
     {
-        $target = null;
-        foreach ($document->workflows as $workflow) {
-            if ($workflow->workflowId === $step->target->workflowId) {
-                $target = $workflow;
-                break;
-            }
-        }
+        $target = $document->findWorkflow($step->target->workflowId);
 
         if ($target === null) {
             throw ExecutionException::subWorkflowNotFound((string) $step->target->workflowId);

@@ -7,6 +7,8 @@ namespace Alama\Arazzo\Tests\Evaluation;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
 use Alama\Arazzo\Evaluation\Condition\ConditionEvaluator;
 use Alama\Arazzo\Evaluation\Condition\ConditionSyntaxException;
+use Alama\Arazzo\Evaluation\Condition\ParserInterface;
+use Alama\Arazzo\Evaluation\Interfaces\ConditionNode;
 use Alama\Arazzo\Expression\ExpressionEngine;
 
 function conditionContext(): WorkflowContext
@@ -101,3 +103,28 @@ it('throws on malformed conditions', function (string $condition) {
 it('rejects unbalanced quotes', function () {
     evalCondition('$response.body#/status == \'ok');
 })->throws(ConditionSyntaxException::class);
+
+it('covers lexer expression delimiters, braced expression errors, and nested comparison operands', function () {
+    expect(fn () => evalCondition('{$statusCode'))->toThrow(ConditionSyntaxException::class, "Unterminated '{'");
+    expect(fn () => evalCondition('{notAnExpr}'))->toThrow(ConditionSyntaxException::class, 'Malformed runtime expression');
+    expect(evalCondition('$statusCode&&true'))->toBeTrue();
+    expect(evalCondition('($statusCode == 200) == ($statusCode == 200)'))->toBeTrue();
+
+    $unknownNode = new class() implements ConditionNode {};
+    $stubParser = new class($unknownNode) implements ParserInterface
+    {
+        public function __construct(private ConditionNode $node) {}
+
+        public function parse(string $condition): ConditionNode
+        {
+            return $this->node;
+        }
+    };
+
+    $evaluator = new ConditionEvaluator(
+        ExpressionEngine::create(),
+        parser: $stubParser,
+    );
+    expect(fn () => $evaluator->evaluate('x', new WorkflowContext('def')))
+        ->toThrow(ConditionSyntaxException::class, 'Unsupported condition node');
+});

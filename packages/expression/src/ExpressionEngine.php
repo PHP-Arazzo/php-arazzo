@@ -11,11 +11,11 @@ use Alama\Arazzo\Contracts\Spec\Interfaces\WorkflowContextInterface;
 use Alama\Arazzo\Contracts\Spec\Selector;
 use Alama\Arazzo\Expression\Data\EmbeddedSegment;
 use Alama\Arazzo\Expression\Data\ExpressionReference;
-use Alama\Arazzo\Expression\Data\InterpolationOptions;
 use Alama\Arazzo\Expression\Exceptions\ExpressionSyntaxException;
 use Alama\Arazzo\Expression\Exceptions\SelectorEvaluationException;
 use Alama\Arazzo\Expression\Interfaces\EvaluationInputInterface;
 use Alama\Arazzo\Expression\Interfaces\ExpressionEngineInterface;
+use Alama\Arazzo\Expression\Policy\InterpolationPolicy;
 use Alama\Arazzo\Expression\Registries\SelectorPluginRegistry;
 
 /**
@@ -74,9 +74,9 @@ final readonly class ExpressionEngine implements ExpressionEngineInterface
         return $this->getInterpolator()->interpolate($template, $resolver, $options);
     }
 
-    public function interpolateWithOptions(string $template, callable $resolver, ?InterpolationOptions $options = null): string
+    public function interpolateWithPolicy(string $template, callable $resolver, ?InterpolationPolicy $policy = null): string
     {
-        return $this->getInterpolator()->interpolateWithOptions($template, $resolver, $options);
+        return $this->getInterpolator()->interpolateWithPolicy($template, $resolver, $policy);
     }
 
     public function test(string $raw): bool
@@ -114,11 +114,7 @@ final readonly class ExpressionEngine implements ExpressionEngineInterface
         $plugin = SelectorPluginRegistry::create()->get($type);
 
         if ($plugin === null) {
-            throw new SelectorEvaluationException(
-                "No selector plugin registered for type '{$type->value}'.",
-                '',
-                'selector.no_plugin',
-            );
+            throw SelectorEvaluationException::noPluginRegistered($type->value);
         }
 
         return $plugin->evaluate($data, $expression, $version, $namespaces);

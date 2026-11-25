@@ -6,9 +6,8 @@ namespace Alama\Arazzo\Sources\Normalizer;
 
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
-use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Spec\Step;
-use RuntimeException;
+use Alama\Arazzo\Sources\Exceptions\InvalidSourceReferenceException;
 
 /**
  * Parses operation target references into source name and reference path/id.
@@ -24,13 +23,9 @@ final class SourceReferenceParser
             return false;
         }
 
-        foreach ($document->sourceDescriptions as $source) {
-            if ($source->name === $sourceName) {
-                return $source->type === SourceType::Openapi;
-            }
-        }
+        $source = $document->findSource($sourceName);
 
-        return false;
+        return $source !== null && $source->type === SourceType::Openapi;
     }
 
     public static function resolveSourceName(Step $step, ArazzoDocument $document): ?string
@@ -63,7 +58,7 @@ final class SourceReferenceParser
             return self::parseFromOperationId($opId, $step->stepId, $document);
         }
 
-        throw new RuntimeException("Step '{$step->stepId}' must have either operationId or operationPath.");
+        throw InvalidSourceReferenceException::missingOperationTarget($step->stepId);
     }
 
     /**
@@ -73,7 +68,7 @@ final class SourceReferenceParser
     {
         $parts = explode('#', $opPath, 2);
         if (count($parts) !== 2 || !str_starts_with($parts[0], '{$sourceDescriptions.') || !str_ends_with($parts[0], '.url}')) {
-            throw new RuntimeException("Invalid operationPath format in step '{$stepId}'. Expected {\$sourceDescriptions.NAME.url}#...");
+            throw InvalidSourceReferenceException::invalidOperationPath($stepId);
         }
 
         return [
@@ -91,7 +86,7 @@ final class SourceReferenceParser
         if (str_contains($opId, '#')) {
             $parts = explode('#', $opId, 2);
             if (!str_starts_with($parts[0], '{$sourceDescriptions.') || !str_ends_with($parts[0], '.url}')) {
-                throw new RuntimeException("Invalid operationId format in step '{$stepId}'. Expected {\$sourceDescriptions.NAME.url}#...");
+                throw InvalidSourceReferenceException::invalidOperationId($stepId);
             }
 
             return [
@@ -109,13 +104,13 @@ final class SourceReferenceParser
             ];
         }
 
-        $nonArazzo = array_filter($document->sourceDescriptions, fn (SourceDescription $s) => $s->type !== SourceType::Arazzo);
+        $nonArazzo = $document->nonArazzoSources();
         if (count($nonArazzo) !== 1) {
-            throw new RuntimeException("Plain operationId '{$opId}' used in step '{$stepId}' but there are multiple non-Arazzo sources. Please use source-qualified operationId.");
+            throw InvalidSourceReferenceException::ambiguousPlainOperationId($opId, $stepId);
         }
 
         return [
-            'sourceName' => reset($nonArazzo)->name,
+            'sourceName' => $nonArazzo[0]->name,
             'operationReference' => $opId,
             'isPath' => false,
         ];
@@ -141,9 +136,9 @@ final class SourceReferenceParser
             return $m[1];
         }
 
-        $nonArazzo = array_filter($document->sourceDescriptions, fn (SourceDescription $s) => $s->type !== SourceType::Arazzo);
+        $nonArazzo = $document->nonArazzoSources();
         if (count($nonArazzo) === 1) {
-            return reset($nonArazzo)->name;
+            return $nonArazzo[0]->name;
         }
 
         return null;

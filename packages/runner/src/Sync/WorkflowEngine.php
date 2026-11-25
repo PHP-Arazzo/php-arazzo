@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Runner\Sync;
 
-use Alama\Arazzo\Contracts\Dependency\DependencyGraph;
 use Alama\Arazzo\Contracts\Spec\Action\FailureAction;
 use Alama\Arazzo\Contracts\Spec\Action\FailureEndAction;
 use Alama\Arazzo\Contracts\Spec\Action\FailureGotoAction;
@@ -23,12 +22,10 @@ use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Contracts\State\ExecutionState;
 use Alama\Arazzo\Evaluation\EvaluationEngineInterface;
 use Alama\Arazzo\Expression\Data\EvaluationContext;
+use Alama\Arazzo\Runner\Exceptions\ExecutionError;
+use Alama\Arazzo\Runner\Exceptions\GotoTargetNotFoundException;
+use Alama\Arazzo\Runner\Exceptions\StepBudgetExceededException;
 use Alama\Arazzo\Runner\Execution\Data\Transition;
-use Alama\Arazzo\Runner\Execution\Exceptions\ExecutionError;
-use Alama\Arazzo\Runner\Execution\Exceptions\GotoTargetNotFoundException;
-use Alama\Arazzo\Runner\Execution\Exceptions\StepBudgetExceededException;
-use Alama\Arazzo\Runner\Execution\Exceptions\WorkflowCycleException;
-use Alama\Arazzo\Runner\Execution\Exceptions\WorkflowDepthExceededException;
 use Alama\Arazzo\Runtime\Policy\RetryPolicy;
 use Alama\Arazzo\Runtime\State\Data\ExecutionContext;
 
@@ -39,6 +36,8 @@ use Alama\Arazzo\Runtime\State\Data\ExecutionContext;
 final class WorkflowEngine
 {
     private RetryPolicy $retryPolicy;
+
+    private readonly WorkflowNavigator $navigator;
 
     /**
      * @param  int|RetryPolicy|null  $maxRetryAttempts  Accepts the legacy int ceiling,
@@ -55,6 +54,7 @@ final class WorkflowEngine
         $this->retryPolicy = $maxRetryAttempts instanceof RetryPolicy
             ? $maxRetryAttempts
             : new RetryPolicy(maxAttempts: $maxRetryAttempts ?? 10, backoffMultiplier: $retryBackoffMultiplier);
+        $this->navigator = new WorkflowNavigator();
     }
 
     /**
@@ -71,250 +71,13 @@ final class WorkflowEngine
             return Transition::suspend($state->withCurrentStep($step->stepId));
         }
         if ($state->stepsSpent >= $state->maxSteps) {
-            throw new StepBudgetExceededException("Execution '{$state->executionId}' exceeded its {$state->maxSteps}-step budget.");
+            throw StepBudgetExceededException::exceeded($state->executionId, $state->maxSteps);
         }
 
-        $state = $state->spendStep()->withCurrentStep($step->stepId);
-        $record = self::stepRecord($state->stepResults[$step->stepId] ?? null);
-        $record['status'] = $criteriaMet ? StepStatus::Succeeded->value : StepStatus::Failed->value;
-        $state = $state->withStepResult($step->stepId, $record);
-        $actions = $this->actions($document, $workflow, $step, $criteriaMet);
-        foreach ($actions as $action) {
-            $criteriaResults = $this->evaluationEngine->evaluateCriteria($action->criteria, $step, $state->toContext(), $document);
-            if (!$criteriaResults->criteriaMet()) {
-                continue;
-            }
-            $this->assertActionTargetExclusive($action);
-            if ($action instanceof RetryAction) {
-                $attemptsSoFar = $state->attemptFor($step->stepId);
-                if ($this->retryPolicy->isExhausted($attemptsSoFar, $action->retryLimit)) {
-                    // Observable exhaustion marker; adapters may surface it.
-                    $state = $state->withErrorEntry([
-                        'type' => 'retry_exhausted',
-                        'stepId' => $step->stepId,
-                        'attempts' => $attemptsSoFar,
-                    ]);
+        $state = $this->recordAttemptOutcome($state, $step, $criteriaMet);
+        [$matched, $state] = $this->evaluateActions($document, $workflow, $step, $state, $criteriaMet);
 
-                    continue; // exhausted - fall through to later actions
-                }
-                $targetWorkflowId = $action->workflowId ?? $workflow->workflowId;
-                $targetStepId = $action->stepId ?? $step->stepId;
-                $this->target($document, $targetWorkflowId, $targetStepId);
-                $next = $state->withStepAttempt($step->stepId)->withWorkflow($targetWorkflowId)->withCurrentStep($targetStepId);
-
-                return Transition::retry($next, $targetStepId, $this->retryPolicy->calculateDelay($action, $step, $state->toContext(), $attemptsSoFar + 1), $targetWorkflowId);
-            }
-            if ($action instanceof SuccessGotoAction || $action instanceof FailureGotoAction) {
-                $targetWorkflowId = $action->workflowId ?? $workflow->workflowId;
-                if ($this->findWorkflow($document, $targetWorkflowId) === null) {
-                    throw new GotoTargetNotFoundException("Goto action '{$action->name}' references unknown workflowId '{$targetWorkflowId}'.");
-                }
-                if ($action->stepId !== null) {
-                    $this->target($document, $targetWorkflowId, $action->stepId);
-                }
-
-                $gotoState = $state->withWorkflow($targetWorkflowId)->withCurrentStep($action->stepId);
-
-                // Steps topologically between the goto source and target are
-                // skipped: no further transition (and no side effect) targets
-                // them while this goto set is active.
-                $skipped = $this->stepsBetween($workflow, $step->stepId, $action->stepId);
-                $gotoState = $gotoState->withSkippedSteps($skipped);
-
-                // 1.1: goto parameters bind values into the target workflow input scope.
-                foreach ($action->parameters as $parameter) {
-                    if ($parameter instanceof Reusable) {
-                        continue; // component defaults resolve inside the target scope
-                    }
-
-                    $value = $parameter->value instanceof Expression
-                        ? $this->evaluationEngine->evaluate($parameter->value, new EvaluationContext($gotoState->toContext(), $step->stepId))
-                        : $parameter->value;
-
-                    $inputs = $gotoState->inputs;
-                    $inputs[$parameter->name] = $value;
-                    /** @var ExecutionState $gotoState */
-                    $gotoState = $gotoState->withInputs($inputs);
-                }
-
-                return Transition::goto($gotoState, $action->stepId, $targetWorkflowId);
-            }
-            if ($action instanceof SuccessEndAction || $action instanceof FailureEndAction) {
-                return Transition::end($state, $action instanceof SuccessEndAction ? 'succeeded' : 'failed');
-            }
-            if ($action instanceof SubWorkflowSuccessAction || $action instanceof SubWorkflowFailureAction) {
-                $this->assertCanEnter($state, $action->workflowId);
-
-                // Invocation is deliberately represented as a transition. An adapter can run
-                // the nested engine using the shared budget and stack before resuming here.
-                return Transition::invoke($state, $action->workflowId);
-            }
-        }
-
-        if (!$criteriaMet) {
-            return Transition::end($state, 'failed');
-        }
-        $next = $this->nextRunnable($workflow, $state, $step->stepId);
-
-        return $next === null ? Transition::end($state, 'succeeded') : Transition::next($state->withCurrentStep($next), $next);
-    }
-
-    /** @return list<SuccessAction|FailureAction> */
-    private function actions(ArazzoDocument $document, Workflow $workflow, Step $step, bool $criteriaMet): array
-    {
-        $actions = $criteriaMet ? $step->flow->onSuccess : $step->flow->onFailure;
-        $actions = $actions !== [] ? $actions : ($criteriaMet ? $workflow->successActions : $workflow->failureActions);
-        $type = $criteriaMet ? 'successActions' : 'failureActions';
-
-        return array_map(function (SuccessAction|FailureAction|Reusable $action) use ($document, $type): SuccessAction|FailureAction {
-            if (!$action instanceof Reusable) {
-                return $action;
-            }
-            $prefix = "\$components.{$type}.";
-            if (!str_starts_with($action->reference, $prefix)) {
-                throw new GotoTargetNotFoundException("Reusable reference '{$action->reference}' does not target components.{$type}.");
-            }
-            $name = substr($action->reference, strlen($prefix));
-            $resolved = $type === 'successActions' ? ($document->components->successActions[$name] ?? null) : ($document->components->failureActions[$name] ?? null);
-            if ($resolved === null) {
-                throw new GotoTargetNotFoundException("Reusable reference '{$action->reference}' does not resolve.");
-            }
-
-            return $resolved;
-        }, $actions);
-    }
-
-    /** @return array{0: Workflow, 1: Step} */
-    private function target(ArazzoDocument $document, string $workflowId, string $stepId): array
-    {
-        foreach ($document->workflows as $workflow) {
-            if ($workflow->workflowId !== $workflowId) {
-                continue;
-            }
-            foreach ($workflow->steps as $step) {
-                if ($step->stepId === $stepId) {
-                    return [$workflow, $step];
-                }
-            }
-            break;
-        }
-        throw new GotoTargetNotFoundException("Action references unknown stepId '{$stepId}' in workflow '{$workflowId}'.");
-    }
-
-    private function findWorkflow(ArazzoDocument $document, string $workflowId): ?Workflow
-    {
-        foreach ($document->workflows as $workflow) {
-            if ($workflow->workflowId === $workflowId) {
-                return $workflow;
-            }
-        }
-
-        return null;
-    }
-
-    private function assertCanEnter(ExecutionState $state, string $workflowId): void
-    {
-        if (in_array($workflowId, $state->workflowCallStack, true)) {
-            throw new WorkflowCycleException("Workflow '{$workflowId}' is already on the execution call stack.");
-        }
-        if (count($state->workflowCallStack) >= $state->maxWorkflowDepth) {
-            throw new WorkflowDepthExceededException("Execution exceeded workflow depth {$state->maxWorkflowDepth}.");
-        }
-    }
-
-    private function assertActionTargetExclusive(mixed $action): void
-    {
-        if (!($action instanceof SuccessGotoAction || $action instanceof FailureGotoAction || $action instanceof RetryAction)) {
-            return;
-        }
-        if ($action->stepId !== null && $action->workflowId !== null) {
-            throw new ExecutionError(
-                "Action '{$action->name}' declares both stepId and workflowId; they are mutually exclusive.",
-                '',
-                'ambiguous-target',
-            );
-        }
-    }
-
-    /**
-     * @return list<string>
-     */
-    private function stepsBetween(Workflow $workflow, ?string $source, ?string $target): array
-    {
-        if ($source === null || $target === null || $source === $target) {
-            return [];
-        }
-
-        $graph = new DependencyGraph($workflow->steps);
-        $order = $graph->getTopologicalOrder();
-
-        $sourceIndex = $this->indexOf($order, $source);
-        $targetIndex = $this->indexOf($order, $target);
-
-        if ($sourceIndex === null || $targetIndex === null) {
-            return [];
-        }
-
-        // Only forward jumps (target after source) skip the steps in between.
-        if ($targetIndex <= $sourceIndex) {
-            return [];
-        }
-
-        return array_values(array_slice($order, $sourceIndex + 1, $targetIndex - $sourceIndex - 1));
-    }
-
-    /**
-     * @param  array<string>  $haystack
-     */
-    private function indexOf(array $haystack, string $needle): ?int
-    {
-        foreach ($haystack as $index => $value) {
-            if ($value === $needle) {
-                return $index;
-            }
-        }
-
-        return null;
-    }
-
-    private function nextRunnable(Workflow $workflow, ExecutionState $state, string $completed): ?string
-    {
-        $graph = new DependencyGraph($workflow->steps);
-
-        foreach ($graph->getTopologicalOrder() as $candidateId) {
-            if ($candidateId === $completed || isset($state->stepResults[$candidateId])) {
-                continue;
-            }
-            if (in_array($candidateId, $state->getSkippedSteps(), true)) {
-                continue;
-            }
-
-            foreach ($graph->getEffectiveDependencies($candidateId) as $dependency) {
-                if (!isset($state->stepResults[$dependency])) {
-                    continue 2;
-                }
-            }
-
-            return $candidateId;
-        }
-
-        return null;
-    }
-
-    /**
-     * Persisted step results are name-to-value maps. Non-array entries are
-     * dropped and non-string keys filtered so the result matches the typed
-     * seam the record is handed to.
-     *
-     * @return array<string, mixed>
-     */
-    private static function stepRecord(mixed $record): array
-    {
-        if (!is_array($record)) {
-            return [];
-        }
-
-        return array_filter($record, static fn (mixed $key): bool => is_string($key), ARRAY_FILTER_USE_KEY);
+        return $matched ?? $this->fallbackTransition($workflow, $step, $state, $criteriaMet);
     }
 
     /**
@@ -326,12 +89,11 @@ final class WorkflowEngine
      */
     public function evaluateWorkflowOutputs(Workflow $workflow, ExecutionState|ExecutionContext $state): array
     {
-        if ($workflow->outputs === []) {
+        if ($workflow->outputs->isEmpty()) {
             return [];
         }
 
         $context = $state instanceof ExecutionContext ? $state->toWorkflowContext() : $state->toContext();
-
         $outputs = [];
 
         foreach ($workflow->outputs as $name => $expression) {
@@ -354,6 +116,193 @@ final class WorkflowEngine
      */
     public function nextRunnableStep(Workflow $workflow, ExecutionState $state, ?string $completed): ?string
     {
-        return $this->nextRunnable($workflow, $state, $completed ?? '');
+        return $this->navigator->nextRunnable($workflow, $state, $completed ?? '');
+    }
+
+    private function recordAttemptOutcome(ExecutionState $state, Step $step, bool $criteriaMet): ExecutionState
+    {
+        $state = $state->spendStep()->withCurrentStep($step->stepId);
+        $record = self::stepRecord($state->stepResults[$step->stepId] ?? null);
+        $record['status'] = $criteriaMet ? StepStatus::Succeeded->value : StepStatus::Failed->value;
+
+        return $state->withStepResult($step->stepId, $record);
+    }
+
+    /**
+     * @return array{0: ?Transition, 1: ExecutionState}
+     */
+    private function evaluateActions(
+        ArazzoDocument $document,
+        Workflow $workflow,
+        Step $step,
+        ExecutionState $state,
+        bool $criteriaMet,
+    ): array {
+        foreach ($this->navigator->resolveActions($document, $workflow, $step, $criteriaMet) as $action) {
+            $criteriaResults = $this->evaluationEngine->evaluateCriteria($action->criteria, $step, $state->toContext(), $document);
+            if (!$criteriaResults->criteriaMet()) {
+                continue;
+            }
+
+            $this->assertActionTargetExclusive($action);
+            [$transition, $state] = $this->applyAction($document, $workflow, $step, $state, $action);
+            if ($transition !== null) {
+                return [$transition, $state];
+            }
+        }
+
+        return [null, $state];
+    }
+
+    /**
+     * @return array{0: ?Transition, 1: ExecutionState}
+     */
+    private function applyAction(
+        ArazzoDocument $document,
+        Workflow $workflow,
+        Step $step,
+        ExecutionState $state,
+        SuccessAction|FailureAction $action,
+    ): array {
+        if ($action instanceof RetryAction) {
+            return $this->applyRetry($document, $workflow, $step, $state, $action);
+        }
+        if ($action instanceof SuccessGotoAction || $action instanceof FailureGotoAction) {
+            return [$this->applyGoto($document, $workflow, $step, $state, $action), $state];
+        }
+        if ($action instanceof SuccessEndAction || $action instanceof FailureEndAction) {
+            return [Transition::end($state, $action instanceof SuccessEndAction ? 'succeeded' : 'failed'), $state];
+        }
+        if ($action instanceof SubWorkflowSuccessAction || $action instanceof SubWorkflowFailureAction) {
+            $this->navigator->assertCanEnter($state, $action->workflowId);
+
+            // Invocation is deliberately represented as a transition. An adapter can run
+            // the nested engine using the shared budget and stack before resuming here.
+            return [Transition::invoke($state, $action->workflowId), $state];
+        }
+
+        return [null, $state];
+    }
+
+    /**
+     * @return array{0: ?Transition, 1: ExecutionState}
+     */
+    private function applyRetry(
+        ArazzoDocument $document,
+        Workflow $workflow,
+        Step $step,
+        ExecutionState $state,
+        RetryAction $action,
+    ): array {
+        $attemptsSoFar = $state->attemptFor($step->stepId);
+        if ($this->retryPolicy->isExhausted($attemptsSoFar, $action->retryLimit)) {
+            // Observable exhaustion marker; adapters may surface it.
+            $nextState = $state->withErrorEntry([
+                'type' => 'retry_exhausted',
+                'stepId' => $step->stepId,
+                'attempts' => $attemptsSoFar,
+            ]);
+
+            return [null, $nextState];
+        }
+
+        $targetWorkflowId = $action->workflowId ?? $workflow->workflowId;
+        $targetStepId = $action->stepId ?? $step->stepId;
+        $this->navigator->assertTargetExists($document, $targetWorkflowId, $targetStepId);
+
+        $next = $state->withStepAttempt($step->stepId)->withWorkflow($targetWorkflowId)->withCurrentStep($targetStepId);
+        $delay = $this->retryPolicy->calculateDelay($action, $step, $state->toContext(), $attemptsSoFar + 1);
+
+        return [Transition::retry($next, $targetStepId, $delay, $targetWorkflowId), $next];
+    }
+
+    private function applyGoto(
+        ArazzoDocument $document,
+        Workflow $workflow,
+        Step $step,
+        ExecutionState $state,
+        SuccessGotoAction|FailureGotoAction $action,
+    ): Transition {
+        $targetWorkflowId = $action->workflowId ?? $workflow->workflowId;
+        if ($document->findWorkflow($targetWorkflowId) === null) {
+            throw GotoTargetNotFoundException::unknownWorkflow($action->name, $targetWorkflowId);
+        }
+        if ($action->stepId !== null) {
+            $this->navigator->assertTargetExists($document, $targetWorkflowId, $action->stepId);
+        }
+
+        // Steps topologically between the goto source and target are skipped:
+        // no further transition (and no side effect) targets them while active.
+        $skipped = $this->navigator->stepsBetween($workflow, $step->stepId, $action->stepId);
+        $gotoState = $state
+            ->withWorkflow($targetWorkflowId)
+            ->withCurrentStep($action->stepId)
+            ->withSkippedSteps($skipped);
+
+        $gotoState = $this->bindGotoParameters($action, $step, $gotoState);
+
+        return Transition::goto($gotoState, $action->stepId, $targetWorkflowId);
+    }
+
+    private function bindGotoParameters(
+        SuccessGotoAction|FailureGotoAction $action,
+        Step $step,
+        ExecutionState $gotoState,
+    ): ExecutionState {
+        // 1.1: goto parameters bind values into the target workflow input scope.
+        foreach ($action->parameters as $parameter) {
+            if ($parameter instanceof Reusable) {
+                continue; // component defaults resolve inside the target scope
+            }
+
+            $value = $parameter->value instanceof Expression
+                ? $this->evaluationEngine->evaluate($parameter->value, new EvaluationContext($gotoState->toContext(), $step->stepId))
+                : $parameter->value;
+
+            $inputs = $gotoState->inputs;
+            $inputs[$parameter->name] = $value;
+            $gotoState = $gotoState->withInputs($inputs);
+        }
+
+        return $gotoState;
+    }
+
+    private function fallbackTransition(Workflow $workflow, Step $step, ExecutionState $state, bool $criteriaMet): Transition
+    {
+        if (!$criteriaMet) {
+            return Transition::end($state, 'failed');
+        }
+
+        $next = $this->navigator->nextRunnable($workflow, $state, $step->stepId);
+
+        return $next === null
+            ? Transition::end($state, 'succeeded')
+            : Transition::next($state->withCurrentStep($next), $next);
+    }
+
+    private function assertActionTargetExclusive(mixed $action): void
+    {
+        if (!($action instanceof SuccessGotoAction || $action instanceof FailureGotoAction || $action instanceof RetryAction)) {
+            return;
+        }
+        if ($action->stepId !== null && $action->workflowId !== null) {
+            throw ExecutionError::ambiguousActionTarget($action->name);
+        }
+    }
+
+    /**
+     * Persisted step results are name-to-value maps. Non-array entries are
+     * dropped and non-string keys filtered so the result matches the typed
+     * seam the record is handed to.
+     *
+     * @return array<string, mixed>
+     */
+    private static function stepRecord(mixed $record): array
+    {
+        if (!is_array($record)) {
+            return [];
+        }
+
+        return array_filter($record, static fn (mixed $key): bool => is_string($key), ARRAY_FILTER_USE_KEY);
     }
 }

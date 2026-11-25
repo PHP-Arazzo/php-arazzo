@@ -20,13 +20,6 @@ use Alama\Arazzo\Evaluation\Interfaces\ConditionNode;
  */
 final class Parser implements ParserInterface
 {
-    private const array TERMINAL_KINDS = [
-        TokenKind::Number,
-        TokenKind::String,
-        TokenKind::Ident,
-        TokenKind::Expr,
-    ];
-
     private Lexer $lexer;
 
     /** @var list<Token> */
@@ -45,14 +38,14 @@ final class Parser implements ParserInterface
         $this->position = 0;
 
         if ($this->tokens === []) {
-            throw new ConditionSyntaxException('Condition is empty.');
+            throw ConditionSyntaxException::emptyCondition();
         }
 
         $ast = $this->parseOr();
 
         $trailing = $this->peek();
         if ($trailing !== null) {
-            throw new ConditionSyntaxException("Unexpected trailing input in condition near '{$trailing->value}'.");
+            throw ConditionSyntaxException::unexpectedTrailing($trailing->value);
         }
 
         return $ast;
@@ -119,18 +112,18 @@ final class Parser implements ParserInterface
 
         $token = $this->peek();
         if ($token === null) {
-            throw new ConditionSyntaxException('Unexpected end of condition.');
+            throw ConditionSyntaxException::unexpectedEnd();
         }
 
-        if ($token->kind === TokenKind::LParen) {
+        if ($token->isKind(TokenKind::LParen)) {
             return $this->parseGroup();
         }
 
-        if (in_array($token->kind, self::TERMINAL_KINDS, true)) {
+        if ($token->isTerminal()) {
             return $this->parseTerminal();
         }
 
-        throw new ConditionSyntaxException("Unexpected '{$token->value}' in condition.");
+        throw ConditionSyntaxException::unexpectedToken($token->value);
     }
 
     private function parseTerminal(): Literal|RuntimeExpr
@@ -145,8 +138,8 @@ final class Parser implements ParserInterface
         };
 
         $next = $this->peek();
-        if ($next !== null && in_array($next->kind, self::TERMINAL_KINDS, true)) {
-            throw new ConditionSyntaxException("Unexpected operand '{$next->value}' in condition.");
+        if ($next !== null && $next->isTerminal()) {
+            throw ConditionSyntaxException::unexpectedOperand($next->value);
         }
 
         return $node;
@@ -176,7 +169,7 @@ final class Parser implements ParserInterface
             'true' => true,
             'false' => false,
             'null' => null,
-            default => throw new ConditionSyntaxException("Unknown identifier '{$token->value}' in condition; expected a runtime expression or literal."),
+            default => throw ConditionSyntaxException::unknownIdentifier($token->value),
         };
 
         return new Literal($value);
@@ -188,8 +181,8 @@ final class Parser implements ParserInterface
         $inner = $this->parseOr();
 
         $closing = $this->peek();
-        if ($closing === null || $closing->kind !== TokenKind::RParen) {
-            throw new ConditionSyntaxException("Expected closing parenthesis in condition near '{$closing?->value}'.");
+        if ($closing === null || !$closing->isKind(TokenKind::RParen)) {
+            throw ConditionSyntaxException::expectedClosingParen($closing?->value);
         }
         $this->advance();
 
@@ -200,7 +193,7 @@ final class Parser implements ParserInterface
     {
         $token = $this->peek();
 
-        return $token !== null && $token->kind === $kind;
+        return $token !== null && $token->isKind($kind);
     }
 
     private function peek(): ?Token
@@ -211,7 +204,7 @@ final class Parser implements ParserInterface
     private function advance(): Token
     {
         $token = $this->tokens[$this->position]
-            ?? throw new ConditionSyntaxException('Unexpected end of condition.');
+            ?? throw ConditionSyntaxException::unexpectedEnd();
 
         $this->position++;
 

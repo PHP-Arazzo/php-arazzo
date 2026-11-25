@@ -7,7 +7,7 @@ namespace Alama\Arazzo\Engine\Execution;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Parameter;
 use Alama\Arazzo\Contracts\Spec\Reusable;
-use RuntimeException;
+use Alama\Arazzo\Engine\Exceptions\ParameterResolutionException;
 
 /**
  * Substitutes reusable parameter references ({reference: $components.parameters.x})
@@ -19,8 +19,8 @@ use RuntimeException;
 final class ReusableParameterResolver
 {
     /**
-     * @param  list<Parameter|Reusable>  $parameters
-     * @return list<Parameter>
+     * @param  array<Parameter|Reusable>  $parameters
+     * @return array<Parameter>
      */
     public function resolve(array $parameters, ?ArazzoDocument $document): array
     {
@@ -34,9 +34,7 @@ final class ReusableParameterResolver
             $component = $parameter->getParamterComponent($document);
 
             if ($component === null) {
-                throw new RuntimeException(
-                    "Unresolvable reusable parameter reference '{$parameter->reference}'.",
-                );
+                throw ParameterResolutionException::unresolvableReference($parameter->reference);
             }
 
             // A value supplied alongside the reference overrides the component default.

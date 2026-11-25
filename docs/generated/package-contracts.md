@@ -27,9 +27,7 @@ public contract between packages.
 
 - `AiClientInterface` (`interface`)
   - `public function generate(string $systemPrompt, string $userPrompt): string;`
-- `StepProtocolExecutorInterface` (`interface`)
-  - `public function supports(Step $step, ArazzoDocument $document): bool;`
-  - `public function execute(Step $step, WorkflowContext $context, ArazzoDocument $document, string $executionId): StepExecutionOutcome;`
+- `StepProtocolExecutorInterface` — _not found in scan_
 - `QueueDriverInterface` (`interface`)
   - `public function dispatch(object $job, int $delaySeconds = 0): void;`
 - `LockManagerInterface` (`interface`)
@@ -48,6 +46,16 @@ public contract between packages.
   - `public function getWorkflows(): array;`
   - `public function getStepStatus(string $stepId): ?StepStatus;`
   - `public function getWorkflowId(): ?string;`
+  - `public function hasStep(string $stepId): bool;`
+  - `public function hasExecutedSteps(): bool;`
+  - `public function getStepRecord(string $stepId): ?array;`
+  - `public function getStepOutputs(string $stepId): array;`
+  - `public function getStepResponse(string $stepId): ?array;`
+  - `public function getStepRequest(string $stepId): ?array;`
+  - `public function getStepInputs(string $stepId): array;`
+  - `public function getStepStatusCode(string $stepId): ?int;`
+  - `public function getInput(string $name): mixed;`
+  - `public function hasInput(string $name): bool;`
 
 ### Cross-boundary value types
 
@@ -90,7 +98,7 @@ public contract between packages.
   - `public function extract(string $template): array;`
   - `public function parseEmbedded(string $raw, SpecVersion $version = SpecVersion::V1_0): array;`
   - `public function interpolate(string $template, callable $resolver, array $options = []): string;`
-  - `public function interpolateWithOptions(string $template, callable $resolver, ?InterpolationOptions $options = null): string;`
+  - `public function interpolateWithPolicy(string $template, callable $resolver, ?InterpolationPolicy $policy = null): string;`
   - `public function test(string $raw): bool;`
   - `public function evaluate(Expression $expression, EvaluationInputInterface $context): mixed;`
   - `public function evaluateSelector(Selector $selector, WorkflowContextInterface $context, string $stepId): mixed;`
@@ -275,9 +283,7 @@ public contract between packages.
 
 ### Public entry surface
 
-- `RunnerFacadeInterface` (`interface`)
-  - `public function run(ArazzoDocument $document, string $workflowId, array $inputs = []): array;`
-  - `public function execute(ArazzoDocument $document, string $workflowId, array $inputs = []): array;`
+- `RunnerFacadeInterface` — _not found in scan_
 
 ### Cross-boundary value types
 
@@ -292,10 +298,10 @@ _None — the entry surface exchanges plain arrays._
 - `PendingCorrelationRegistryInterface` — _not found in scan_
 - `InMemoryStateStore` — _not found in scan_
 - `FileStateStore` — _not found in scan_
-- `EventLedgerInterface` — `@internal`: yes
+- `EventLedgerInterface` — _not found in scan_
 - `HttpClientInterface` — _not found in scan_
-- `ProtocolExecutorRegistryInterface` — `@internal`: yes
-- `OpenApiExecutorInterface` — `@internal`: yes
+- `ProtocolExecutorRegistryInterface` — _not found in scan_
+- `OpenApiExecutorInterface` — _not found in scan_
 - `PessimisticLockStrategy` — _not found in scan_
 - `NullLockStrategy` — _not found in scan_
 - `FileLockStrategy` — _not found in scan_
@@ -327,7 +333,7 @@ _None — the entry surface exchanges plain arrays._
 - `Application` (`class`)
   - `public function __construct()`
 - `RunCommand` (`class`)
-  - `public function __construct(private readonly ?RunnerFacadeInterface $runner = null, private readonly ?DocumentInterface $document = null)`
+  - `public function __construct(private readonly ?RunnerInterface $runner = null, private readonly ?DocumentInterface $document = null)`
 - `ValidateCommand` (`class`)
 - `ListWorkflowsCommand` (`class`)
 - `ExplainCommand` (`class`)
@@ -345,6 +351,6 @@ _None — the entry surface exchanges plain arrays._
 - `DocumentLoader` — _not found in scan_
 - `CliRunner` — `@internal`: yes
 - `CliRunResult` — `@internal`: yes
-- `NullEventLedger` — `@internal`: yes
-- `InProcessExecutionRegistry` — `@internal`: yes
+- `NullEventLedger` — _not found in scan_
+- `InProcessExecutionRegistry` — _not found in scan_
 

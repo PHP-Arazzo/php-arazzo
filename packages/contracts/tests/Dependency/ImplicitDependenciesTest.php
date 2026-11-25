@@ -7,12 +7,14 @@ namespace Alama\Arazzo\Tests\Evaluation;
 use Alama\Arazzo\Contracts\Dependency\DependencyAnalyzer;
 use Alama\Arazzo\Contracts\Dependency\DependencyGraph;
 use Alama\Arazzo\Contracts\Dependency\ImplicitDependencies;
+use Alama\Arazzo\Contracts\Spec\Enum\ExpressionType;
 use Alama\Arazzo\Contracts\Spec\Enum\ParameterIn;
 use Alama\Arazzo\Contracts\Spec\Enum\StepStatus;
 use Alama\Arazzo\Contracts\Spec\Expression;
 use Alama\Arazzo\Contracts\Spec\Parameter;
 use Alama\Arazzo\Contracts\Spec\PayloadReplacement;
 use Alama\Arazzo\Contracts\Spec\RequestBody;
+use Alama\Arazzo\Contracts\Spec\Selector;
 use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Contracts\Spec\StepTarget;
 use Alama\Arazzo\Contracts\Spec\SuccessCriterion;
@@ -112,4 +114,12 @@ it('ignores non-output step references like request or response parts', function
     ]);
 
     expect(ImplicitDependencies::fromStep($step))->toBe([]);
+});
+
+it('extracts implicit dependencies from Selector outputs', function (): void {
+    $step = Fx::step('d', 'op', outputs: [
+        'item' => new Selector('$steps.fetch.outputs.items', '$.id', ExpressionType::JsonPath),
+    ]);
+
+    expect(ImplicitDependencies::fromStep($step))->toBe(['fetch']);
 });

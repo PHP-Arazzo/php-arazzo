@@ -12,7 +12,6 @@ use Alama\Arazzo\Contracts\Interfaces\QueueDriverInterface;
 use Alama\Arazzo\Contracts\Interfaces\ReplacementTargetResolverInterface;
 use Alama\Arazzo\Contracts\Interfaces\ResponseTransferInterface;
 use Alama\Arazzo\Contracts\Interfaces\SourceNormalizerInterface;
-use Alama\Arazzo\Contracts\Interfaces\StepProtocolExecutorInterface;
 
 it('declares the shared contracts consumers rely on')
     ->expect(interface_exists(BackoffCalculatorInterface::class))
@@ -20,8 +19,6 @@ it('declares the shared contracts consumers rely on')
     ->and(interface_exists(AiClientInterface::class))
     ->toBeTrue()
     ->and(interface_exists(QueueDriverInterface::class))
-    ->toBeTrue()
-    ->and(interface_exists(StepProtocolExecutorInterface::class))
     ->toBeTrue();
 
 it('declares the plugin base faces')

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Contracts\State;
 
+use Alama\Arazzo\Contracts\Policy\SourcePolicy;
 use Alama\Arazzo\Contracts\Spec\Enum\StepStatus;
 use Alama\Arazzo\Contracts\Spec\Interfaces\WorkflowContextInterface;
 use Alama\Arazzo\Contracts\Spec\Workflow;
@@ -32,6 +33,7 @@ final readonly class WorkflowContext implements WorkflowContextInterface
         /** @var list<string> */
         private array $skippedSteps = [],
         public ?string $parentRunId = null,
+        private ?SourcePolicy $activeSourcePolicy = null,
     ) {
         $this->executionId = $executionId ?? uniqid('run_', true);
     }
@@ -75,32 +77,7 @@ final readonly class WorkflowContext implements WorkflowContextInterface
      */
     public static function fromPersisted(array $persisted, string $executionId): self
     {
-        $definitionId = is_string($persisted['definitionId'] ?? null) ? $persisted['definitionId'] : '';
-        $workflowId = is_string($persisted['workflowId'] ?? null) ? $persisted['workflowId'] : '';
-
-        /** @var array<string, mixed> $inputs */
-        $inputs = is_array($persisted['inputs'] ?? null) ? $persisted['inputs'] : [];
-
-        /** @var array<string, array<string, mixed>> $steps */
-        $steps = is_array($persisted['steps'] ?? null) ? $persisted['steps'] : [];
-
-        /** @var array<string, mixed> $components */
-        $components = is_array($persisted['components'] ?? null) ? $persisted['components'] : [];
-        /** @var list<string> $skippedSteps */
-        $skippedSteps = is_array($persisted['skippedSteps'] ?? null) ? $persisted['skippedSteps'] : [];
-
-        $context = new self($definitionId, $inputs, $steps, $components, $workflowId, $executionId, workflows: WorkflowDataMap::from($persisted['workflows'] ?? null), skippedSteps: $skippedSteps);
-
-        if (array_key_exists('stepsSpent', $persisted) || array_key_exists('workflowCallStack', $persisted)) {
-            $stack = is_array($persisted['workflowCallStack'] ?? null) ? $persisted['workflowCallStack'] : [];
-
-            $context = $context->withBudget(
-                is_int($persisted['stepsSpent'] ?? null) ? $persisted['stepsSpent'] : 0,
-                array_values(array_filter($stack, 'is_string')),
-            );
-        }
-
-        return $context;
+        return WorkflowContextHydrator::fromPersisted($persisted, $executionId);
     }
 
     /**
@@ -112,44 +89,7 @@ final readonly class WorkflowContext implements WorkflowContextInterface
      */
     public static function reconciled(self $incoming, array $persisted, string $executionId): self
     {
-        /** @var array<string, array<string, mixed>> $persistedSteps */
-        $persistedSteps = is_array($persisted['steps'] ?? null) ? $persisted['steps'] : [];
-
-        /** @var array<string, array<string, mixed>> $mergedSteps */
-        $mergedSteps = array_merge($incoming->getSteps(), $persistedSteps);
-
-        $persistedWorkflows = WorkflowDataMap::from($persisted['workflows'] ?? null);
-
-        /** @var list<string> $skippedSteps */
-        $skippedSteps = $persisted['skippedSteps'] ?? $incoming->getSkippedSteps();
-
-        $restored = new self(
-            $incoming->getDefinitionId(),
-            $incoming->getInputs(),
-            $mergedSteps,
-            $incoming->getComponents(),
-            $incoming->getWorkflowId(),
-            $executionId,
-            workflows: $incoming->getWorkflows(),
-            skippedSteps: $skippedSteps,
-        );
-
-        if (array_key_exists('stepsSpent', $persisted) || array_key_exists('workflowCallStack', $persisted)) {
-            $stack = is_array($persisted['workflowCallStack'] ?? null) ? $persisted['workflowCallStack'] : [];
-
-            $restored = $restored->withBudget(
-                is_int($persisted['stepsSpent'] ?? null) ? $persisted['stepsSpent'] : 0,
-                array_values(array_filter($stack, 'is_string')),
-            );
-        }
-
-        // Persisted workflow outputs are newer than anything the incoming
-        // job carried, so they win per workflow without dropping untouched ones.
-        foreach ($persistedWorkflows as $workflowId => $data) {
-            $restored = $restored->withWorkflowData($workflowId, $data);
-        }
-
-        return $restored;
+        return WorkflowContextHydrator::reconciled($incoming, $persisted, $executionId);
     }
 
     /**
@@ -437,5 +377,167 @@ final readonly class WorkflowContext implements WorkflowContextInterface
             parentRunId: $this->parentRunId,
             skippedSteps: $skippedSteps,
         );
+    }
+
+    /**
+     * Transient per-step source policy resolved by the runner for the active step.
+     * Deliberately excluded from {@see self::toArray()} so source credentials are
+     * never serialized into persisted hot state.
+     */
+    public function getActiveSourcePolicy(): ?SourcePolicy
+    {
+        return $this->activeSourcePolicy;
+    }
+
+    public function withActiveSourcePolicy(?SourcePolicy $policy): self
+    {
+        return new self(
+            $this->definitionId,
+            $this->inputs,
+            $this->steps,
+            $this->components,
+            $this->workflowId,
+            $this->executionId,
+            workflows: $this->workflows,
+            stepsSpent: $this->stepsSpent,
+            workflowCallStack: $this->workflowCallStack,
+            skippedSteps: $this->skippedSteps,
+            parentRunId: $this->parentRunId,
+            activeSourcePolicy: $policy,
+        );
+    }
+
+    public function hasStep(string $stepId): bool
+    {
+        return isset($this->steps[$stepId]);
+    }
+
+    public function hasExecutedSteps(): bool
+    {
+        return $this->steps !== [];
+    }
+
+    /**
+     * @return array<mixed, mixed>|null
+     */
+    public function getStepRecord(string $stepId): ?array
+    {
+        $record = $this->steps[$stepId] ?? null;
+
+        return is_array($record) ? $record : null;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function getStepOutputs(string $stepId): array
+    {
+        $record = $this->getStepRecord($stepId);
+        $outputs = $record['outputs'] ?? null;
+        if (!is_array($outputs)) {
+            return [];
+        }
+
+        /** @var array<string, mixed> $outputs */
+        return $outputs;
+    }
+
+    public function getStepOutput(string $stepId, string $key): mixed
+    {
+        return $this->getStepOutputs($stepId)[$key] ?? null;
+    }
+
+    /**
+     * @return array<mixed, mixed>|null
+     */
+    public function getStepResponse(string $stepId): ?array
+    {
+        $record = $this->getStepRecord($stepId);
+        $response = $record['response'] ?? null;
+
+        return is_array($response) ? $response : null;
+    }
+
+    public function getStepResponseBody(string $stepId): mixed
+    {
+        $response = $this->getStepResponse($stepId);
+
+        return $response['body'] ?? null;
+    }
+
+    public function getStepResponseHeader(string $stepId, string $name): ?string
+    {
+        $response = $this->getStepResponse($stepId);
+        if ($response === null) {
+            return null;
+        }
+
+        $headers = $response['headers'] ?? null;
+        if (!is_array($headers)) {
+            return null;
+        }
+
+        $normalized = strtolower($name);
+        foreach ($headers as $headerKey => $headerVal) {
+            if (is_string($headerKey) && strtolower($headerKey) === $normalized) {
+                return is_scalar($headerVal) ? (string) $headerVal : null;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return array<mixed, mixed>|null
+     */
+    public function getStepRequest(string $stepId): ?array
+    {
+        $record = $this->getStepRecord($stepId);
+        $request = $record['request'] ?? null;
+
+        return is_array($request) ? $request : null;
+    }
+
+    /**
+     * @return array<mixed, mixed>
+     */
+    public function getStepInputs(string $stepId): array
+    {
+        $record = $this->getStepRecord($stepId);
+        $inputs = $record['inputs'] ?? null;
+
+        return is_array($inputs) ? $inputs : [];
+    }
+
+    public function getStepStatusCode(string $stepId): ?int
+    {
+        $record = $this->getStepRecord($stepId);
+        if ($record === null) {
+            return null;
+        }
+
+        $code = $record['statusCode'] ?? null;
+        if (is_int($code)) {
+            return $code;
+        }
+
+        $response = $this->getStepResponse($stepId);
+        if ($response !== null) {
+            $respCode = $response['statusCode'] ?? $response['status'] ?? null;
+
+            return is_int($respCode) ? $respCode : null;
+        }
+
+        return null;
+    }
+
+    public function getInput(string $name): mixed
+    {
+        return $this->inputs[$name] ?? null;
+    }
+
+    public function hasInput(string $name): bool
+    {
+        return array_key_exists($name, $this->inputs);
     }
 }

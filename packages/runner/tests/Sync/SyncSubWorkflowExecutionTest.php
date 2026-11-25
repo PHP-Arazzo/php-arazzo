@@ -6,6 +6,7 @@ namespace Alama\Arazzo\Tests\Execution;
 
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Components;
+use Alama\Arazzo\Contracts\Spec\Enum\ExecutionStatus;
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
 use Alama\Arazzo\Contracts\Spec\Expression;
 use Alama\Arazzo\Contracts\Spec\Info;
@@ -20,11 +21,11 @@ use Alama\Arazzo\Document\DocumentInterface;
 use Alama\Arazzo\Evaluation\EvaluationEngine;
 use Alama\Arazzo\Expression\ExpressionEngine;
 use Alama\Arazzo\Protocol\Http\Execution\StepOutputExtractor;
+use Alama\Arazzo\Protocol\Http\Plugins\OperationExecutor\HttpStepExecutor;
 use Alama\Arazzo\Protocol\Http\Resolver\OpenApiOperationHandle;
 use Alama\Arazzo\Protocol\Http\Resolver\OpenApiOperationResolver;
-use Alama\Arazzo\Runner\Execution\OperationRuntime;
-use Alama\Arazzo\Runner\OperationExecutorRegistry;
-use Alama\Arazzo\Runner\Plugins\OperationExecutor\SubWorkflowStepExecutor;
+use Alama\Arazzo\Runner\Execution\Data\RunnerOptions;
+use Alama\Arazzo\Runner\Registries\OperationExecutorRegistry;
 use Alama\Arazzo\Runner\Sync\ExecutionGraphFactory;
 use Alama\Arazzo\Runner\Sync\WorkflowExecutor;
 use Alama\Arazzo\Tests\Support\FakeOpenApiExecutor;
@@ -36,10 +37,6 @@ use Mockery;
 
 require_once __DIR__.'/../Support/FakeSeams.php';
 
-/**
- * Parent -> child document. The child fetches one operation and publishes its
- * id as a workflow output; the parent invokes it and re-exports that output.
- */
 function subWorkflowDocument(): ArazzoDocument
 {
     $child = new Workflow(
@@ -96,8 +93,6 @@ function subWorkflowDocument(): ArazzoDocument
 
 function subWorkflowGraph(OperationExecutorRegistry $registry): WorkflowExecutor
 {
-    $document = subWorkflowDocument();
-
     $documents = Mockery::mock(DocumentInterface::class);
 
     $resolver = Mockery::mock(OpenApiOperationResolver::class);
@@ -117,42 +112,45 @@ function subWorkflowGraph(OperationExecutorRegistry $registry): WorkflowExecutor
     ));
 
     $evaluation = new EvaluationEngine(expression: new ExpressionEngine());
-
-    return (new ExecutionGraphFactory(
-        new OperationRuntime($documents, $resolver),
-        $evaluation,
+    $httpPlugin = new HttpStepExecutor(
         new FakeOpenApiExecutor(new Response(200, ['Content-Type' => 'application/json'], '{"id":"ord_1"}')),
+        $resolver,
+        $evaluation,
         new StepOutputExtractor($resolver, $evaluation, new ExpressionEngine()),
         new FakeResponseValidator(),
-    ))->createWorkflowExecutor($registry);
+    );
+
+    $options = (new RunnerOptions())
+        ->withExecutor($httpPlugin)
+        ->withOperationResolver($resolver);
+
+    return (new ExecutionGraphFactory($documents, $evaluation, $options))
+        ->createWorkflowExecutor($registry);
 }
 
 afterEach(function (): void {
     OperationExecutorRegistry::reset();
 });
 
-it('registers the sub-workflow executor on the synchronous graph, like the async assembler', function () {
+it('snapshots the registry so graph-scoped SubWorkflowStepExecutor does not mutate the global singleton', function (): void {
     OperationExecutorRegistry::reset();
     $registry = OperationExecutorRegistry::create();
 
     subWorkflowGraph($registry);
 
-    expect($registry->all())->toHaveCount(1)
-        ->and($registry->all()[0])->toBeInstanceOf(SubWorkflowStepExecutor::class);
+    expect($registry->all())->toBe([]);
 });
 
-it('runs a parent -> child workflow synchronously', function () {
+it('runs a parent -> child workflow synchronously', function (): void {
     $document = subWorkflowDocument();
     OperationExecutorRegistry::reset();
     $result = subWorkflowGraph(OperationExecutorRegistry::create())
-        ->execute($document->workflows[0], $document, []);
+        ->execute($document->firstWorkflow(), $document, []);
 
-    expect($result->status)->toBe('succeeded')
+    expect($result->status)->toBe(ExecutionStatus::Succeeded)
         ->and($result->stepResults)->toHaveKey('call-child')
         ->and($result->stepResults['call-child']->success)->toBeTrue()
-        // The child's workflow output reaches the parent step through $outputs.
         ->and($result->stepResults['call-child']->outputs)->toBe(['order_id' => 'ord_1'])
-        // ...and the parent workflow re-exports it through $steps.
         ->and($result->outputs)->toBe(['order_id' => 'ord_1'])
         ->and($result->workflowCallStack)->toBe(['parent']);
 });

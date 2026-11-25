@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Alama\Arazzo\Runner\OperationExecutorRegistry;
+use Alama\Arazzo\Runner\Registries\OperationExecutorRegistry;
 use Alama\Arazzo\Tests\TestCase;
 
 require_once __DIR__.'/Support/helpers.php';

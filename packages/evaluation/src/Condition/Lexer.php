@@ -27,75 +27,14 @@ final class Lexer
         $i = 0;
 
         while ($i < $length) {
-            $char = $condition[$i];
-
-            if ($char === ' ' || $char === "\t" || $char === "\n" || $char === "\r") {
+            if (str_contains(" \t\n\r", $condition[$i])) {
                 $i++;
 
                 continue;
             }
 
-            $two = substr($condition, $i, 2);
-            if (isset(TokenKind::OPERATORS[$two])) {
-                $tokens[] = new Token(TokenKind::OPERATORS[$two], $two, $i);
-                $i += 2;
-
-                continue;
-            }
-
-            if (isset(TokenKind::OPERATORS[$char])) {
-                $tokens[] = new Token(TokenKind::OPERATORS[$char], $char, $i);
-                $i++;
-
-                continue;
-            }
-
-            if ($char === '\'' || $char === '"') {
-                [$token, $i] = $this->scanString($condition, $i);
-                $tokens[] = $token;
-
-                continue;
-            }
-
-            if (preg_match('/-?\d+(?:\.\d+)?/', $condition, $m, PREG_OFFSET_CAPTURE, $i) === 1 && $m[0][1] === $i) {
-                $tokens[] = new Token(TokenKind::Number, $m[0][0], $i);
-                $i += strlen($m[0][0]);
-
-                continue;
-            }
-
-            if ($char === '$' || $char === '{') {
-                if ($char === '{') {
-                    $closing = strpos($condition, '}', $i);
-                    if ($closing === false) {
-                        throw new ConditionSyntaxException("Unterminated '{' runtime expression in condition at offset {$i}.");
-                    }
-
-                    $raw = trim(substr($condition, $i + 1, $closing - $i - 1));
-                    $end = $closing + 1;
-                } else {
-                    $end = $this->expressionEnd($condition, $i);
-                    $raw = rtrim(substr($condition, $i, $end - $i));
-                }
-
-                if ($raw === '' || $raw[0] !== '$') {
-                    throw new ConditionSyntaxException("Malformed runtime expression in condition at offset {$i}.");
-                }
-
-                $tokens[] = new Token(TokenKind::Expr, $raw, $i);
-                $i = $end;
-
-                continue;
-            }
-
-            if (preg_match('/[A-Za-z_][A-Za-z0-9_.\-\/]*/', $condition, $m, PREG_OFFSET_CAPTURE, $i) === 1 && $m[0][1] === $i) {
-                $tokens[] = new Token(TokenKind::Ident, $m[0][0], $i);
-                $i += strlen($m[0][0]);
-
-                continue;
-            }
-
-            throw new ConditionSyntaxException("Unexpected character '{$char}' in condition at offset {$i}.");
+            [$token, $i] = $this->scanNext($condition, $i);
+            $tokens[] = $token;
         }
 
         return $tokens;
@@ -118,13 +57,103 @@ final class Lexer
     }
 
     /**
+     * @return array{Token, int}
+     */
+    private function scanNext(string $condition, int $i): array
+    {
+        $operator = $this->tryScanOperator($condition, $i);
+        if ($operator !== null) {
+            return $operator;
+        }
+
+        $char = $condition[$i];
+        if ($char === '\'' || $char === '"') {
+            return $this->scanString($condition, $i);
+        }
+
+        if ($char === '$' || $char === '{') {
+            return $this->scanExpression($condition, $i);
+        }
+
+        return $this->scanNumberOrIdent($condition, $i);
+    }
+
+    /**
+     * @return array{Token, int}|null
+     */
+    private function tryScanOperator(string $condition, int $i): ?array
+    {
+        $two = substr($condition, $i, 2);
+        if (isset(TokenKind::OPERATORS[$two])) {
+            return [new Token(TokenKind::OPERATORS[$two], $two, $i), $i + 2];
+        }
+
+        $one = $condition[$i];
+        if (isset(TokenKind::OPERATORS[$one])) {
+            return [new Token(TokenKind::OPERATORS[$one], $one, $i), $i + 1];
+        }
+
+        return null;
+    }
+
+    /**
+     * @return array{Token, int}
+     */
+    private function scanExpression(string $condition, int $i): array
+    {
+        if ($condition[$i] === '{') {
+            $closing = strpos($condition, '}', $i);
+            if ($closing === false) {
+                throw ConditionLexException::unterminatedExpression($i);
+            }
+
+            $raw = trim(substr($condition, $i + 1, $closing - $i - 1));
+            $end = $closing + 1;
+        } else {
+            $end = $this->expressionEnd($condition, $i);
+            $raw = rtrim(substr($condition, $i, $end - $i));
+        }
+
+        if ($raw === '' || $raw[0] !== '$') {
+            throw ConditionLexException::malformedExpression($i);
+        }
+
+        return [new Token(TokenKind::Expr, $raw, $i), $end];
+    }
+
+    /**
+     * @return array{Token, int}
+     */
+    private function scanNumberOrIdent(string $condition, int $i): array
+    {
+        $number = $this->tryScanPattern($condition, $i, '/-?\d+(?:\.\d+)?/', TokenKind::Number);
+        if ($number !== null) {
+            return $number;
+        }
+
+        $ident = $this->tryScanPattern($condition, $i, '/[A-Za-z_][A-Za-z0-9_.\-\/]*/', TokenKind::Ident);
+        if ($ident !== null) {
+            return $ident;
+        }
+
+        throw ConditionLexException::unexpectedCharacter($condition[$i], $i);
+    }
+
+    /**
+     * @return array{Token, int}|null
+     */
+    private function tryScanPattern(string $condition, int $i, string $pattern, TokenKind $kind): ?array
+    {
+        if (preg_match($pattern, $condition, $m, PREG_OFFSET_CAPTURE, $i) === 1 && $m[0][1] === $i) {
+            return [new Token($kind, $m[0][0], $i), $i + strlen($m[0][0])];
+        }
+
+        return null;
+    }
+
+    /**
      * Scan a quoted string literal starting at `$start`, returning the token and
      * the index just past its closing quote.
-     *
-     * The spec escapes a literal single quote inside a single-quoted string by
-     * doubling it (`''`), so the closing quote is the first one that is not part
-     * of such a pair. Double quotes are a lenient extension and simply close at
-     * the next quote.
      *
      * @return array{Token, int}
      */
@@ -137,7 +166,7 @@ final class Lexer
 
         while (true) {
             if ($i >= $length) {
-                throw new ConditionSyntaxException("Unterminated string literal in condition at offset {$start}.");
+                throw ConditionLexException::unterminatedString($start);
             }
 
             if ($condition[$i] === $quote) {
@@ -165,17 +194,7 @@ final class Lexer
         $i = $start;
 
         while ($i < $length) {
-            $char = $condition[$i];
-            if ($char === ' ' || $char === "\t" || $char === ')') {
-                return $i;
-            }
-
-            $two = substr($condition, $i, 2);
-            if ($two === '&&' || $two === '||') {
-                return $i;
-            }
-
-            if ($i > $start && ($char === '=' || $char === '!' || $char === '<' || $char === '>')) {
+            if ($this->isExpressionDelimiter($condition, $i, $start)) {
                 return $i;
             }
 
@@ -183,5 +202,20 @@ final class Lexer
         }
 
         return $length;
+    }
+
+    private function isExpressionDelimiter(string $condition, int $i, int $start): bool
+    {
+        $char = $condition[$i];
+        if (str_contains(" \t)", $char)) {
+            return true;
+        }
+
+        $two = substr($condition, $i, 2);
+        if ($two === '&&' || $two === '||') {
+            return true;
+        }
+
+        return $i > $start && str_contains('=!<>', $char);
     }
 }

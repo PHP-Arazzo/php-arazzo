@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Tests\Expression;
 
-use Alama\Arazzo\Expression\Data\InterpolationOptions;
 use Alama\Arazzo\Expression\ExpressionEngine;
+use Alama\Arazzo\Expression\Policy\InterpolationPolicy;
 
 it('interpolates single expression', function (): void {
     $engine = new ExpressionEngine();
@@ -65,11 +65,14 @@ it('supports custom stringify', function (): void {
     expect($result)->toBe("{\n    \"id\": 1\n}");
 });
 
-it('interpolateWithOptions works with InterpolationOptions object', function (): void {
+it('interpolateWithPolicy works with InterpolationPolicy object and default fallback', function (): void {
     $engine = new ExpressionEngine();
-    $opts = new InterpolationOptions(stringify: fn (mixed $v) => strtoupper((string) $v));
-    $result = $engine->interpolateWithOptions('Hello {$name}', fn () => 'world', $opts);
-    expect($result)->toBe('Hello WORLD');
+    $policy = InterpolationPolicy::default()->withStringify(fn (mixed $v): string => strtoupper((string) $v));
+    $result = $engine->interpolateWithPolicy('Hello {$name}', fn () => 'world', $policy);
+    $defaultResult = $engine->interpolateWithPolicy('Hello {$name}', fn () => 'world');
+
+    expect($result)->toBe('Hello WORLD')
+        ->and($defaultResult)->toBe('Hello world');
 });
 
 it('json encodes structured values returned by a custom stringify callback', function (): void {

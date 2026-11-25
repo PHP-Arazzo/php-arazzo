@@ -11,16 +11,18 @@ package entry point must expose its `*Interface` + facade pair. Any file in
 regression to fix, not drift to accept.
 
 - Core aggregator clean: **yes** (0 stray file(s) in `packages/core/src`)
-- Facade pairs present: **5 / 6** (**83%**)
+- Facade pairs present: **3 / 6** (**50%**)
 
 ```mermaid
 xychart-beta
-    title "Facade entry points present (83%)"
+    title "Facade entry points present (50%)"
     x-axis ["present", "missing"]
     y-axis "Files" 0 --> 6
-    bar [5, 1]
+    bar [3, 3]
 ```
 
 ## Missing facade files
 
 - `packages/expression/src/ExpressionEngineInterface.php`
+- `packages/runner/src/RunnerFacade.php`
+- `packages/runner/src/RunnerFacadeInterface.php`

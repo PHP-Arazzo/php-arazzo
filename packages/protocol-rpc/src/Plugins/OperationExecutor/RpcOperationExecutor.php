@@ -7,6 +7,9 @@ namespace Alama\Arazzo\Protocol\Rpc\Plugins\OperationExecutor;
 use Alama\Arazzo\Contracts\Attributes\AsOperationExecutorPlugin;
 use Alama\Arazzo\Contracts\Interfaces\HttpClientInterface;
 use Alama\Arazzo\Contracts\Interfaces\OperationExecutorPluginInterface;
+use Alama\Arazzo\Contracts\Observability\NullTracer;
+use Alama\Arazzo\Contracts\Observability\TracerInterface;
+use Alama\Arazzo\Contracts\Policy\SourcePolicy;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Enum\OperationProtocol;
 use Alama\Arazzo\Contracts\Spec\ResolvedOperation;
@@ -14,13 +17,16 @@ use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Contracts\Spec\StepExecutionOutcome;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
 use Alama\Arazzo\Document\OperationResolverInterface;
-use Alama\Arazzo\Engine\Exceptions\ExecutionException;
+use Alama\Arazzo\Protocol\Rpc\Exceptions\RpcExecutionException;
 use Alama\Arazzo\Protocol\Rpc\Execution\RpcFailureMapper;
 use Alama\Arazzo\Protocol\Rpc\Execution\RpcRequestBuilder;
 use Alama\Arazzo\Protocol\Rpc\Protocol\RpcFieldBag;
 use Alama\Arazzo\Protocol\Rpc\Transfer\RpcResponseTransfer;
 use Alama\Arazzo\Protocol\Rpc\Transfer\RpcResponseTransferMapper;
 use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use RuntimeException;
 
 /**
@@ -47,13 +53,36 @@ final class RpcOperationExecutor implements OperationExecutorPluginInterface
      */
     public const PLUGIN_PRIORITY = 50;
 
+    private LoggerInterface $logger;
+
+    private TracerInterface $tracer;
+
     public function __construct(
         private OperationResolverInterface $operationResolver,
         private RpcRequestBuilder $requestBuilder,
         private HttpClientInterface $httpClient,
         private RpcResponseTransferMapper $responseMapper,
         private RpcFailureMapper $failureMapper,
-    ) {}
+    ) {
+        $this->logger = new NullLogger();
+        $this->tracer = new NullTracer();
+    }
+
+    public function withLogger(LoggerInterface $logger): self
+    {
+        $clone = clone $this;
+        $clone->logger = $logger;
+
+        return $clone;
+    }
+
+    public function withTracer(TracerInterface $tracer): self
+    {
+        $clone = clone $this;
+        $clone->tracer = $tracer;
+
+        return $clone;
+    }
 
     public function name(): string
     {
@@ -67,17 +96,32 @@ final class RpcOperationExecutor implements OperationExecutorPluginInterface
 
     public function supports(Step $step, ArazzoDocument $document): bool
     {
-        return $step->target->action === null && $this->operationResolver->supportsStep($step, $document);
+        return !$step->hasAction() && $this->operationResolver->supportsStep($step, $document);
     }
 
     public function execute(Step $step, WorkflowContext $context, ArazzoDocument $document, string $executionId): StepExecutionOutcome
     {
         $resolved = $this->resolve($step, $document);
+        $sourcePolicy = $context->getActiveSourcePolicy();
+        $timeoutSeconds = $step->flow->timeout ?? $sourcePolicy?->timeoutSeconds();
+
+        $span = $this->tracer->startSpan('arazzo.rpc.request', [
+            'arazzo.step.id' => $step->stepId,
+        ]);
 
         try {
             $request = $this->requestBuilder->build($step, $context, $document, $resolved);
-            $response = $this->httpClient->sendRequest($request, $step->flow->timeout);
+            $request = $this->decorateRequest($request, $sourcePolicy);
+            $response = $this->httpClient->sendRequest($request, $timeoutSeconds);
         } catch (ClientExceptionInterface $e) {
+            $span->recordException($e);
+            $span->setStatus(false, $e->getMessage());
+            $span->end();
+            $this->logger->warning('RPC transport request failed.', [
+                'step' => $step->stepId,
+                'error' => $e->getMessage(),
+            ]);
+
             // Transport-level failures become a synthetic 500 (HTTP precedent)
             // so failureActions apply identically to the sync adapter.
             return $this->failureMapper->map(
@@ -88,29 +132,64 @@ final class RpcOperationExecutor implements OperationExecutorPluginInterface
 
         $protocol = $resolved->rpcProtocol;
         if ($protocol === null) {
-            throw new ExecutionException(
-                "RPC step '{$step->stepId}' does not declare an rpcProtocol; expected one of grpc, grpc-web, twirp, connect.",
-                '/',
-                'execution.rpc_protocol_missing',
-            );
+            $span->setStatus(false, 'rpc_protocol_missing');
+            $span->end();
+
+            throw RpcExecutionException::protocolMissing($step->stepId);
         }
 
         $bags = $resolved->normalized->requestBodies['application/protobuf'] ?? null;
         $responseFields = RpcFieldBag::normalize(is_array($bags) ? ($bags['responseFields'] ?? []) : []);
         $transfer = $this->responseMapper->map($response, $protocol, $responseFields);
-        $meta = $transfer->meta();
 
-        if (isset($meta['rpc.error']) || isset($meta['error'])) {
-            return $this->failureMapper->map($transfer, isset($meta['rpc.error']) ? 'rpc-error' : 'transport');
+        if ($transfer->hasFailure()) {
+            $category = $transfer->failureCategory() ?? 'transport';
+            $span->setStatus(false, $category);
+            $span->end();
+            $this->logger->warning('RPC operation returned error.', [
+                'step' => $step->stepId,
+                'category' => $category,
+            ]);
+
+            return $this->failureMapper->map($transfer, $category);
         }
 
+        $statusCode = $transfer->httpStatusCode();
+        $span->setAttribute('http.response.status_code', $statusCode);
+        $span->setStatus(true);
+        $span->end();
+
+        $this->logger->debug('Executed RPC operation.', [
+            'step' => $step->stepId,
+            'status' => $statusCode,
+        ]);
+
         return StepExecutionOutcome::resolved(
-            statusCode: is_int($transfer->status()) ? $transfer->status() : 500,
+            statusCode: $statusCode,
             outputs: [],
             responseBody: ['transfer' => $transfer],
             responseHeaders: $transfer->headers(),
-            rawBody: is_string($transfer->rawBody()) ? $transfer->rawBody() : null,
+            rawBody: $transfer->rawPayload(),
         );
+    }
+
+    private function decorateRequest(RequestInterface $request, ?SourcePolicy $sourcePolicy): RequestInterface
+    {
+        if ($sourcePolicy !== null) {
+            foreach ($sourcePolicy->headers as $name => $value) {
+                if (!$request->hasHeader($name)) {
+                    $request = $request->withHeader($name, $value);
+                }
+            }
+        }
+
+        $carrier = [];
+        $this->tracer->injectContext($carrier);
+        foreach ($carrier as $header => $value) {
+            $request = $request->withHeader($header, $value);
+        }
+
+        return $request;
     }
 
     private function resolve(Step $step, ArazzoDocument $document): ResolvedOperation
@@ -118,12 +197,7 @@ final class RpcOperationExecutor implements OperationExecutorPluginInterface
         try {
             return $this->operationResolver->resolve($step, $document);
         } catch (RuntimeException $e) {
-            throw new ExecutionException(
-                "RPC resolution failed for step '{$step->stepId}': ".$e->getMessage(),
-                '/',
-                'execution.rpc_resolution_failed',
-                $e,
-            );
+            throw RpcExecutionException::resolutionFailed($step->stepId, $e);
         }
     }
 }

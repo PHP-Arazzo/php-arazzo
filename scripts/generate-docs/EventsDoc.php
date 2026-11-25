@@ -12,8 +12,8 @@ const BANNER = <<<'MD'
 
 # Generated: Domain Events
 
-PSR-14 event classes from the `alama/arazzo-events` package (`Alama\Arazzo\Events`)
-and `Events/` (Laravel), with every dispatch site found in the live tree.
+PSR-14 event classes from the `php-arazzo/arazzo-runner` package (`Alama\Arazzo\Runner\Events`),
+with every dispatch site found in the live tree.
 Regenerated before every commit.
 
 MD;

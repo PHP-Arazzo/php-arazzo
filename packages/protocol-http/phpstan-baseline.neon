@@ -1,24 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Method execute has too high cyclomatic complexity \(19\)\. Maximum allowed is 10\.$#'
-			identifier: arazzo.custom.cyclomaticComplexity
-			count: 1
-			path: src/Execution/DefaultOpenApiExecutor.php
-
-		-
-			message: '#^Method castOutputAgainstResponseSchema has too high cyclomatic complexity \(11\)\. Maximum allowed is 10\.$#'
-			identifier: arazzo.custom.cyclomaticComplexity
-			count: 1
-			path: src/Execution/StepOutputExtractor.php
-
-		-
-			message: '#^Method name ''castOutputAgainstResponseSchema'' length \(31\) is outside allowed range \(3\-30\)\.$#'
-			identifier: arazzo.custom.identifierLength
-			count: 1
-			path: src/Execution/StepOutputExtractor.php
-
-		-
 			message: '#^Method __construct has too many parameters \(6\)\. Maximum allowed is 5\.$#'
 			identifier: arazzo.custom.maxParameterCount
 			count: 1
@@ -29,9 +11,3 @@ parameters:
 			identifier: arazzo.custom.maxParameterCount
 			count: 1
 			path: src/Plugins/OperationExecutor/HttpStepExecutor.php
-
-		-
-			message: '#^Method resolve has too high cyclomatic complexity \(26\)\. Maximum allowed is 10\.$#'
-			identifier: arazzo.custom.cyclomaticComplexity
-			count: 1
-			path: src/Resolver/OpenApiOperationResolver.php

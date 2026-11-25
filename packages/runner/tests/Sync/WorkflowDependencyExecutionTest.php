@@ -6,6 +6,7 @@ namespace Alama\Arazzo\Tests\Sync;
 
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Components;
+use Alama\Arazzo\Contracts\Spec\Enum\ExecutionStatus;
 use Alama\Arazzo\Contracts\Spec\Expression;
 use Alama\Arazzo\Contracts\Spec\Info;
 use Alama\Arazzo\Contracts\Spec\Step;
@@ -16,9 +17,9 @@ use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
 use Alama\Arazzo\Contracts\Support\Events\Dispatcher\SimpleEventDispatcher;
 use Alama\Arazzo\Evaluation\EvaluationEngine;
-use Alama\Arazzo\Events\RunCompletedEvent;
-use Alama\Arazzo\Events\RunStartedEvent;
 use Alama\Arazzo\Expression\ExpressionEngine;
+use Alama\Arazzo\Runner\Events\RunCompletedEvent;
+use Alama\Arazzo\Runner\Events\RunStartedEvent;
 use Alama\Arazzo\Runner\Sync\StepExecutor;
 use Alama\Arazzo\Runner\Sync\WorkflowEngine;
 use Alama\Arazzo\Runner\Sync\WorkflowExecutor;
@@ -102,7 +103,7 @@ it('runs dependencies first and exposes their outputs inside steps and workflow 
         ->and($seen[1]['workflows']['login']['outputs']['token'] ?? null)->toBe('t-login-step')
         ->and($seen[2]['workflows']['profile']['outputs']['name'] ?? null)->toBe('t-profile-step')
         ->and($result->workflowId)->toBe('orders')
-        ->and($result->status)->toBe('succeeded')
+        ->and($result->status)->toBe(ExecutionStatus::Succeeded)
         ->and($result->outputs)->toBe(['delegated' => 't-login-step']);
 });
 
@@ -120,7 +121,7 @@ it('executes each transitive dependency at most once in a diamond graph', functi
     );
 
     expect(array_column($seen, 'step'))->toBe(['base-step', 'left-step', 'right-step', 'target-step'])
-        ->and($result->status)->toBe('succeeded');
+        ->and($result->status)->toBe(ExecutionStatus::Succeeded);
 });
 
 it('does not execute the target when a dependency fails', function () {
@@ -136,7 +137,7 @@ it('does not execute the target when a dependency fails', function () {
 
     expect(array_column($seen, 'step'))->toBe(['dep-step'])
         ->and($result->workflowId)->toBe('target')
-        ->and($result->status)->toBe('failed');
+        ->and($result->status)->toBe(ExecutionStatus::Failed);
 });
 
 it('fires lifecycle events per workflow with a shared execution id', function () {

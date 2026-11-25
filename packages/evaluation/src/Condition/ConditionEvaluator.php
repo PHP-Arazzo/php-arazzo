@@ -66,7 +66,7 @@ final class ConditionEvaluator
             return self::truthy($this->runtimeValue($node, $context));
         }
 
-        throw new ConditionSyntaxException('Unsupported condition node.');
+        throw ConditionSyntaxException::unsupportedNode();
     }
 
     /**
@@ -139,12 +139,8 @@ final class ConditionEvaluator
 
     private function looseEquals(mixed $left, mixed $right): bool
     {
-        if ($left === null || $right === null) {
-            return $left === null && $right === null;
-        }
-
-        if (is_bool($left) || is_bool($right)) {
-            return is_bool($left) === is_bool($right) && $left === $right;
+        if (self::isStrictComparisonType($left) || self::isStrictComparisonType($right)) {
+            return $left === $right;
         }
 
         $a = self::asNumber($left);
@@ -155,11 +151,12 @@ final class ConditionEvaluator
             return $a == $b;
         }
 
-        if (is_array($left) || is_array($right)) {
-            return $left === $right;
-        }
-
         return strcasecmp(self::stringify($left), self::stringify($right)) === 0;
+    }
+
+    private static function isStrictComparisonType(mixed $value): bool
+    {
+        return $value === null || is_bool($value) || is_array($value);
     }
 
     private static function asNumber(mixed $value): int|float|null

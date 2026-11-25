@@ -21,11 +21,11 @@ final class StepParameterMerger
 {
     public static function merge(Step $step, ?Workflow $workflow): Step
     {
-        if ($workflow === null || $workflow->parameters === []) {
+        if ($workflow === null || $workflow->parameters->isEmpty()) {
             return $step;
         }
 
-        $merged = $workflow->parameters;
+        $merged = $workflow->parameters->all();
         foreach ($step->io->parameters as $stepParam) {
             $replaced = false;
             foreach ($merged as $i => $base) {

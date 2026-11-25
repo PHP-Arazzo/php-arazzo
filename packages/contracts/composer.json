@@ -16,6 +16,7 @@
     },
     "require": {
         "php": "^8.4",
+        "psr/clock": "^1.0",
         "psr/event-dispatcher": "^1.0"
     },
     "require-dev": {

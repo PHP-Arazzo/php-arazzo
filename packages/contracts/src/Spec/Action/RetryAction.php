@@ -20,4 +20,24 @@ final readonly class RetryAction extends FailureAction
     ) {
         parent::__construct($name, ActionKind::Retry, $criteria);
     }
+
+    public function isStepTarget(): bool
+    {
+        return $this->stepId !== null;
+    }
+
+    public function isWorkflowTarget(): bool
+    {
+        return $this->workflowId !== null;
+    }
+
+    public function hasRetryLimit(): bool
+    {
+        return $this->retryLimit !== null;
+    }
+
+    public function hasRetryAfter(): bool
+    {
+        return $this->retryAfter !== null;
+    }
 }

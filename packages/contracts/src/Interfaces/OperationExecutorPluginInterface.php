@@ -11,12 +11,8 @@ use Alama\Arazzo\Contracts\State\WorkflowContext;
 
 /**
  * Executes an Arazzo Step's Operation for one protocol.
- *
- * Replaces StepProtocolExecutorInterface. Existing executors implement
- * this by typecasting the context: StepProtocolExecutor executes against
- * the concrete WorkflowContext; this face keeps the same shape (spec D1).
  */
-interface OperationExecutorPluginInterface extends PluginInterface, StepProtocolExecutorInterface
+interface OperationExecutorPluginInterface extends PluginInterface
 {
     public function supports(Step $step, ArazzoDocument $document): bool;
 

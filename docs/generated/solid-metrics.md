@@ -24,77 +24,92 @@ quadrantChart
     quadrant-3 Modular building blocks
     quadrant-4 Zone of pain
     cli/Console: [1, 0]
+    cli/Exceptions: [0.333, 0.333]
     cli/Generator: [1, 0]
     cli/Renderer: [0.5, 0]
     contracts/Attributes: [0.133, 0]
+    contracts/Clock: [0, 0]
     contracts/Data: [0.167, 0]
     contracts/Dependency: [0.333, 0]
-    contracts/Discovery: [0, 0]
-    contracts/Exceptions: [0, 0]
-    contracts/Interfaces: [0.108, 1]
-    contracts/Spec: [0.019, 0.019]
-    contracts/State: [0.053, 0]
+    contracts/Discovery: [0.2, 0]
+    contracts/Exceptions: [0.1, 0]
+    contracts/Interfaces: [0.103, 1]
+    contracts/Observability: [0, 0.5]
+    contracts/Policy: [0, 0]
+    contracts/Spec: [0.036, 0.017]
+    contracts/State: [0.105, 0]
     contracts/Support: [0, 0.2]
-    contracts/Validation: [0.125, 0]
-    document/Parser: [0.333, 0.083]
+    contracts/Validation: [0.111, 0]
+    document/Parser: [0.286, 0.065]
     document/Plugins: [1, 0]
     document/Registries: [0.8, 0]
     document/Validator: [0.714, 0]
-    document/_: [0.375, 0.4]
+    document/_: [0.333, 0.4]
     engine/Data: [0.75, 0]
     engine/Enum: [0, 0]
-    engine/Exceptions: [0.1, 0]
-    engine/Execution: [0.364, 0]
-    engine/Runtime: [0.375, 0.211]
-    engine/_: [0.75, 0.5]
-    evaluation/Condition: [0.889, 0.118]
+    engine/Exceptions: [0.091, 0.125]
+    engine/Execution: [0.357, 0]
+    engine/Runtime: [0.6, 0.19]
+    engine/_: [1, 0.5]
+    evaluation/Condition: [0.889, 0.111]
     evaluation/Data: [0.4, 0]
     evaluation/Enum: [0, 0]
     evaluation/Events: [0.333, 0]
+    evaluation/Exceptions: [0.333, 0]
     evaluation/Interfaces: [0.6, 1]
     evaluation/Plugins: [1, 0]
-    evaluation/Registries: [0.833, 0]
-    evaluation/_: [0.565, 0.167]
+    evaluation/Registries: [0.857, 0]
+    evaluation/_: [0.538, 0.167]
     expression/Ast: [0.333, 0]
-    expression/Data: [0.263, 0]
+    expression/Data: [0.25, 0]
     expression/Enum: [0, 0]
-    expression/Exceptions: [0.091, 0]
-    expression/Interfaces: [0.294, 1]
-    expression/Internal: [0.75, 0]
-    expression/JsonPath: [0.667, 0.143]
+    expression/Exceptions: [0.083, 0]
+    expression/Interfaces: [0.333, 1]
+    expression/Internal: [0.778, 0]
+    expression/JsonPath: [0.667, 0.111]
     expression/Plugins: [1, 0]
-    expression/Registries: [0.571, 0]
+    expression/Policy: [0, 0]
+    expression/Registries: [0.625, 0]
     expression/Support: [0.667, 0]
     expression/Xpath: [0.5, 0.333]
-    expression/_: [0.733, 0]
-    protocol-http/Execution: [0.692, 0.25]
-    protocol-http/Plugins: [1, 0]
-    protocol-http/Resolver: [0.5, 0]
+    expression/_: [0.667, 0]
+    protocol-http/Exceptions: [0.333, 0]
+    protocol-http/Execution: [0.857, 0.167]
+    protocol-http/Plugins: [0.917, 0]
+    protocol-http/Policy: [0.333, 0]
+    protocol-http/Resolver: [0.7, 0]
+    protocol-http/_: [0.923, 0]
+    protocol-rpc/Exceptions: [0.2, 0]
     protocol-rpc/Execution: [0.875, 0]
-    protocol-rpc/Normalizer: [0, 0]
-    protocol-rpc/Plugins: [0.917, 0]
-    protocol-rpc/Protocol: [0.571, 0]
+    protocol-rpc/Normalizer: [0.5, 0]
+    protocol-rpc/Plugins: [0.929, 0]
+    protocol-rpc/Protocol: [0.625, 0]
     protocol-rpc/Transfer: [0.6, 0]
-    protocol-soap/Exceptions: [0, 0]
+    protocol-soap/Exceptions: [0.333, 0]
     protocol-soap/Execution: [0.818, 0]
     protocol-soap/Plugins: [0.929, 0]
     protocol-soap/Resolver: [1, 0]
     protocol-soap/Transfer: [0.333, 0]
     protocol-soap/Validation: [1, 0]
-    runner/Async: [0.9, 0]
-    runner/Events: [0.167, 0.091]
-    runner/Exceptions: [0.333, 0]
-    runner/Execution: [0.714, 0.063]
-    runner/Interfaces: [1, 1]
+    runner/Async: [0.957, 0]
+    runner/Data: [0.429, 0]
+    runner/Events: [0, 0]
+    runner/Exceptions: [0.375, 0.091]
+    runner/Execution: [0.857, 0]
     runner/Plugins: [0.818, 0]
-    runner/Preflight: [0.429, 0]
+    runner/Policy: [0.286, 0]
+    runner/Preflight: [0.5, 0]
+    runner/Queue: [0.333, 0]
+    runner/Registries: [0.6, 0]
+    runner/Store: [0.6, 0]
     runner/Sync: [0.84, 0]
-    runner/_: [0.857, 0.222]
-    sources/Exceptions: [0, 0.2]
-    sources/Normalizer: [0.333, 0.2]
+    runner/_: [0.75, 0.667]
+    sources/Exceptions: [0, 0.125]
+    sources/Normalizer: [0.5, 0.167]
     sources/Plugins: [1, 0]
+    sources/Policy: [0.333, 0]
     sources/Registries: [0.8, 0]
-    sources/Resolver: [0.571, 0.273]
+    sources/Resolver: [0.667, 0.25]
     sources/_: [0.75, 0.5]
 ```
 
@@ -104,18 +119,14 @@ Concrete types over 300 LOC:
 
 | Class | Module | LOC |
 |---|---|---:|
-| `Parser` | `document:Parser` | 931 |
 | `ExecutionContext` | `engine:Runtime` | 553 |
-| `Parser` | `expression:_` | 511 |
-| `Parser` | `expression:JsonPath` | 470 |
-| `ExecutionState` | `contracts:State` | 465 |
-| `StepOutcomeHandler` | `runner:Async` | 455 |
-| `ProtoParser` | `protocol-rpc:Normalizer` | 446 |
-| `WsdlSourceNormalizer` | `protocol-soap:Plugins` | 446 |
-| `WorkflowContext` | `contracts:State` | 442 |
-| `StepExecutionWorker` | `runner:Async` | 414 |
-| `WorkflowEngine` | `runner:Sync` | 360 |
-| `SchemaValidator` | `engine:Execution` | 302 |
+| `WorkflowContext` | `contracts:State` | 544 |
+| `ExecutionState` | `contracts:State` | 511 |
+| `WorkflowExecutor` | `runner:Sync` | 397 |
+| `StepExecutionWorker` | `runner:Async` | 387 |
+| `StepOutcomeHandler` | `runner:Async` | 366 |
+| `WorkflowEngine` | `runner:Sync` | 309 |
+| `DefaultOpenApiExecutor` | `protocol-http:Execution` | 306 |
 
 ## Fat interfaces (ISP)
 
@@ -123,7 +134,13 @@ Contracts declaring more than 7 methods:
 
 | Interface | Methods |
 |---|---:|
+| `WorkflowContextInterface` <small>contracts</small> | 16 |
+| `AsyncRunnerInterface` <small>runner</small> | 16 |
 | `ExpressionEngineInterface` <small>expression</small> | 14 |
+| `EvaluationInputInterface` <small>expression</small> | 12 |
+| `SourcesInterface` <small>sources</small> | 10 |
+| `RunnerInterface` <small>runner</small> | 9 |
+| `ExecutionStoreInterface` <small>runner</small> | 9 |
 | `EvaluationEngineInterface` <small>evaluation</small> | 8 |
 
 ## Concrete hubs (DIP)

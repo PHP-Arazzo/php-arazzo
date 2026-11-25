@@ -28,11 +28,11 @@ final class ParameterReusableRefResolvesRule implements ValidationRuleInterface
     {
         foreach ($doc->workflows as $wi => $w) {
             // Workflow-level reusable parameters.
-            $this->checkList($w->parameters, $symbols, $errors, "/workflows/{$wi}/parameters");
+            $this->checkList($w->parameters->all(), $symbols, $errors, "/workflows/{$wi}/parameters");
 
             // Workflow-level Success/Failure Action parameters.
-            $this->checkActionParameters($w->successActions, $symbols, $errors, "/workflows/{$wi}/successActions");
-            $this->checkActionParameters($w->failureActions, $symbols, $errors, "/workflows/{$wi}/failureActions");
+            $this->checkActionParameters($w->successActions->all(), $symbols, $errors, "/workflows/{$wi}/successActions");
+            $this->checkActionParameters($w->failureActions->all(), $symbols, $errors, "/workflows/{$wi}/failureActions");
 
             foreach ($w->steps as $si => $s) {
                 // Step-level reusable parameters.
@@ -46,7 +46,7 @@ final class ParameterReusableRefResolvesRule implements ValidationRuleInterface
     }
 
     /**
-     * @param  list<Parameter|Reusable>  $params
+     * @param  array<Parameter|Reusable>  $params
      */
     private function checkList(array $params, SymbolTable $symbols, ErrorCollector $errors, string $base): void
     {
@@ -59,7 +59,7 @@ final class ParameterReusableRefResolvesRule implements ValidationRuleInterface
     }
 
     /**
-     * @param  list<mixed>  $actions
+     * @param  array<mixed>  $actions
      */
     private function checkActionParameters(array $actions, SymbolTable $symbols, ErrorCollector $errors, string $base): void
     {

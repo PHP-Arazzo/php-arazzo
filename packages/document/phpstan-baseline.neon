@@ -1,8 +1,2 @@
 parameters:
-	ignoreErrors:
-		-
-			message: '#^Class Parser has too many methods \(36\)\. Maximum allowed is 20\.$#'
-			identifier: arazzo.custom.maxMethodCount
-			count: 1
-			path: src/Parser/Parser.php
-
+	ignoreErrors: []

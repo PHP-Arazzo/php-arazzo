@@ -68,7 +68,7 @@ class StepOutputExtractor implements OutputExtractorInterface
                 }
 
                 $value = $this->evaluationEngine->evaluate($expression, new EvaluationContext($context, $step->stepId, $document));
-                $outputs[$outputName] = $this->castOutputAgainstResponseSchema($step, $context, $document, $expression, $value);
+                $outputs[$outputName] = $this->castResponseOutput($step, $context, $document, $expression, $value);
             } else {
                 $outputs[$outputName] = $expression;
             }
@@ -77,7 +77,7 @@ class StepOutputExtractor implements OutputExtractorInterface
         return $outputs;
     }
 
-    private function castOutputAgainstResponseSchema(
+    private function castResponseOutput(
         Step $step,
         WorkflowContextInterface $context,
         ?ArazzoDocument $document,
@@ -88,39 +88,58 @@ class StepOutputExtractor implements OutputExtractorInterface
             return $value;
         }
 
-        $ref = $this->inspector->expressionReferences($expression->raw);
-        if ($ref === null
-            || $ref->kind !== ReferenceKind::Step
-            || $ref->part !== 'response'
-            || $ref->httpPart !== 'body'
-            || $ref->jsonPointer === null
-        ) {
+        $pointer = $this->responseBodyPointer($expression);
+        if ($pointer === null) {
             return $value;
         }
 
+        $schema = $this->resolveResponseBodySchema($step, $context, $document);
+        $leafSchema = $this->resolveSchemaAtPointer($schema, $pointer);
+
+        return $this->castToSchemaType($value, $leafSchema);
+    }
+
+    private function responseBodyPointer(Expression $expression): ?string
+    {
+        $ref = $this->inspector->expressionReferences($expression->raw);
+        if ($ref === null || $ref->jsonPointer === null) {
+            return null;
+        }
+
+        $isStepResponseBody = $ref->kind === ReferenceKind::Step
+            && $ref->part === 'response'
+            && $ref->httpPart === 'body';
+
+        return $isStepResponseBody ? $ref->jsonPointer : null;
+    }
+
+    private function resolveResponseBodySchema(
+        Step $step,
+        WorkflowContextInterface $context,
+        ArazzoDocument $document,
+    ): ?Schema {
         try {
-            $operation = $this->resolveOperation($step, $document)->cebeOperation;
+            $responses = $this->resolveOperation($step, $document)->cebeOperation->responses;
         } catch (\RuntimeException) {
-            return $value;
+            return null;
+        }
+
+        if (!$responses instanceof Responses) {
+            return null;
         }
 
         $statusCode = self::stringify(self::stepRecordValue($context, $step, 'response', 'statusCode'));
-        $responses = $operation->responses;
-        if (!$responses instanceof Responses) {
-            return $value;
-        }
         $response = $responses->getResponse($statusCode) ?? $responses->getResponse('default');
         if (!$response instanceof Response) {
-            return $value;
+            return null;
         }
 
         $schema = $response->content['application/json']->schema ?? null;
         if ($schema instanceof Reference) {
             $schema = $schema->resolve();
         }
-        $leafSchema = $this->resolveSchemaAtPointer($schema instanceof Schema ? $schema : null, $ref->jsonPointer);
 
-        return $this->castToSchemaType($value, $leafSchema);
+        return $schema instanceof Schema ? $schema : null;
     }
 
     private function resolveOperation(Step $step, ArazzoDocument $document): OpenApiOperationHandle

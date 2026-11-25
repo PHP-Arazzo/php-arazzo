@@ -15,6 +15,7 @@ use Alama\Arazzo\Protocol\Rpc\Normalizer\ProtoDocument;
 use Alama\Arazzo\Protocol\Rpc\Normalizer\ProtoField;
 use Alama\Arazzo\Protocol\Rpc\Normalizer\ProtoMethod;
 use Alama\Arazzo\Protocol\Rpc\Normalizer\ProtoParser;
+use Alama\Arazzo\Protocol\Rpc\Normalizer\ProtoService;
 
 /**
  * Port (D2): the RPC sibling of OpenApiSourceNormalizer and
@@ -62,8 +63,8 @@ final class ProtoSourceNormalizer implements SourceNormalizerInterface
         $index = [];
         foreach ($parsed->services as $service) {
             foreach ($service->methods as $method) {
-                $reference = $service->name.'/'.$method->name;
-                $resolved = $this->resolveOperation($source, $parsed, $service->name, $method);
+                $reference = $service->methodReference($method);
+                $resolved = $this->resolveOperation($source, $parsed, $service, $method);
                 $index[$reference] = $resolved;
                 $index['$sourceDescriptions.'.$source->name.'.'.$reference] = $resolved;
             }
@@ -75,11 +76,12 @@ final class ProtoSourceNormalizer implements SourceNormalizerInterface
     private function resolveOperation(
         SourceDescription $source,
         ProtoDocument $parsed,
-        string $service,
+        ProtoService $service,
         ProtoMethod $method,
     ): ResolvedOperation {
+        $reference = $service->methodReference($method);
         $normalized = new NormalizedOpenApiOperation(
-            path: $service.'/'.$method->name,
+            path: $reference,
             method: 'POST',
             resolvedServerUrl: $source->url,
             pathParameters: [],
@@ -89,14 +91,14 @@ final class ProtoSourceNormalizer implements SourceNormalizerInterface
             requestBodies: [
                 'application/protobuf' => [
                     'package' => $parsed->package,
-                    'service' => $service,
+                    'service' => $service->name,
                     'method' => $method->name,
                     'requestType' => $method->requestType,
                     'responseType' => $method->responseType,
                     'requestStreaming' => $method->requestStreaming,
                     'responseStreaming' => $method->responseStreaming,
-                    'requestFields' => self::fieldBag($parsed->messages[$method->requestType] ?? []),
-                    'responseFields' => self::fieldBag($parsed->messages[$method->responseType] ?? []),
+                    'requestFields' => array_map(static fn (ProtoField $field): array => $field->toArray(), $parsed->messageFields($method->requestType)),
+                    'responseFields' => array_map(static fn (ProtoField $field): array => $field->toArray(), $parsed->messageFields($method->responseType)),
                 ],
             ],
             responses: [
@@ -106,23 +108,6 @@ final class ProtoSourceNormalizer implements SourceNormalizerInterface
             ],
         );
 
-        return new ResolvedOperation($source, $normalized, rpcMethod: $service.'/'.$method->name);
-    }
-
-    /**
-     * @param  list<ProtoField>  $fields
-     * @return list<array{name: string, type: string, number: int, repeated: bool}>
-     */
-    private static function fieldBag(array $fields): array
-    {
-        return array_map(
-            static fn (ProtoField $field): array => [
-                'name' => $field->name,
-                'type' => $field->type,
-                'number' => $field->number,
-                'repeated' => $field->repeated,
-            ],
-            $fields,
-        );
+        return new ResolvedOperation($source, $normalized, rpcMethod: $reference);
     }
 }

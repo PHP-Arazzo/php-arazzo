@@ -15,7 +15,7 @@ use Alama\Arazzo\Contracts\Spec\StepFlow;
 use Alama\Arazzo\Contracts\Spec\StepIo;
 use Alama\Arazzo\Contracts\Spec\StepTarget;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
-use Alama\Arazzo\Runner\OperationExecutorRegistry;
+use Alama\Arazzo\Runner\Registries\OperationExecutorRegistry;
 
 #[AsOperationExecutorPlugin(OperationProtocol::SubWorkflow)]
 class SubWorkflowProtocolPlugin implements OperationExecutorPluginInterface, PluginInterface

@@ -12,9 +12,9 @@ use Alama\Arazzo\Contracts\State\WorkflowContext;
 use Alama\Arazzo\Engine\Exceptions\ExecutionException;
 use Alama\Arazzo\Evaluation\EvaluationEngineInterface;
 use Alama\Arazzo\Expression\Data\EvaluationContext;
+use Alama\Arazzo\Runner\DefinitionStoreInterface;
 use Alama\Arazzo\Runner\Execution\Data\SubWorkflowResult;
 use Alama\Arazzo\Runner\Sync\WorkflowExecutor;
-use Alama\Arazzo\Runtime\State\Interfaces\DefinitionRegistryInterface;
 
 /**
  * @internal stays out of the advertised contract; not part of the public API surface
@@ -22,7 +22,7 @@ use Alama\Arazzo\Runtime\State\Interfaces\DefinitionRegistryInterface;
 class SubWorkflowInvoker
 {
     public function __construct(
-        private DefinitionRegistryInterface $registry,
+        private DefinitionStoreInterface $definitions,
         private WorkflowExecutor $executor,
         private EvaluationEngineInterface $evaluationEngine,
     ) {}
@@ -31,19 +31,13 @@ class SubWorkflowInvoker
         SubWorkflowSuccessAction|SubWorkflowFailureAction $action,
         WorkflowContext $parent,
     ): SubWorkflowResult {
-        $document = $this->registry->get($parent->getDefinitionId());
+        $document = $this->definitions->find($parent->getDefinitionId());
 
         if ($document === null) {
             throw ExecutionException::subWorkflowNotFound($action->workflowId);
         }
 
-        $target = null;
-        foreach ($document->workflows as $w) {
-            if ($w->workflowId === $action->workflowId) {
-                $target = $w;
-                break;
-            }
-        }
+        $target = $document->findWorkflow($action->workflowId);
 
         if ($target === null) {
             throw ExecutionException::subWorkflowNotFound($action->workflowId);
@@ -62,7 +56,7 @@ class SubWorkflowInvoker
 
         return new SubWorkflowResult(
             outputs: $outcome->outputs,
-            status: $outcome->status,
+            status: $outcome->status->value,
             childRunId: (string) $child->getExecutionId(),
             inputs: $bound,
             stepsSpent: $outcome->stepsSpent,

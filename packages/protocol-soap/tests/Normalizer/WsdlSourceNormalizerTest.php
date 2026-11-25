@@ -164,3 +164,65 @@ it('rejects a WSDL 2.0 description document as unsupported', function (): void {
 
     $normalizer->normalize($source, $wsdl2);
 })->throws(UnsupportedSourceVersionException::class);
+
+it('rejects non-WSDL XML documents', function (): void {
+    $normalizer = makeWsdlSourceNormalizer();
+    $source = new SourceDescription(name: 'other', url: 'http://example.test/other.xml', type: SourceType::Wsdl);
+
+    $normalizer->normalize($source, '<?xml version="1.0"?><root/>');
+})->throws(InvalidArgumentException::class, 'not a WSDL 1.1');
+
+it('handles SOAP 1.2 bindings, empty types blocks, and skips incomplete WSDL definitions', function (): void {
+    $normalizer = makeWsdlSourceNormalizer();
+    $source = new SourceDescription(name: 'edge', url: 'http://example.test/edge.wsdl', type: SourceType::Wsdl);
+
+    $wsdl = <<<'XML'
+    <?xml version="1.0" encoding="UTF-8"?>
+    <definitions xmlns="http://schemas.xmlsoap.org/wsdl/"
+                 xmlns:tns="urn:edge"
+                 xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/">
+        <types><other/></types>
+        <message/>
+        <message name="NoPart"/>
+        <portType/>
+        <portType name="EdgePort">
+            <operation/>
+            <operation name="Echo">
+                <input/>
+                <output message="NoPart"/>
+            </operation>
+        </portType>
+        <binding/>
+        <binding name="OrphanBinding" type="tns:UnknownPort"/>
+        <binding name="EdgeBinding" type="tns:EdgePort">
+            <soap12:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+            <operation/>
+            <operation name="Echo">
+                <soap12:operation style="document"/>
+            </operation>
+        </binding>
+        <service name="EdgeService">
+            <port/>
+            <port name="NoAddress" binding="tns:EdgeBinding"/>
+            <port name="MissingBinding" binding="tns:Missing">
+                <soap12:address location="http://localhost/missing"/>
+            </port>
+            <port name="MissingPortType" binding="tns:OrphanBinding">
+                <soap12:address location="http://localhost/orphan"/>
+            </port>
+            <port name="ValidPort" binding="tns:EdgeBinding">
+                <soap12:address location="http://localhost/edge"/>
+            </port>
+        </service>
+    </definitions>
+    XML;
+
+    $index = $normalizer->normalize($source, $wsdl);
+
+    expect($index)->toHaveKey('Echo')
+        ->and($index['Echo']->normalized->requestBodies['application/xml']['soapVersion'])->toBe('1.2')
+        ->and($index['Echo']->normalized->requestBodies['application/xml']['schema'])->toBeNull()
+        ->and($index['Echo']->normalized->requestBodies['application/xml']['namespace'])->toBeNull()
+        ->and($index['Echo']->normalized->requestBodies['application/xml']['xsdElement'])->toBeNull()
+        ->and($index['Echo']->normalized->headerParameters)->not->toHaveKey('SOAPAction');
+});

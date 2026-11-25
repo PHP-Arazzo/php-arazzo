@@ -18,7 +18,7 @@ final class WorkflowAtLeastOneRule implements ValidationRuleInterface
 {
     public function check(ArazzoDocument $doc, SymbolTable $symbols, ErrorCollector $errors): void
     {
-        if ($doc->workflows === []) {
+        if ($doc->workflows->isEmpty()) {
             $errors->error($this->code(), 'Document must declare at least one workflow.', '/workflows');
         }
     }

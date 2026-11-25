@@ -26,7 +26,7 @@ final class SubWorkflowInvokeTargetResolvesRule implements ValidationRuleInterfa
             return;
         }
 
-        $localIds = array_map(fn ($w) => $w->workflowId, $doc->workflows);
+        $localIds = $doc->workflows->allIds();
 
         foreach ($doc->workflows as $wi => $wf) {
             foreach ($wf->steps as $si => $step) {

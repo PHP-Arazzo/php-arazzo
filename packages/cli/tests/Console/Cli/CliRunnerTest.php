@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Alama\Arazzo\Cli\Console\Cli\CliExecutionStore;
 use Alama\Arazzo\Cli\Console\Cli\CliRunner;
 use Alama\Arazzo\Contracts\Interfaces\OperationExecutorPluginInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
@@ -14,8 +15,8 @@ use Alama\Arazzo\Contracts\Spec\StepIo;
 use Alama\Arazzo\Contracts\Spec\StepTarget;
 use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
-use Alama\Arazzo\Runner\Execution\InMemoryDefinitionRegistry;
-use Alama\Arazzo\Runner\OperationExecutorRegistry;
+use Alama\Arazzo\Runner\Registries\OperationExecutorRegistry;
+use Alama\Arazzo\Runner\Store\InMemoryDefinitionStore;
 use Alama\Arazzo\Runtime\State\FileStateStore;
 use Alama\Arazzo\Tests\Expression\Support\TestEvaluationEngine;
 
@@ -62,28 +63,21 @@ function cliDocument(): ArazzoDocument
 }
 
 /**
- * @return array{0: CliRunner, 1: InMemoryDefinitionRegistry}
+ * @return array{0: CliRunner, 1: InMemoryDefinitionStore, 2: string}
  */
-function cliRunner(FileStateStore $store): array
+function cliRunner(FileStateStore $stateStore): array
 {
-    $definitions = new InMemoryDefinitionRegistry();
-    $definitions->register(cliDocument());
+    $definitions = new InMemoryDefinitionStore();
+    $definitionId = $definitions->save(cliDocument());
 
     $runner = new CliRunner(
         evaluationEngine: new TestEvaluationEngine(),
-        stateStore: $store,
+        store: new CliExecutionStore($stateStore),
         definitions: $definitions,
         protocolExecutors: [new CliFakeExecutor()],
     );
 
-    return [$runner, $definitions];
-}
-
-function cliDefinitionIdOf(InMemoryDefinitionRegistry $definitions): string
-{
-    $ids = array_keys((new ReflectionClass($definitions))->getProperty('registry')->getValue($definitions));
-
-    return $ids[0];
+    return [$runner, $definitions, $definitionId];
 }
 
 it('runs a linear workflow to completion in-process and persists final state to files', function (): void {
@@ -97,7 +91,6 @@ it('runs a linear workflow to completion in-process and persists final state to 
         ->and($result->succeeded())->toBeTrue()
         ->and($result->failed())->toBeFalse();
 
-    // Final state is on disk, keyed by execution id.
     $persisted = $store->load('cli_exec_1');
     expect($persisted)->not->toBeNull()
         ->and($persisted['workflowId'])->toBe('cli_wf');
@@ -105,10 +98,8 @@ it('runs a linear workflow to completion in-process and persists final state to 
 
 it('resumes a run from persisted file state without re-running completed steps', function (): void {
     $store = new FileStateStore(tempStateDir());
-    [$runner, $definitions] = cliRunner($store);
-    $definitionId = cliDefinitionIdOf($definitions);
+    [$runner, $definitions, $definitionId] = cliRunner($store);
 
-    // Seed persisted state as if step one already succeeded in an earlier process.
     $store->save('cli_resume_1', [
         'definitionId' => $definitionId,
         'workflowId' => 'cli_wf',

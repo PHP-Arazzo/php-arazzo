@@ -20,3 +20,13 @@ arch('sources does not depend on protocol-http')
 arch('document does not depend on protocol-http')
     ->expect('Alama\Arazzo\Document')
     ->not->toUse('Alama\Arazzo\Protocol\Http');
+
+arch('protocol-http policy DTOs are final and readonly')
+    ->expect('Alama\Arazzo\Protocol\Http\Policy')
+    ->toBeFinal()
+    ->toBeReadonly();
+
+arch('protocol-http stays vendor-agnostic on observability (ADR-010 Tier 2)')
+    ->expect('Alama\Arazzo\Protocol\Http')
+    ->not->toUse('OpenTelemetry')
+    ->not->toUse('Psr\EventDispatcher');

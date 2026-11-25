@@ -8,12 +8,9 @@ use Alama\Arazzo\Document\Document;
 use Alama\Arazzo\Document\DocumentInterface;
 use Alama\Arazzo\Evaluation\EvaluationEngine;
 use Alama\Arazzo\Expression\ExpressionEngine;
-use Alama\Arazzo\Protocol\Http\Execution\DefaultOpenApiExecutor;
-use Alama\Arazzo\Protocol\Http\Execution\ResponseSchemaValidator;
-use Alama\Arazzo\Protocol\Http\Execution\StepOutputExtractor;
-use Alama\Arazzo\Protocol\Http\Resolver\OpenApiOperationResolver;
-use Alama\Arazzo\Runner\RunnerFacade;
-use Alama\Arazzo\Runner\RunnerFacadeInterface;
+use Alama\Arazzo\Protocol\Http\HttpProtocol;
+use Alama\Arazzo\Runner\Runner;
+use Alama\Arazzo\Runner\RunnerInterface;
 use Alama\Arazzo\Sources\Sources;
 use Alama\Arazzo\Sources\SourcesInterface;
 use GuzzleHttp\Client;
@@ -25,35 +22,32 @@ use Psr\Http\Message\RequestFactoryInterface;
  * Composition root for assembling the default HTTP workflow runner in CLI.
  *
  * @internal stays out of the advertised contract; not part of the public API surface
- *
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
  */
 final readonly class RunnerFactory
 {
+    public static function defaultDocument(): DocumentInterface
+    {
+        return Document::create();
+    }
+
     public static function create(
         ?ClientInterface $httpClient = null,
         ?RequestFactoryInterface $httpFactory = null,
         ?SourcesInterface $sources = null,
         ?DocumentInterface $document = null,
-    ): RunnerFacadeInterface {
+    ): RunnerInterface {
         $client = $httpClient ?? new Client();
         $factory = $httpFactory ?? new HttpFactory();
 
         $documentFacade = $document ?? Document::create();
-        $expressionEngine = new ExpressionEngine();
+        $expressionEngine = ExpressionEngine::create();
         $engine = new EvaluationEngine(expression: $expressionEngine);
 
         $sourcesResolver = $sources ?? Sources::create()->withHttpClient($client, $factory);
-        $resolver = OpenApiOperationResolver::create($sourcesResolver);
+        $http = HttpProtocol::create($client, $factory, $sourcesResolver, $engine, $expressionEngine);
 
-        return new RunnerFacade(
-            $documentFacade,
-            $resolver,
-            $engine,
-            inspector: null,
-            openApiExecutor: new DefaultOpenApiExecutor($client, $factory),
-            outputExtractor: new StepOutputExtractor($resolver, $engine, $expressionEngine),
-            schemaValidator: new ResponseSchemaValidator($resolver),
-        );
+        return (new Runner($documentFacade, $engine))
+            ->withExecutor($http->executor())
+            ->withOperationResolver($http->resolver());
     }
 }

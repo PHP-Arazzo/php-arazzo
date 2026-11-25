@@ -8,7 +8,6 @@ use Alama\Arazzo\Tests\Support\FakeHttpClient;
 use Alama\Arazzo\Tests\Support\FakeLockManager;
 use Alama\Arazzo\Tests\Support\InMemoryPendingCorrelations;
 use Alama\Arazzo\Tests\Support\RecordingEventDispatcher;
-use Alama\Arazzo\Tests\Support\RecordingEventLedger;
 use Alama\Arazzo\Tests\Support\RecordingExecutionRegistry;
 use Alama\Arazzo\Tests\Support\RecordingStateStore;
 use GuzzleHttp\Psr7\Request;
@@ -67,19 +66,6 @@ it('records state saves and serves preloaded state on load', function () {
 
     expect($store->saved)->toHaveKey('exec_1')
         ->and($store->load('exec_1'))->toBe(['steps' => ['A' => ['status' => 'success']]]);
-});
-
-it('records every ledger append with execution id, type, and payload', function () {
-    $ledger = new RecordingEventLedger();
-    $ledger->append('exec_1', 'step.started', ['stepId' => 'A']);
-    $ledger->append('exec_1', 'step.executed', ['stepId' => 'A']);
-
-    expect($ledger->eventTypes())->toBe(['step.started', 'step.executed'])
-        ->and($ledger->appended[0])->toBe([
-            'executionId' => 'exec_1',
-            'eventType' => 'step.started',
-            'payload' => ['stepId' => 'A'],
-        ]);
 });
 
 it('records registry starts and completions with statuses', function () {

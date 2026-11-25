@@ -16,49 +16,48 @@ Evans' first question: does the code speak one language?
 ### run vs execute vs invoke
 
 - **Execute**: `ExecuteStepJob`, `StepExecutedEvent` (2 types)
-- **Executor**: `AsOperationExecutorPlugin`, `AsyncApiStepExecutor`, `DefaultOpenApiExecutor`, `HttpStepExecutor` + 10 more (14 types)
+- **Executor**: `AsOperationExecutorPlugin`, `AsyncApiStepExecutor`, `DefaultOpenApiExecutor`, `HttpStepExecutor` + 8 more (12 types)
 - **Invoke**: `SubWorkflowInvokeTargetResolvesRule`, `SubWorkflowInvoker` (2 types)
-- **Run**: `CliRunResult`, `CliRunner`, `OperationRuntime`, `RunCommand` + 11 more (15 types)
-- **Runner**: `CliRunner`, `RunnerFacade`, `RunnerFacadeInterface`, `RunnerFactory` + 2 more (6 types)
+- **Run**: `AsyncRunner`, `AsyncRunnerInterface`, `CliRunResult`, `CliRunner` + 14 more (18 types)
+- **Runner**: `AsyncRunner`, `AsyncRunnerInterface`, `CliRunner`, `Runner` + 5 more (9 types)
 
 ### parse vs load vs decode
 
 - **Decoder**: `DecoderInterface`, `DecoderRegistry`, `Decoders`, `NativeJsonDecoder` + 1 more (5 types)
 - **Loader**: `Loader`, `LoaderException`, `OpenApiDocumentLoader` (3 types)
-- **Parser**: `AccessorParser`, `CachedParser`, `FieldParser`, `Parser` + 4 more (8 types)
+- **Parser**: `AccessorParser`, `ActionParser`, `CachedParser`, `ComponentsParser` + 15 more (19 types)
 
 ### document vs definition vs spec
 
-- **Definition**: `DefinitionHydrationException`, `DefinitionRegistryInterface`, `InMemoryDefinitionRegistry`, `WritableDefinitionRegistryInterface` (4 types)
-- **Document**: `ArazzoDocument`, `Document`, `DocumentArazzoVersionRule`, `DocumentInfoRequiredRule` + 6 more (10 types)
-- **Spec**: `SpecVersion` (1 types)
+- **Definition**: `DefinitionHydrationException`, `DefinitionRegistryInterface`, `DefinitionStoreInterface`, `InMemoryDefinitionStore` + 1 more (5 types)
+- **Document**: `ArazzoDocument`, `Document`, `DocumentArazzoVersionRule`, `DocumentInfoRequiredRule` + 7 more (11 types)
+- **Spec**: `InvalidSpecVersionException`, `SpecVersion` (2 types)
 
 ### fetch vs resolve vs retrieve
 
 - **Fetcher**: `CachedFetcher`, `HttpFetcher`, `LocalFetcher`, `SourceFetcher` + 1 more (5 types)
-- **Resolver**: `DefaultSourceResolver`, `InputSchemaResolver`, `OpenApiOperationResolver`, `OperationResolverInterface` + 10 more (14 types)
+- **Resolver**: `DefaultSourceResolver`, `InputSchemaResolver`, `OpenApiOperationResolver`, `OperationResolverInterface` + 11 more (15 types)
 
 ### state vs status
 
-- **State**: `ExecutionState`, `FileStateStore`, `InMemoryStateStore`, `StateStoreInterface` + 4 more (8 types)
+- **State**: `ExecutionState`, `FileStateStore`, `InMemoryStateStore`, `StateStoreException` + 6 more (10 types)
 - **Status**: `ExecutionStatus`, `StepStatus` (2 types)
 
 ### registry vs store vs repository
 
-- **Registry**: `CriterionEvaluatorRegistry`, `DecoderRegistry`, `DefinitionRegistryInterface`, `ExecutionRegistryInterface` + 11 more (15 types)
+- **Registry**: `CriterionEvaluatorRegistry`, `DecoderRegistry`, `DefinitionRegistryInterface`, `ExecutionRegistryInterface` + 8 more (12 types)
 - **Repository**: `StoredWorkflowStateRepository`, `WorkflowStateRepositoryInterface` (2 types)
-- **Store**: `FileStateStore`, `InMemoryStateStore`, `StateStoreInterface`, `StoredWorkflowStateRepository` (4 types)
+- **Store**: `CliExecutionStore`, `DefinitionStoreInterface`, `ExecutionStoreCorrelationBridge`, `ExecutionStoreInterface` + 7 more (11 types)
 
 ### workflow vs process vs flow
 
 - **Flow**: `RunControlFlow`, `StepFlow` (2 types)
-- **Process**: `InProcessExecutionRegistry`, `InProcessPendingCorrelationRegistry` (2 types)
-- **Workflow**: `ExpressionUnresolvedWorkflowRefRule`, `ListWorkflowsCommand`, `StepNestedWorkflowExistsRule`, `StepNestedWorkflowNoCycleRule` + 28 more (32 types)
+- **Workflow**: `ExpressionUnresolvedWorkflowRefRule`, `ListWorkflowsCommand`, `StepNestedWorkflowExistsRule`, `StepNestedWorkflowNoCycleRule` + 33 more (37 types)
 
 ### render vs generate
 
-- **Generator**: `ArazzoGenerator` (1 types)
-- **Render**: `RenderCommand`, `Renderer` (2 types)
+- **Generator**: `ArazzoGenerator`, `GeneratorApiException` (2 types)
+- **Render**: `MarkdownRenderer`, `MermaidRenderer`, `RenderCommand`, `Renderer` (4 types)
 
 ## Homonyms (same name, multiple homes)
 
@@ -66,14 +65,13 @@ Evans' first question: does the code speak one language?
 |---|---|---|
 | `Lexer` | `Expression\Lexer`<br/>`Evaluation\Condition\Lexer` | expression, evaluation |
 | `NormalizedOpenApiOperation` | `Contracts\Spec\NormalizedOpenApiOperation`<br/>`Document\NormalizedOpenApiOperation` | contracts, document |
-| `OpenApiExecutorInterface` | `Protocol\Http\Execution\Interfaces\OpenApiExecutorInterface`<br/>`Runner\Execution\Interfaces\OpenApiExecutorInterface` | protocol-http, runner |
 | `Parser` | `Expression\JsonPath\Parser`<br/>`Expression\Parser`<br/>`Evaluation\Condition\Parser`<br/>`Document\Parser\Parser` | expression, evaluation, document |
 | `ParserInterface` | `Expression\Interfaces\ParserInterface`<br/>`Evaluation\Condition\ParserInterface` | expression, evaluation |
 | `ResolvedOperation` | `Contracts\Spec\ResolvedOperation`<br/>`Document\ResolvedOperation` | contracts, document |
 | `SourceFetchException` | `Sources\Exceptions\SourceFetchException`<br/>`Sources\Resolver\Exceptions\SourceFetchException` | sources |
 | `SourceParseException` | `Sources\Exceptions\SourceParseException`<br/>`Sources\Resolver\Exceptions\SourceParseException` | sources |
 | `SourceResolutionException` | `Sources\Exceptions\SourceResolutionException`<br/>`Sources\Resolver\Exceptions\SourceResolutionException` | sources |
-| `StepResult` | `Runtime\State\Data\StepResult`<br/>`Runner\Execution\Data\StepResult` | engine, runner |
+| `StepResult` | `Runtime\State\Data\StepResult`<br/>`Runner\Data\StepResult` | engine, runner |
 | `Token` | `Expression\Data\Token`<br/>`Evaluation\Condition\Token` | expression, evaluation |
 | `TokenKind` | `Expression\Enum\TokenKind`<br/>`Evaluation\Enum\TokenKind` | expression, evaluation |
 | `Transition` | `Engine\Data\Transition`<br/>`Runner\Execution\Data\Transition` | engine, runner |

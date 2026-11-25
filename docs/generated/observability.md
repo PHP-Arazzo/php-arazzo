@@ -85,12 +85,20 @@ _No catalog found (LedgerAppendingListener not found)._
 | `SelectorTypeSupportedRule` <small>core</small> | `error` | 2 |
 | `StepOperationPathSyntaxRule` <small>core</small> | `error` | 4 |
 | `SuccessCriteriaVersionSupportedRule` <small>core</small> | `error` | 2 |
-| `DefaultOpenApiExecutor` <small>core</small> | `warning` | 1 |
+| `DefaultOpenApiExecutor` <small>core</small> | `debug` · `warning` | 3 |
 | `StepOutputExtractor` <small>core</small> | `warning` | 1 |
+| `RpcOperationExecutor` <small>core</small> | `debug` · `warning` | 3 |
 | `RpcStepRule` <small>core</small> | `error` | 4 |
+| `SoapOperationExecutor` <small>core</small> | `debug` · `warning` | 3 |
 | `WsdlStepRule` <small>core</small> | `error` | 3 |
+| `CorrelationResumer` <small>core</small> | `info` · `warning` | 6 |
+| `StepExecutionWorker` <small>core</small> | `info` · `error` | 5 |
+| `StepOutcomeHandler` <small>core</small> | `warning` · `info` | 2 |
+| `WorkflowExecutor` <small>core</small> | `warning` · `info` · `error` | 4 |
+| `HttpFetcher` <small>core</small> | `debug` · `warning` | 4 |
+| `Sources` <small>core</small> | `warning` | 2 |
 
-110 logging calls total. PSR-14 events are dispatched independently (see events.md).
+141 logging calls total. PSR-14 events are dispatched independently (see events.md).
 
 ## Persistence adapters
 
@@ -99,13 +107,12 @@ Runtime state survives process boundaries through these contracts:
 | Contract | Implementations |
 |---|---|
 | `DefinitionRegistryInterface` |  |
-| `EventLedgerInterface` | `NullEventLedger` <small>core</small> |
-| `ExecutionRegistryInterface` | `InProcessExecutionRegistry` <small>core</small> |
-| `LockManagerInterface` | `CliRunner` <small>core</small> |
-| `PendingCorrelationRegistryInterface` | `InProcessPendingCorrelationRegistry` <small>core</small> |
+| `ExecutionRegistryInterface` |  |
+| `LockManagerInterface` | `InMemoryLockManager` <small>core</small> |
+| `PendingCorrelationRegistryInterface` | `ExecutionStoreCorrelationBridge` <small>core</small> |
 | `QueueDriverInterface` | `SyncQueueDriver` <small>core</small> |
 | `StateStoreInterface` | `FileStateStore` <small>core</small>, `InMemoryStateStore` <small>core</small> |
-| `WritableDefinitionRegistryInterface` | `InMemoryDefinitionRegistry` <small>core</small> |
+| `WritableDefinitionRegistryInterface` |  |
 
 ## Correlation touchpoints
 
@@ -113,15 +120,14 @@ Where async suspend/resume bookkeeping happens:
 
 | Class | Role signals |
 |---|---|
-| `CliRunner` <small>core</small> | resumes from webhook |
-| `InProcessPendingCorrelationRegistry` <small>core</small> | consumes correlation, creates pending correlation, reads pending state |
+| `CliExecutionStore` <small>core</small> | consumes correlation, creates pending correlation |
 | `PendingCorrelationRegistryInterface` <small>core</small> | consumes correlation, reads pending state |
 | `WorkflowContext` <small>core</small> | resumes from webhook |
-| `CorrelationResumedEvent` <small>core</small> | resumes from webhook |
-| `LedgerEventListener` <small>core</small> | resumes from webhook |
-| `AsyncExecutionGraph` <small>core</small> | resumes from webhook |
+| `AsyncRunner` <small>core</small> | resumes from webhook |
+| `AsyncRunnerInterface` <small>core</small> | resumes from webhook |
 | `AsyncExecutionGraphAssembler` <small>core</small> | resumes from webhook |
 | `CorrelationResumer` <small>core</small> | consumes correlation, resumes from webhook |
-| `ResumeCorrelationJob` <small>core</small> | resumes from webhook |
-| `StepExecutionWorker` <small>core</small> | resumes from webhook |
-| `StepOutcomeHandler` <small>core</small> | reads pending state |
+| `CorrelationResumedEvent` <small>core</small> | resumes from webhook |
+| `ExecutionStoreInterface` <small>core</small> | consumes correlation, resumes from webhook |
+| `ExecutionStoreCorrelationBridge` <small>core</small> | consumes correlation, reads pending state |
+| `InMemoryExecutionStore` <small>core</small> | consumes correlation, creates pending correlation |

@@ -7,6 +7,7 @@ namespace Alama\Arazzo\Tests\Protocol\Http\Protocol;
 use Alama\Arazzo\Contracts\Exceptions\SchemaValidationException;
 use Alama\Arazzo\Contracts\Interfaces\OutputExtractorInterface;
 use Alama\Arazzo\Contracts\Interfaces\ResponseValidatorInterface;
+use Alama\Arazzo\Contracts\Policy\SourcePolicy;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Components;
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
@@ -24,6 +25,7 @@ use Alama\Arazzo\Contracts\Spec\StepFlow;
 use Alama\Arazzo\Contracts\Spec\StepIo;
 use Alama\Arazzo\Contracts\Spec\StepTarget;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
+use Alama\Arazzo\Engine\Execution\IdempotencyKeyInjector;
 use Alama\Arazzo\Evaluation\Data\CriterionResult;
 use Alama\Arazzo\Evaluation\Data\CriterionResultCollection;
 use Alama\Arazzo\Evaluation\EvaluationEngine;
@@ -122,6 +124,7 @@ class HttpStepExecutorMockOpenApiExecutor implements OpenApiExecutorInterface
         OpenApiPayload $payload,
         ?callable $requestInterceptor = null,
         ?float $timeoutSeconds = null,
+        ?SourcePolicy $sourcePolicy = null,
     ): ResponseInterface {
         if ($requestInterceptor) {
             $requestInterceptor(new Request('GET', 'http://localhost/thing'));
@@ -214,7 +217,7 @@ it('executes the request and returns a resolved outcome with statusCode/outputs/
         new HttpStepExecutorMockEngine(),
         $outputExtractor,
         Mockery::mock(ResponseValidatorInterface::class),
-        strictValidationDefault: false,
+        strictDefault: false,
     );
 
     $step = new Step('s1', null, new StepTarget(), new StepFlow(), new StepIo());
@@ -244,7 +247,7 @@ it('stores the response on the context before calling extractOutputs, fixing the
         new HttpStepExecutorMockEngine(),
         $outputExtractor,
         Mockery::mock(ResponseValidatorInterface::class),
-        strictValidationDefault: false,
+        strictDefault: false,
     );
 
     $step = new Step('s1', null, new StepTarget(), new StepFlow(), new StepIo());
@@ -336,4 +339,65 @@ it('validates response schema by default when the step does not opt out', functi
     } catch (SchemaValidationException $e) {
         expect($e->stepId)->toBe('default-step');
     }
+});
+
+it('forwards active SourcePolicy timeout and strictValidation override to executor and schema validator', function (): void {
+    $capturedTimeout = null;
+    $capturedPolicy = null;
+
+    $openApiExecutor = Mockery::mock(OpenApiExecutorInterface::class);
+    $openApiExecutor->shouldReceive('execute')->andReturnUsing(function ($resolved, $payload, $interceptor, $timeout, $policy) use (&$capturedTimeout, &$capturedPolicy) {
+        $capturedTimeout = $timeout;
+        $capturedPolicy = $policy;
+        if ($interceptor) {
+            $interceptor(new Request('GET', '/'));
+        }
+
+        return new Response(200, ['Content-Type' => 'application/json'], '{"ok":true}');
+    });
+
+    $validator = Mockery::mock(ResponseValidatorInterface::class);
+    $validator->shouldReceive('validateResponseSchema')->never();
+
+    $outputExtractor = Mockery::mock(OutputExtractorInterface::class);
+    $outputExtractor->shouldReceive('extractOutputs')->andReturn([]);
+
+    $executor = new HttpStepExecutor(
+        $openApiExecutor,
+        createMockDocumentResolver(),
+        new HttpStepExecutorMockEngine(),
+        $outputExtractor,
+        $validator,
+        strictDefault: true,
+    );
+
+    $sourcePolicy = SourcePolicy::default()
+        ->withTimeoutSeconds(9.5)
+        ->withStrictValidation(false);
+
+    $context = (new WorkflowContext('wf_1'))->withActiveSourcePolicy($sourcePolicy);
+    $step = StepFactory::http('policy-step', null, new StepFlow(), new StepIo(), operationId: 'op');
+
+    $outcome = $executor->execute($step, $context, httpStepExecutorDocument(), 'exec_1');
+
+    expect($outcome->statusCode)->toBe(200)
+        ->and($capturedTimeout)->toBe(9.5)
+        ->and($capturedPolicy)->toBe($sourcePolicy)
+        ->and($executor->name())->toBe('http')
+        ->and($executor->priority())->toBe(HttpStepExecutor::PLUGIN_PRIORITY);
+
+    // Step-level timeout (in ms) overrides SourcePolicy timeout and IdempotencyKeyInjector runs when configured
+    $injectedExecutor = new HttpStepExecutor(
+        $openApiExecutor,
+        createMockDocumentResolver(),
+        new HttpStepExecutorMockEngine(),
+        $outputExtractor,
+        $validator,
+        strictDefault: false,
+        injector: new IdempotencyKeyInjector(true, 'Idempotency-Key'),
+    );
+    $stepWithTimeout = StepFactory::http('t-step', null, new StepFlow(timeout: 2500), new StepIo(), operationId: 'op');
+    $injectedExecutor->execute($stepWithTimeout, $context, httpStepExecutorDocument(), 'exec_1');
+
+    expect($capturedTimeout)->toBe(2.5);
 });

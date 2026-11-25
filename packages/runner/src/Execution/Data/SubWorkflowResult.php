@@ -22,4 +22,9 @@ final readonly class SubWorkflowResult
         public int $stepsSpent = 0,
         public array $workflowCallStack = [],
     ) {}
+
+    public function isSucceeded(): bool
+    {
+        return $this->status === 'succeeded';
+    }
 }

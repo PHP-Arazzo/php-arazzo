@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use Alama\Arazzo\Contracts\Interfaces\PendingCorrelationRegistryInterface;
 use Alama\Arazzo\Contracts\Interfaces\QueueDriverInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Components;
@@ -15,37 +14,24 @@ use Alama\Arazzo\Contracts\Spec\StepIo;
 use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
 use Alama\Arazzo\Evaluation\EvaluationEngineInterface;
-use Alama\Arazzo\Events\Interfaces\EventLedgerInterface;
 use Alama\Arazzo\Runner\Async\StepOutcomeHandler;
 use Alama\Arazzo\Runner\Async\SubWorkflowInvoker;
 use Alama\Arazzo\Runner\Execution\Data\RunControlFlow;
-use Alama\Arazzo\Runner\Execution\Data\RunPersistence;
+use Alama\Arazzo\Runner\ExecutionStoreInterface;
 use Alama\Arazzo\Runner\Sync\WorkflowEngine;
-use Alama\Arazzo\Runtime\State\Interfaces\ExecutionRegistryInterface;
-use Alama\Arazzo\Runtime\State\Interfaces\StateStoreInterface;
 
 it('resolves a Selector output through SelectorEvaluator', function () {
     $exprEngine = Mockery::mock(EvaluationEngineInterface::class);
     $exprEngine->shouldReceive('evaluateSelector')->once()->andReturn('bar');
 
-    $engine = new WorkflowEngine(Mockery::mock(EvaluationEngineInterface::class));
-
-    $store = Mockery::mock(StateStoreInterface::class);
-    $store->shouldReceive('save');
-
-    $pending = Mockery::mock(PendingCorrelationRegistryInterface::class);
-    $pending->shouldReceive('existsForExecution')->once()->andReturn(false);
-
-    $exec = Mockery::mock(ExecutionRegistryInterface::class);
-    $exec->shouldReceive('complete')->once();
-
-    $ledger = Mockery::mock(EventLedgerInterface::class);
-    $ledger->shouldReceive('append')->once();
+    $store = Mockery::mock(ExecutionStoreInterface::class);
+    $store->shouldReceive('saveState');
+    $store->shouldReceive('hasPendingCorrelations')->once()->andReturn(false);
+    $store->shouldReceive('markCompleted')->once();
 
     $handler = new StepOutcomeHandler(
-        new RunPersistence($store, $ledger, $exec),
+        $store,
         new RunControlFlow(new WorkflowEngine(Mockery::mock(EvaluationEngineInterface::class)), Mockery::mock(QueueDriverInterface::class)),
-        pendingCorrelations: $pending,
         invoker: Mockery::mock(SubWorkflowInvoker::class),
         evaluationEngine: $exprEngine,
     );

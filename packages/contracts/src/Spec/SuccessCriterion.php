@@ -14,4 +14,34 @@ final readonly class SuccessCriterion
         public ?CriterionType $type,
         public ?string $version = null,
     ) {}
+
+    public function isSimple(): bool
+    {
+        return $this->type === CriterionType::Simple;
+    }
+
+    public function isRegex(): bool
+    {
+        return $this->type === CriterionType::Regex;
+    }
+
+    public function isJsonPath(): bool
+    {
+        return $this->type === CriterionType::JsonPath;
+    }
+
+    public function isXPath(): bool
+    {
+        return $this->type === CriterionType::XPath;
+    }
+
+    public function hasContext(): bool
+    {
+        return $this->context !== null && trim($this->context) !== '';
+    }
+
+    public function hasVersion(): bool
+    {
+        return $this->version !== null && trim($this->version) !== '';
+    }
 }

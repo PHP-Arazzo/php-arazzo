@@ -16,28 +16,31 @@ Where mutable state lives, and which of it crosses process boundaries:
 
 | Package | Readonly | Mutable | Readonly share |
 |---|---:|---:|---:|
-| contracts | 53 | 14 | 79% |
-| expression | 24 | 40 | 38% |
-| evaluation | 14 | 13 | 52% |
-| sources | 1 | 20 | 5% |
-| document | 9 | 74 | 11% |
-| engine | 7 | 20 | 26% |
-| protocol-http | 1 | 7 | 12% |
-| protocol-rpc | 5 | 10 | 33% |
-| protocol-soap | 1 | 11 | 8% |
-| runner | 17 | 30 | 36% |
+| contracts | 68 | 19 | 78% |
+| expression | 28 | 43 | 39% |
+| evaluation | 14 | 16 | 47% |
+| sources | 3 | 24 | 11% |
+| document | 9 | 81 | 10% |
+| engine | 10 | 28 | 26% |
+| protocol-http | 5 | 9 | 36% |
+| protocol-rpc | 5 | 16 | 24% |
+| protocol-soap | 1 | 17 | 6% |
+| runner | 29 | 29 | 50% |
 | core | 0 | 0 | — |
-| cli | 1 | 14 | 7% |
+| cli | 1 | 17 | 6% |
 
 ## Mutable clusters
 
 | Class | Package | Dir | Serialization signals |
 |---|---|---|---|
 | `ImplicitDependencies` | contracts | `Dependency` | `hydrate` |
+| `WorkflowContextHydrator` | contracts | `State` | `hydrate` |
 | `WorkflowDataMap` | contracts | `State` | `hydrate` |
 | `DecoderRegistry` | document | `Parser` | `hydrate` |
+| `DecodeException` | document | `Parser/Exceptions` | `hydrate` |
 | `ParameterSerializer` | engine | `Execution` | `serialize` |
 | `ExecutionContext` | engine | `Runtime/State/Data` | `toArray`, `hydrate` |
+| `PreflightFailureException` | runner | `Exceptions` | `hydrate` |
 | `CliRunResult` | cli | `Console/Cli` | `hydrate` |
 
 ## Cross-process aggregates
@@ -46,7 +49,10 @@ Mutable types that serialize themselves or are carried by queue jobs — each ne
 
 - `CliRunResult` <small>cli · `hydrate`</small>
 - `ImplicitDependencies` <small>contracts · `hydrate`</small>
+- `WorkflowContextHydrator` <small>contracts · `hydrate`</small>
 - `WorkflowDataMap` <small>contracts · `hydrate`</small>
 - `DecoderRegistry` <small>document · `hydrate`</small>
+- `DecodeException` <small>document · `hydrate`</small>
 - `ParameterSerializer` <small>engine · `serialize`</small>
+- `PreflightFailureException` <small>runner · `hydrate`</small>
 - `ExecutionContext` <small>engine · `toArray`, `hydrate`</small>

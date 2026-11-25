@@ -4,74 +4,63 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Runner\Sync;
 
-use Alama\Arazzo\Contracts\Interfaces\OutputExtractorInterface;
-use Alama\Arazzo\Contracts\Interfaces\ResponseValidatorInterface;
 use Alama\Arazzo\Document\DocumentInterface;
-use Alama\Arazzo\Engine\Exceptions\ExecutionException;
 use Alama\Arazzo\Evaluation\EvaluationEngineInterface;
-use Alama\Arazzo\Protocol\Http\Execution\Interfaces\OpenApiExecutorInterface;
-use Alama\Arazzo\Runner\Execution\OperationRuntime;
-use Alama\Arazzo\Runner\OperationExecutorRegistry;
+use Alama\Arazzo\Runner\Execution\Data\RunnerOptions;
 use Alama\Arazzo\Runner\Plugins\OperationExecutor\SubWorkflowStepExecutor;
 use Alama\Arazzo\Runner\Preflight\OperationResolvers;
 use Alama\Arazzo\Runner\Preflight\Preflight;
+use Alama\Arazzo\Runner\Registries\OperationExecutorRegistry;
 
 /**
- * Assembles the runner execution graph.
- *
- * The runner consumes the document package through its public face: source
- * resolution/fetching, preflight validation and OpenAPI operation resolution
- * all flow through {@see DocumentInterface}. Expression services flow
- * through the injected expression public face ({@see EvaluationEngineInterface}),
- * with the runner composing output extraction and schema validation itself.
+ * Assembles the synchronous runner execution graph.
  *
  * @internal stays out of the advertised contract; not part of the public API surface
  */
 final class ExecutionGraphFactory
 {
     public function __construct(
-        private readonly OperationRuntime $operations,
+        private readonly DocumentInterface $document,
         private readonly EvaluationEngineInterface $evaluationEngine,
-        private readonly ?OpenApiExecutorInterface $openApiExecutor = null,
-        private readonly ?OutputExtractorInterface $outputExtractor = null,
-        private readonly ?ResponseValidatorInterface $schemaValidator = null,
+        private readonly RunnerOptions $options = new RunnerOptions(),
     ) {}
 
     public function createWorkflowExecutor(?OperationExecutorRegistry $executors = null): WorkflowExecutor
     {
-        $openApiExecutor = $this->openApiExecutor
-            ?? throw new ExecutionException('No HTTP/OpenAPI executor configured; register alama/arazzo-protocol-http (Phase F1).');
-        $outputExtractor = $this->outputExtractor
-            ?? throw new ExecutionException('No output extractor configured; register alama/arazzo-protocol-http (Phase F1).');
-        $schemaValidator = $this->schemaValidator
-            ?? throw new ExecutionException('No response validator configured; register alama/arazzo-protocol-http (Phase F1).');
-
-        // Runner-native plugins go through the same first-supports()-wins
-        // registry the async assembler uses; the host's protocol executors stay
-        // on the constructor seam for this facade.
-        $executors ??= OperationExecutorRegistry::create();
+        // Snapshot the registry so registering this graph's SubWorkflowStepExecutor
+        // and per-instance overrides never mutates the global singleton.
+        $base = $executors ?? OperationExecutorRegistry::create();
+        $graphRegistry = $base->snapshot($this->options->executors);
 
         $stepExecutor = new StepExecutor(
-            $openApiExecutor,
-            $this->operations->resolver,
-            $this->evaluationEngine,
-            $outputExtractor,
-            $schemaValidator,
-            executors: $executors,
+            evaluationEngine: $this->evaluationEngine,
+            executors: $graphRegistry,
+            policy: $this->options->policy,
         );
 
-        $preflight = new Preflight(new OperationResolvers([$this->operations->resolver]));
+        $preflight = $this->options->policy->preflight && $this->options->operationResolvers !== []
+            ? new Preflight(new OperationResolvers($this->options->operationResolvers))
+            : null;
+
+        $workflowEngine = new WorkflowEngine(
+            $this->evaluationEngine,
+            maxRetryAttempts: $this->options->policy->retryPolicy,
+        );
 
         $workflowExecutor = new WorkflowExecutor(
-            $stepExecutor,
-            workflowEngine: new WorkflowEngine($this->evaluationEngine),
+            stepExecutor: $stepExecutor,
+            workflowEngine: $workflowEngine,
+            events: $this->options->observability,
             preflight: $preflight,
-            document: $this->operations->document,
+            document: $this->options->policy->preflight ? $this->document : null,
         );
 
-        // The sub-workflow executor wraps THIS graph's WorkflowExecutor, so it
-        // is registered after construction, exactly like the async assembly.
-        $executors->register(new SubWorkflowStepExecutor($workflowExecutor, $this->evaluationEngine));
+        // Register SubWorkflowStepExecutor unless the caller explicitly overrode
+        // the SubWorkflow protocol on this Runner instance.
+        $graphRegistry->register(new SubWorkflowStepExecutor($workflowExecutor, $this->evaluationEngine));
+        foreach ($this->options->executors as $override) {
+            $graphRegistry->register($override);
+        }
 
         return $workflowExecutor;
     }

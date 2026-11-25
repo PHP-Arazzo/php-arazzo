@@ -6,36 +6,29 @@ namespace Tests\Execution;
 
 use Alama\Arazzo\Contracts\Interfaces\LockManagerInterface;
 use Alama\Arazzo\Contracts\Interfaces\OutputExtractorInterface;
-use Alama\Arazzo\Contracts\Interfaces\PendingCorrelationRegistryInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
+use Alama\Arazzo\Contracts\Spec\Enum\ExecutionStatus;
 use Alama\Arazzo\Contracts\Spec\PendingCorrelation;
 use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
 use Alama\Arazzo\Evaluation\EvaluationEngineInterface;
-use Alama\Arazzo\Events\Interfaces\EventLedgerInterface;
 use Alama\Arazzo\Runner\Async\CorrelationResumer;
 use Alama\Arazzo\Runner\Async\StepOutcomeHandler;
-use Alama\Arazzo\Runtime\State\Interfaces\DefinitionRegistryInterface;
-use Alama\Arazzo\Runtime\State\Interfaces\StateStoreInterface;
+use Alama\Arazzo\Runner\DefinitionStoreInterface;
+use Alama\Arazzo\Runner\Execution\Data\AsyncPorts;
+use Alama\Arazzo\Runner\Execution\Data\ObservabilityContext;
+use Alama\Arazzo\Runner\ExecutionStoreInterface;
+use Alama\Arazzo\Runner\Queue\SyncQueueDriver;
+use Psr\Log\AbstractLogger;
 
 require_once __DIR__.'/../Execution/ResumerTestHelpers.php';
 
-/**
- * CorrelationResumer type-hints the concrete StepOutcomeHandler, so the spy has
- * to extend it. It overrides handle() and never calls the parent constructor:
- * the parent's private collaborators stay uninitialised but are unreachable
- * because every inherited method that touches them is overridden away.
- */
 class RecordingStepOutcomeHandler extends StepOutcomeHandler
 {
-    /** @var list<array{executionId: string, stepId: string, criteriaMet: bool, context: WorkflowContext}> */
+    /** @var list<array{executionId: string, stepId: string, criteriaMet: bool, suspended: bool, context: WorkflowContext}> */
     public array $handled = [];
 
-    /**
-     * Declared explicitly and deliberately empty: without it PHP would
-     * implicitly call the parent constructor, which needs five collaborators.
-     */
     public function __construct() {}
 
     public function handle(
@@ -57,9 +50,15 @@ class RecordingStepOutcomeHandler extends StepOutcomeHandler
     }
 }
 
-class ResumerMockPendingCorrelations implements PendingCorrelationRegistryInterface
+class ResumerMockStore implements ExecutionStoreInterface
 {
     public ?PendingCorrelation $toReturn = null;
+
+    /** @var array<string, mixed>|null */
+    public ?array $state = null;
+
+    /** @var array<string, array<string, mixed>> */
+    public array $saved = [];
 
     /** @var list<string> */
     public array $created = [];
@@ -67,71 +66,66 @@ class ResumerMockPendingCorrelations implements PendingCorrelationRegistryInterf
     /** @var list<string> */
     public array $consumed = [];
 
-    public function create(string $correlationId, string $executionId, string $stepId, string $channelPath, ?int $timeoutSeconds = null): void
+    public function saveState(string $executionId, array $state, ?int $ttlSeconds = null): void
+    {
+        $this->saved[$executionId] = $state;
+    }
+
+    public function loadState(string $executionId): ?array
+    {
+        return $this->state;
+    }
+
+    public function deleteState(string $executionId): void {}
+
+    public function markStarted(string $executionId, string $definitionId, string $workflowId): void {}
+
+    public function markCompleted(string $executionId, ExecutionStatus $status): void {}
+
+    public function saveCorrelation(string $correlationId, string $executionId, string $stepId, string $channelPath, ?int $timeoutSeconds = null): void
     {
         $this->created[] = $correlationId;
     }
 
-    public function findByCorrelationId(string $correlationId): ?PendingCorrelation
+    public function findCorrelation(string $correlationId): ?PendingCorrelation
     {
         return $this->toReturn;
     }
 
-    public function consume(string $correlationId): void
+    public function consumeCorrelation(string $correlationId): void
     {
         $this->consumed[] = $correlationId;
     }
 
-    public function existsForExecution(string $executionId): bool
+    public function hasPendingCorrelations(string $executionId): bool
     {
         return false;
     }
 }
 
-class ResumerMockStateStore implements StateStoreInterface
-{
-    /** @var array<string, mixed>|null */
-    public ?array $state = null;
-
-    /** @var array<string, array<string, mixed>> */
-    public array $saved = [];
-
-    public function save(string $executionId, array $state, ?int $ttlSeconds = null): void
-    {
-        $this->saved[$executionId] = $state;
-    }
-
-    public function load(string $executionId): ?array
-    {
-        return $this->state;
-    }
-
-    public function delete(string $executionId): void {}
-}
-
-class RecordingDefinitionRegistry implements DefinitionRegistryInterface
+class RecordingDefinitionStore implements DefinitionStoreInterface
 {
     public function __construct(private ?ArazzoDocument $document = null) {}
 
-    public function register(ArazzoDocument $document): string
+    public function save(ArazzoDocument $document, ?string $definitionId = null): string
     {
-        return 'test-def';
+        return $definitionId ?? 'test-def';
     }
 
-    public function get(string $definitionId): ?ArazzoDocument
+    public function find(string $definitionId): ?ArazzoDocument
     {
         return $this->document;
     }
 }
 
-class ResumerMockEventLedger implements EventLedgerInterface
+class ResumerSpyLogger extends AbstractLogger
 {
-    /** @var list<array{executionId: string, eventType: string, payload: array<string, mixed>}> */
-    public array $appended = [];
+    /** @var list<array{level: mixed, message: string, context: array<mixed>}> */
+    public array $records = [];
 
-    public function append(string $executionId, string $eventType, array $payload): void
+    public function log($level, \Stringable|string $message, array $context = []): void
     {
-        $this->appended[] = ['executionId' => $executionId, 'eventType' => $eventType, 'payload' => $payload];
+        $this->records[] = ['level' => $level, 'message' => (string) $message, 'context' => $context];
     }
 }
 
@@ -155,169 +149,162 @@ class ResumerMockLockManager implements LockManagerInterface
     public function release(string $key): void {}
 }
 
-it('does nothing when the correlation is not found', function (): void {
-    $pendingCorrelations = new ResumerMockPendingCorrelations();
-    $pendingCorrelations->toReturn = null;
+function makeResumer(
+    ResumerMockStore $store,
+    DefinitionStoreInterface $definitions,
+    OutputExtractorInterface $extractor,
+    EvaluationEngineInterface $engine,
+    RecordingStepOutcomeHandler $outcomeHandler,
+    ResumerSpyLogger $logger,
+): CorrelationResumer {
+    return new CorrelationResumer(
+        new AsyncPorts($store, $definitions, new SyncQueueDriver(), new ResumerMockLockManager(), $extractor),
+        $engine,
+        $outcomeHandler,
+        new ObservabilityContext(logger: $logger),
+    );
+}
 
-    $eventLedger = new ResumerMockEventLedger();
+it('does nothing when the correlation is not found', function (): void {
+    $store = new ResumerMockStore();
+    $logger = new ResumerSpyLogger();
     $outcomeHandler = new RecordingStepOutcomeHandler();
 
-    $resumer = new CorrelationResumer(
-        $pendingCorrelations,
-        new ResumerMockStateStore(),
-        new RecordingDefinitionRegistry(),
+    $resumer = makeResumer(
+        $store,
+        new RecordingDefinitionStore(),
         \Mockery::mock(OutputExtractorInterface::class),
         \Mockery::mock(EvaluationEngineInterface::class),
         $outcomeHandler,
-        $eventLedger,
-        new ResumerMockLockManager(),
+        $logger,
     );
 
     $resumer->resume('missing', ['body' => ['x' => 1]]);
 
     expect($outcomeHandler->handled)->toBe([])
-        ->and($pendingCorrelations->consumed)->toBe([])
-        ->and($eventLedger->appended)->toBe([]);
+        ->and($store->consumed)->toBe([])
+        ->and($logger->records)->toBe([]);
 });
 
 it('logs and does nothing when persisted state is missing', function (): void {
-    $pendingCorrelations = new ResumerMockPendingCorrelations();
-    $pendingCorrelations->toReturn = new PendingCorrelation('corr_1', 'exec_1', 'wait-for-ride', 'channels/rides/created');
+    $store = new ResumerMockStore();
+    $store->toReturn = new PendingCorrelation('corr_1', 'exec_1', 'wait-for-ride', 'channels/rides/created');
 
-    $eventLedger = new ResumerMockEventLedger();
+    $logger = new ResumerSpyLogger();
     $outcomeHandler = new RecordingStepOutcomeHandler();
 
-    // State store preloaded with nothing: load() returns null.
-    $resumer = new CorrelationResumer(
-        $pendingCorrelations,
-        new ResumerMockStateStore(),
-        new RecordingDefinitionRegistry(),
+    $resumer = makeResumer(
+        $store,
+        new RecordingDefinitionStore(),
         \Mockery::mock(OutputExtractorInterface::class),
         \Mockery::mock(EvaluationEngineInterface::class),
         $outcomeHandler,
-        $eventLedger,
-        new ResumerMockLockManager(),
+        $logger,
     );
 
     $resumer->resume('corr_1', ['body' => ['x' => 1]]);
 
     expect($outcomeHandler->handled)->toBe([])
-        ->and($eventLedger->appended[0]['eventType'])->toBe('execution.state_missing')
-        ->and($eventLedger->appended[0]['payload'])->toBe(['correlationId' => 'corr_1']);
+        ->and($logger->records[0]['message'])->toContain('Execution state missing')
+        ->and($logger->records[0]['context']['correlationId'])->toBe('corr_1');
 });
 
 it('reports a missing definition when the persisted definitionId is not scalar', function (): void {
-    $pendingCorrelations = new ResumerMockPendingCorrelations();
-    $pendingCorrelations->toReturn = new PendingCorrelation('corr_1', 'exec_1', 'wait-for-ride', 'channels/rides/created');
+    $store = new ResumerMockStore();
+    $store->toReturn = new PendingCorrelation('corr_1', 'exec_1', 'wait-for-ride', 'channels/rides/created');
+    $store->state = ['definitionId' => ['not', 'a', 'string']];
 
-    $stateStore = new ResumerMockStateStore();
-    $stateStore->state = ['definitionId' => ['not', 'a', 'string']];
-
-    $eventLedger = new ResumerMockEventLedger();
+    $logger = new ResumerSpyLogger();
     $outcomeHandler = new RecordingStepOutcomeHandler();
 
-    $resumer = new CorrelationResumer(
-        $pendingCorrelations,
-        $stateStore,
-        new RecordingDefinitionRegistry(),
+    $resumer = makeResumer(
+        $store,
+        new RecordingDefinitionStore(),
         \Mockery::mock(OutputExtractorInterface::class),
         \Mockery::mock(EvaluationEngineInterface::class),
         $outcomeHandler,
-        $eventLedger,
-        new ResumerMockLockManager(),
+        $logger,
     );
 
     $resumer->resume('corr_1', ['body' => ['x' => 1]]);
 
     expect($outcomeHandler->handled)->toBe([])
-        ->and($eventLedger->appended[0]['eventType'])->toBe('execution.definition_missing')
-        ->and($eventLedger->appended[0]['payload'])->toBe(['definitionId' => ['not', 'a', 'string']]);
+        ->and($logger->records[0]['message'])->toContain('Definition missing')
+        ->and($logger->records[0]['context']['definitionId'])->toBe(['not', 'a', 'string']);
 });
 
 it('reports a missing workflow when the persisted workflowId is not scalar', function (): void {
-    [$registry, $definitionId] = resumerDocument();
-    $document = $registry->get($definitionId);
+    [$definitions, $definitionId] = resumerDocument();
+    $document = $definitions->find($definitionId);
 
-    $pendingCorrelations = new ResumerMockPendingCorrelations();
-    $pendingCorrelations->toReturn = new PendingCorrelation('corr_1', 'exec_1', 'wait-for-ride', 'channels/rides/created');
+    $store = new ResumerMockStore();
+    $store->toReturn = new PendingCorrelation('corr_1', 'exec_1', 'wait-for-ride', 'channels/rides/created');
+    $store->state = ['definitionId' => $definitionId, 'workflowId' => ['not', 'a', 'string']];
 
-    $stateStore = new ResumerMockStateStore();
-    $stateStore->state = ['definitionId' => $definitionId, 'workflowId' => ['not', 'a', 'string']];
-
-    $eventLedger = new ResumerMockEventLedger();
+    $logger = new ResumerSpyLogger();
     $outcomeHandler = new RecordingStepOutcomeHandler();
 
-    $resumer = new CorrelationResumer(
-        $pendingCorrelations,
-        $stateStore,
-        new RecordingDefinitionRegistry($document),
+    $resumer = makeResumer(
+        $store,
+        new RecordingDefinitionStore($document),
         \Mockery::mock(OutputExtractorInterface::class),
         \Mockery::mock(EvaluationEngineInterface::class),
         $outcomeHandler,
-        $eventLedger,
-        new ResumerMockLockManager(),
+        $logger,
     );
 
     $resumer->resume('corr_1', ['body' => ['x' => 1]]);
 
     expect($outcomeHandler->handled)->toBe([])
-        ->and($eventLedger->appended[0]['eventType'])->toBe('execution.workflow_missing')
-        ->and($eventLedger->appended[0]['payload'])->toBe(['workflowId' => ['not', 'a', 'string']]);
+        ->and($logger->records[0]['message'])->toContain('Workflow missing')
+        ->and($logger->records[0]['context']['workflowId'])->toBe(['not', 'a', 'string']);
 });
 
 it('falls back to a 200 status when the resumption payload carries a non-int statusCode', function (): void {
-    [$registry, $definitionId] = resumerDocument();
-    $document = $registry->get($definitionId);
+    [$definitions, $definitionId] = resumerDocument();
+    $document = $definitions->find($definitionId);
 
-    $pendingCorrelations = new ResumerMockPendingCorrelations();
-    $pendingCorrelations->toReturn = new PendingCorrelation('corr_1', 'exec_1', 'wait-for-ride', 'channels/rides/created');
-
-    $stateStore = new ResumerMockStateStore();
-    $stateStore->state = ['definitionId' => $definitionId, 'workflowId' => 'wf_1'];
+    $store = new ResumerMockStore();
+    $store->toReturn = new PendingCorrelation('corr_1', 'exec_1', 'wait-for-ride', 'channels/rides/created');
+    $store->state = ['definitionId' => $definitionId, 'workflowId' => 'wf_1'];
 
     $outcomeHandler = new RecordingStepOutcomeHandler();
 
-    $resumer = new CorrelationResumer(
-        $pendingCorrelations,
-        $stateStore,
-        new RecordingDefinitionRegistry($document),
+    $resumer = makeResumer(
+        $store,
+        new RecordingDefinitionStore($document),
         \Mockery::mock(OutputExtractorInterface::class)->shouldReceive('extractOutputs')->andReturn([])->getMock(),
         \Mockery::mock(EvaluationEngineInterface::class)->shouldReceive('evaluateSuccessCriteria')->andReturn(true)->getMock(),
         $outcomeHandler,
-        new ResumerMockEventLedger(),
-        new ResumerMockLockManager(),
+        new ResumerSpyLogger(),
     );
 
     $response = ['statusCode' => 'not-an-int', 'body' => ['x' => 1]];
     $resumer->resume('corr_1', $response);
 
-    expect($stateStore->saved['exec_1']['steps']['wait-for-ride']['statusCode'])->toBe(200)
-        ->and($stateStore->saved['exec_1']['steps']['wait-for-ride']['response'])->toBe($response)
+    expect($store->saved['exec_1']['steps']['wait-for-ride']['statusCode'])->toBe(200)
+        ->and($store->saved['exec_1']['steps']['wait-for-ride']['response'])->toBe($response)
         ->and($outcomeHandler->handled)->toHaveCount(1);
 });
 
 it('marks a resumed receive step as having received a message', function (): void {
-    [$registry, $definitionId] = resumerDocument();
-    $document = $registry->get($definitionId);
+    [$definitions, $definitionId] = resumerDocument();
+    $document = $definitions->find($definitionId);
 
-    $pendingCorrelations = new ResumerMockPendingCorrelations();
-    $pendingCorrelations->toReturn = new PendingCorrelation('corr_1', 'exec_1', 'wait-for-ride', 'channels/rides/created');
+    $store = new ResumerMockStore();
+    $store->toReturn = new PendingCorrelation('corr_1', 'exec_1', 'wait-for-ride', 'channels/rides/created');
+    $store->state = ['definitionId' => $definitionId, 'workflowId' => 'wf_1'];
 
-    $stateStore = new ResumerMockStateStore();
-    $stateStore->state = ['definitionId' => $definitionId, 'workflowId' => 'wf_1'];
-
-    $resumer = new CorrelationResumer(
-        $pendingCorrelations,
-        $stateStore,
-        new RecordingDefinitionRegistry($document),
+    $resumer = makeResumer(
+        $store,
+        new RecordingDefinitionStore($document),
         \Mockery::mock(OutputExtractorInterface::class)->shouldReceive('extractOutputs')->andReturn([])->getMock(),
         \Mockery::mock(EvaluationEngineInterface::class)->shouldReceive('evaluateSuccessCriteria')->andReturn(true)->getMock(),
         new RecordingStepOutcomeHandler(),
-        new ResumerMockEventLedger(),
-        new ResumerMockLockManager(),
+        new ResumerSpyLogger(),
     );
 
     $resumer->resume('corr_1', ['body' => ['x' => 1]]);
 
-    expect($stateStore->saved['exec_1']['steps']['wait-for-ride']['messageReceived'])->toBeTrue();
+    expect($store->saved['exec_1']['steps']['wait-for-ride']['messageReceived'])->toBeTrue();
 });

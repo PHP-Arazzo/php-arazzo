@@ -28,9 +28,9 @@ final class DefaultSourceResolver implements SourceResolver
      * Remote sources are advisory during validation (R5), so an unreachable
      * host must not stall the process until the caller's own timeout fires.
      */
-    private const HTTP_CONNECT_TIMEOUT = 2.0;
+    private const float HTTP_CONNECT_TIMEOUT = 2.0;
 
-    private const HTTP_REQUEST_TIMEOUT = 5.0;
+    private const float HTTP_REQUEST_TIMEOUT = 5.0;
 
     /** @var array<string, SourceDocument> */
     private array $seeded = [];
@@ -56,7 +56,7 @@ final class DefaultSourceResolver implements SourceResolver
     public function withFetcher(string $scheme, SourceFetcherInterface $fetcher): self
     {
         $fetchers = $this->fetchers;
-        $fetchers[$scheme] = $fetcher;
+        $fetchers[strtolower($scheme)] = $fetcher;
 
         // Preserve explicitly seeded documents; clear fetched cache so the new fetcher takes effect.
         return new self($fetchers, $this->decodePolicy, $this->seeded);
@@ -70,17 +70,24 @@ final class DefaultSourceResolver implements SourceResolver
         return new self($this->fetchers, $this->decodePolicy, $seeded);
     }
 
+    public function withDecodePolicy(?DecodePolicy $decodePolicy): self
+    {
+        return new self($this->fetchers, $decodePolicy, $this->seeded);
+    }
+
     /**
      * The Guzzle client every default source fetch goes through.
      *
      * The explicit timeouts keep a dead remote source bounded to a few
      * seconds before the loader skips it; Guzzle's defaults wait forever.
      */
-    public static function defaultHttpClient(): Client
-    {
+    public static function defaultHttpClient(
+        float $connectTimeout = self::HTTP_CONNECT_TIMEOUT,
+        float $timeout = self::HTTP_REQUEST_TIMEOUT,
+    ): Client {
         return new Client([
-            'connect_timeout' => self::HTTP_CONNECT_TIMEOUT,
-            'timeout' => self::HTTP_REQUEST_TIMEOUT,
+            'connect_timeout' => $connectTimeout,
+            'timeout' => $timeout,
         ]);
     }
 
@@ -131,10 +138,7 @@ final class DefaultSourceResolver implements SourceResolver
         }
 
         if (isset($this->resolving[$source->name])) {
-            throw new UnresolvableReferenceException(
-                "Circular reference detected when resolving source '{$source->name}'",
-                $source->name,
-            );
+            throw UnresolvableReferenceException::circularReference($source->name);
         }
 
         $this->resolving[$source->name] = true;
@@ -151,14 +155,11 @@ final class DefaultSourceResolver implements SourceResolver
 
     private function fetchAndDecode(SourceDescription $source, string $basePath): SourceDocument
     {
-        $scheme = parse_url($source->url, PHP_URL_SCHEME);
-        if (!is_string($scheme) || $scheme === '') {
-            $scheme = 'file';
-        }
+        $scheme = $source->scheme();
 
         $fetcher = $this->fetchers[$scheme] ?? null;
         if ($fetcher === null) {
-            throw new SourceFetchException("No fetcher configured for scheme '{$scheme}'.");
+            throw SourceFetchException::noFetcherForScheme($scheme);
         }
 
         $content = $fetcher->fetch($source->url, $basePath);
@@ -182,11 +183,11 @@ final class DefaultSourceResolver implements SourceResolver
         try {
             $decoded = Decoders::for($format, $this->decodePolicy)->decode($content);
         } catch (Throwable $e) {
-            throw new SourceParseException("Failed to parse source '{$sourceName}': ".$e->getMessage(), 0, $e);
+            throw SourceParseException::parseFailed($sourceName, $e);
         }
 
         if (!is_array($decoded)) {
-            throw new SourceParseException("Parsed document for '{$sourceName}' must be an array.");
+            throw SourceParseException::rootMustBeArray($sourceName);
         }
 
         /** @var array<string, mixed> $decoded */

@@ -7,7 +7,7 @@ namespace Tests\Unit\Execution;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Components;
 use Alama\Arazzo\Contracts\Spec\Info;
-use Alama\Arazzo\Runner\Execution\InMemoryDefinitionRegistry;
+use Alama\Arazzo\Runner\Store\InMemoryDefinitionStore;
 
 function makeEmptyArazzoDocument(): ArazzoDocument
 {
@@ -21,17 +21,17 @@ function makeEmptyArazzoDocument(): ArazzoDocument
     );
 }
 
-it('registers and retrieves a document', function (): void {
-    $registry = new InMemoryDefinitionRegistry();
+it('saves and retrieves a document', function (): void {
+    $store = new InMemoryDefinitionStore();
     $document = makeEmptyArazzoDocument();
 
-    $id = $registry->register($document);
+    $id = $store->save($document);
 
-    expect($registry->get($id))->toBe($document);
+    expect($store->find($id))->toBe($document);
 });
 
 it('returns null for an unknown id', function (): void {
-    $registry = new InMemoryDefinitionRegistry();
+    $store = new InMemoryDefinitionStore();
 
-    expect($registry->get('unknown'))->toBeNull();
+    expect($store->find('unknown'))->toBeNull();
 });

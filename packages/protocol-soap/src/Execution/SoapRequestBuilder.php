@@ -7,13 +7,12 @@ namespace Alama\Arazzo\Protocol\Soap\Execution;
 use Alama\Arazzo\Contracts\Interfaces\ReplacementTargetResolverInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\NormalizedOpenApiOperation;
-use Alama\Arazzo\Contracts\Spec\PayloadReplacement;
 use Alama\Arazzo\Contracts\Spec\ResolvedOperation;
 use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
-use Alama\Arazzo\Engine\Exceptions\ExecutionException;
 use Alama\Arazzo\Engine\Execution\RequestCompiler;
 use Alama\Arazzo\Evaluation\EvaluationEngineInterface;
+use Alama\Arazzo\Protocol\Soap\Exceptions\SoapExecutionException;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
@@ -55,21 +54,13 @@ final class SoapRequestBuilder
         $normalized = $resolved->normalized;
         $bags = $normalized->requestBodies['application/xml'] ?? null;
         if (!is_array($bags)) {
-            throw new ExecutionException(
-                "SOAP step '{$step->stepId}' has no application/xml request body definition.",
-                '/',
-                'execution.soap_request_body_missing',
-            );
+            throw SoapExecutionException::requestBodyMissing($step->stepId);
         }
 
         $soapVersion = is_string($bags['soapVersion'] ?? null) ? $bags['soapVersion'] : '1.1';
         $namespace = is_string($bags['namespace'] ?? null) ? $bags['namespace'] : '';
         if ($namespace === '') {
-            throw new ExecutionException(
-                "SOAP step '{$step->stepId}' has no request namespace (WSDL targetNamespace missing).",
-                '/',
-                'execution.soap_namespace_missing',
-            );
+            throw SoapExecutionException::namespaceMissing($step->stepId);
         }
 
         $compiled = (new RequestCompiler($this->evaluationEngine))->compile($step, $document, $context);
@@ -77,11 +68,7 @@ final class SoapRequestBuilder
 
         $target = $this->override($inputs, 'url') ?? $this->override($inputs, 'location') ?? $normalized->resolvedServerUrl;
         if ($target === null || $target === '') {
-            throw new ExecutionException(
-                "SOAP step '{$step->stepId}' has no target endpoint.",
-                '/',
-                'execution.soap_target_missing',
-            );
+            throw SoapExecutionException::targetEndpointMissing($step->stepId);
         }
 
         $soapAction = $this->override($inputs, 'soapAction') ?? $this->declaredSoapAction($normalized);
@@ -130,7 +117,7 @@ final class SoapRequestBuilder
         }
 
         foreach ($replacements as $replacement) {
-            $type = self::selectorType($replacement);
+            $type = $replacement->selectorType();
 
             if ($type === null || !$resolver->supports($type)) {
                 continue;
@@ -139,17 +126,6 @@ final class SoapRequestBuilder
             $value = $this->evaluationEngine->resolveValue($replacement->value, $context, $step->stepId);
             $resolver->resolve($envelope->dom(), $replacement->target, $value);
         }
-    }
-
-    private static function selectorType(PayloadReplacement $replacement): ?string
-    {
-        if (is_array($replacement->targetSelectorType)) {
-            $type = $replacement->targetSelectorType['type'] ?? null;
-
-            return is_string($type) ? $type : null;
-        }
-
-        return is_string($replacement->targetSelectorType) ? $replacement->targetSelectorType : null;
     }
 
     private function applyMediaHeaders(RequestInterface $request, string $soapVersion, ?string $soapAction): RequestInterface

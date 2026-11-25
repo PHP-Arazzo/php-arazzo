@@ -6,6 +6,7 @@ namespace Alama\Arazzo\Tests\Execution;
 
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Components;
+use Alama\Arazzo\Contracts\Spec\Enum\ExecutionStatus;
 use Alama\Arazzo\Contracts\Spec\Enum\ParameterIn;
 use Alama\Arazzo\Contracts\Spec\Expression;
 use Alama\Arazzo\Contracts\Spec\Info;
@@ -20,7 +21,7 @@ use Alama\Arazzo\Contracts\State\WorkflowContext;
 use Alama\Arazzo\Engine\Exceptions\ExecutionException;
 use Alama\Arazzo\Evaluation\EvaluationEngine;
 use Alama\Arazzo\Expression\ExpressionEngine;
-use Alama\Arazzo\Runner\Execution\Data\ExecutionResult;
+use Alama\Arazzo\Runner\Data\ExecutionResult;
 use Alama\Arazzo\Runner\Plugins\OperationExecutor\SubWorkflowStepExecutor;
 use Alama\Arazzo\Runner\Sync\WorkflowExecutor;
 use Alama\Arazzo\Tests\Support\Fx;
@@ -63,7 +64,7 @@ it('supports steps targeting a workflowId and not plain operation steps', functi
 
     $document = nestedExecutorDocument();
 
-    expect($executor->supports($document->workflows[0]->steps[0], $document))->toBeTrue()
+    expect($executor->supports($document->firstWorkflow()->firstStep(), $document))->toBeTrue()
         ->and($executor->supports(Fx::step('plain', 'op'), $document))->toBeFalse()
         ->and($executor->supports(new Step(
             'async', null, new StepTarget(action: 'send', channelPath: 'https://broker/x'), new StepFlow(), new StepIo(),
@@ -80,12 +81,12 @@ it('executes the child workflow and surfaces its outputs as step outputs', funct
 
             return true;
         })
-        ->andReturn(new ExecutionResult('fetch-user', 'succeeded', ['name' => 'user-42'], []));
+        ->andReturn(new ExecutionResult('fetch-user', ExecutionStatus::Succeeded, ['name' => 'user-42'], []));
 
     $executor = new SubWorkflowStepExecutor($childExecutor, new EvaluationEngine(expression: new ExpressionEngine()));
 
     $document = nestedExecutorDocument();
-    $step = $document->workflows[0]->steps[0];
+    $step = $document->firstWorkflow()->firstStep();
     $context = new WorkflowContext('def_1', ['uid' => 42], [], [], 'wf_1', 'exec_1');
 
     $outcome = $executor->execute($step, $context, $document, 'exec_1');

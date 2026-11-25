@@ -58,7 +58,7 @@ final class XsdResponseValidator implements ResponseValidatorInterface
         $violations = self::validateAgainstXsd($body, $xsd);
 
         if ($violations !== []) {
-            throw new SchemaValidationException($step->stepId, $violations);
+            throw SchemaValidationException::forStep($step->stepId, $violations);
         }
     }
 

@@ -45,7 +45,7 @@ class StringInterpolator
         $out = '';
 
         foreach ($segments as $segment) {
-            if (!$segment->isExpression) {
+            if ($segment->isLiteral()) {
                 $out .= $segment->text;
 
                 continue;

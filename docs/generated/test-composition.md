@@ -13,103 +13,107 @@ compliance — not an inverted pyramid of end-to-end tests.
 
 ```mermaid
 pie showData
-    title Contracts — 39 test files
-    "Module-scoped": 38
+    title Contracts — 43 test files
+    "Module-scoped": 41
     "Root": 1
+    "Unit": 1
 ```
 
 | Suite | Files | Share |
 |---|---:|---:|
-| Module-scoped | 38 | 97% |
-| Root | 1 | 3% |
+| Module-scoped | 41 | 95% |
+| Root | 1 | 2% |
+| Unit | 1 | 2% |
 
 ## Expression package
 
 ```mermaid
 pie showData
-    title Expression — 26 test files
-    "Module-scoped": 20
+    title Expression — 30 test files
+    "Module-scoped": 24
     "Conformance": 4
     "Root": 2
 ```
 
 | Suite | Files | Share |
 |---|---:|---:|
-| Module-scoped | 20 | 77% |
-| Conformance | 4 | 15% |
-| Root | 2 | 8% |
+| Module-scoped | 24 | 80% |
+| Conformance | 4 | 13% |
+| Root | 2 | 7% |
 
 ## Evaluation package
 
 ```mermaid
 pie showData
-    title Evaluation — 20 test files
+    title Evaluation — 22 test files
     "Root": 16
-    "Module-scoped": 3
+    "Module-scoped": 5
     "Conformance": 1
 ```
 
 | Suite | Files | Share |
 |---|---:|---:|
-| Root | 16 | 80% |
-| Module-scoped | 3 | 15% |
+| Root | 16 | 73% |
+| Module-scoped | 5 | 23% |
 | Conformance | 1 | 5% |
 
 ## Document package
 
 ```mermaid
 pie showData
-    title Document — 99 test files
-    "Module-scoped": 95
+    title Document — 101 test files
+    "Module-scoped": 97
     "Root": 4
 ```
 
 | Suite | Files | Share |
 |---|---:|---:|
-| Module-scoped | 95 | 96% |
+| Module-scoped | 97 | 96% |
 | Root | 4 | 4% |
 
 ## Sources package
 
 ```mermaid
 pie showData
-    title Sources — 11 test files
-    "Module-scoped": 9
+    title Sources — 14 test files
+    "Module-scoped": 12
     "Root": 2
 ```
 
 | Suite | Files | Share |
 |---|---:|---:|
-| Module-scoped | 9 | 82% |
-| Root | 2 | 18% |
+| Module-scoped | 12 | 86% |
+| Root | 2 | 14% |
 
 ## Engine package
 
 ```mermaid
 pie showData
-    title Engine — 12 test files
-    "Module-scoped": 10
+    title Engine — 15 test files
+    "Module-scoped": 12
     "Root": 2
+    "Unit": 1
 ```
 
 | Suite | Files | Share |
 |---|---:|---:|
-| Module-scoped | 10 | 83% |
-| Root | 2 | 17% |
+| Module-scoped | 12 | 80% |
+| Root | 2 | 13% |
+| Unit | 1 | 7% |
 
 ## Runner package
 
 ```mermaid
 pie showData
-    title Runner — 57 test files
-    "Module-scoped": 49
-    "Root": 8
+    title Runner — 54 test files
+    "Module-scoped": 47
+    "Root": 7
 ```
 
 | Suite | Files | Share |
 |---|---:|---:|
-| Module-scoped | 49 | 86% |
-| Root | 8 | 14% |
+| Module-scoped | 47 | 87% |
+| Root | 7 | 13% |
 
 ## Cli package
 
@@ -129,43 +133,45 @@ pie showData
 
 ```mermaid
 pie showData
-    title Protocol-http — 7 test files
-    "Module-scoped": 6
+    title Protocol-http — 12 test files
+    "Module-scoped": 10
     "Architecture": 1
+    "Root": 1
 ```
 
 | Suite | Files | Share |
 |---|---:|---:|
-| Module-scoped | 6 | 86% |
-| Architecture | 1 | 14% |
+| Module-scoped | 10 | 83% |
+| Architecture | 1 | 8% |
+| Root | 1 | 8% |
 
 ## Protocol-rpc package
 
 ```mermaid
 pie showData
-    title Protocol-rpc — 10 test files
-    "Module-scoped": 9
+    title Protocol-rpc — 11 test files
+    "Module-scoped": 10
     "Architecture": 1
 ```
 
 | Suite | Files | Share |
 |---|---:|---:|
-| Module-scoped | 9 | 90% |
-| Architecture | 1 | 10% |
+| Module-scoped | 10 | 91% |
+| Architecture | 1 | 9% |
 
 ## Protocol-soap package
 
 ```mermaid
 pie showData
-    title Protocol-soap — 10 test files
-    "Module-scoped": 9
+    title Protocol-soap — 11 test files
+    "Module-scoped": 10
     "Architecture": 1
 ```
 
 | Suite | Files | Share |
 |---|---:|---:|
-| Module-scoped | 9 | 90% |
-| Architecture | 1 | 10% |
+| Module-scoped | 10 | 91% |
+| Architecture | 1 | 9% |
 
 ## Core package
 

@@ -7,7 +7,6 @@ namespace Alama\Arazzo\Expression\Plugins\ValidationRule;
 use Alama\Arazzo\Contracts\Attributes\AsValidationRulePlugin;
 use Alama\Arazzo\Contracts\Interfaces\ValidationRuleInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
-use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Contracts\Validation\ErrorCollector;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
 use Alama\Arazzo\Expression\Enum\ReferenceKind;
@@ -42,8 +41,9 @@ final class MessageRefRequiresReceiveRule implements ValidationRuleInterface
                 continue;
             }
 
-            $step = $this->findStep($doc, $site->currentStepId);
-            if ($step === null || $step->target->action !== 'receive') {
+            $stepId = $site->currentStepId;
+            $step = $stepId !== null ? $doc->workflows->findStepByWorkflow($stepId) : null;
+            if ($step === null || !$step->isReceiveAction()) {
                 $errors->error(
                     $this->code(),
                     'The $message runtime expression is only available in asyncapi steps with action "receive".',
@@ -51,26 +51,6 @@ final class MessageRefRequiresReceiveRule implements ValidationRuleInterface
                 );
             }
         }
-    }
-
-    /**
-     * Locate the step carrying the given stepId across all workflows.
-     */
-    private function findStep(ArazzoDocument $doc, ?string $stepId): ?Step
-    {
-        if ($stepId === null) {
-            return null;
-        }
-
-        foreach ($doc->workflows as $wf) {
-            foreach ($wf->steps as $s) {
-                if ($s->stepId === $stepId) {
-                    return $s;
-                }
-            }
-        }
-
-        return null;
     }
 
     public function code(): string

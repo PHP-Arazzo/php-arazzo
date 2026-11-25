@@ -24,6 +24,11 @@ final readonly class ErrorEntry
         return $this->timestamp ?? new \DateTimeImmutable();
     }
 
+    public function isRetryExhausted(): bool
+    {
+        return $this->type === 'retry_exhausted';
+    }
+
     /**
      * @return array<string, mixed>
      */

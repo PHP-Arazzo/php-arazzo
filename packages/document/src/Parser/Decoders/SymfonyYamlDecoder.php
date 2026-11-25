@@ -33,7 +33,7 @@ final class SymfonyYamlDecoder implements DecoderInterface
     {
         $byteLength = strlen($source);
         if ($byteLength > $this->policy->maxBytes) {
-            throw new MaxBytesExceededException($byteLength, $this->policy->maxBytes);
+            throw MaxBytesExceededException::exceeded($byteLength, $this->policy->maxBytes);
         }
 
         $this->scanner->scanTags($source, $this->policy);
@@ -50,7 +50,7 @@ final class SymfonyYamlDecoder implements DecoderInterface
         try {
             $data = Yaml::parse($source, $flags);
         } catch (ParseException $e) {
-            throw new DecodeException($e->getMessage(), 0, $e);
+            throw DecodeException::fromThrowable($e);
         }
 
         $this->assertDepthAndNodes($data);
@@ -68,14 +68,14 @@ final class SymfonyYamlDecoder implements DecoderInterface
         $traverse = function (mixed $node, int $depth) use (&$traverse, &$nodeCount, $maxDepth, $maxNodes, $allowObjects): void {
             $nodeCount++;
             if ($nodeCount > $maxNodes) {
-                throw new MaxNodesExceededException($nodeCount, $maxNodes);
+                throw MaxNodesExceededException::exceeded($nodeCount, $maxNodes);
             }
             if ($depth > $maxDepth) {
-                throw new MaxDepthExceededException($depth, $maxDepth);
+                throw MaxDepthExceededException::exceeded($depth, $maxDepth);
             }
 
             if (is_object($node) && !$allowObjects) {
-                throw new ObjectDeserializationForbiddenException();
+                throw ObjectDeserializationForbiddenException::detected();
             }
 
             if (is_array($node)) {

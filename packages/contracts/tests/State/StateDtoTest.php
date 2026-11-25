@@ -166,3 +166,85 @@ it('survives corrupt step records in the workflow context', function (): void {
         ->and($updated->getStepAttempts('step_1'))->toBe(1)
         ->and($updated->getStepStatus('step_1'))->toBe(StepStatus::Succeeded);
 });
+
+it('hydrates persisted payloads without budget keys cleanly', function (): void {
+    $hydrated = WorkflowContext::fromPersisted([
+        'definitionId' => 'def_1',
+        'workflowId' => 'wf_1',
+        'inputs' => ['a' => 1],
+    ], 'exec_no_budget');
+
+    expect($hydrated->getExecutionId())->toBe('exec_no_budget')
+        ->and($hydrated->getStepsSpent())->toBe(0)
+        ->and($hydrated->getWorkflowCallStack())->toBe([]);
+});
+
+it('queries step records, responses, requests, headers, and inputs directly on WorkflowContext and ExecutionState', function (): void {
+    $context = (new WorkflowContext('def_1', inputs: ['token' => 'secret_xyz']))
+        ->withStepResult('s1', [
+            'outputs' => ['id' => 123, 'name' => 'Alice'],
+            'request' => ['method' => 'POST', 'body' => ['user' => 'Alice']],
+            'response' => [
+                'statusCode' => 201,
+                'headers' => ['Content-Type' => 'application/json', 'X-Trace-Id' => 'tr_123'],
+                'body' => ['status' => 'created'],
+            ],
+            'inputs' => ['in_param' => 'val'],
+            'statusCode' => 201,
+        ]);
+
+    expect($context->hasExecutedSteps())->toBeTrue()
+        ->and($context->hasStep('s1'))->toBeTrue()
+        ->and($context->hasStep('missing'))->toBeFalse()
+        ->and($context->hasInput('token'))->toBeTrue()
+        ->and($context->hasInput('other'))->toBeFalse()
+        ->and($context->getInput('token'))->toBe('secret_xyz')
+        ->and($context->getInput('other'))->toBeNull()
+        ->and($context->getStepRecord('s1'))->toBeArray()
+        ->and($context->getStepRecord('missing'))->toBeNull()
+        ->and($context->getStepOutputs('s1'))->toBe(['id' => 123, 'name' => 'Alice'])
+        ->and($context->getStepOutputs('missing'))->toBe([])
+        ->and($context->getStepOutput('s1', 'id'))->toBe(123)
+        ->and($context->getStepOutput('s1', 'missing'))->toBeNull()
+        ->and($context->getStepOutput('missing', 'id'))->toBeNull()
+        ->and($context->getStepResponse('s1'))->toHaveKey('body')
+        ->and($context->getStepResponse('missing'))->toBeNull()
+        ->and($context->getStepResponseBody('s1'))->toBe(['status' => 'created'])
+        ->and($context->getStepResponseBody('missing'))->toBeNull()
+        ->and($context->getStepResponseHeader('s1', 'content-type'))->toBe('application/json')
+        ->and($context->getStepResponseHeader('s1', 'X-Trace-Id'))->toBe('tr_123')
+        ->and($context->getStepResponseHeader('s1', 'nonexistent'))->toBeNull()
+        ->and($context->getStepResponseHeader('missing', 'any'))->toBeNull()
+        ->and($context->getStepRequest('s1'))->toHaveKey('method')
+        ->and($context->getStepRequest('missing'))->toBeNull()
+        ->and($context->getStepInputs('s1'))->toBe(['in_param' => 'val'])
+        ->and($context->getStepInputs('missing'))->toBe([])
+        ->and($context->getStepStatusCode('s1'))->toBe(201)
+        ->and($context->getStepStatusCode('missing'))->toBeNull();
+
+    $emptyCtx = new WorkflowContext('def_empty');
+    expect($emptyCtx->hasExecutedSteps())->toBeFalse();
+
+    $state = ExecutionState::start('exec_1', 'def_1', 'wf_1')
+        ->withStepResult('s1', ['outputs' => ['x' => 1]])
+        ->withError('some error');
+
+    expect($state->hasStepResult('s1'))->toBeTrue()
+        ->and($state->hasStepResult('missing'))->toBeFalse()
+        ->and($state->stepResult('s1'))->toBe(['outputs' => ['x' => 1]])
+        ->and($state->stepResult('missing'))->toBeNull()
+        ->and($state->stepOutputs('s1'))->toBe(['x' => 1])
+        ->and($state->stepOutputs('missing'))->toBe([])
+        ->and($state->hasErrors())->toBeTrue()
+        ->and($state->isRunning())->toBeTrue()
+        ->and($state->isSucceeded())->toBeFalse()
+        ->and($state->isFailed())->toBeFalse();
+
+    $succeededState = $state->withStatus('succeeded');
+    expect($succeededState->isSucceeded())->toBeTrue()
+        ->and($succeededState->isRunning())->toBeFalse();
+
+    $failedState = $state->withStatus('failed');
+    expect($failedState->isFailed())->toBeTrue()
+        ->and($failedState->isRunning())->toBeFalse();
+});

@@ -21,4 +21,12 @@ final readonly class ProtoDocument
         public array $services,
         public array $messages,
     ) {}
+
+    /**
+     * @return list<ProtoField>
+     */
+    public function messageFields(string $typeName): array
+    {
+        return $this->messages[$typeName] ?? [];
+    }
 }

@@ -1271,10 +1271,11 @@
             "dist": {
                 "type": "path",
                 "url": "packages/contracts",
-                "reference": "82fceb9e8607f2f9abf8ad55eb293654ba621507"
+                "reference": "1dab62c1b3f8502ddfe41400190b15be6054597f"
             },
             "require": {
                 "php": "^8.4",
+                "psr/clock": "^1.0",
                 "psr/event-dispatcher": "^1.0"
             },
             "require-dev": {
@@ -1432,13 +1433,13 @@
             "dist": {
                 "type": "path",
                 "url": "packages/engine",
-                "reference": "c586086e1218083aa420d5e01cc6c5b089b3ebb7"
+                "reference": "afd67a3c07132cfe4d6e7c9ba81000be6af13f6e"
             },
             "require": {
                 "open-telemetry/api": "^1.1",
                 "php": "^8.4",
                 "php-arazzo/arazzo-contracts": "@dev",
-                "psr/log": "^3.0"
+                "psr/clock": "^1.0"
             },
             "require-dev": {
                 "pestphp/pest": "^5.0",
@@ -1471,14 +1472,13 @@
             "dist": {
                 "type": "path",
                 "url": "packages/evaluation",
-                "reference": "e64a52ee0f03643a12a312096c5226aa26d604a5"
+                "reference": "22ed56ab266c12d62939adc3f8582931ebb30432"
             },
             "require": {
                 "php": "^8.4",
                 "php-arazzo/arazzo-contracts": "@dev",
                 "php-arazzo/arazzo-expression": "@dev",
-                "psr/event-dispatcher": "^1.0",
-                "psr/log": "^3.0"
+                "psr/event-dispatcher": "^1.0"
             },
             "require-dev": {
                 "larastan/larastan": "^3.0",
@@ -1523,13 +1523,11 @@
             "dist": {
                 "type": "path",
                 "url": "packages/expression",
-                "reference": "bf987df0800ed099ea28246f9cfc70238c116f43"
+                "reference": "8e7f69936ef8bf105b5ea8d20e6a44fbd416c0a4"
             },
             "require": {
                 "php": "^8.4",
                 "php-arazzo/arazzo-contracts": "@dev",
-                "psr/event-dispatcher": "^1.0",
-                "psr/log": "^3.0",
                 "softcreatr/jsonpath": "^0.10.0"
             },
             "require-dev": {
@@ -1636,7 +1634,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/protocol-rpc",
-                "reference": "3aa6be0797d3fef0d2f6f222158f95bf4b9c9fb3"
+                "reference": "9b5579a5bf99c6df9b07f071de9ccb1cee70a835"
             },
             "require": {
                 "php": "^8.4",
@@ -1648,7 +1646,8 @@
                 "php-arazzo/arazzo-sources": "@dev",
                 "psr/http-client": "^1.0",
                 "psr/http-factory": "^1.1",
-                "psr/http-message": "^2.0"
+                "psr/http-message": "^2.0",
+                "psr/log": "^3.0"
             },
             "require-dev": {
                 "pestphp/pest": "^5.0",
@@ -1699,7 +1698,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/protocol-soap",
-                "reference": "083849f33ad0a93b1b52462f1092b53121d9d7b5"
+                "reference": "f2fc9e0acd30244a263c3af1dcda581bda9f429b"
             },
             "require": {
                 "ext-dom": "*",
@@ -1713,7 +1712,8 @@
                 "php-arazzo/arazzo-sources": "@dev",
                 "psr/http-client": "^1.0",
                 "psr/http-factory": "^1.1",
-                "psr/http-message": "^2.0"
+                "psr/http-message": "^2.0",
+                "psr/log": "^3.0"
             },
             "require-dev": {
                 "pestphp/pest": "^5.0",
@@ -1761,26 +1761,18 @@
             "dist": {
                 "type": "path",
                 "url": "packages/runner",
-                "reference": "90e581315278aaed01c0ce966c2285bdcf1d38ba"
+                "reference": "57d911b0d872df71d0fc54ee4cf5d959bfc1b492"
             },
             "require": {
-                "guzzlehttp/guzzle": "^7.9",
-                "open-telemetry/api": "^1.0",
-                "open-telemetry/exporter-otlp": "^1.0",
-                "open-telemetry/sdk": "^1.0",
                 "php": "^8.4",
                 "php-arazzo/arazzo-contracts": "@dev",
                 "php-arazzo/arazzo-document": "@dev",
                 "php-arazzo/arazzo-engine": "@dev",
                 "php-arazzo/arazzo-evaluation": "@dev",
                 "php-arazzo/arazzo-expression": "@dev",
-                "php-arazzo/arazzo-sources": "@dev",
+                "psr/clock": "^1.0",
                 "psr/event-dispatcher": "^1.0",
-                "psr/http-client": "^1.0",
-                "psr/http-factory": "^1.0",
-                "psr/http-message": "^1.0||^2.0",
-                "psr/log": "^3.0",
-                "psr/simple-cache": "^3.0"
+                "psr/log": "^3.0"
             },
             "require-dev": {
                 "mockery/mockery": "^1.6",
@@ -1797,8 +1789,7 @@
             },
             "autoload": {
                 "psr-4": {
-                    "Alama\\Arazzo\\Runner\\": "src/",
-                    "Alama\\Arazzo\\Events\\": "src/Events/"
+                    "Alama\\Arazzo\\Runner\\": "src/"
                 }
             },
             "autoload-dev": {
@@ -1821,7 +1812,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/sources",
-                "reference": "0204194c4c4be2bf40495920e3cc3a3255225ce2"
+                "reference": "97f2f25b02a0b26033d75de6792ffc28117b9887"
             },
             "require": {
                 "ext-dom": "*",
@@ -1834,6 +1825,7 @@
                 "php-arazzo/arazzo-expression": "@dev",
                 "psr/http-client": "^1.0",
                 "psr/http-message": "^1.0||^2.0",
+                "psr/log": "^3.0",
                 "psr/simple-cache": "^3.0"
             },
             "require-dev": {
@@ -1950,6 +1942,54 @@
                 "source": "https://github.com/php-http/discovery/tree/1.20.0"
             },
             "time": "2024-10-02T11:20:13+00:00"
+        },
+        {
+            "name": "psr/clock",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/clock.git",
+                "reference": "e41a24703d4560fd0acb709162f73b8adfc3aa0d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/clock/zipball/e41a24703d4560fd0acb709162f73b8adfc3aa0d",
+                "reference": "e41a24703d4560fd0acb709162f73b8adfc3aa0d",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.0 || ^8.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Psr\\Clock\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "https://www.php-fig.org/"
+                }
+            ],
+            "description": "Common interface for reading the clock.",
+            "homepage": "https://github.com/php-fig/clock",
+            "keywords": [
+                "clock",
+                "now",
+                "psr",
+                "psr-20",
+                "time"
+            ],
+            "support": {
+                "issues": "https://github.com/php-fig/clock/issues",
+                "source": "https://github.com/php-fig/clock/tree/1.0.0"
+            },
+            "time": "2022-11-25T14:36:26+00:00"
         },
         {
             "name": "psr/container",
@@ -9706,54 +9746,6 @@
                 }
             ],
             "time": "2026-11-13T11:10:10+00:00"
-        },
-        {
-            "name": "psr/clock",
-            "version": "1.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/php-fig/clock.git",
-                "reference": "e41a24703d4560fd0acb709162f73b8adfc3aa0d"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/clock/zipball/e41a24703d4560fd0acb709162f73b8adfc3aa0d",
-                "reference": "e41a24703d4560fd0acb709162f73b8adfc3aa0d",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^7.0 || ^8.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Psr\\Clock\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "PHP-FIG",
-                    "homepage": "https://www.php-fig.org/"
-                }
-            ],
-            "description": "Common interface for reading the clock.",
-            "homepage": "https://github.com/php-fig/clock",
-            "keywords": [
-                "clock",
-                "now",
-                "psr",
-                "psr-20",
-                "time"
-            ],
-            "support": {
-                "issues": "https://github.com/php-fig/clock/issues",
-                "source": "https://github.com/php-fig/clock/tree/1.0.0"
-            },
-            "time": "2022-11-25T14:36:26+00:00"
         },
         {
             "name": "psy/psysh",

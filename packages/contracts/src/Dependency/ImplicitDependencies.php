@@ -24,17 +24,28 @@ final class ImplicitDependencies
      */
     public static function fromStep(Step $step): array
     {
+        $ids = [];
+        foreach (self::collectFragments($step) as $fragment) {
+            foreach (self::extractStepRefs($fragment) as $ref) {
+                if ($ref !== $step->stepId) {
+                    $ids[$ref] = true;
+                }
+            }
+        }
+
+        /** @var list<string> */
+        return array_keys($ids);
+    }
+
+    /**
+     * @return list<mixed>
+     */
+    private static function collectFragments(Step $step): array
+    {
         $fragments = [];
 
         foreach ($step->io->parameters as $parameter) {
             $fragments[] = $parameter->value;
-        }
-
-        if ($step->io->requestBody !== null) {
-            $fragments[] = $step->io->requestBody->payload;
-            foreach ($step->io->requestBody->replacements as $replacement) {
-                $fragments[] = $replacement->value;
-            }
         }
 
         foreach ($step->io->successCriteria as $criterion) {
@@ -46,23 +57,43 @@ final class ImplicitDependencies
             $fragments[] = $step->target->correlationId;
         }
 
+        return [
+            ...$fragments,
+            ...self::collectRequestBodyFragments($step),
+            ...self::collectOutputFragments($step),
+        ];
+    }
+
+    /**
+     * @return list<mixed>
+     */
+    private static function collectRequestBodyFragments(Step $step): array
+    {
+        if ($step->io->requestBody === null) {
+            return [];
+        }
+
+        $fragments = [$step->io->requestBody->payload];
+        foreach ($step->io->requestBody->replacements as $replacement) {
+            $fragments[] = $replacement->value;
+        }
+
+        return $fragments;
+    }
+
+    /**
+     * @return list<Expression|Selector>
+     */
+    private static function collectOutputFragments(Step $step): array
+    {
+        $fragments = [];
         foreach ($step->io->outputs as $expression) {
             if ($expression instanceof Expression || $expression instanceof Selector) {
                 $fragments[] = $expression;
             }
         }
 
-        $ids = [];
-        foreach ($fragments as $fragment) {
-            foreach (self::extractStepRefs($fragment) as $ref) {
-                if ($ref !== $step->stepId) {
-                    $ids[$ref] = true;
-                }
-            }
-        }
-
-        /** @var list<string> */
-        return array_keys($ids);
+        return $fragments;
     }
 
     /**

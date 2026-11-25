@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Protocol\Soap\Execution;
 
+use Alama\Arazzo\Protocol\Soap\Exceptions\SoapEnvelopeException;
 use DOMDocument;
 use DOMElement;
-use RuntimeException;
 
 /**
  * DOM-based SOAP envelope builder (plan F4.2).
@@ -117,7 +117,7 @@ final class SoapEnvelope
         $element = $dom->createElementNS($namespace, $qualifiedName);
 
         if ($element === false) {
-            throw new RuntimeException('Failed to create SOAP envelope element.');
+            throw SoapEnvelopeException::elementCreationFailed();
         }
 
         return $element;

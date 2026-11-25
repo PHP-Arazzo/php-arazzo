@@ -13,4 +13,9 @@ final readonly class PendingCorrelation
         public string $channelPath,
         public ?\DateTimeImmutable $expiresAt = null,
     ) {}
+
+    public function isExpiredAt(\DateTimeImmutable $now): bool
+    {
+        return $this->expiresAt !== null && $now > $this->expiresAt;
+    }
 }

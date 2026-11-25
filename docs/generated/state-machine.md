@@ -17,11 +17,11 @@ stateDiagram-v2
     Executing --> Succeeded : action - terminal action
     Executing --> Failed : criteria NOT met (no matching action)
     Executing --> Succeeded : workflow exhausted (no runnable step)
-    Executing --> Executing : action - FailureGotoAction
+    Executing --> Executing : (see engine)
     Executing --> Invoking : action - SubWorkflowFailureAction
     Invoking --> Executing : nested run completes
     Executing --> Executing : criteria met + dependency-ordered next step
-    StepFailed --> Retrying : action - RetryAction
+    StepFailed --> Retrying : retry action， attempts < limit
     Executing --> Suspended : adapter suspended the step
     Succeeded --> [*]
     Failed --> [*]
@@ -52,18 +52,12 @@ stateDiagram-v2
 | action: terminal action | `end` | `succeeded` |
 | criteria NOT met (no matching action) | `end` | `failed` |
 | workflow exhausted (no runnable step) | `end` | `succeeded` |
-| action: FailureGotoAction | `goto` | — |
+| (see engine) | `goto` | — |
 | action: SubWorkflowFailureAction | `invoke` | — |
 | criteria met + dependency-ordered next step | `next` | — |
-| action: RetryAction | `retry` | — |
+| retry action, attempts < limit | `retry` | — |
 | adapter suspended the step | `suspend` | — |
 
 ## Guards raised by transition()
 
-| Exception | Meaning |
-|---|---|
-| `ExecutionError` |  |
-| `GotoTargetNotFoundException` | goto/reusable target missing |
-| `StepBudgetExceededException` | step budget exhausted |
-| `WorkflowCycleException` | re-entry into running workflow blocked |
-| `WorkflowDepthExceededException` | workflow nesting depth exceeded |
+_None._

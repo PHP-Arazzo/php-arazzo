@@ -7,6 +7,9 @@ namespace Alama\Arazzo\Protocol\Soap\Plugins\OperationExecutor;
 use Alama\Arazzo\Contracts\Attributes\AsOperationExecutorPlugin;
 use Alama\Arazzo\Contracts\Interfaces\HttpClientInterface;
 use Alama\Arazzo\Contracts\Interfaces\OperationExecutorPluginInterface;
+use Alama\Arazzo\Contracts\Observability\NullTracer;
+use Alama\Arazzo\Contracts\Observability\TracerInterface;
+use Alama\Arazzo\Contracts\Policy\SourcePolicy;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Enum\OperationProtocol;
 use Alama\Arazzo\Contracts\Spec\ResolvedOperation;
@@ -14,12 +17,15 @@ use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Contracts\Spec\StepExecutionOutcome;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
 use Alama\Arazzo\Document\OperationResolverInterface;
-use Alama\Arazzo\Engine\Exceptions\ExecutionException;
+use Alama\Arazzo\Protocol\Soap\Exceptions\SoapExecutionException;
 use Alama\Arazzo\Protocol\Soap\Execution\SoapFaultMapper;
 use Alama\Arazzo\Protocol\Soap\Execution\SoapRequestBuilder;
 use Alama\Arazzo\Protocol\Soap\Transfer\SoapResponseTransfer;
 use Alama\Arazzo\Protocol\Soap\Transfer\SoapResponseTransferMapper;
 use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use RuntimeException;
 
 /**
@@ -46,13 +52,36 @@ final class SoapOperationExecutor implements OperationExecutorPluginInterface
      */
     public const PLUGIN_PRIORITY = 50;
 
+    private LoggerInterface $logger;
+
+    private TracerInterface $tracer;
+
     public function __construct(
         private OperationResolverInterface $operationResolver,
         private SoapRequestBuilder $requestBuilder,
         private HttpClientInterface $httpClient,
         private SoapResponseTransferMapper $responseMapper,
         private SoapFaultMapper $faultMapper,
-    ) {}
+    ) {
+        $this->logger = new NullLogger();
+        $this->tracer = new NullTracer();
+    }
+
+    public function withLogger(LoggerInterface $logger): self
+    {
+        $clone = clone $this;
+        $clone->logger = $logger;
+
+        return $clone;
+    }
+
+    public function withTracer(TracerInterface $tracer): self
+    {
+        $clone = clone $this;
+        $clone->tracer = $tracer;
+
+        return $clone;
+    }
 
     public function name(): string
     {
@@ -66,17 +95,32 @@ final class SoapOperationExecutor implements OperationExecutorPluginInterface
 
     public function supports(Step $step, ArazzoDocument $document): bool
     {
-        return $step->target->action === null && $this->operationResolver->supportsStep($step, $document);
+        return !$step->hasAction() && $this->operationResolver->supportsStep($step, $document);
     }
 
     public function execute(Step $step, WorkflowContext $context, ArazzoDocument $document, string $executionId): StepExecutionOutcome
     {
         $resolved = $this->resolve($step, $document);
+        $sourcePolicy = $context->getActiveSourcePolicy();
+        $timeoutSeconds = $step->flow->timeout ?? $sourcePolicy?->timeoutSeconds();
+
+        $span = $this->tracer->startSpan('arazzo.soap.request', [
+            'arazzo.step.id' => $step->stepId,
+        ]);
 
         try {
             $request = $this->requestBuilder->build($step, $context, $document, $resolved, $executionId);
-            $response = $this->httpClient->sendRequest($request, $step->flow->timeout);
+            $request = $this->decorateRequest($request, $sourcePolicy);
+            $response = $this->httpClient->sendRequest($request, $timeoutSeconds);
         } catch (ClientExceptionInterface $e) {
+            $span->recordException($e);
+            $span->setStatus(false, $e->getMessage());
+            $span->end();
+            $this->logger->warning('SOAP transport request failed.', [
+                'step' => $step->stepId,
+                'error' => $e->getMessage(),
+            ]);
+
             // Transport-level failures become a synthetic 500 (HTTP precedent)
             // so failureActions apply identically to the sync adapter.
             return $this->faultMapper->map(
@@ -86,19 +130,55 @@ final class SoapOperationExecutor implements OperationExecutorPluginInterface
         }
 
         $transfer = $this->responseMapper->map($response);
-        $meta = $transfer->meta();
 
-        if (isset($meta['soap.faultcode']) || isset($meta['error'])) {
-            return $this->faultMapper->map($transfer, isset($meta['soap.faultcode']) ? 'soap-fault' : 'transport');
+        if ($transfer->hasFailure()) {
+            $category = $transfer->failureCategory() ?? 'transport';
+            $span->setStatus(false, $category);
+            $span->end();
+            $this->logger->warning('SOAP operation returned fault or transport error.', [
+                'step' => $step->stepId,
+                'category' => $category,
+            ]);
+
+            return $this->faultMapper->map($transfer, $category);
         }
 
+        $statusCode = $transfer->httpStatusCode();
+        $span->setAttribute('http.response.status_code', $statusCode);
+        $span->setStatus(true);
+        $span->end();
+
+        $this->logger->debug('Executed SOAP operation.', [
+            'step' => $step->stepId,
+            'status' => $statusCode,
+        ]);
+
         return StepExecutionOutcome::resolved(
-            statusCode: is_int($transfer->status()) ? $transfer->status() : 500,
+            statusCode: $statusCode,
             outputs: [],
             responseBody: ['transfer' => $transfer],
             responseHeaders: $transfer->headers(),
-            rawBody: is_string($transfer->rawBody()) ? $transfer->rawBody() : null,
+            rawBody: $transfer->rawXmlBody(),
         );
+    }
+
+    private function decorateRequest(RequestInterface $request, ?SourcePolicy $sourcePolicy): RequestInterface
+    {
+        if ($sourcePolicy !== null) {
+            foreach ($sourcePolicy->headers as $name => $value) {
+                if (!$request->hasHeader($name)) {
+                    $request = $request->withHeader($name, $value);
+                }
+            }
+        }
+
+        $carrier = [];
+        $this->tracer->injectContext($carrier);
+        foreach ($carrier as $header => $value) {
+            $request = $request->withHeader($header, $value);
+        }
+
+        return $request;
     }
 
     private function resolve(Step $step, ArazzoDocument $document): ResolvedOperation
@@ -106,12 +186,7 @@ final class SoapOperationExecutor implements OperationExecutorPluginInterface
         try {
             return $this->operationResolver->resolve($step, $document);
         } catch (RuntimeException $e) {
-            throw new ExecutionException(
-                "SOAP resolution failed for step '{$step->stepId}': ".$e->getMessage(),
-                '/',
-                'execution.soap_resolution_failed',
-                $e,
-            );
+            throw SoapExecutionException::resolutionFailed($step->stepId, $e);
         }
     }
 }
