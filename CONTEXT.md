@@ -75,7 +75,7 @@ same pull request.
 | `packages/runner` | Protocol-agnostic execution engine: `Runner` (sync), `AsyncRunner` (durable/queue), `ExecutionResult`, `Preflight`, and workflow lifecycle events. |
 | `packages/protocol-http` | PSR-18 HTTP/OpenAPI + AsyncAPI protocol slice (`HttpProtocol`, `HttpStepExecutor`, response validation). |
 | `packages/sources` | Source resolution & reachability (`Sources`, `SourceNormalizerRegistry`). |
-| `packages/cli` | `arazzo run` / `validate` commands, `RunCommand`, `CliRunner`. |
+| `packages/cli` | Console terminal edge: ships the `arazzo` executable binary (`bin/arazzo`), providing `run`, `validate`, `list-workflows`, `explain`, and `render` commands. |
 
 ## 6. Architecture decisions (ADRs)
 

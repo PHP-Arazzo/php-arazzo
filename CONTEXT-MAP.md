@@ -46,11 +46,11 @@ The monorepo has been split into 7 focused packages with clear layering boundari
 - **Layer**: Runner — depends on `contracts` + `document` + `evaluation` + guzzle + otel + psr; facade `RunnerFacade`
   hides the full execution graph behind external adapters
 
-### `alama/arazzo-cli`
+### `php-arazzo/arazzo-cli`
 
-- **Purpose**: Command-line tool for running Arazzo workflows
-- **Key contents**: `RunCommand` (consumes `RunnerFacadeInterface` directly with CLI adapters)
-- **Layer**: CLI — depends on `runner` and `document`; thin adapter layer for CLI usage
+- **Purpose**: Command-line tool and terminal entry point for running and inspecting Arazzo workflows
+- **Key contents**: `bin/arazzo` executable, `Application`, `RunCommand`, `ValidateCommand`, `ListWorkflowsCommand`, `ExplainCommand`, `RenderCommand`
+- **Layer**: CLI — depends on `runner`, `document`, `sources`, and `protocol-http`; thin adapter layer for CLI usage
 
 ### `alama/laravel-arazzo`
 

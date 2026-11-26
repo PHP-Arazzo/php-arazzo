@@ -6,6 +6,7 @@ namespace Alama\Arazzo\Tests\Console;
 
 use Alama\Arazzo\Cli\Console\Application;
 use Symfony\Component\Console\Tester\ApplicationTester;
+use Symfony\Component\Process\Process;
 
 const CLI_PACKAGE_DIR = __DIR__.'/../../';
 
@@ -42,8 +43,11 @@ it('ships an arazzo binary declared in composer.json', function (): void {
 
     expect(is_array($bin))->toBeTrue()
         ->and(in_array('bin/arazzo', $bin, true))->toBeTrue()
-        ->and(file_exists(CLI_PACKAGE_DIR.'bin/arazzo'))->toBeTrue()
-        ->and(is_executable(CLI_PACKAGE_DIR.'bin/arazzo'))->toBeTrue();
+        ->and(file_exists(CLI_PACKAGE_DIR.'bin/arazzo'))->toBeTrue();
+
+    if (PHP_OS_FAMILY !== 'Windows') {
+        expect(is_executable(CLI_PACKAGE_DIR.'bin/arazzo'))->toBeTrue();
+    }
 });
 
 it('prints --version as one line and exits 0', function (): void {
@@ -59,4 +63,77 @@ it('prints --version as one line and exits 0', function (): void {
     expect(count($lines))->toBe(1)
         ->and($lines[0])->toContain('arazzo')
         ->and($tester->getStatusCode())->toBe(0);
+});
+
+it('executes bin/arazzo --version via CLI process successfully', function (): void {
+    $binary = realpath(CLI_PACKAGE_DIR.'bin/arazzo');
+    expect($binary)->not->toBeFalse();
+
+    $process = new Process([PHP_BINARY, $binary, '--version'], CLI_PACKAGE_DIR);
+    $process->run();
+
+    expect($process->isSuccessful())->toBeTrue()
+        ->and($process->getExitCode())->toBe(0)
+        ->and($process->getOutput())->toContain('arazzo')
+        ->and($process->getErrorOutput())->toBeEmpty();
+});
+
+it('executes bin/arazzo validate --help via CLI process successfully', function (): void {
+    $binary = realpath(CLI_PACKAGE_DIR.'bin/arazzo');
+    expect($binary)->not->toBeFalse();
+
+    $process = new Process([PHP_BINARY, $binary, 'validate', '--help'], CLI_PACKAGE_DIR);
+    $process->run();
+
+    expect($process->isSuccessful())->toBeTrue()
+        ->and($process->getExitCode())->toBe(0)
+        ->and($process->getOutput())->toContain('validate')
+        ->and($process->getErrorOutput())->toBeEmpty();
+});
+
+it('locates autoload.php when installed as a vendor dependency', function (): void {
+    $tempDir = str_replace('\\', '/', sys_get_temp_dir()).'/arazzo-vendor-test-'.uniqid();
+    $binDir = $tempDir.'/vendor/php-arazzo/arazzo-cli/bin';
+    mkdir($binDir, 0777, true);
+
+    copy(CLI_PACKAGE_DIR.'bin/arazzo', $binDir.'/arazzo');
+
+    $monorepoAutoload = str_replace('\\', '/', (string) realpath(__DIR__.'/../../../../vendor/autoload.php'));
+    file_put_contents($tempDir.'/vendor/autoload.php', "<?php require_once '{$monorepoAutoload}';\n");
+
+    $process = new Process([PHP_BINARY, $binDir.'/arazzo', '--version']);
+    $process->run();
+
+    // Clean up
+    @unlink($binDir.'/arazzo');
+    @unlink($tempDir.'/vendor/autoload.php');
+    @rmdir($binDir);
+    @rmdir($tempDir.'/vendor/php-arazzo/arazzo-cli');
+    @rmdir($tempDir.'/vendor/php-arazzo');
+    @rmdir($tempDir.'/vendor');
+    @rmdir($tempDir);
+
+    expect($process->isSuccessful())->toBeTrue()
+        ->and($process->getExitCode())->toBe(0)
+        ->and($process->getOutput())->toContain('arazzo')
+        ->and($process->getErrorOutput())->toBeEmpty();
+});
+
+it('exits with status 1 and error message when no autoload.php can be found', function (): void {
+    $tempDir = str_replace('\\', '/', sys_get_temp_dir()).'/arazzo-no-autoload-test-'.uniqid();
+    $binDir = $tempDir.'/bin';
+    mkdir($binDir, 0777, true);
+
+    copy(CLI_PACKAGE_DIR.'bin/arazzo', $binDir.'/arazzo');
+
+    $process = new Process([PHP_BINARY, $binDir.'/arazzo', '--version']);
+    $process->run();
+
+    // Clean up
+    @unlink($binDir.'/arazzo');
+    @rmdir($binDir);
+    @rmdir($tempDir);
+
+    expect($process->getExitCode())->toBe(1)
+        ->and($process->getErrorOutput())->toContain('You need to set up the project dependencies using Composer');
 });

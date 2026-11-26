@@ -3,7 +3,33 @@
 
 declare(strict_types=1);
 
-require __DIR__.'/../../../vendor/autoload.php';
+$autoloadCandidates = [
+    __DIR__.'/../vendor/autoload.php',
+    __DIR__.'/../../../vendor/autoload.php',
+    __DIR__.'/../../vendor/autoload.php',
+    __DIR__.'/../../../autoload.php',
+    __DIR__.'/../../../../autoload.php',
+    __DIR__.'/../../autoload.php',
+];
+
+$autoloaderFound = false;
+
+foreach ($autoloadCandidates as $file) {
+    if (file_exists($file)) {
+        require_once $file;
+        $autoloaderFound = true;
+        break;
+    }
+}
+
+if (! $autoloaderFound) {
+    fwrite(
+        STDERR,
+        "You need to set up the project dependencies using Composer:\nrun 'composer install'\n"
+    );
+
+    exit(1);
+}
 
 use Alama\Arazzo\Cli\Console\Application;
 
