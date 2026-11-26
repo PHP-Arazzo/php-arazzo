@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Tests\Parser;
 
+use Alama\Arazzo\Contracts\Spec\Action\SubWorkflowFailureAction;
+use Alama\Arazzo\Contracts\Spec\Action\SubWorkflowSuccessAction;
 use Alama\Arazzo\Contracts\Spec\Enum\CriterionType;
 use Alama\Arazzo\Contracts\Spec\Enum\ParameterIn;
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
@@ -52,6 +54,16 @@ class LeafProbe extends Parser
     public function pExpr(mixed $n)
     {
         return $this->parseExpressionOrValue($n);
+    }
+
+    public function pSuccAction(mixed $n, ParseContext $c)
+    {
+        return $this->parseSuccessAction($n, $c);
+    }
+
+    public function pFailAction(mixed $n, ParseContext $c)
+    {
+        return $this->parseFailureAction($n, $c);
     }
 }
 
@@ -118,6 +130,47 @@ it('parses PayloadReplacement', function () use ($ctx): void {
     $r = (new LeafProbe())->pRepl(['target' => '$request.body.foo', 'value' => 'bar'], $ctx());
     expect($r->target)->toBe('$request.body.foo')
         ->and($r->value)->toBe('bar');
+});
+
+it('parses Parameter with canonical x- prefixed in extensions and bare extensions', function () use ($ctx): void {
+    $pXBody = (new LeafProbe())->pParam(['name' => 'payload', 'in' => 'x-body', 'value' => 'bar'], $ctx());
+    expect($pXBody->in)->toBe(ParameterIn::Body)
+        ->and($pXBody->rawIn)->toBe('x-body')
+        ->and($pXBody->isExtension())->toBeTrue();
+
+    $pXQs = (new LeafProbe())->pParam(['name' => 'qs', 'in' => 'x-querystring', 'value' => 'a=1'], $ctx());
+    expect($pXQs->in)->toBe(ParameterIn::Querystring)
+        ->and($pXQs->rawIn)->toBe('x-querystring');
+
+    $pXMeta = (new LeafProbe())->pParam(['name' => 'meta', 'in' => 'x-metadata', 'value' => 'm'], $ctx());
+    expect($pXMeta->in)->toBe(ParameterIn::Metadata)
+        ->and($pXMeta->rawIn)->toBe('x-metadata');
+
+    $pXVar = (new LeafProbe())->pParam(['name' => 'var', 'in' => 'x-variable', 'value' => 'v'], $ctx());
+    expect($pXVar->in)->toBe(ParameterIn::Variable)
+        ->and($pXVar->rawIn)->toBe('x-variable');
+
+    $pBare = (new LeafProbe())->pParam(['name' => 'b', 'in' => 'body', 'value' => 'bar'], $ctx());
+    expect($pBare->in)->toBe(ParameterIn::Body)
+        ->and($pBare->rawIn)->toBe('body')
+        ->and($pBare->isExtension())->toBeTrue();
+});
+
+it('parses actions with canonical x-invoke and bare invoke type', function () use ($ctx): void {
+    $probe = new LeafProbe();
+    $succX = $probe->pSuccAction(['name' => 'callSub', 'type' => 'x-invoke', 'workflowId' => 'targetWf'], $ctx());
+    expect($succX)->toBeInstanceOf(SubWorkflowSuccessAction::class)
+        ->and($succX->rawType)->toBe('x-invoke')
+        ->and($succX->isInvoke())->toBeTrue();
+
+    $failX = $probe->pFailAction(['name' => 'failSub', 'type' => 'x-invoke', 'workflowId' => 'targetWf'], $ctx());
+    expect($failX)->toBeInstanceOf(SubWorkflowFailureAction::class)
+        ->and($failX->rawType)->toBe('x-invoke')
+        ->and($failX->isInvoke())->toBeTrue();
+
+    $succBare = $probe->pSuccAction(['name' => 'callSub', 'type' => 'invoke', 'workflowId' => 'targetWf'], $ctx());
+    expect($succBare)->toBeInstanceOf(SubWorkflowSuccessAction::class)
+        ->and($succBare->rawType)->toBe('invoke');
 });
 
 it('rejects PayloadReplacement missing value', function () use ($ctx): void {

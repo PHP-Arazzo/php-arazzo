@@ -22,6 +22,27 @@ it('maps enum spec strings', function (): void {
         ->and(CriterionType::from('jsonpath'))->toBe(CriterionType::JsonPath);
 });
 
+it('distinguishes spec and extension cases on ParameterIn and normalizes raw tokens', function (): void {
+    expect(ParameterIn::Path->isSpec())->toBeTrue()
+        ->and(ParameterIn::Query->isSpec())->toBeTrue()
+        ->and(ParameterIn::Header->isSpec())->toBeTrue()
+        ->and(ParameterIn::Cookie->isSpec())->toBeTrue()
+        ->and(ParameterIn::Path->isExtension())->toBeFalse()
+        ->and(ParameterIn::Body->isSpec())->toBeFalse()
+        ->and(ParameterIn::Body->isExtension())->toBeTrue()
+        ->and(ParameterIn::Querystring->isExtension())->toBeTrue()
+        ->and(ParameterIn::Metadata->isExtension())->toBeTrue()
+        ->and(ParameterIn::Variable->isExtension())->toBeTrue()
+        ->and(ParameterIn::tryFromRaw('query'))->toBe(ParameterIn::Query)
+        ->and(ParameterIn::tryFromRaw('x-body'))->toBe(ParameterIn::Body)
+        ->and(ParameterIn::tryFromRaw('x-querystring'))->toBe(ParameterIn::Querystring)
+        ->and(ParameterIn::tryFromRaw('unknown'))->toBeNull();
+
+    $p = new Parameter('item', ParameterIn::Body, 'val', null, 'x-body');
+    expect($p->rawIn)->toBe('x-body')
+        ->and($p->isExtension())->toBeTrue();
+});
+
 it('builds Info', function (): void {
     $info = new Info('T', null, 'd', '1.0');
     expect($info->title)->toBe('T')->and($info->version)->toBe('1.0');

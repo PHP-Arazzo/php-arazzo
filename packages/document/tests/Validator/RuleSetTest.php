@@ -48,6 +48,11 @@ it('exposes strict flag via isStrict() from ValidatorPolicy', function (): void 
         ->and(RuleSet::default(ValidatorPolicy::default()->withStrict(false))->isStrict())->toBeFalse();
 });
 
+it('exposes conformance flag via isConformance() from ValidatorPolicy', function (): void {
+    expect(RuleSet::default(ValidatorPolicy::default()->withConformance(true))->isConformance())->toBeTrue()
+        ->and(RuleSet::default(ValidatorPolicy::default()->withConformance(false))->isConformance())->toBeFalse();
+});
+
 it('supports withPolicy immutably', function (): void {
     $set = RuleSet::default();
     $newSet = $set->withPolicy(ValidatorPolicy::default()->withDisabled('step.receive_missing_success_criteria'));

@@ -28,3 +28,11 @@ Bugs found and fixed while building this matrix (each pinned by tests):
 - OpenAPI 3.1 normalizer was an unimplemented stub
 - expression parser rejected the spec's `$steps.<id>.<output>` shortcut form
 - JSONPath filter selectors `[?@...]` / `[?count(...)]` unsupported spelling
+
+## Beyond-Spec Extensions & Conformance Mode
+
+`php-arazzo` supports beyond-spec extensions (such as `x-invoke` action kind and `x-body`, `x-querystring`, `x-metadata`, `x-variable` parameter locations) with dual canonical (`x-*`) and permissive bare naming.
+
+When running validation in strict conformance mode (`arazzo validate --conformance` or `ValidatorPolicy::withConformance(true)`), all beyond-spec extensions are rejected to guarantee portable spec compliance.
+
+See [`docs/EXTENSIONS.md`](EXTENSIONS.md) and [`docs/adr/ADR-013-beyond-spec-extensions-gating-and-naming.md`](adr/ADR-013-beyond-spec-extensions-gating-and-naming.md) for full details.

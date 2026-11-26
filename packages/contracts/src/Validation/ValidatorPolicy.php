@@ -12,6 +12,8 @@ final readonly class ValidatorPolicy
 {
     public const bool DEFAULT_STRICT = true;
 
+    public const bool DEFAULT_CONFORMANCE = false;
+
     /**
      * @param  array<string, Severity>  $severities
      * @param  list<string>  $disabled
@@ -20,6 +22,7 @@ final readonly class ValidatorPolicy
         public array $severities = [],
         public array $disabled = [],
         public bool $strict = self::DEFAULT_STRICT,
+        public bool $conformance = self::DEFAULT_CONFORMANCE,
     ) {}
 
     public static function default(): self
@@ -33,14 +36,14 @@ final readonly class ValidatorPolicy
         $severities = $this->severities;
         $severities[$ruleCode] = $resolved;
 
-        return new self($severities, $this->disabled, $this->strict);
+        return new self($severities, $this->disabled, $this->strict, $this->conformance);
     }
 
     public function withDisabled(string ...$ruleCodes): self
     {
         $disabled = array_values(array_unique([...$this->disabled, ...$ruleCodes]));
 
-        return new self($this->severities, $disabled, $this->strict);
+        return new self($this->severities, $disabled, $this->strict, $this->conformance);
     }
 
     public function withEnabled(string ...$ruleCodes): self
@@ -50,12 +53,17 @@ final readonly class ValidatorPolicy
             static fn (string $code): bool => !in_array($code, $ruleCodes, true),
         ));
 
-        return new self($this->severities, $disabled, $this->strict);
+        return new self($this->severities, $disabled, $this->strict, $this->conformance);
     }
 
     public function withStrict(bool $strict = true): self
     {
-        return new self($this->severities, $this->disabled, $strict);
+        return new self($this->severities, $this->disabled, $strict, $this->conformance);
+    }
+
+    public function withConformance(bool $conformance = true): self
+    {
+        return new self($this->severities, $this->disabled, $this->strict, $conformance);
     }
 
     public function severityFor(string $ruleCode, Severity $default = Severity::Error): Severity
@@ -71,5 +79,10 @@ final readonly class ValidatorPolicy
     public function isStrict(): bool
     {
         return $this->strict;
+    }
+
+    public function isConformance(): bool
+    {
+        return $this->conformance;
     }
 }

@@ -34,9 +34,9 @@ final class ValueParser extends FieldParser
 
         $in = null;
         if (($rawIn = $this->optionalString($obj, 'in', $ctx)) !== null) {
-            $in = ParameterIn::tryFrom($rawIn)
+            $in = ParameterIn::tryFromRaw($rawIn)
                 ?? throw ParserException::invalidEnum(
-                    $ctx->push('in'), 'path|query|header|cookie|body|querystring', $rawIn,
+                    $ctx->push('in'), 'path|query|header|cookie|body|querystring|metadata|variable', $rawIn,
                 );
         }
         if (!array_key_exists('value', $obj)) {
@@ -47,6 +47,7 @@ final class ValueParser extends FieldParser
             name: $this->requireString($obj, 'name', $ctx),
             in: $in,
             value: $this->parseValueOrSelector($obj['value'], $ctx->push('value'), false),
+            rawIn: $rawIn,
         );
     }
 

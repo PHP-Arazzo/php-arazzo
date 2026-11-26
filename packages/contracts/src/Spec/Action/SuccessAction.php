@@ -14,8 +14,9 @@ abstract readonly class SuccessAction extends Action
         string $name,
         ActionKind $kind,
         public array $criteria,
+        ?string $rawType = null,
     ) {
-        parent::__construct($name, $kind);
+        parent::__construct($name, $kind, $rawType);
     }
 
     public function hasCriteria(): bool

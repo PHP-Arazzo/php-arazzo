@@ -46,12 +46,13 @@ final class ActionParser extends FieldParser
                 parameters: $this->values->parseActionParameters($obj, $ctx),
             ),
             'end' => new SuccessEndAction($name, $criteria),
-            'invoke' => new SubWorkflowSuccessAction(
+            'invoke', 'x-invoke' => new SubWorkflowSuccessAction(
                 $name,
                 $this->requireString($obj, 'workflowId', $ctx),
                 $this->values->parseInvokeParameters($obj, $ctx),
                 $criteria,
                 $this->optionalString($obj, 'version', $ctx),
+                $type,
             ),
             default => throw ParserException::invalidActionType($ctx->push('type'), $type),
         };
