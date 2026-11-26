@@ -295,6 +295,7 @@ flowchart TB
     M_expression_Support --> M_contracts_Validation
     M_expression_Support --> M_expression_Ast
     M_expression_Support --> M_expression_Data
+    M_expression_Support --> M_expression_Enum
     M_expression_Xpath --> M_contracts_Spec
     M_expression_Xpath --> M_expression_Exceptions
     M_expression__ --> M_contracts_Spec
@@ -569,13 +570,13 @@ flowchart TB
 | `cli` | `protocol-http` | 1 |
 | `cli` | `runner` | 13 |
 | `cli` | `sources` | 3 |
-| `document` | `contracts` | 397 |
+| `document` | `contracts` | 402 |
 | `engine` | `contracts` | 51 |
 | `engine` | `document` | 1 |
 | `engine` | `evaluation` | 1 |
 | `evaluation` | `contracts` | 63 |
 | `evaluation` | `expression` | 20 |
-| `expression` | `contracts` | 134 |
+| `expression` | `contracts` | 137 |
 | `protocol-http` | `contracts` | 54 |
 | `protocol-http` | `document` | 2 |
 | `protocol-http` | `engine` | 11 |
@@ -596,7 +597,7 @@ flowchart TB
 | `runner` | `engine` | 11 |
 | `runner` | `evaluation` | 14 |
 | `runner` | `expression` | 8 |
-| `sources` | `contracts` | 47 |
+| `sources` | `contracts` | 50 |
 | `sources` | `document` | 3 |
 
 ## Module-level detail

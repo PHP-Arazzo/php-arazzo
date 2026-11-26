@@ -255,3 +255,111 @@ it('preserves seeded documents across withFetcher() while clearing fetched cache
         ->and($resolvedSeeded)->toBe($seeded)
         ->and($rebound->get('seeded'))->toBe($seeded);
 });
+
+it('captures self uri (S1)', function (): void {
+    $fetcher = new class() implements SourceFetcher
+    {
+        public function fetch(string $urlOrPath, string $basePath): string
+        {
+            return '{"arazzo": "1.1.0", "$self": "https://example.com/doc.arazzo", "info": {"title": "T", "version": "1.0"}}';
+        }
+    };
+
+    $resolver = new DefaultSourceResolver(['http' => $fetcher]);
+    $source = new SourceDescription('doc', 'http://example.com/doc.arazzo', SourceType::Arazzo);
+    $result = $resolver->resolve($source, 'http://example.com');
+
+    expect($result->selfUri)->toBe('https://example.com/doc.arazzo')
+        ->and($result->canonicalUri)->toBe('http://example.com/doc.arazzo')
+        ->and($result->baseUri())->toBe('https://example.com/doc.arazzo');
+});
+
+it('resolves by self before location (S2)', function (): void {
+    $fetchCount = 0;
+    $fetcher = new class($fetchCount) implements SourceFetcher
+    {
+        public function __construct(public int &$count) {}
+
+        public function fetch(string $urlOrPath, string $basePath): string
+        {
+            $this->count++;
+
+            return '{"arazzo": "1.1.0"}';
+        }
+    };
+
+    $indexedDoc = new SourceDocument(
+        name: 'cached-copy',
+        type: SourceType::Arazzo,
+        canonicalUri: 'https://cache.example.com/copy.arazzo',
+        content: ['arazzo' => '1.1.0'],
+        selfUri: 'https://example.com/doc.arazzo',
+    );
+
+    $resolver = (new DefaultSourceResolver(['https' => $fetcher]))->withDocument($indexedDoc);
+
+    // Resolving a different source description whose URL matches the known $self
+    $source = new SourceDescription('payments', 'https://example.com/doc.arazzo', SourceType::Arazzo);
+    $result = $resolver->resolve($source, 'https://example.com');
+
+    expect($result)->toBe($indexedDoc)
+        ->and($fetchCount)->toBe(0);
+});
+
+it('falls back to location on identity miss (S3)', function (): void {
+    $fetchCount = 0;
+    $fetcher = new class($fetchCount) implements SourceFetcher
+    {
+        public function __construct(public int &$count) {}
+
+        public function fetch(string $urlOrPath, string $basePath): string
+        {
+            $this->count++;
+
+            return '{"arazzo": "1.1.0", "info": {"title": "Fetched", "version": "1.0"}}';
+        }
+    };
+
+    $resolver = new DefaultSourceResolver(['https' => $fetcher]);
+    $source = new SourceDescription('fresh', 'https://example.com/fresh.arazzo', SourceType::Arazzo);
+    $result = $resolver->resolve($source, 'https://example.com');
+
+    expect($fetchCount)->toBe(1)
+        ->and($result->name)->toBe('fresh')
+        ->and($result->canonicalUri)->toBe('https://example.com/fresh.arazzo');
+});
+
+it('resolves relative self against retrieval uri (S5)', function (): void {
+    $fetcher = new class() implements SourceFetcher
+    {
+        public function fetch(string $urlOrPath, string $basePath): string
+        {
+            return '{"arazzo": "1.1.0", "$self": "./doc.arazzo"}';
+        }
+    };
+
+    $resolver = new DefaultSourceResolver(['https' => $fetcher]);
+    $source = new SourceDescription('rel-self', 'https://example.com/base/workflow.arazzo', SourceType::Arazzo);
+    $result = $resolver->resolve($source, 'https://example.com/base/');
+
+    expect($result->selfUri)->toBe('https://example.com/base/doc.arazzo')
+        ->and($result->canonicalUri)->toBe('https://example.com/base/workflow.arazzo');
+});
+
+it('keeps retrieval base without self (S6)', function (): void {
+    $fetcher = new class() implements SourceFetcher
+    {
+        public function fetch(string $urlOrPath, string $basePath): string
+        {
+            return '{"openapi": "3.0.0"}';
+        }
+    };
+
+    $resolver = new DefaultSourceResolver(['file' => $fetcher]);
+    $source = new SourceDescription('no-self', './specs/api.json', SourceType::Openapi);
+    $result = $resolver->resolve($source, '/workspace');
+
+    expect($result->selfUri)->toBeNull()
+        ->and($result->canonicalUri)->toBe('file:///workspace/specs/api.json')
+        ->and($result->baseUri())->toBe('file:///workspace/specs/api.json');
+});

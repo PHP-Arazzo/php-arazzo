@@ -215,6 +215,49 @@ it('immutably seeds in-memory documents via withDocument() and preserves them ac
         ->and($rebound->resolve($desc))->toBe($seeded);
 });
 
+it('resolves by identity when seeded document has selfUri (S2)', function (): void {
+    $seeded = new SourceDocument(
+        name: 'remote-cache',
+        type: SourceType::Openapi,
+        canonicalUri: 'https://cache.example.com/openapi.json',
+        content: [
+            'openapi' => '3.0.3',
+            'info' => ['title' => 'Identified', 'version' => '1.0'],
+            'paths' => [],
+        ],
+        selfUri: 'https://specs.example.com/canonical-openapi.json',
+    );
+
+    $sources = Sources::create()->withDocument($seeded);
+
+    // Source description specifies canonical self URL under different name
+    $desc = new SourceDescription('aliased', 'https://specs.example.com/canonical-openapi.json', SourceType::Openapi);
+
+    expect($sources->resolve($desc))->toBe($seeded);
+});
+
+it('uses document $self as base URI when normalizing sources (S4)', function (): void {
+    $file = __DIR__.'/fixtures/document/openapi30.yaml';
+    // Declare relative source
+    $source = new SourceDescription('petstore', './openapi30.yaml', SourceType::Openapi);
+
+    $arazzoDoc = new ArazzoDocument(
+        arazzo: '1.1.0',
+        info: new Info('Test', null, null, '1.0.0'),
+        sourceDescriptions: [$source],
+        workflows: [],
+        components: new Components([], [], [], []),
+        specificationExtensions: [],
+        self: 'file:///'.ltrim(str_replace('\\', '/', __DIR__), '/').'/fixtures/document/workflow.arazzo.yaml',
+    );
+
+    $sources = Sources::create();
+    $operations = $sources->normalizeSources($arazzoDoc, '/nonexistent/fallback');
+
+    expect(count($operations))->toBeGreaterThan(0)
+        ->and($operations->has('listPets'))->toBeTrue();
+});
+
 afterEach(function (): void {
     SourceNormalizerRegistry::reset();
 });

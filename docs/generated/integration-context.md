@@ -37,6 +37,9 @@ flowchart LR
         A_Alama_Arazzo_Sources_Resolver_DefaultSourceResolver["DefaultSourceResolver"]:::adapter
         A_Alama_Arazzo_Sources_Resolver_DefaultSourceResolver --- CORE
         A_Alama_Arazzo_Sources_Resolver_DefaultSourceResolver --- net
+        A_Alama_Arazzo_Sources_Resolver_Fetchers_DefaultFetchers["DefaultFetchers"]:::adapter
+        A_Alama_Arazzo_Sources_Resolver_Fetchers_DefaultFetchers --- CORE
+        A_Alama_Arazzo_Sources_Resolver_Fetchers_DefaultFetchers --- net
         A_Alama_Arazzo_Sources_Resolver_Fetchers_HttpFetcher["HttpFetcher"]:::adapter
         A_Alama_Arazzo_Sources_Resolver_Fetchers_HttpFetcher --- CORE
         A_Alama_Arazzo_Sources_Resolver_Fetchers_HttpFetcher --- net

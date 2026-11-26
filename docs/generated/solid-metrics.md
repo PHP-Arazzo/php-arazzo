@@ -36,7 +36,7 @@ quadrantChart
     contracts/Interfaces: [0.103, 1]
     contracts/Observability: [0, 0.5]
     contracts/Policy: [0, 0]
-    contracts/Spec: [0.036, 0.017]
+    contracts/Spec: [0.036, 0.016]
     contracts/State: [0.105, 0]
     contracts/Support: [0, 0.2]
     contracts/Validation: [0.111, 0]
@@ -70,7 +70,7 @@ quadrantChart
     expression/Plugins: [1, 0]
     expression/Policy: [0, 0]
     expression/Registries: [0.625, 0]
-    expression/Support: [0.667, 0]
+    expression/Support: [0.714, 0]
     expression/Xpath: [0.5, 0.333]
     expression/_: [0.667, 0]
     protocol-http/Exceptions: [0.333, 0]
@@ -104,12 +104,12 @@ quadrantChart
     runner/Store: [0.6, 0]
     runner/Sync: [0.84, 0]
     runner/_: [0.75, 0.667]
-    sources/Exceptions: [0, 0.125]
+    sources/Exceptions: [0, 0]
     sources/Normalizer: [0.5, 0.167]
     sources/Plugins: [1, 0]
     sources/Policy: [0.333, 0]
     sources/Registries: [0.8, 0]
-    sources/Resolver: [0.667, 0.25]
+    sources/Resolver: [0.667, 0.2]
     sources/_: [0.75, 0.5]
 ```
 
@@ -125,7 +125,7 @@ Concrete types over 300 LOC:
 | `WorkflowExecutor` | `runner:Sync` | 397 |
 | `StepExecutionWorker` | `runner:Async` | 387 |
 | `StepOutcomeHandler` | `runner:Async` | 366 |
-| `Sources` | `sources:_` | 315 |
+| `Sources` | `sources:_` | 331 |
 | `WorkflowEngine` | `runner:Sync` | 309 |
 | `DefaultOpenApiExecutor` | `protocol-http:Execution` | 306 |
 
@@ -140,8 +140,8 @@ Contracts declaring more than 7 methods:
 | `ExpressionEngineInterface` <small>expression</small> | 14 |
 | `EvaluationInputInterface` <small>expression</small> | 12 |
 | `SourcesInterface` <small>sources</small> | 10 |
-| `RunnerInterface` <small>runner</small> | 9 |
 | `ExecutionStoreInterface` <small>runner</small> | 9 |
+| `RunnerInterface` <small>runner</small> | 9 |
 | `EvaluationEngineInterface` <small>evaluation</small> | 8 |
 
 ## Concrete hubs (DIP)

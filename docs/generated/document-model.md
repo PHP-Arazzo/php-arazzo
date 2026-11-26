@@ -48,6 +48,7 @@ classDiagram
     class SourceDescription
     class SourceDescriptionCollection
     class SourceDocument
+    class SourceIdentity
     class SourceType
     class SpecVersion
     class Step
@@ -127,6 +128,7 @@ classDiagram
     SourceDescription "1" --> "0..1" SourceType : holds
     SourceDescriptionCollection "1" --> "0..*" SourceDescription : holds
     SourceDocument "1" --> "0..1" SourceType : holds
+    SourceIdentity "1" --> "0..1" SourceDocument : holds
     Step "1" --> "0..1" StepTarget : holds
     Step "1" --> "0..1" StepFlow : holds
     Step "1" --> "0..1" StepIo : holds
