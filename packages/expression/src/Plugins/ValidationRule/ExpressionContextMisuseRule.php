@@ -35,7 +35,7 @@ final class ExpressionContextMisuseRule implements ValidationRuleInterface
             if ($ref->isRuntimeHttpReference() && !$site->allowsRuntimeHttpReference()) {
                 $errors->error(
                     $this->code(),
-                    "Runtime reference (\$response/\$request/\$statusCode/\$url/\$method) is not valid in context '{$site->context}'.",
+                    "Runtime reference (\$response/\$request/\$statusCode/\$url/\$method) is not valid in context '{$site->context->value}'.",
                     $site->pointer,
                 );
             }

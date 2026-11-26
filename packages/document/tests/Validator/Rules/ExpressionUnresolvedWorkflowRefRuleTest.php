@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Tests\Validation\Rules;
 
+use Alama\Arazzo\Contracts\Spec\Action\SuccessEndAction;
 use Alama\Arazzo\Contracts\Spec\Expression;
+use Alama\Arazzo\Contracts\Spec\StepFactory;
+use Alama\Arazzo\Contracts\Spec\StepFlow;
+use Alama\Arazzo\Contracts\Spec\StepIo;
+use Alama\Arazzo\Contracts\Spec\SuccessCriterion;
 use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Contracts\Validation\ErrorCollector;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
@@ -36,4 +41,27 @@ it('flags reference to workflow not in dependsOn', function (): void {
     $ec = new ErrorCollector();
     (new ExpressionUnresolvedWorkflowRefRule())->check($doc, SymbolTable::build($doc), $ec);
     expect($ec->errors())->toHaveCount(1);
+});
+
+it('flags unresolved workflow reference in action criteria and allows resolvable reference', function (): void {
+    $other = new Workflow('other', null, null, ['type' => 'object', 'properties' => ['token' => []]], [], [Fx::step()], [], [], [], []);
+    $actionBad = new SuccessEndAction('bad', [new SuccessCriterion(null, '$workflows.ghost.outputs.t == 1', null)]);
+    $actionGood = new SuccessEndAction('good', [new SuccessCriterion(null, '$workflows.other.inputs.token != null', null)]);
+
+    $step = StepFactory::http(
+        's', null,
+        new StepFlow(onSuccess: [$actionBad, $actionGood]),
+        new StepIo(),
+        operationId: 'op',
+    );
+    $main = new Workflow('main', null, null, null, ['other'], [$step], [], [], [], []);
+    $doc = Fx::doc(workflows: [$other, $main]);
+
+    $ec = new ErrorCollector();
+    (new ExpressionUnresolvedWorkflowRefRule())->check($doc, SymbolTable::build($doc), $ec);
+
+    expect($ec->errors())->toHaveCount(1)
+        ->and($ec->errors()[0]->code)->toBe('expr.unresolved_workflow_ref')
+        ->and($ec->errors()[0]->path)->toBe('/workflows/1/steps/0/onSuccess/0/criteria/0/condition')
+        ->and($ec->errors()[0]->message)->toContain("Expression references unknown workflow 'ghost'");
 });

@@ -7,6 +7,7 @@ use Alama\Arazzo\Expression\Data\EmbeddedSegment;
 use Alama\Arazzo\Expression\Data\ExpressionReference;
 use Alama\Arazzo\Expression\Data\ExpressionSite;
 use Alama\Arazzo\Expression\Data\Token;
+use Alama\Arazzo\Expression\Enum\ExpressionContext;
 use Alama\Arazzo\Expression\Enum\ReferenceKind;
 use Alama\Arazzo\Expression\Enum\TokenKind;
 
@@ -42,8 +43,8 @@ test('expression Data objects host domain predicates directly (Tell, Dont Ask)',
         ->and($stepResp->isRuntimeHttpReference())->toBeTrue()
         ->and($stepOut->isRuntimeHttpReference())->toBeFalse();
 
-    $criteriaSite = new ExpressionSite('/p', new Expression('$statusCode'), null, 's1', 'criteria');
-    $paramSite = new ExpressionSite('/p', new Expression('$statusCode'), null, 's1', 'parameters');
+    $criteriaSite = new ExpressionSite('/p', new Expression('$statusCode'), null, 's1', ExpressionContext::Criteria);
+    $paramSite = new ExpressionSite('/p', new Expression('$statusCode'), null, 's1', ExpressionContext::Parameters);
 
     expect($criteriaSite->allowsRuntimeHttpReference())->toBeTrue()
         ->and($paramSite->allowsRuntimeHttpReference())->toBeFalse();

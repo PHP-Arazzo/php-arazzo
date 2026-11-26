@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Tests\Validation\Rules;
 
+use Alama\Arazzo\Contracts\Spec\Action\SuccessEndAction;
 use Alama\Arazzo\Contracts\Spec\Enum\ParameterIn;
 use Alama\Arazzo\Contracts\Spec\Expression;
 use Alama\Arazzo\Contracts\Spec\Parameter;
 use Alama\Arazzo\Contracts\Spec\StepFactory;
 use Alama\Arazzo\Contracts\Spec\StepFlow;
 use Alama\Arazzo\Contracts\Spec\StepIo;
+use Alama\Arazzo\Contracts\Spec\SuccessCriterion;
 use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Contracts\Validation\ErrorCollector;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
@@ -162,4 +164,32 @@ it('returns false from isForwardReference when current step id is null', functio
     $ec = new ErrorCollector();
     (new ExpressionUnresolvedStepRefRule($parser))->check($doc, SymbolTable::build($doc), $ec);
     expect($ec->errors())->toBe([]);
+});
+
+it('flags unresolved step reference in action criteria and allows resolvable reference', function (): void {
+    $badAction = new SuccessEndAction(
+        'goBad',
+        [new SuccessCriterion(null, '$steps.ghost.outputs.x == 1', null)],
+    );
+    $goodAction = new SuccessEndAction(
+        'goGood',
+        [new SuccessCriterion(null, '$steps.one.outputs.status == "ok"', null)],
+    );
+
+    $s1 = Fx::step('one', 'op', outputs: ['status' => new Expression('{$response.body#/status}')]);
+    $s2 = StepFactory::http(
+        'two', null,
+        new StepFlow(onSuccess: [$badAction, $goodAction]),
+        new StepIo(),
+        operationId: 'op',
+    );
+
+    $doc = Fx::doc(workflows: [Fx::wf('main', [$s1, $s2])]);
+    $ec = new ErrorCollector();
+    (new ExpressionUnresolvedStepRefRule())->check($doc, SymbolTable::build($doc), $ec);
+
+    expect($ec->errors())->toHaveCount(1)
+        ->and($ec->errors()[0]->code)->toBe('expr.unresolved_step_ref')
+        ->and($ec->errors()[0]->path)->toBe('/workflows/0/steps/1/onSuccess/0/criteria/0/condition')
+        ->and($ec->errors()[0]->message)->toContain("Expression references unknown step 'ghost'");
 });

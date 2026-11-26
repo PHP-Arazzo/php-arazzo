@@ -59,6 +59,8 @@ same pull request.
 | **Strict validation** | Default `true`: a response violating its OpenAPI response schema fails the step (issue #334). Opt-out per step via `x-strict-validation: false`. |
 | **Reference resolution (validate)** | `operationId` is resolved against locally-loaded source operations; `$sourceDescriptions.<name>` and `$components.<type>.<name>` are checked against the symbol table. Local sources resolve offline; unreachable remote sources are skipped, never fail validation (issue #384). |
 | **Source resolution seam** | Performed in `cli` (`ValidateCommand` → `SourceLoader`); the `document` validator never imports `sources` (issue #384). |
+| **ExpressionSite** | Value object carrying JSON Pointer, `Expression`, symbol table reference, `currentStepId`, and traversal `context` identifying an expression site in an Arazzo document for static validation rules. |
+| **ExpressionWalker** | Internal traversal engine in `packages/expression` that yields `ExpressionSite`s across workflows, steps, and action flows (criteria and parameters) for static analysis. |
 
 ## 5. Packages
 
@@ -88,6 +90,7 @@ same pull request.
 | ADR-008 | `As<Name>Plugin` attributes & `src/Plugins/<Name>` directory convention | #457 |
 | ADR-009 | Runner package public interface (`Runner` / `AsyncRunner`), `ExecutionStore`, `ExecutionPolicy` & protocol-agnostic execution | — |
 | ADR-010 | Monorepo observability tiers, vendor-agnostic `TracerInterface` & `*Policy` value-object standard | — |
+| ADR-011 | Static expression walking for action criteria & parameters with step/workflow context isolation | #344 |
 
 ## 7. How to update this file
 
