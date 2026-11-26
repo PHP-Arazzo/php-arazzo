@@ -19,10 +19,7 @@
 
 declare(strict_types=1);
 
-$bootstraps = [
-    ...glob(__DIR__.'/../packages/*/tests/Pest.php') ?: [],
-    ...glob(__DIR__.'/../tools/*/tests/Pest.php') ?: [],
-];
+$bootstraps = glob(__DIR__.'/../packages/*/tests/Pest.php') ?: [];
 
 sort($bootstraps);
 
