@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Cli\Console\Command;
 
 use Alama\Arazzo\Cli\Console\Config\ValidateConfigLoader;
+use Alama\Arazzo\Contracts\Validation\Error;
 use Alama\Arazzo\Contracts\Validation\ValidatorPolicy;
+use Alama\Arazzo\Contracts\Validation\Warning;
 use Alama\Arazzo\Document\Document;
 use Alama\Arazzo\Sources\Sources;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -175,7 +177,7 @@ final class ValidateCommand extends Command
     }
 
     /**
-     * @param  list<\Alama\Arazzo\Contracts\Validation\Error|\Alama\Arazzo\Contracts\Validation\Warning>  $diagnostics
+     * @param  list<Error|Warning>  $diagnostics
      */
     private function printDiagnostics(array $diagnostics, string $heading, string $color, OutputInterface $output): void
     {
