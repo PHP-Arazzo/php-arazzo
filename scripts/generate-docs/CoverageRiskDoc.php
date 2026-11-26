@@ -139,12 +139,13 @@ function scanTestMentions(string $root): array
         $iterator = new \RecursiveIteratorIterator(
             new \RecursiveDirectoryIterator($srcDir, \FilesystemIterator::SKIP_DOTS),
         );
+        $normalizedSrcDir = rtrim(str_replace('\\', '/', $srcDir), '/');
         /** @var \SplFileInfo $file */
         foreach ($iterator as $file) {
             if ($file->getExtension() !== 'php') {
                 continue;
             }
-            $relative = str_replace($srcDir.'/', '', (string) $file->getPathname());
+            $relative = str_replace($normalizedSrcDir.'/', '', str_replace('\\', '/', (string) $file->getPathname()));
             $parts = explode('/', $relative);
             if (count($parts) < 2) {
                 continue; // root files have no module dir

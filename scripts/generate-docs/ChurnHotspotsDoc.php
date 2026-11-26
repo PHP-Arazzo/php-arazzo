@@ -121,8 +121,9 @@ function scanChurn(string $root): array
     );
     $pathspecs[] = 'packages/laravel/src';
 
+    $nullSink = PHP_OS_FAMILY === 'Windows' ? 'NUL' : '/dev/null';
     exec(
-        'git -C '.escapeshellarg($root).' log --name-only --format=%x00 -- '.implode(' ', $pathspecs).' 2>/dev/null',
+        'git -C '.escapeshellarg($root).' log --name-only --format=%x00 -- '.implode(' ', $pathspecs).' 2>'.$nullSink,
         $output,
     );
 

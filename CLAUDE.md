@@ -1,68 +1,47 @@
 # php-arazzo
 
-PHP monorepo for alama/arazzo-core + alama/laravel-arazzo.
+Framework-agnostic PHP 8.4+ monorepo implementing the Arazzo 1.0.0/1.1.0 Specification (`php-arazzo/arazzo-*`; Laravel integration lives in `php-arazzo/laravel-arazzo`).
 
-## Working on features
+## Worktree Workflow
 
-When working on any feature or GitHub issue, use the apptree setup:
-
-1. Create isolated environment: `scripts/apptree create <branch-name>`
-2. Work inside the container: `scripts/apptree shell <branch-name>`
-3. Run tests: `scripts/apptree test <branch-name>`
-4. When done: `scripts/apptree down <branch-name>`
-
-## Available commands
-
-- `scripts/apptree create <branch>` - Create worktree + start Docker
-- `scripts/apptree shell <branch>` - Open shell in container
-- `scripts/apptree test <branch>` - Run Pest tests
-- `scripts/apptree down <branch>` - Stop containers + remove worktree
-- `scripts/apptree list` - List active instances
-
-## Testing
+Use native git worktrees with local PHP 8.4+ (or Herd); `scripts/apptree` is optional for Docker-isolated runs:
 
 ```bash
-# Run all tests
-composer run test
-
-# Run core tests only
-composer run test-core
-
-# Run laravel tests only
-composer run test-laravel
-
-# Run with coverage
-make test-coverage
+git worktree add .worktrees/<branch> -b <branch>
+cd .worktrees/<branch> && composer install
 ```
 
-## Code quality
+## Verification & Quality Gates
 
 ```bash
-# Format code
-composer run format
-
-# Static analysis
-composer run analyse
-
-# Full verification
-make verify
+make verify                   # Pre-push gate: docs, pint --test, analyse, check-baselines, pest
+composer run test             # Run all Pest suites (or composer run test-<pkg>)
+composer run analyse          # Run PHPStan across all 12 packages
+composer run check-baselines  # Enforce docs/BASELINE-POLICY.md (no correctness suppressions)
+composer run format           # Format with Laravel Pint
+make phpmd                    # Run PHPMD against phpmd.xml + phpmd.baseline.xml
 ```
 
-Suppressions are governed by [`docs/BASELINE-POLICY.md`](docs/BASELINE-POLICY.md) — a
-baseline may freeze style findings, never correctness ones, and `composer run
-check-baselines` enforces that.
+## Context Pointers
 
-## Coding Standards (Mandatory for Contributors & Agents)
+- **Writing or refactoring PHP:** follow [`docs/CODING-STANDARDS.md`](docs/CODING-STANDARDS.md) (domain exceptions with static factories, rich DTOs, symmetric decomposition, `@internal` collaborators).
+- **Changing public seams, plugins, or observability:** consult [`docs/adr/`](docs/adr/) — facade seams (`ADR-006`, `ADR-007`, `ADR-009`), `As<Name>Plugin` + `src/Plugins/<Name>/` convention (`ADR-008`), observability tiers & `*Policy` VOs (`ADR-010`).
+- **Moving or splitting classes:** update [`phpmd.baseline.xml`](phpmd.baseline.xml) (`make phpmd-baseline`) and `packages/*/phpstan-baseline.neon` (`make analyse-baseline`), governed by [`docs/BASELINE-POLICY.md`](docs/BASELINE-POLICY.md).
+- **Changing namespaces, packages, or public APIs:** run [`scripts/generate-docs.php`](scripts/generate-docs.php) (`composer run docs`) to refresh `docs/generated/`.
 
-All code changes MUST follow [`docs/CODING-STANDARDS.md`](docs/CODING-STANDARDS.md):
+## Monorepo Packages (`packages/`)
 
-- **Domain exceptions with static factories**: never throw bare `RuntimeException` / `InvalidArgumentException` / `LogicException` with inline message strings; use package domain exceptions with named static factories (e.g. `GotoTargetNotFoundException::unknownStep($stepId, $workflowId)`).
-- **Rich DTOs (Tell, Don't Ask)**: place pure queries and predicates over DTO data on the DTO itself (`$document->findWorkflow()`, `$document->findSource()`, `$workflow->findStep()`, `$step->isActorHandoff()`, `$step->flow->timeoutSeconds()`, `$components->resolveReusableAction()`) instead of repeating lookup helpers across callers.
-- **Symmetric decomposition & zero baseline regressions**: extract sibling collaborators symmetrically, mark internal helpers `@internal`, and never add PHPMD/PHPStan baseline entries.
-
-## Project structure
-
-- `packages/core/` - Arazzo core library
-- `packages/laravel/` - Laravel integration package
-- `tests/` - Test suites
-- `scripts/` - Development scripts
+| Package | Architectural Role |
+|---|---|
+| `packages/contracts/` | Foundation DTOs, spec/state models, tracing/clock/policy ports |
+| `packages/expression/` | Static Arazzo expression lexer, parser, AST, selector plugins |
+| `packages/evaluation/` | Runtime expression, criteria, selector, interpolation, payload evaluation |
+| `packages/document/` | Arazzo document loading, parsing, validation, input schema validation |
+| `packages/sources/` | Source fetching/resolution and base OpenAPI/WSDL normalization |
+| `packages/engine/` | Step state machine, retry policy, execution pipeline, OTel adapter |
+| `packages/protocol-http/` | HTTP/OpenAPI + AsyncAPI executors, normalizers, response validation |
+| `packages/protocol-rpc/` | gRPC, gRPC-Web, Twirp, and Connect protocol vertical slice |
+| `packages/protocol-soap/` | SOAP executor, response mapper, and XSD response validator |
+| `packages/runner/` | Sync (`Runner`) and durable (`AsyncRunner`) workflow execution facades |
+| `packages/cli/` | `arazzo` CLI binary (`run`, `validate`, `list`, `explain`, `render`) |
+| `packages/core/` | Aggregator metapackage, cross-cutting architecture/conformance tests, custom PHPStan rules |
