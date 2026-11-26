@@ -38,7 +38,8 @@ if (!is_file($manifestPath)) {
     exit(1);
 }
 
-$committed = (string) file_get_contents($manifestPath);
+$committed = str_replace("\r\n", "\n", (string) file_get_contents($manifestPath));
+$rebuilt = str_replace("\r\n", "\n", $rebuilt);
 
 if ($committed === $rebuilt) {
     echo "docs/conformance/manifest.json is in sync with the corpus.\n";

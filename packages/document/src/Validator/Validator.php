@@ -40,7 +40,7 @@ final readonly class Validator
             default => KnownOperations::none(),
         };
 
-        $symbols = SymbolTable::build($doc, $ops);
+        $symbols = SymbolTable::build($doc, $ops, $this->rules->policy->isConformance());
         $collector = new ErrorCollector($this->rules->policy);
 
         foreach ($this->rules->activeRules() as $rule) {

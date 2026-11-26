@@ -21,7 +21,8 @@ final readonly class SubWorkflowFailureAction extends FailureAction
         public array $parameters,
         array $criteria,
         public ?string $version = null,
+        ?string $rawType = null,
     ) {
-        parent::__construct($name, ActionKind::Invoke, $criteria);
+        parent::__construct($name, ActionKind::Invoke, $criteria, $rawType);
     }
 }

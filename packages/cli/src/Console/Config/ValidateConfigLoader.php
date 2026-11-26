@@ -85,6 +85,10 @@ final readonly class ValidateConfigLoader
             $policy = $policy->withStrict($data['strict']);
         }
 
+        if (isset($data['conformance']) && is_bool($data['conformance'])) {
+            $policy = $policy->withConformance($data['conformance']);
+        }
+
         return $policy;
     }
 

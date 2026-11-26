@@ -6,8 +6,10 @@ namespace Alama\Arazzo\Document\Validator;
 
 use Alama\Arazzo\Contracts\Interfaces\ValidationRuleInterface;
 use Alama\Arazzo\Contracts\Validation\ValidatorPolicy;
+use Alama\Arazzo\Document\Plugins\ValidationRule\ActionTypeValidRule;
 use Alama\Arazzo\Document\Plugins\ValidationRule\DocUnknownFieldRule;
 use Alama\Arazzo\Document\Plugins\ValidationRule\ReceiveStepSuccessCriteriaRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\StepParameterInValidRule;
 use Alama\Arazzo\Document\Registries\ValidationRuleRegistry;
 
 /**
@@ -40,6 +42,10 @@ final readonly class RuleSet
             $rules = self::applyStrictness($rules, false);
         }
 
+        if ($policy->isConformance()) {
+            $rules = self::applyConformance($rules, true);
+        }
+
         return new self($rules, $policy);
     }
 
@@ -59,6 +65,9 @@ final readonly class RuleSet
         if ($policy->isStrict() !== $this->policy->isStrict()) {
             $rules = self::applyStrictness($rules, $policy->isStrict());
         }
+        if ($policy->isConformance() !== $this->policy->isConformance()) {
+            $rules = self::applyConformance($rules, $policy->isConformance());
+        }
 
         return new self($rules, $policy);
     }
@@ -73,6 +82,22 @@ final readonly class RuleSet
             static fn (ValidationRuleInterface $rule): ValidationRuleInterface => match (true) {
                 $rule instanceof DocUnknownFieldRule => new DocUnknownFieldRule($strict),
                 $rule instanceof ReceiveStepSuccessCriteriaRule => new ReceiveStepSuccessCriteriaRule($strict),
+                default => $rule,
+            },
+            $rules,
+        );
+    }
+
+    /**
+     * @param  list<ValidationRuleInterface>  $rules
+     * @return list<ValidationRuleInterface>
+     */
+    private static function applyConformance(array $rules, bool $conformance): array
+    {
+        return array_map(
+            static fn (ValidationRuleInterface $rule): ValidationRuleInterface => match (true) {
+                $rule instanceof StepParameterInValidRule => new StepParameterInValidRule($conformance),
+                $rule instanceof ActionTypeValidRule => new ActionTypeValidRule($conformance),
                 default => $rule,
             },
             $rules,
@@ -97,5 +122,10 @@ final readonly class RuleSet
     public function isStrict(): bool
     {
         return $this->policy->isStrict();
+    }
+
+    public function isConformance(): bool
+    {
+        return $this->policy->isConformance();
     }
 }

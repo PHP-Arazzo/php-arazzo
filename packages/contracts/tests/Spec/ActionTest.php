@@ -7,6 +7,7 @@ namespace Alama\Arazzo\Tests\Dto;
 use Alama\Arazzo\Contracts\Spec\Action\FailureEndAction;
 use Alama\Arazzo\Contracts\Spec\Action\FailureGotoAction;
 use Alama\Arazzo\Contracts\Spec\Action\RetryAction;
+use Alama\Arazzo\Contracts\Spec\Action\SubWorkflowSuccessAction;
 use Alama\Arazzo\Contracts\Spec\Action\SuccessEndAction;
 use Alama\Arazzo\Contracts\Spec\Action\SuccessGotoAction;
 use Alama\Arazzo\Contracts\Spec\Enum\ActionKind;
@@ -29,4 +30,27 @@ it('builds failure actions', function (): void {
     $e = new FailureEndAction('end', []);
     expect($g->workflowId)->toBe('wfB')
         ->and($e->kind)->toBe(ActionKind::End);
+});
+
+it('distinguishes spec and extension cases on ActionKind and SubWorkflowAction', function (): void {
+    expect(ActionKind::Goto->isSpec())->toBeTrue()
+        ->and(ActionKind::End->isSpec())->toBeTrue()
+        ->and(ActionKind::Retry->isSpec())->toBeTrue()
+        ->and(ActionKind::Invoke->isSpec())->toBeFalse()
+        ->and(ActionKind::Invoke->isExtension())->toBeTrue()
+        ->and(ActionKind::tryFromRaw('goto'))->toBe(ActionKind::Goto)
+        ->and(ActionKind::tryFromRaw('x-invoke'))->toBe(ActionKind::Invoke)
+        ->and(ActionKind::tryFromRaw('invalid'))->toBeNull();
+
+    $sub = new SubWorkflowSuccessAction(
+        'sub',
+        'wf-target',
+        [],
+        [],
+        null,
+        'x-invoke',
+    );
+    expect($sub->isInvoke())->toBeTrue()
+        ->and($sub->isExtension())->toBeTrue()
+        ->and($sub->rawType)->toBe('x-invoke');
 });

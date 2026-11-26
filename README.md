@@ -224,3 +224,6 @@ All 54 sources polled via `gh api` (`gh` CLI) with `GITHUB_TOKEN` fallback — s
 ## Conformance
 
 `php-arazzo/arazzo-core` runs the **official OAI example corpus** through both its synchronous and queued adapters on every change. The current results live in [`docs/CONFORMANCE.md`](docs/CONFORMANCE.md); regenerate with `php scripts/generate-conformance-matrix.php`.
+
+For beyond-spec extensions (`x-invoke`, `x-body`, etc.) and enforcing strict spec conformance via `--conformance`, see [`docs/EXTENSIONS.md`](docs/EXTENSIONS.md).
+

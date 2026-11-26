@@ -42,6 +42,48 @@ class RecordingRule implements ValidationRuleInterface
     }
 }
 
+it('gates beyond-spec extensions when Document is configured with conformance policy', function (): void {
+    $yaml = <<<'YAML'
+arazzo: 1.1.0
+info:
+  title: Test Doc
+  version: 1.0.0
+sourceDescriptions:
+  - name: s1
+    url: https://example.com/api.yaml
+    type: openapi
+workflows:
+  - workflowId: mainWf
+    steps:
+      - stepId: step1
+        operationId: s1.op1
+        parameters:
+          - name: bodyParam
+            in: x-body
+            value: data
+        onSuccess:
+          - name: invokeSub
+            type: x-invoke
+            workflowId: mainWf
+YAML;
+
+    $doc = Document::create()->loadFromYaml($yaml);
+
+    // 1. Permissive mode (default) -> Valid!
+    $permissiveResult = Document::create()->validate($doc);
+    expect($permissiveResult->isValid())->toBeTrue();
+
+    // 2. Conformance mode -> Invalid with step.parameter_in_valid and action.type_valid errors!
+    $conformanceResult = Document::create()
+        ->withValidatorPolicy(ValidatorPolicy::default()->withConformance(true))
+        ->validate($doc);
+
+    expect($conformanceResult->isValid())->toBeFalse();
+    $codes = array_map(fn ($e) => $e->code, $conformanceResult->errors);
+    expect($codes)->toContain('step.parameter_in_valid')
+        ->and($codes)->toContain('action.type_valid');
+});
+
 it('collects errors and warnings', function (): void {
     $doc = new ArazzoDocument('1.0.0', new Info('T', null, null, '1'), [], [], new Components([], [], [], []), []);
     $result = (new Validator(new RuleSet([new RecordingRule()])))->validate($doc);

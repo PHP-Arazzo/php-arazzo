@@ -31,6 +31,7 @@ final readonly class SymbolTable
         public array $components,
         KnownOperations|array $knownOperations = new KnownOperations(),
         array $resolvedOperations = [],
+        public bool $conformance = false,
     ) {
         $this->knownOperations = $knownOperations instanceof KnownOperations
             ? $knownOperations
@@ -43,7 +44,7 @@ final readonly class SymbolTable
     /**
      * @param  KnownOperations|array<string,array<string,true>>|null  $resolvedOperations
      */
-    public static function build(ArazzoDocument $doc, KnownOperations|array|null $resolvedOperations = null): self
+    public static function build(ArazzoDocument $doc, KnownOperations|array|null $resolvedOperations = null, bool $conformance = false): self
     {
         $sources = [];
         foreach ($doc->sourceDescriptions as $s) {
@@ -68,7 +69,7 @@ final readonly class SymbolTable
             default => KnownOperations::none(),
         };
 
-        return new self($workflows, $sources, $components, $ops);
+        return new self($workflows, $sources, $components, $ops, conformance: $conformance);
     }
 
     public function hasWorkflow(string $workflowId): bool

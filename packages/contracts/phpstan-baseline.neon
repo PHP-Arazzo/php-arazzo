@@ -7,6 +7,24 @@ parameters:
 			path: src/Spec/Action/RetryAction.php
 
 		-
+			message: '#^Method __construct has too many parameters \(6\)\. Maximum allowed is 5\.$#'
+			identifier: arazzo.custom.maxParameterCount
+			count: 1
+			path: src/Spec/Action/SubWorkflowFailureAction.php
+
+		-
+			message: '#^Method __construct has too many parameters \(6\)\. Maximum allowed is 5\.$#'
+			identifier: arazzo.custom.maxParameterCount
+			count: 1
+			path: src/Spec/Action/SubWorkflowSuccessAction.php
+
+		-
+			message: '#^Method __construct has too many parameters \(6\)\. Maximum allowed is 5\.$#'
+			identifier: arazzo.custom.maxParameterCount
+			count: 1
+			path: src/Validation/SymbolTable.php
+
+		-
 			message: '#^Method __construct has too many parameters \(9\)\. Maximum allowed is 5\.$#'
 			identifier: arazzo.custom.maxParameterCount
 			count: 1

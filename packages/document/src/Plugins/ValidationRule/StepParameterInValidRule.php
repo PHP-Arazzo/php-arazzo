@@ -21,6 +21,9 @@ use Alama\Arazzo\Contracts\Validation\SymbolTable;
 final class StepParameterInValidRule implements ValidationRuleInterface
 {
     /** @var list<ParameterIn> */
+    private const SPEC_IN = [ParameterIn::Path, ParameterIn::Query, ParameterIn::Header, ParameterIn::Cookie];
+
+    /** @var list<ParameterIn> */
     private const V1_0_IN = [ParameterIn::Path, ParameterIn::Query, ParameterIn::Header, ParameterIn::Cookie];
 
     /** @var list<ParameterIn> */
@@ -35,24 +38,43 @@ final class StepParameterInValidRule implements ValidationRuleInterface
         ParameterIn::Variable,
     ];
 
+    public function __construct(
+        private readonly bool $conformance = false,
+    ) {}
+
     public function check(ArazzoDocument $doc, SymbolTable $symbols, ErrorCollector $errors): void
     {
+        $isConformance = $this->conformance || $symbols->conformance;
+
         foreach ($doc->workflows as $wi => $w) {
             foreach ($w->steps as $si => $s) {
                 foreach ($s->io->parameters as $pi => $p) {
-                    $this->checkParameter($p, $doc, $errors, "/workflows/{$wi}/steps/{$si}/parameters/{$pi}/in");
+                    $this->checkParameter($p, $doc, $errors, "/workflows/{$wi}/steps/{$si}/parameters/{$pi}/in", $isConformance);
                 }
             }
         }
 
         foreach ($doc->components->parameters as $name => $p) {
-            $this->checkParameter($p, $doc, $errors, "/components/parameters/{$name}/in");
+            $this->checkParameter($p, $doc, $errors, "/components/parameters/{$name}/in", $isConformance);
         }
     }
 
-    private function checkParameter(Parameter|Reusable $p, ArazzoDocument $doc, ErrorCollector $errors, string $path): void
+    private function checkParameter(Parameter|Reusable $p, ArazzoDocument $doc, ErrorCollector $errors, string $path, bool $isConformance): void
     {
         if ($p instanceof Reusable || $p->in === null) {
+            return;
+        }
+
+        if ($isConformance) {
+            if (!in_array($p->in, self::SPEC_IN, true)) {
+                $raw = $p->rawIn ?? $p->in->value;
+                $errors->error(
+                    $this->code(),
+                    "Parameter 'in' value '{$raw}' is a non-spec extension and not allowed in strict conformance mode.",
+                    $path,
+                );
+            }
+
             return;
         }
 

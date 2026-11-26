@@ -62,6 +62,12 @@ final class ValidateCommand extends Command
                 'Disable strict validation mode',
             )
             ->addOption(
+                'conformance',
+                null,
+                InputOption::VALUE_NONE,
+                'Enforce strict Arazzo specification conformance (reject beyond-spec extensions)',
+            )
+            ->addOption(
                 'config',
                 'c',
                 InputOption::VALUE_REQUIRED,
@@ -146,6 +152,10 @@ final class ValidateCommand extends Command
             $policy = $policy->withStrict(false);
         } elseif ((bool) $input->getOption('strict')) {
             $policy = $policy->withStrict(true);
+        }
+
+        if ((bool) $input->getOption('conformance')) {
+            $policy = $policy->withConformance(true);
         }
 
         return $this->applySeverityFlags($input, $policy, $output);
