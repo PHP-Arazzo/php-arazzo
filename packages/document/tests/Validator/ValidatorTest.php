@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Tests\Validation;
 
 use Alama\Arazzo\Contracts\Interfaces\ValidationRuleInterface;
+use Alama\Arazzo\Contracts\Spec\Action\FailureGotoAction;
 use Alama\Arazzo\Contracts\Spec\Action\SuccessEndAction;
 use Alama\Arazzo\Contracts\Spec\Action\SuccessGotoAction;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
@@ -85,4 +86,52 @@ it('flags unresolved expressions in action criteria and parameters during full v
 
     $inputErr = current(array_filter($result->errors, fn ($e) => $e->code === 'expr.unresolved_input_ref'));
     expect($inputErr->path)->toBe('/workflows/0/steps/0/onSuccess/1/parameters/0/value');
+});
+
+it('flags unresolved goto targets in workflow-level successActions and failureActions during full validation', function (): void {
+    $actionSuccess = new SuccessGotoAction(
+        'go',
+        'nope',
+        null,
+        [],
+    );
+    $actionFailure = new FailureGotoAction(
+        'recover',
+        null,
+        'ghost-wf',
+        [],
+    );
+
+    $step = StepFactory::http(
+        'one', null,
+        new StepFlow(),
+        new StepIo(),
+        operationId: '$sourceDescriptions.api.getThing',
+    );
+    $source = new SourceDescription('api', 'https://example.com/openapi.yaml', SourceType::Openapi);
+    $wf = new Workflow(
+        'wf',
+        null,
+        null,
+        null,
+        [],
+        [$step],
+        [$actionSuccess],
+        [$actionFailure],
+        [],
+        [],
+    );
+    $doc = new ArazzoDocument('1.1.0', new Info('Repro', null, null, '1'), [$source], [$wf], new Components([], [], [], []), []);
+
+    $validator = new Validator(RuleSet::default());
+    $result = $validator->validate($doc);
+
+    expect($result->isValid())->toBeFalse();
+
+    $gotoErrors = array_values(array_filter($result->errors, fn ($e) => $e->code === 'action.goto_target_resolves'));
+    expect($gotoErrors)->toHaveCount(2)
+        ->and($gotoErrors[0]->path)->toBe('/workflows/0/successActions/0/stepId')
+        ->and($gotoErrors[0]->message)->toBe("Action references unknown stepId 'nope'.")
+        ->and($gotoErrors[1]->path)->toBe('/workflows/0/failureActions/0/workflowId')
+        ->and($gotoErrors[1]->message)->toBe("Action references unknown workflowId 'ghost-wf'.");
 });

@@ -146,3 +146,36 @@ it('supports immutable per-instance validation rules via withRule()', function (
         ->and($withCustom->validate($arazzoDoc)->isValid())->toBeFalse()
         ->and($withCustom->validate($arazzoDoc)->errors[0]->code)->toBe('custom.require_description');
 });
+
+it('rejects workflow-level goto with undeclared stepId target when loaded from YAML', function (): void {
+    $yaml = <<<'YAML'
+arazzo: 1.1.0
+info:
+  title: Repro
+  version: "1"
+sourceDescriptions:
+  - name: api
+    url: https://example.com/openapi.yaml
+    type: openapi
+workflows:
+  - workflowId: wf
+    successActions:
+      - name: go
+        type: goto
+        stepId: nope
+    steps:
+      - stepId: one
+        operationId: $sourceDescriptions.api.getThing
+YAML;
+
+    $doc = createDocument();
+    $arazzoDoc = $doc->loadFromYaml($yaml);
+    $result = $doc->validate($arazzoDoc);
+
+    expect($result->isValid())->toBeFalse();
+
+    $gotoErrors = array_values(array_filter($result->errors, fn ($e) => $e->code === 'action.goto_target_resolves'));
+    expect($gotoErrors)->toHaveCount(1)
+        ->and($gotoErrors[0]->path)->toBe('/workflows/0/successActions/0/stepId')
+        ->and($gotoErrors[0]->message)->toBe("Action references unknown stepId 'nope'.");
+});
