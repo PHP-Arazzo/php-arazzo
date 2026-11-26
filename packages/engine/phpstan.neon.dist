@@ -10,4 +10,5 @@ parameters:
         - tests
     scanDirectories:
         - ../contracts/src
+        - ../evaluation/src
     reportUnmatchedIgnoredErrors: true

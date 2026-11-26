@@ -1,15 +1,15 @@
 {
     "package": "all",
     "total": {
-        "lines_percent": 93.88,
-        "lines_covered": 8972,
-        "lines_total": 9557,
-        "methods_percent": 88.8,
-        "methods_covered": 1737,
-        "methods_total": 1956,
-        "classes_percent": 78.77,
+        "lines_percent": 93.67,
+        "lines_covered": 9029,
+        "lines_total": 9639,
+        "methods_percent": 88.61,
+        "methods_covered": 1742,
+        "methods_total": 1966,
+        "classes_percent": 78.57,
         "classes_covered": 319,
-        "classes_total": 405
+        "classes_total": 406
     },
     "packages": {
         "cli": {
@@ -25,11 +25,11 @@
             "report": "coverage-report-all/packages/cli/index.html"
         },
         "contracts": {
-            "lines_percent": 94.88,
-            "lines_covered": 1279,
-            "lines_total": 1348,
-            "methods_percent": 91.61,
-            "methods_covered": 437,
+            "lines_percent": 94.81,
+            "lines_covered": 1280,
+            "lines_total": 1350,
+            "methods_percent": 91.4,
+            "methods_covered": 436,
             "methods_total": 477,
             "classes_percent": 75,
             "classes_covered": 66,
@@ -73,15 +73,15 @@
             "report": "coverage-report-all/packages/evaluation/index.html"
         },
         "expression": {
-            "lines_percent": 97.03,
-            "lines_covered": 1732,
-            "lines_total": 1785,
-            "methods_percent": 90.7,
-            "methods_covered": 322,
-            "methods_total": 355,
-            "classes_percent": 78.26,
+            "lines_percent": 97.01,
+            "lines_covered": 1782,
+            "lines_total": 1837,
+            "methods_percent": 90.33,
+            "methods_covered": 327,
+            "methods_total": 362,
+            "classes_percent": 77.14,
             "classes_covered": 54,
-            "classes_total": 69,
+            "classes_total": 70,
             "report": "coverage-report-all/packages/expression/index.html"
         },
         "runner": {
@@ -97,12 +97,12 @@
             "report": "coverage-report-all/packages/runner/index.html"
         },
         "sources": {
-            "lines_percent": 52.3,
-            "lines_covered": 307,
-            "lines_total": 587,
-            "methods_percent": 31.48,
-            "methods_covered": 34,
-            "methods_total": 108,
+            "lines_percent": 50.89,
+            "lines_covered": 313,
+            "lines_total": 615,
+            "methods_percent": 31.53,
+            "methods_covered": 35,
+            "methods_total": 111,
             "classes_percent": 0,
             "classes_covered": 0,
             "classes_total": 20,

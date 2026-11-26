@@ -15,7 +15,7 @@ the declaration honest.
 ```mermaid
 flowchart LR
     subgraph S_core["Core domain"]
-        S_contracts_Spec["contracts:Spec<br/><small>2797 LOC</small>"]:::coreDomain
+        S_contracts_Spec["contracts:Spec<br/><small>2801 LOC</small>"]:::coreDomain
     end
     subgraph S_supporting["Supporting"]
         S_cli_Console["cli:Console<br/><small>797 LOC</small>"]:::supportingDomain
@@ -68,7 +68,7 @@ flowchart LR
         S_expression_Interfaces["expression:Interfaces<br/><small>252 LOC</small>"]:::unknownDomain
         S_expression_Internal["expression:Internal<br/><small>885 LOC</small>"]:::unknownDomain
         S_expression_JsonPath["expression:JsonPath<br/><small>1470 LOC</small>"]:::unknownDomain
-        S_expression_Plugins["expression:Plugins<br/><small>1339 LOC</small>"]:::unknownDomain
+        S_expression_Plugins["expression:Plugins<br/><small>1486 LOC</small>"]:::unknownDomain
         S_expression_Policy["expression:Policy<br/><small>37 LOC</small>"]:::unknownDomain
         S_expression_Registries["expression:Registries<br/><small>113 LOC</small>"]:::unknownDomain
         S_expression_Xpath["expression:Xpath<br/><small>173 LOC</small>"]:::unknownDomain
@@ -99,7 +99,7 @@ flowchart LR
         S_runner_Sync["runner:Sync<br/><small>1146 LOC</small>"]:::unknownDomain
         S_sources_Exceptions["sources:Exceptions<br/><small>220 LOC</small>"]:::unknownDomain
         S_sources_Normalizer["sources:Normalizer<br/><small>498 LOC</small>"]:::unknownDomain
-        S_sources_Plugins["sources:Plugins<br/><small>147 LOC</small>"]:::unknownDomain
+        S_sources_Plugins["sources:Plugins<br/><small>159 LOC</small>"]:::unknownDomain
         S_sources_Policy["sources:Policy<br/><small>125 LOC</small>"]:::unknownDomain
         S_sources_Registries["sources:Registries<br/><small>81 LOC</small>"]:::unknownDomain
     end
@@ -111,10 +111,10 @@ flowchart LR
 
 | Subdomain | Modules | Core pkg LOC | Laravel pkg LOC | Share |
 |---|---:|---:|---:|---:|
-| Core domain | 1 | 2,797 | 0 | 8% |
+| Core domain | 1 | 2,801 | 0 | 8% |
 | Supporting | 8 | 5,461 | 0 | 15% |
 | Generic subdomain | 6 | 1,858 | 0 | 5% |
-| Unclassified | 66 | 26,934 | 0 | 73% |
+| Unclassified | 66 | 27,093 | 0 | 73% |
 
 **Unclassified modules** — classify them in `SUBDOMAINS` or delete them:
 - `cli:Exceptions`

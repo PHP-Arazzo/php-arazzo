@@ -124,11 +124,11 @@ Grouped cross-package uses of concrete internals (AST nodes, evaluators, resolve
 | `evaluation` | `Parser` | `expression` | 1 | `AccessorParser` |
 | `evaluation` | `PluginDiscovery` | `contracts` | 2 | `ExpressionEvaluatorRegistry` |
 | `expression` | `AsSelectorPlugin` | `contracts` | 4 | `XpathSelectorPlugin` |
-| `expression` | `AsValidationRulePlugin` | `contracts` | 14 | `ExpressionUnresolvedStepRefRule` |
-| `expression` | `ErrorCollector` | `contracts` | 14 | `ExpressionUnresolvedStepRefRule` |
+| `expression` | `AsValidationRulePlugin` | `contracts` | 15 | `ExpressionUnresolvedStepRefRule` |
+| `expression` | `ErrorCollector` | `contracts` | 15 | `ExpressionUnresolvedStepRefRule` |
 | `expression` | `PluginDiscovery` | `contracts` | 1 | `SelectorPluginRegistry` |
 | `expression` | `StepSymbols` | `contracts` | 1 | `ExpressionUnresolvedStepRefRule` |
-| `expression` | `SymbolTable` | `contracts` | 15 | `ExpressionUnresolvedStepRefRule` |
+| `expression` | `SymbolTable` | `contracts` | 16 | `ExpressionUnresolvedStepRefRule` |
 | `expression` | `WorkflowSymbols` | `contracts` | 4 | `ExpressionSite` |
 | `protocol-http` | `AsOperationExecutorPlugin` | `contracts` | 2 | `HttpStepExecutor` |
 | `protocol-http` | `Credential` | `contracts` | 1 | `SourcePolicyApplicator` |

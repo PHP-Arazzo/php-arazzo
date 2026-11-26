@@ -29,17 +29,17 @@ pie showData
 
 ```mermaid
 pie showData
-    title Expression — 30 test files
-    "Module-scoped": 24
+    title Expression — 31 test files
+    "Module-scoped": 25
     "Conformance": 4
     "Root": 2
 ```
 
 | Suite | Files | Share |
 |---|---:|---:|
-| Module-scoped | 24 | 80% |
+| Module-scoped | 25 | 81% |
 | Conformance | 4 | 13% |
-| Root | 2 | 7% |
+| Root | 2 | 6% |
 
 ## Evaluation package
 

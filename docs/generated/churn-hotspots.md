@@ -14,10 +14,10 @@ xychart-beta
     title "Edit churn per module (git touches)"
     x-axis ["document:Validator", "cli:Console", "runner:Execution", "runner:Async", "contracts:Spec", "runner:Sync", "sources:Normalizer", "document:Parser", "expression:Interfaces", "contracts:Interfaces", "sources:Resolver", "expression:Data"]
     y-axis "Touches" 0 --> 70
-    bar [54, 45, 33, 26, 24, 24, 21, 20, 19, 16, 15, 14]
+    bar [54, 45, 33, 26, 25, 24, 21, 20, 19, 16, 15, 14]
 ```
 
-Analyzed 591 total file-touches across 81 modules.
+Analyzed 594 total file-touches across 81 modules.
 
 | Module | Touches | Share | LOC | Touches/KLOC |
 |---|---:|---:|---:|---:|
@@ -25,7 +25,7 @@ Analyzed 591 total file-touches across 81 modules.
 | `cli:Console` | 45 | 8% | 797 | 56.5 |
 | `runner:Execution` | 33 | 6% | 723 | 45.6 |
 | `runner:Async` | 26 | 4% | 1,457 | 17.8 |
-| `contracts:Spec` | 24 | 4% | 2,797 | 8.6 |
+| `contracts:Spec` | 25 | 4% | 2,801 | 8.9 |
 | `runner:Sync` | 24 | 4% | 1,146 | 20.9 |
 | `sources:Normalizer` | 21 | 4% | 498 | 42.2 |
 | `document:Parser` | 20 | 3% | 2,479 | 8.1 |
@@ -34,7 +34,7 @@ Analyzed 591 total file-touches across 81 modules.
 | `sources:Resolver` | 15 | 3% | 625 | 24 |
 | `expression:Data` | 14 | 2% | 394 | 35.5 |
 | `engine:Execution` | 12 | 2% | 1,204 | 10 |
-| `expression:Plugins` | 11 | 2% | 1,339 | 8.2 |
+| `expression:Plugins` | 12 | 2% | 1,486 | 8.1 |
 | `cli:Renderer` | 10 | 2% | 317 | 31.5 |
 | `evaluation:Plugins` | 10 | 2% | 125 | 80 |
 | `evaluation:Registries` | 10 | 2% | 190 | 52.6 |
@@ -76,6 +76,7 @@ Analyzed 591 total file-touches across 81 modules.
 | `protocol-soap:Validation` | 3 | 1% | 139 | 21.6 |
 | `runner:Data` | 3 | 1% | 202 | 14.9 |
 | `runner:Plugins` | 3 | 1% | 80 | 37.5 |
+| `sources:Plugins` | 3 | 1% | 159 | 18.9 |
 | `sources:Registries` | 3 | 1% | 81 | 37 |
 | `engine:Enum` | 2 | 0% | 17 | 117.6 |
 | `engine:Exceptions` | 2 | 0% | 222 | 9 |
@@ -86,7 +87,6 @@ Analyzed 591 total file-touches across 81 modules.
 | `protocol-soap:Exceptions` | 2 | 0% | 152 | 13.2 |
 | `protocol-soap:Transfer` | 2 | 0% | 227 | 8.8 |
 | `sources:Exceptions` | 2 | 0% | 220 | 9.1 |
-| `sources:Plugins` | 2 | 0% | 147 | 13.6 |
 | `sources:Policy` | 2 | 0% | 125 | 16 |
 | `cli:Exceptions` | 1 | 0% | 51 | 19.6 |
 | `contracts:Clock` | 1 | 0% | 20 | 50 |

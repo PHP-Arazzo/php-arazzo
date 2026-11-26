@@ -60,7 +60,10 @@ final class ConformanceScorer
             if ($resolved === false) {
                 $resolved = realpath(__DIR__.'/../../'.$this->binary);
             }
-            if ($resolved !== false) {
+            // Only trust a resolved path that is an executable file: realpath()
+            // also succeeds for directories (e.g. a `php/` folder at repo root),
+            // which would otherwise be passed as the binary and fail with exit 126.
+            if ($resolved !== false && is_file($resolved) && is_executable($resolved)) {
                 $this->binary = $resolved;
             }
         }
