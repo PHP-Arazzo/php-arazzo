@@ -64,7 +64,7 @@ quadrantChart
     expression/Plugins: [1, 1]
     expression/Policy: [0, 1]
     expression/Registries: [0.625, 1]
-    expression/Support: [0.667, 1]
+    expression/Support: [0.714, 1]
     expression/Xpath: [0.5, 0.667]
     protocol-http/Exceptions: [0.333, 0.5]
     protocol-http/Execution: [0.857, 1]
@@ -118,14 +118,14 @@ quadrantChart
 | `contracts/Interfaces` | 0.10 | 51 | 20 | 100% |
 | `contracts/Observability` | 0.00 | 9 | 4 | 100% |
 | `contracts/Policy` | 0.00 | 12 | 5 | 100% |
-| `contracts/Spec` | 0.04 | 307 | 60 | 100% |
+| `contracts/Spec` | 0.04 | 310 | 61 | 100% |
 | `contracts/State` | 0.10 | 92 | 4 | 100% |
 | `contracts/Support` | 0.00 | 13 | 5 | 100% |
-| `contracts/Validation` | 0.11 | 98 | 9 | 100% |
+| `contracts/Validation` | 0.11 | 99 | 9 | 100% |
 | `document/Parser` | 0.29 | 65 | 31 | 100% |
-| `document/Plugins` | 1.00 | 52 | 50 | 100% |
+| `document/Plugins` | 1.00 | 53 | 51 | 100% |
 | `document/Registries` | 0.80 | 3 | 1 | 100% |
-| `document/Validator` | 0.71 | 26 | 6 | 100% |
+| `document/Validator` | 0.71 | 27 | 6 | 100% |
 | `engine/Data` | 0.75 | 5 | 2 | 100% |
 | `engine/Enum` | 0.00 | 1 | 1 | 100% |
 | `engine/Exceptions` | 0.09 | 12 | 8 | 100% |
@@ -141,7 +141,7 @@ quadrantChart
 | `evaluation/Registries` | 0.86 | 7 | 2 | 100% |
 | `expression/Ast` | 0.33 | 12 | 15 | 80% |
 | `expression/Data` | 0.25 | 29 | 6 | 100% |
-| `expression/Enum` | 0.00 | 10 | 2 | 100% |
+| `expression/Enum` | 0.00 | 11 | 3 | 100% |
 | `expression/Exceptions` | 0.08 | 19 | 4 | 100% |
 | `expression/Interfaces` | 0.33 | 24 | 4 | 100% |
 | `expression/Internal` | 0.78 | 1 | 6 | 17% |
@@ -149,7 +149,7 @@ quadrantChart
 | `expression/Plugins` | 1.00 | 24 | 18 | 100% |
 | `expression/Policy` | 0.00 | 3 | 1 | 100% |
 | `expression/Registries` | 0.62 | 5 | 1 | 100% |
-| `expression/Support` | 0.67 | 5 | 2 | 100% |
+| `expression/Support` | 0.71 | 5 | 3 | 100% |
 | `expression/Xpath` | 0.50 | 2 | 3 | 67% |
 | `protocol-http/Exceptions` | 0.33 | 1 | 2 | 50% |
 | `protocol-http/Execution` | 0.86 | 26 | 6 | 100% |
@@ -180,11 +180,11 @@ quadrantChart
 | `runner/Registries` | 0.60 | 23 | 1 | 100% |
 | `runner/Store` | 0.60 | 18 | 2 | 100% |
 | `runner/Sync` | 0.84 | 39 | 7 | 100% |
-| `sources/Exceptions` | 0.00 | 10 | 8 | 100% |
+| `sources/Exceptions` | 0.00 | 11 | 8 | 100% |
 | `sources/Normalizer` | 0.50 | 7 | 6 | 100% |
 | `sources/Plugins` | 1.00 | 3 | 1 | 100% |
 | `sources/Policy` | 0.33 | 3 | 1 | 100% |
 | `sources/Registries` | 0.80 | 5 | 1 | 100% |
-| `sources/Resolver` | 0.67 | 26 | 12 | 100% |
+| `sources/Resolver` | 0.67 | 28 | 15 | 100% |
 
 **Refactor-now list** (untested churn): `expression/Internal`, `protocol-rpc/Normalizer`

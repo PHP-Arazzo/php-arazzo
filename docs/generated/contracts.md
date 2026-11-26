@@ -198,6 +198,8 @@ flowchart LR
     C_document_document_Plugins_StepParameterRequiresInRule -.->|implements| I_ValidationRuleInterface
     C_document_document_Plugins_StepParametersHaveNameRule["StepParametersHaveNameRule<br/><small>document:Plugins</small>"]:::implCore
     C_document_document_Plugins_StepParametersHaveNameRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_StepRequestBodyReplacementsDuplicateRule["StepRequestBodyReplacementsDuplicateRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_StepRequestBodyReplacementsDuplicateRule -.->|implements| I_ValidationRuleInterface
     C_document_document_Plugins_StepRequestBodyReplacementsTargetRule["StepRequestBodyReplacementsTargetRule<br/><small>document:Plugins</small>"]:::implCore
     C_document_document_Plugins_StepRequestBodyReplacementsTargetRule -.->|implements| I_ValidationRuleInterface
     C_document_document_Plugins_StepRequestBodyWorkflowRule["StepRequestBodyWorkflowRule<br/><small>document:Plugins</small>"]:::implCore

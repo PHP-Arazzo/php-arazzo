@@ -316,6 +316,13 @@ this file on a commit is a public API change — review it deliberately.
 - `public function nonArazzo(): self`
 - `public static function fromArray(array $sources): self`
 
+#### `SourceDocument` class
+- `public function __construct(public string $name, public ?SourceType $type, public string $canonicalUri, public array $content, public ?string $selfUri = null)`
+
+#### `SourceIdentity` class
+- `public function __construct(public string $retrievalUri, public ?string $selfUri = null, public ?SourceDocument $document = null)`
+- `public function baseUri(): string`
+
 #### `Step` class
 - `public function __construct(public string $stepId, public ?string $description, public StepTarget $target, public StepFlow $flow, public StepIo $io)`
 - `public function allActions(Workflow $workflow): array`
@@ -716,6 +723,10 @@ this file on a commit is a public API change — review it deliberately.
 
 ### `Alama\Arazzo\Expression\Enum`
 
+#### `ExpressionContext` enum
+- Cases: `Components`, `Criteria`, `OnFailure`, `OnSuccess`, `Outputs`, `Parameters`, `RequestBody`, `WorkflowFailureActions`, `WorkflowOutputs`, `WorkflowParameters`, `WorkflowSuccessActions`
+- `public function allowsRuntimeHttpReference(): bool`
+
 #### `ReferenceKind` enum
 - Cases: `Component`, `HttpMeta`, `Input`, `Message`, `Output`, `Self`, `Source`, `Step`, `Workflow`
 
@@ -934,6 +945,10 @@ this file on a commit is a public API change — review it deliberately.
 #### `SourceParseException` class
 - `public static function parseFailed(string $sourceName, Throwable $previous): self`
 - `public static function rootMustBeArray(string $sourceName): self`
+
+#### `SourceResolutionException` class
+- `public function __construct(string $message = '', int $code = 0, ?Throwable $previous = null, string $selfUri = '', array $conflictingUris = [])`
+- `public static function duplicateSelfUri(string $selfUri, string $existingRetrievalUri, string $newRetrievalUri, ): self`
 
 #### `UnresolvableReferenceException` class
 - `public function __construct(string $message, public readonly string $sourceName = '', public readonly string $reference = '', ?Throwable $previous = null)`
