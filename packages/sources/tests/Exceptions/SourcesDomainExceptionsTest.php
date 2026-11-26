@@ -34,5 +34,18 @@ test('sources domain exception factories construct typed exceptions', function (
         ->and(InvalidOpenApiSourceException::methodNotFound('post', '/pets')->getMessage())->toContain('post')
         ->and(InvalidFetchPolicyException::nonPositiveConnectTimeout())->toBeInstanceOf(InvalidArgumentException::class)
         ->and(InvalidFetchPolicyException::nonPositiveTimeout()->getMessage())->toContain('timeout')
-        ->and(InvalidFetchPolicyException::nonPositiveMaxBytes()->getMessage())->toContain('maxBytes');
+        ->and(InvalidFetchPolicyException::nonPositiveMaxBytes()->getMessage())->toContain('maxBytes')
+        ->and(
+            $duplicate = SourceResolutionException::duplicateSelfUri(
+                'https://example.com/doc.arazzo',
+                'https://cache-a.example.com/doc.arazzo',
+                'https://cache-b.example.com/doc.arazzo',
+            ),
+        )->toBeInstanceOf(SourceResolutionException::class)
+        ->and($duplicate->selfUri)->toBe('https://example.com/doc.arazzo')
+        ->and($duplicate->existingRetrievalUri)->toBe('https://cache-a.example.com/doc.arazzo')
+        ->and($duplicate->newRetrievalUri)->toBe('https://cache-b.example.com/doc.arazzo')
+        ->and($duplicate->getMessage())->toContain('https://example.com/doc.arazzo')
+        ->and($duplicate->getMessage())->toContain('https://cache-a.example.com/doc.arazzo')
+        ->and($duplicate->getMessage())->toContain('https://cache-b.example.com/doc.arazzo');
 });

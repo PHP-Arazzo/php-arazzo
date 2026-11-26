@@ -24,12 +24,12 @@ targets. Regenerated before every commit.
 | `contracts:Interfaces` | 20 | 367 | 35 | 4 | 0.10 |  |
 | `contracts:Observability` | 4 | 104 | 12 | 0 | 0.00 |  |
 | `contracts:Policy` | 5 | 263 | 6 | 0 | 0.00 |  |
-| `contracts:Spec` | 60 | 2741 | 54 | 2 | 0.04 |  |
+| `contracts:Spec` | 61 | 2776 | 54 | 2 | 0.04 |  |
 | `contracts:State` | 4 | 1238 | 17 | 2 | 0.11 |  |
 | `contracts:Support` | 5 | 180 | 10 | 0 | 0.00 |  |
 | `contracts:Validation` | 9 | 364 | 16 | 2 | 0.11 |  |
 | `document:Parser` | 31 | 2448 | 5 | 2 | 0.29 |  |
-| `document:Plugins` | 50 | 3062 | 0 | 7 | 1.00 |  |
+| `document:Plugins` | 51 | 3119 | 0 | 7 | 1.00 |  |
 | `document:Registries` | 1 | 96 | 1 | 4 | 0.80 |  |
 | `document:Validator` | 6 | 653 | 2 | 5 | 0.71 |  |
 | `(document root)` | 5 | 229 | 12 | 6 | 0.33 |  |
@@ -49,8 +49,8 @@ targets. Regenerated before every commit.
 | `evaluation:Registries` | 2 | 188 | 1 | 6 | 0.86 |  |
 | `(evaluation root)` | 6 | 822 | 12 | 14 | 0.54 |  |
 | `expression:Ast` | 15 | 340 | 4 | 2 | 0.33 |  |
-| `expression:Data` | 6 | 388 | 15 | 5 | 0.25 |  |
-| `expression:Enum` | 2 | 45 | 6 | 0 | 0.00 |  |
+| `expression:Data` | 6 | 384 | 15 | 5 | 0.25 |  |
+| `expression:Enum` | 3 | 76 | 7 | 0 | 0.00 |  |
 | `expression:Exceptions` | 4 | 205 | 11 | 1 | 0.08 |  |
 | `expression:Interfaces` | 4 | 248 | 12 | 6 | 0.33 |  |
 | `expression:Internal` | 6 | 879 | 2 | 7 | 0.78 |  |
@@ -58,7 +58,7 @@ targets. Regenerated before every commit.
 | `expression:Plugins` | 18 | 1468 | 0 | 13 | 1.00 |  |
 | `expression:Policy` | 1 | 36 | 2 | 0 | 0.00 |  |
 | `expression:Registries` | 1 | 112 | 3 | 5 | 0.63 |  |
-| `expression:Support` | 2 | 190 | 2 | 4 | 0.67 |  |
+| `expression:Support` | 3 | 336 | 2 | 5 | 0.71 |  |
 | `expression:Xpath` | 3 | 170 | 2 | 2 | 0.50 |  |
 | `(expression root)` | 9 | 891 | 6 | 12 | 0.67 |  |
 | `protocol-http:Exceptions` | 2 | 93 | 2 | 1 | 0.33 |  |
@@ -92,25 +92,25 @@ targets. Regenerated before every commit.
 | `runner:Store` | 2 | 136 | 2 | 3 | 0.60 |  |
 | `runner:Sync` | 7 | 1139 | 4 | 21 | 0.84 | ⚠ unstable hub |
 | `(runner root)` | 6 | 561 | 5 | 15 | 0.75 |  |
-| `sources:Exceptions` | 8 | 212 | 5 | 0 | 0.00 |  |
+| `sources:Exceptions` | 8 | 250 | 5 | 0 | 0.00 |  |
 | `sources:Normalizer` | 6 | 492 | 2 | 2 | 0.50 |  |
 | `sources:Plugins` | 1 | 158 | 0 | 6 | 1.00 |  |
 | `sources:Policy` | 1 | 124 | 2 | 1 | 0.33 |  |
 | `sources:Registries` | 1 | 80 | 1 | 4 | 0.80 |  |
-| `sources:Resolver` | 12 | 613 | 3 | 6 | 0.67 |  |
-| `(sources root)` | 2 | 394 | 3 | 9 | 0.75 |  |
+| `sources:Resolver` | 14 | 876 | 3 | 6 | 0.67 |  |
+| `(sources root)` | 2 | 410 | 3 | 9 | 0.75 |  |
 
-Total cross-module edges: **1718**
+Total cross-module edges: **1734**
 
 ## Most entangled module pairs
 
 | From → To | References |
 |---|---:|
-| `document:Plugins` → `contracts:Validation` | 102 |
-| `document:Plugins` → `contracts:Spec` | 98 |
+| `document:Plugins` → `contracts:Validation` | 104 |
+| `document:Plugins` → `contracts:Spec` | 99 |
 | `document:Parser` → `contracts:Spec` | 58 |
-| `document:Plugins` → `contracts:Attributes` | 50 |
-| `document:Plugins` → `contracts:Interfaces` | 50 |
+| `document:Plugins` → `contracts:Attributes` | 51 |
+| `document:Plugins` → `contracts:Interfaces` | 51 |
 | `expression:Plugins` → `contracts:Validation` | 34 |
 | `runner:Sync` → `contracts:Spec` | 31 |
 | `expression:Plugins` → `contracts:Spec` | 30 |

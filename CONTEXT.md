@@ -63,7 +63,18 @@ same pull request.
 | **ExpressionSite** | Value object carrying JSON Pointer, `Expression`, symbol table reference, `currentStepId`, and traversal `context` identifying an expression site in an Arazzo document for static validation rules. |
 | **ExpressionWalker** | Internal traversal engine in `packages/expression` that yields `ExpressionSite`s across workflows, steps, and action flows (criteria and parameters) for static analysis. |
 
-## 5. Packages
+## 5. Sources & Identification
+
+| Term | Meaning |
+|------|---------|
+| **Retrieval URI** | The physical transport address or filesystem path from which a document was retrieved (e.g., `file:///specs/doc.arazzo.yaml`, `https://api.example.com/doc.arazzo.yaml`). Stored on `SourceDocument::$canonicalUri` for backward compatibility, and on `SourceIdentity::$retrievalUri`. _Avoid_: `PhysicalUri`, `FetchAddress`, `FetchPath`. |
+| **Identity URI (`$self`)** | The author-declared, permanent canonical identifier of the document declared in the root `$self` property (Arazzo 1.1.0 §5.2). MUST NOT contain a fragment. When relative, it is resolved against the Retrieval URI. Stored on `SourceDocument::$selfUri` and `SourceIdentity::$selfUri`. _Avoid_: `DocId`, `DocumentUri`. |
+| **Base URI** | The URI against which relative references (e.g., `sourceDescriptions[*].url`) within the document are resolved. RFC 3986 §5.1 hierarchy: equals **Identity URI** if present; falls back to **Retrieval URI** when absent. Exposed via `$sourceDoc->baseUri()`. |
+| **Canonical URI** | Historically in `php-arazzo`, `$canonicalUri` held the normalized Retrieval URI. Under Arazzo 1.1.0, the true canonical URI is the Identity URI (`$self`). The property `SourceDocument::$canonicalUri` is retained for backward compatibility and is equivalent to the Retrieval URI. |
+| **SourceIdentity** | Immutable value object (`Alama\Arazzo\Contracts\Spec\SourceIdentity`) binding a document's `retrievalUri`, optional `selfUri`, and resolved `SourceDocument`. |
+| **SourceIdentityCollection** | Immutable collection of `SourceIdentity` entries providing O(1) identity-first then retrieval-location-second lookup, enforcing idempotency and rejecting duplicate `$self` claims from different retrieval locations. |
+
+## 6. Packages
 
 | Package | Role |
 |---------|------|
@@ -77,7 +88,7 @@ same pull request.
 | `packages/sources` | Source resolution & reachability (`Sources`, `SourceNormalizerRegistry`). |
 | `packages/cli` | Console terminal edge: ships the `arazzo` executable binary (`bin/arazzo`), providing `run`, `validate`, `list-workflows`, `explain`, and `render` commands. |
 
-## 6. Architecture decisions (ADRs)
+## 7. Architecture decisions (ADRs)
 
 | ADR | Decision | Issue |
 |-----|----------|-------|
@@ -93,6 +104,6 @@ same pull request.
 | ADR-010 | Monorepo observability tiers, vendor-agnostic `TracerInterface` & `*Policy` value-object standard | — |
 | ADR-011 | Static expression walking for action criteria & parameters with step/workflow context isolation | #344 |
 
-## 7. How to update this file
+## 8. How to update this file
 
 When a design decision changes a term above, update CONTEXT.md in the same pull request as the implementation. Do not let the glossary drift from the code.

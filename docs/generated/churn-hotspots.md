@@ -12,40 +12,41 @@ same corner every week" signal that static structure graphs cannot show.
 ```mermaid
 xychart-beta
     title "Edit churn per module (git touches)"
-    x-axis ["document:Validator", "cli:Console", "runner:Execution", "runner:Async", "contracts:Spec", "runner:Sync", "sources:Normalizer", "document:Parser", "expression:Interfaces", "contracts:Interfaces", "sources:Resolver", "expression:Data"]
+    x-axis ["document:Validator", "cli:Console", "runner:Execution", "runner:Async", "contracts:Spec", "runner:Sync", "sources:Normalizer", "document:Parser", "expression:Interfaces", "contracts:Interfaces", "expression:Data", "sources:Resolver"]
     y-axis "Touches" 0 --> 70
-    bar [54, 45, 33, 26, 25, 24, 21, 20, 19, 16, 15, 14]
+    bar [54, 45, 33, 26, 25, 24, 21, 20, 19, 16, 15, 15]
 ```
 
-Analyzed 594 total file-touches across 81 modules.
+Analyzed 601 total file-touches across 81 modules.
 
 | Module | Touches | Share | LOC | Touches/KLOC |
 |---|---:|---:|---:|---:|
 | `document:Validator` | 54 | 9% | 659 | 81.9 |
-| `cli:Console` | 45 | 8% | 797 | 56.5 |
-| `runner:Execution` | 33 | 6% | 723 | 45.6 |
+| `cli:Console` | 45 | 7% | 797 | 56.5 |
+| `runner:Execution` | 33 | 5% | 723 | 45.6 |
 | `runner:Async` | 26 | 4% | 1,457 | 17.8 |
-| `contracts:Spec` | 25 | 4% | 2,801 | 8.9 |
+| `contracts:Spec` | 25 | 4% | 2,837 | 8.8 |
 | `runner:Sync` | 24 | 4% | 1,146 | 20.9 |
-| `sources:Normalizer` | 21 | 4% | 498 | 42.2 |
+| `sources:Normalizer` | 21 | 3% | 498 | 42.2 |
 | `document:Parser` | 20 | 3% | 2,479 | 8.1 |
 | `expression:Interfaces` | 19 | 3% | 252 | 75.4 |
 | `contracts:Interfaces` | 16 | 3% | 387 | 41.3 |
-| `sources:Resolver` | 15 | 3% | 625 | 24 |
-| `expression:Data` | 14 | 2% | 394 | 35.5 |
+| `expression:Data` | 15 | 2% | 390 | 38.5 |
+| `sources:Resolver` | 15 | 2% | 890 | 16.9 |
+| `expression:Plugins` | 13 | 2% | 1,486 | 8.7 |
 | `engine:Execution` | 12 | 2% | 1,204 | 10 |
-| `expression:Plugins` | 12 | 2% | 1,486 | 8.1 |
 | `cli:Renderer` | 10 | 2% | 317 | 31.5 |
 | `evaluation:Plugins` | 10 | 2% | 125 | 80 |
 | `evaluation:Registries` | 10 | 2% | 190 | 52.6 |
 | `protocol-soap:Execution` | 10 | 2% | 444 | 22.5 |
-| `evaluation:Condition` | 9 | 2% | 1,149 | 7.8 |
+| `evaluation:Condition` | 9 | 1% | 1,149 | 7.8 |
 | `contracts:State` | 8 | 1% | 1,242 | 6.4 |
 | `expression:Internal` | 8 | 1% | 885 | 9 |
 | `protocol-http:Execution` | 8 | 1% | 946 | 8.5 |
 | `engine:Runtime` | 7 | 1% | 1,870 | 3.7 |
 | `protocol-rpc:Execution` | 7 | 1% | 176 | 39.8 |
 | `protocol-rpc:Normalizer` | 7 | 1% | 604 | 11.6 |
+| `document:Plugins` | 6 | 1% | 3,170 | 1.9 |
 | `expression:Registries` | 6 | 1% | 113 | 53.1 |
 | `runner:Events` | 6 | 1% | 187 | 32.1 |
 | `runner:Preflight` | 6 | 1% | 156 | 38.5 |
@@ -54,39 +55,38 @@ Analyzed 594 total file-touches across 81 modules.
 | `contracts:Dependency` | 5 | 1% | 375 | 13.3 |
 | `evaluation:Data` | 5 | 1% | 96 | 52.1 |
 | `expression:Ast` | 5 | 1% | 355 | 14.1 |
+| `expression:Enum` | 5 | 1% | 79 | 63.3 |
 | `expression:Xpath` | 5 | 1% | 173 | 28.9 |
 | `protocol-http:Plugins` | 5 | 1% | 336 | 14.9 |
 | `protocol-soap:Plugins` | 5 | 1% | 867 | 5.8 |
 | `runner:Policy` | 5 | 1% | 124 | 40.3 |
 | `contracts:Validation` | 4 | 1% | 373 | 10.7 |
-| `document:Plugins` | 4 | 1% | 3,112 | 1.3 |
-| `expression:Enum` | 4 | 1% | 47 | 85.1 |
 | `expression:Exceptions` | 4 | 1% | 209 | 19.1 |
 | `expression:JsonPath` | 4 | 1% | 1,470 | 2.7 |
+| `expression:Support` | 4 | 1% | 339 | 11.8 |
 | `protocol-rpc:Protocol` | 4 | 1% | 501 | 8 |
 | `runner:Exceptions` | 4 | 1% | 283 | 14.1 |
-| `contracts:Discovery` | 3 | 1% | 416 | 7.2 |
-| `contracts:Exceptions` | 3 | 1% | 123 | 24.4 |
-| `contracts:Support` | 3 | 1% | 185 | 16.2 |
-| `document:Registries` | 3 | 1% | 97 | 30.9 |
-| `engine:Data` | 3 | 1% | 99 | 30.3 |
-| `evaluation:Interfaces` | 3 | 1% | 44 | 68.2 |
-| `protocol-http:Resolver` | 3 | 1% | 307 | 9.8 |
-| `protocol-rpc:Plugins` | 3 | 1% | 397 | 7.6 |
-| `protocol-soap:Validation` | 3 | 1% | 139 | 21.6 |
-| `runner:Data` | 3 | 1% | 202 | 14.9 |
-| `runner:Plugins` | 3 | 1% | 80 | 37.5 |
-| `sources:Plugins` | 3 | 1% | 159 | 18.9 |
-| `sources:Registries` | 3 | 1% | 81 | 37 |
+| `contracts:Discovery` | 3 | 0% | 416 | 7.2 |
+| `contracts:Exceptions` | 3 | 0% | 123 | 24.4 |
+| `contracts:Support` | 3 | 0% | 185 | 16.2 |
+| `document:Registries` | 3 | 0% | 97 | 30.9 |
+| `engine:Data` | 3 | 0% | 99 | 30.3 |
+| `evaluation:Interfaces` | 3 | 0% | 44 | 68.2 |
+| `protocol-http:Resolver` | 3 | 0% | 307 | 9.8 |
+| `protocol-rpc:Plugins` | 3 | 0% | 397 | 7.6 |
+| `protocol-soap:Validation` | 3 | 0% | 139 | 21.6 |
+| `runner:Data` | 3 | 0% | 202 | 14.9 |
+| `runner:Plugins` | 3 | 0% | 80 | 37.5 |
+| `sources:Plugins` | 3 | 0% | 159 | 18.9 |
+| `sources:Registries` | 3 | 0% | 81 | 37 |
 | `engine:Enum` | 2 | 0% | 17 | 117.6 |
 | `engine:Exceptions` | 2 | 0% | 222 | 9 |
 | `evaluation:Enum` | 2 | 0% | 123 | 16.3 |
 | `evaluation:Exceptions` | 2 | 0% | 42 | 47.6 |
-| `expression:Support` | 2 | 0% | 192 | 10.4 |
 | `protocol-rpc:Transfer` | 2 | 0% | 243 | 8.2 |
 | `protocol-soap:Exceptions` | 2 | 0% | 152 | 13.2 |
 | `protocol-soap:Transfer` | 2 | 0% | 227 | 8.8 |
-| `sources:Exceptions` | 2 | 0% | 220 | 9.1 |
+| `sources:Exceptions` | 2 | 0% | 258 | 7.8 |
 | `sources:Policy` | 2 | 0% | 125 | 16 |
 | `cli:Exceptions` | 1 | 0% | 51 | 19.6 |
 | `contracts:Clock` | 1 | 0% | 20 | 50 |

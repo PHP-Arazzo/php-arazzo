@@ -17,7 +17,7 @@ when a boundary consciously moves.
 | Vendor | core refs | laravel refs | Policy in core |
 |---|---:|---:|---|
 | `Composer` | 1 | 0 | _unclassified_ ⚠ |
-| `GuzzleHttp` | 9 | 0 | **forbidden** ⚠ |
+| `GuzzleHttp` | 11 | 0 | **forbidden** ⚠ |
 | `JsonSchema` | 7 | 0 | _unclassified_ ⚠ |
 | `OpenTelemetry` | 26 | 0 | _unclassified_ ⚠ |
 | `Psr` | 105 | 0 | allowed |
@@ -62,7 +62,7 @@ when a boundary consciously moves.
 | runner | `runner:Store` | `Psr` | 1 |
 | runner | `runner:Sync` | `Psr` | 3 |
 | runner | `runner:_` | `Psr` | 12 |
-| sources | `sources:Resolver` | `GuzzleHttp` | 2 |
+| sources | `sources:Resolver` | `GuzzleHttp` | 4 |
 | sources | `sources:Resolver` | `Psr` | 10 |
 | sources | `sources:_` | `GuzzleHttp` | 1 |
 | sources | `sources:_` | `Psr` | 6 |
@@ -80,7 +80,7 @@ when a boundary consciously moves.
 - `protocol-http:Execution` imports `cebe\*` (11 refs)
 - `protocol-http:Resolver` imports `cebe\*` (7 refs)
 - `protocol-http:_` imports `GuzzleHttp\*` (2 refs)
-- `sources:Resolver` imports `GuzzleHttp\*` (2 refs)
+- `sources:Resolver` imports `GuzzleHttp\*` (4 refs)
 - `sources:_` imports `GuzzleHttp\*` (1 refs)
 
 ## Core aggregator emptiness
@@ -109,12 +109,12 @@ Grouped cross-package uses of concrete internals (AST nodes, evaluators, resolve
 
 | From package | Target | In package | Refs | Example site |
 |---|---|---|---:|---|
-| `document` | `AsValidationRulePlugin` | `contracts` | 51 | `StepParameterDuplicateRule` |
-| `document` | `ErrorCollector` | `contracts` | 53 | `StepParameterDuplicateRule` |
+| `document` | `AsValidationRulePlugin` | `contracts` | 52 | `ActionDuplicateRule` |
+| `document` | `ErrorCollector` | `contracts` | 54 | `ActionDuplicateRule` |
 | `document` | `ImplicitDependencies` | `contracts` | 1 | `StepDependsOnNoCycleRule` |
 | `document` | `KnownOperations` | `contracts` | 3 | `Validator` |
 | `document` | `PluginDiscovery` | `contracts` | 1 | `ValidationRuleRegistry` |
-| `document` | `SymbolTable` | `contracts` | 53 | `StepParameterDuplicateRule` |
+| `document` | `SymbolTable` | `contracts` | 54 | `ActionDuplicateRule` |
 | `document` | `ValidationResult` | `contracts` | 3 | `Validator` |
 | `document` | `WorkflowSymbols` | `contracts` | 1 | `ActionGotoTargetResolvesRule` |
 | `engine` | `SystemClock` | `contracts` | 1 | `RetryPolicy` |
@@ -122,20 +122,20 @@ Grouped cross-package uses of concrete internals (AST nodes, evaluators, resolve
 | `evaluation` | `AsExpressionPlugin` | `contracts` | 2 | `JsonPathExpressionPlugin` |
 | `evaluation` | `EvaluationContext` | `expression` | 5 | `ConditionEvaluator` |
 | `evaluation` | `Parser` | `expression` | 1 | `AccessorParser` |
-| `evaluation` | `PluginDiscovery` | `contracts` | 2 | `ExpressionEvaluatorRegistry` |
-| `expression` | `AsSelectorPlugin` | `contracts` | 4 | `XpathSelectorPlugin` |
-| `expression` | `AsValidationRulePlugin` | `contracts` | 15 | `ExpressionUnresolvedStepRefRule` |
-| `expression` | `ErrorCollector` | `contracts` | 15 | `ExpressionUnresolvedStepRefRule` |
+| `evaluation` | `PluginDiscovery` | `contracts` | 2 | `CriterionEvaluatorRegistry` |
+| `expression` | `AsSelectorPlugin` | `contracts` | 4 | `JsonPathSelectorPlugin` |
+| `expression` | `AsValidationRulePlugin` | `contracts` | 15 | `ActionOutputTargetExclusivityRule` |
+| `expression` | `ErrorCollector` | `contracts` | 15 | `ActionOutputTargetExclusivityRule` |
 | `expression` | `PluginDiscovery` | `contracts` | 1 | `SelectorPluginRegistry` |
 | `expression` | `StepSymbols` | `contracts` | 1 | `ExpressionUnresolvedStepRefRule` |
-| `expression` | `SymbolTable` | `contracts` | 16 | `ExpressionUnresolvedStepRefRule` |
-| `expression` | `WorkflowSymbols` | `contracts` | 4 | `ExpressionSite` |
-| `protocol-http` | `AsOperationExecutorPlugin` | `contracts` | 2 | `HttpStepExecutor` |
+| `expression` | `SymbolTable` | `contracts` | 16 | `ActionOutputTargetExclusivityRule` |
+| `expression` | `WorkflowSymbols` | `contracts` | 5 | `ExpressionSite` |
+| `protocol-http` | `AsOperationExecutorPlugin` | `contracts` | 2 | `AsyncApiStepExecutor` |
 | `protocol-http` | `Credential` | `contracts` | 1 | `SourcePolicyApplicator` |
 | `protocol-http` | `EvaluationContext` | `expression` | 2 | `StepOutputExtractor` |
 | `protocol-http` | `EvaluationEngine` | `evaluation` | 1 | `HttpProtocol` |
 | `protocol-http` | `IdempotencyKeyInjector` | `engine` | 3 | `HttpStepExecutor` |
-| `protocol-http` | `NullTracer` | `contracts` | 2 | `HttpRuntimeContext` |
+| `protocol-http` | `NullTracer` | `contracts` | 2 | `DefaultOpenApiExecutor` |
 | `protocol-http` | `OpenApi30Normalizer` | `sources` | 1 | `OpenApiOperationResolver` |
 | `protocol-http` | `OpenApi31Normalizer` | `sources` | 1 | `OpenApiOperationResolver` |
 | `protocol-http` | `OpenApiVersionDetector` | `sources` | 1 | `OpenApiOperationResolver` |
@@ -143,10 +143,10 @@ Grouped cross-package uses of concrete internals (AST nodes, evaluators, resolve
 | `protocol-http` | `RequestCompiler` | `engine` | 1 | `HttpStepExecutor` |
 | `protocol-http` | `ReusableParameterResolver` | `engine` | 1 | `AsyncApiStepExecutor` |
 | `protocol-http` | `SchemaValidator` | `engine` | 1 | `ResponseSchemaValidator` |
-| `protocol-http` | `SourcePolicy` | `contracts` | 3 | `SourcePolicyApplicator` |
+| `protocol-http` | `SourcePolicy` | `contracts` | 3 | `DefaultOpenApiExecutor` |
 | `protocol-http` | `SourceReferenceParser` | `sources` | 1 | `OpenApiOperationResolver` |
 | `protocol-http` | `Sources` | `sources` | 2 | `OpenApiOperationResolver` |
-| `protocol-http` | `TypeCaster` | `engine` | 2 | `StepOutputExtractor` |
+| `protocol-http` | `TypeCaster` | `engine` | 2 | `DefaultOpenApiExecutor` |
 | `protocol-rpc` | `AsOperationExecutorPlugin` | `contracts` | 1 | `RpcOperationExecutor` |
 | `protocol-rpc` | `AsSourceNormalizerPlugin` | `contracts` | 1 | `ProtoSourceNormalizer` |
 | `protocol-rpc` | `AsValidationRulePlugin` | `contracts` | 1 | `RpcStepRule` |
@@ -167,8 +167,8 @@ Grouped cross-package uses of concrete internals (AST nodes, evaluators, resolve
 | `runner` | `AsOperationExecutorPlugin` | `contracts` | 2 | `SubWorkflowStepExecutor` |
 | `runner` | `DependencyAnalyzer` | `contracts` | 1 | `StepOutcomeHandler` |
 | `runner` | `DependencyGraph` | `contracts` | 2 | `StepOutcomeHandler` |
-| `runner` | `EvaluationContext` | `expression` | 6 | `SubWorkflowInvoker` |
-| `runner` | `EvaluationEngine` | `evaluation` | 2 | `Runner` |
+| `runner` | `EvaluationContext` | `expression` | 6 | `StepExecutionWorker` |
+| `runner` | `EvaluationEngine` | `evaluation` | 2 | `AsyncRunner` |
 | `runner` | `ExecutionContext` | `engine` | 2 | `Transition` |
 | `runner` | `NullTracer` | `contracts` | 1 | `ObservabilityContext` |
 | `runner` | `RetryPolicy` | `engine` | 2 | `ExecutionPolicy` |

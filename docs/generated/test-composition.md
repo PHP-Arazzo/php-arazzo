@@ -13,15 +13,15 @@ compliance — not an inverted pyramid of end-to-end tests.
 
 ```mermaid
 pie showData
-    title Contracts — 43 test files
-    "Module-scoped": 41
+    title Contracts — 44 test files
+    "Module-scoped": 42
     "Root": 1
     "Unit": 1
 ```
 
 | Suite | Files | Share |
 |---|---:|---:|
-| Module-scoped | 41 | 95% |
+| Module-scoped | 42 | 95% |
 | Root | 1 | 2% |
 | Unit | 1 | 2% |
 
@@ -61,29 +61,29 @@ pie showData
 
 ```mermaid
 pie showData
-    title Document — 101 test files
-    "Module-scoped": 97
+    title Document — 102 test files
+    "Module-scoped": 98
     "Root": 4
 ```
 
 | Suite | Files | Share |
 |---|---:|---:|
-| Module-scoped | 97 | 96% |
+| Module-scoped | 98 | 96% |
 | Root | 4 | 4% |
 
 ## Sources package
 
 ```mermaid
 pie showData
-    title Sources — 14 test files
-    "Module-scoped": 12
+    title Sources — 16 test files
+    "Module-scoped": 14
     "Root": 2
 ```
 
 | Suite | Files | Share |
 |---|---:|---:|
-| Module-scoped | 12 | 86% |
-| Root | 2 | 14% |
+| Module-scoped | 14 | 88% |
+| Root | 2 | 12% |
 
 ## Engine package
 

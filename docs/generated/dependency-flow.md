@@ -56,12 +56,12 @@ contracts-Validation,contracts-Data,1
 contracts-Validation,contracts-Spec,4
 document-Parser,contracts-Spec,58
 document-Parser,contracts-Support,2
-document-Plugins,contracts-Attributes,50
+document-Plugins,contracts-Attributes,51
 document-Plugins,contracts-Dependency,1
-document-Plugins,contracts-Interfaces,50
-document-Plugins,contracts-Spec,98
+document-Plugins,contracts-Interfaces,51
+document-Plugins,contracts-Spec,99
 document-Plugins,contracts-Support,1
-document-Plugins,contracts-Validation,102
+document-Plugins,contracts-Validation,104
 document-Plugins,document-Validator,3
 document-Registries,contracts-Attributes,1
 document-Registries,contracts-Discovery,1
@@ -139,7 +139,7 @@ expression-Ast,expression-Data,9
 expression-Ast,expression-Enum,9
 expression-Data,contracts-Spec,3
 expression-Data,contracts-Validation,1
-expression-Data,expression-Enum,2
+expression-Data,expression-Enum,3
 expression-Data,expression-Exceptions,1
 expression-Exceptions,contracts-Support,3
 expression-Interfaces,contracts-Spec,8
@@ -173,10 +173,11 @@ expression-Registries,contracts-Attributes,1
 expression-Registries,contracts-Discovery,1
 expression-Registries,contracts-Spec,1
 expression-Registries,expression-Exceptions,1
-expression-Support,contracts-Spec,6
-expression-Support,contracts-Validation,2
+expression-Support,contracts-Spec,8
+expression-Support,contracts-Validation,3
 expression-Support,expression-Ast,1
-expression-Support,expression-Data,1
+expression-Support,expression-Data,2
+expression-Support,expression-Enum,2
 expression-Xpath,contracts-Spec,1
 expression-Xpath,expression-Exceptions,2
 expression-root,contracts-Spec,9
@@ -405,9 +406,9 @@ sources-Registries,contracts-Interfaces,1
 sources-Registries,contracts-Spec,1
 sources-Resolver,contracts-Interfaces,3
 sources-Resolver,contracts-Observability,4
-sources-Resolver,contracts-Spec,5
+sources-Resolver,contracts-Spec,7
 sources-Resolver,document-Parser,2
-sources-Resolver,sources-Exceptions,8
+sources-Resolver,sources-Exceptions,9
 sources-Resolver,sources-Policy,1
 sources-root,contracts-Data,4
 sources-root,contracts-Interfaces,6
@@ -417,7 +418,7 @@ sources-root,document-Parser,1
 sources-root,sources-Exceptions,3
 sources-root,sources-Policy,2
 sources-root,sources-Registries,1
-sources-root,sources-Resolver,3
+sources-root,sources-Resolver,4
 ```
 
 ## Folded flows

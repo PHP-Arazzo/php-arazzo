@@ -108,79 +108,80 @@ flowchart LR
     contracts_Interfaces --> contracts_State
     contracts_Interfaces --> contracts_Exceptions
     contracts_Interfaces --> contracts_Validation
-    contracts_Spec --> contracts_Interfaces
     contracts_Spec --> contracts_Exceptions
+    contracts_Spec --> contracts_Interfaces
     contracts_State --> contracts_Policy
     contracts_State --> contracts_Spec
-    contracts_Validation --> contracts_Spec
     contracts_Validation --> contracts_Data
+    contracts_Validation --> contracts_Spec
     expression_Ast --> expression_Data
     expression_Ast --> expression_Enum
-    expression_Data --> expression_Exceptions
-    expression_Data --> expression_Enum
     expression_Data --> contracts_Spec
     expression_Data --> expression_Interfaces
+    expression_Data --> expression_Enum
     expression_Data --> contracts_Validation
+    expression_Data --> expression_Exceptions
     expression_Exceptions --> contracts_Support
     expression_Interfaces --> contracts_Spec
-    expression_Interfaces --> expression_Registries
-    expression_Interfaces --> expression_Ast
     expression_Interfaces --> expression_Data
     expression_Interfaces --> expression_Exceptions
     expression_Interfaces --> expression_Policy
-    expression_Internal --> expression_Ast
-    expression_Internal --> expression_Data
-    expression_Internal --> expression_Enum
-    expression_Internal --> expression_Exceptions
+    expression_Interfaces --> expression_Ast
+    expression_Interfaces --> expression_Registries
     expression_Internal --> contracts_Spec
+    expression_Internal --> expression_Data
+    expression_Internal --> expression_Exceptions
     expression_Internal --> expression_Interfaces
     expression_Internal --> expression__
+    expression_Internal --> expression_Enum
+    expression_Internal --> expression_Ast
     expression_JsonPath --> expression_Exceptions
     expression_JsonPath --> expression_Data
     expression_Plugins --> contracts_Attributes
-    expression_Plugins --> contracts_Interfaces
     expression_Plugins --> contracts_Spec
+    expression_Plugins --> expression_Interfaces
+    expression_Plugins --> expression__
+    expression_Plugins --> expression_Xpath
+    expression_Plugins --> contracts_Interfaces
     expression_Plugins --> contracts_Validation
     expression_Plugins --> expression_Data
     expression_Plugins --> expression_Enum
-    expression_Plugins --> expression_Interfaces
-    expression_Plugins --> expression__
-    expression_Plugins --> expression_Support
     expression_Plugins --> expression_Exceptions
-    expression_Plugins --> expression_Internal
+    expression_Plugins --> expression_Support
     expression_Plugins --> expression_Registries
-    expression_Plugins --> expression_Xpath
+    expression_Plugins --> expression_Internal
     expression_Registries --> contracts_Attributes
     expression_Registries --> contracts_Discovery
     expression_Registries --> contracts_Spec
     expression_Registries --> expression_Exceptions
     expression_Registries --> expression_Interfaces
-    expression_Support --> expression_Ast
     expression_Support --> contracts_Spec
     expression_Support --> contracts_Validation
     expression_Support --> expression_Data
-    expression_Xpath --> contracts_Spec
+    expression_Support --> expression_Enum
+    expression_Support --> expression_Ast
     expression_Xpath --> expression_Exceptions
+    expression_Xpath --> contracts_Spec
+    expression__ --> expression_Interfaces
+    expression__ --> expression_Internal
+    expression__ --> expression_Registries
+    expression__ --> expression_Support
+    expression__ --> expression_Xpath
     expression__ --> contracts_Spec
     expression__ --> expression_Data
     expression__ --> expression_Exceptions
-    expression__ --> expression_Interfaces
     expression__ --> expression_Policy
-    expression__ --> expression_Registries
-    expression__ --> expression_Internal
-    expression__ --> expression_Support
-    expression__ --> expression_Xpath
     expression__ --> expression_Ast
-    expression__ --> expression_Enum
     expression__ --> expression_JsonPath
+    expression__ --> expression_Enum
     evaluation_Condition --> expression_Exceptions
     evaluation_Condition --> expression__
     evaluation_Condition --> evaluation_Enum
-    evaluation_Condition --> contracts_Spec
     evaluation_Condition --> evaluation_Interfaces
-    evaluation_Condition --> contracts_Support
+    evaluation_Condition --> contracts_Spec
     evaluation_Condition --> expression_Data
     evaluation_Condition --> expression_Interfaces
+    evaluation_Condition --> contracts_Support
     evaluation_Data --> contracts_Spec
     evaluation_Data --> evaluation_Enum
     evaluation_Events --> evaluation_Data
@@ -199,18 +200,18 @@ flowchart LR
     evaluation_Registries --> evaluation_Exceptions
     evaluation_Registries --> expression_Interfaces
     evaluation__ --> contracts_Spec
-    evaluation__ --> contracts_State
-    evaluation__ --> expression_Interfaces
-    evaluation__ --> evaluation_Data
-    evaluation__ --> evaluation_Events
     evaluation__ --> evaluation_Condition
     evaluation__ --> evaluation_Exceptions
     evaluation__ --> expression_Data
+    evaluation__ --> expression_Interfaces
     evaluation__ --> contracts_Interfaces
     evaluation__ --> contracts_Support
+    evaluation__ --> evaluation_Data
     evaluation__ --> evaluation_Enum
+    evaluation__ --> evaluation_Events
     evaluation__ --> evaluation_Interfaces
     evaluation__ --> evaluation_Registries
+    evaluation__ --> contracts_State
     evaluation__ --> expression_Exceptions
     document_Parser --> contracts_Spec
     document_Parser --> contracts_Support
@@ -218,26 +219,26 @@ flowchart LR
     document_Plugins --> contracts_Interfaces
     document_Plugins --> contracts_Spec
     document_Plugins --> contracts_Validation
-    document_Plugins --> contracts_Support
     document_Plugins --> document_Validator
     document_Plugins --> contracts_Dependency
+    document_Plugins --> contracts_Support
     document_Registries --> contracts_Attributes
     document_Registries --> contracts_Discovery
     document_Registries --> contracts_Interfaces
     document_Registries --> contracts_Validation
-    document_Validator --> contracts_Data
+    document_Validator --> contracts_Interfaces
     document_Validator --> contracts_Spec
     document_Validator --> contracts_Validation
-    document_Validator --> contracts_Interfaces
     document_Validator --> document_Registries
+    document_Validator --> contracts_Data
     document__ --> contracts_Data
     document__ --> contracts_Interfaces
     document__ --> contracts_Spec
     document__ --> contracts_Validation
     document__ --> document_Parser
     document__ --> document_Validator
-    sources_Normalizer --> sources_Exceptions
     sources_Normalizer --> contracts_Spec
+    sources_Normalizer --> sources_Exceptions
     sources_Plugins --> contracts_Attributes
     sources_Plugins --> contracts_Interfaces
     sources_Plugins --> contracts_Spec
@@ -249,12 +250,12 @@ flowchart LR
     sources_Registries --> contracts_Discovery
     sources_Registries --> contracts_Interfaces
     sources_Registries --> contracts_Spec
-    sources_Resolver --> contracts_Observability
-    sources_Resolver --> sources_Policy
     sources_Resolver --> contracts_Interfaces
     sources_Resolver --> contracts_Spec
     sources_Resolver --> document_Parser
     sources_Resolver --> sources_Exceptions
+    sources_Resolver --> contracts_Observability
+    sources_Resolver --> sources_Policy
     sources__ --> contracts_Data
     sources__ --> contracts_Interfaces
     sources__ --> contracts_Observability
@@ -271,63 +272,63 @@ flowchart LR
     engine_Execution --> contracts_Spec
     engine_Execution --> contracts_State
     engine_Execution --> document_Parser
-    engine_Execution --> engine_Exceptions
     engine_Execution --> evaluation__
-    engine_Runtime --> engine_Exceptions
+    engine_Execution --> engine_Exceptions
     engine_Runtime --> contracts_Interfaces
+    engine_Runtime --> engine_Exceptions
+    engine_Runtime --> contracts_Clock
     engine_Runtime --> contracts_Spec
     engine_Runtime --> contracts_State
     engine_Runtime --> contracts_Observability
-    engine_Runtime --> contracts_Clock
     engine__ --> contracts_Spec
     engine__ --> contracts_State
     engine__ --> engine_Data
     runner_Async --> contracts_Spec
     runner_Async --> contracts_State
-    runner_Async --> engine_Exceptions
-    runner_Async --> evaluation__
-    runner_Async --> expression_Data
-    runner_Async --> runner__
-    runner_Async --> runner_Execution
-    runner_Async --> runner_Sync
-    runner_Async --> contracts_Exceptions
-    runner_Async --> contracts_Interfaces
-    runner_Async --> contracts_Observability
-    runner_Async --> engine_Execution
-    runner_Async --> runner_Data
-    runner_Async --> runner_Events
-    runner_Async --> runner_Exceptions
-    runner_Async --> runner_Policy
-    runner_Async --> runner_Preflight
-    runner_Async --> runner_Registries
     runner_Async --> contracts_Validation
     runner_Async --> document__
+    runner_Async --> evaluation__
+    runner_Async --> runner_Data
+    runner_Async --> runner_Exceptions
+    runner_Async --> runner_Execution
     runner_Async --> runner_Plugins
+    runner_Async --> runner_Preflight
+    runner_Async --> runner_Registries
+    runner_Async --> runner_Sync
+    runner_Async --> contracts_Interfaces
+    runner_Async --> contracts_Observability
+    runner_Async --> runner__
+    runner_Async --> runner_Events
+    runner_Async --> contracts_Exceptions
+    runner_Async --> engine_Exceptions
+    runner_Async --> engine_Execution
+    runner_Async --> expression_Data
+    runner_Async --> runner_Policy
     runner_Async --> contracts_Dependency
     runner_Data --> contracts_Spec
     runner_Data --> contracts_State
     runner_Data --> runner__
-    runner_Exceptions --> contracts_Validation
     runner_Exceptions --> runner_Policy
+    runner_Exceptions --> contracts_Validation
     runner_Exceptions --> contracts_Support
-    runner_Execution --> contracts_Interfaces
-    runner_Execution --> contracts_Spec
     runner_Execution --> runner__
+    runner_Execution --> runner_Queue
+    runner_Execution --> runner_Store
+    runner_Execution --> contracts_Interfaces
+    runner_Execution --> contracts_Clock
+    runner_Execution --> contracts_Observability
+    runner_Execution --> contracts_Support
+    runner_Execution --> runner_Policy
+    runner_Execution --> runner_Preflight
+    runner_Execution --> runner_Sync
+    runner_Execution --> document__
+    runner_Execution --> contracts_Spec
+    runner_Execution --> contracts_State
+    runner_Execution --> engine_Runtime
     runner_Execution --> evaluation__
     runner_Execution --> expression_Data
     runner_Execution --> contracts_Policy
     runner_Execution --> runner_Exceptions
-    runner_Execution --> runner_Policy
-    runner_Execution --> contracts_Observability
-    runner_Execution --> document__
-    runner_Execution --> runner_Preflight
-    runner_Execution --> runner_Sync
-    runner_Execution --> contracts_Clock
-    runner_Execution --> contracts_Support
-    runner_Execution --> runner_Queue
-    runner_Execution --> runner_Store
-    runner_Execution --> contracts_State
-    runner_Execution --> engine_Runtime
     runner_Plugins --> contracts_Attributes
     runner_Plugins --> contracts_Interfaces
     runner_Plugins --> contracts_Spec
@@ -347,96 +348,96 @@ flowchart LR
     runner_Registries --> contracts_Attributes
     runner_Registries --> contracts_Interfaces
     runner_Registries --> contracts_Spec
-    runner_Store --> contracts_Clock
     runner_Store --> contracts_Spec
     runner_Store --> runner__
-    runner_Sync --> contracts_Dependency
+    runner_Store --> contracts_Clock
+    runner_Sync --> document__
+    runner_Sync --> evaluation__
+    runner_Sync --> runner_Execution
+    runner_Sync --> runner_Plugins
+    runner_Sync --> runner_Preflight
+    runner_Sync --> runner_Registries
+    runner_Sync --> contracts_Interfaces
     runner_Sync --> contracts_Spec
     runner_Sync --> contracts_State
-    runner_Sync --> runner_Exceptions
-    runner_Sync --> evaluation__
-    runner_Sync --> expression_Data
-    runner_Sync --> runner_Execution
-    runner_Sync --> engine_Runtime
-    runner_Sync --> contracts_Validation
-    runner_Sync --> document__
-    runner_Sync --> runner_Preflight
-    runner_Sync --> contracts_Interfaces
     runner_Sync --> engine_Exceptions
     runner_Sync --> runner_Policy
-    runner_Sync --> runner_Registries
-    runner_Sync --> runner_Plugins
+    runner_Sync --> expression_Data
+    runner_Sync --> runner_Exceptions
+    runner_Sync --> engine_Runtime
     runner_Sync --> contracts_Exceptions
     runner_Sync --> contracts_Observability
     runner_Sync --> engine_Execution
     runner_Sync --> runner_Data
     runner_Sync --> runner_Events
+    runner_Sync --> contracts_Dependency
+    runner_Sync --> contracts_Validation
     runner__ --> contracts_Interfaces
     runner__ --> contracts_Observability
     runner__ --> contracts_Spec
     runner__ --> document__
-    runner__ --> runner_Data
-    runner__ --> runner_Exceptions
-    runner__ --> runner_Policy
-    runner__ --> contracts_Exceptions
-    runner__ --> contracts_Validation
     runner__ --> evaluation__
     runner__ --> expression__
+    runner__ --> runner_Async
+    runner__ --> runner_Data
     runner__ --> runner_Execution
+    runner__ --> runner_Policy
+    runner__ --> runner_Exceptions
+    runner__ --> contracts_Validation
     runner__ --> runner_Preflight
     runner__ --> runner_Sync
-    runner__ --> runner_Async
+    runner__ --> contracts_Exceptions
+    cli_Console --> contracts_Clock
+    cli_Console --> contracts_Spec
+    cli_Console --> runner__
+    cli_Console --> engine_Runtime
     cli_Console --> cli_Exceptions
     cli_Console --> contracts_Interfaces
     cli_Console --> contracts_Observability
-    cli_Console --> contracts_Spec
     cli_Console --> evaluation__
-    cli_Console --> runner__
     cli_Console --> runner_Data
     cli_Console --> runner_Queue
-    cli_Console --> engine_Runtime
     cli_Console --> runner_Store
-    cli_Console --> contracts_Clock
-    cli_Console --> contracts_Data
-    cli_Console --> document__
-    cli_Console --> document_Parser
-    cli_Console --> sources__
     cli_Console --> contracts_Dependency
+    cli_Console --> document__
     cli_Console --> cli_Renderer
     cli_Console --> contracts_Exceptions
+    cli_Console --> document_Parser
+    cli_Console --> contracts_Data
+    cli_Console --> sources__
     cli_Console --> expression__
     cli_Console --> protocol_http__
     cli_Exceptions --> engine_Exceptions
-    cli_Generator --> cli_Exceptions
     cli_Generator --> contracts_Interfaces
+    cli_Generator --> cli_Exceptions
     cli_Renderer --> contracts_Spec
     protocol_http_Exceptions --> engine_Exceptions
-    protocol_http_Execution --> contracts_Exceptions
-    protocol_http_Execution --> contracts_Interfaces
+    protocol_http_Execution --> contracts_Observability
+    protocol_http_Execution --> contracts_Policy
     protocol_http_Execution --> contracts_Spec
     protocol_http_Execution --> engine_Execution
     protocol_http_Execution --> protocol_http_Resolver
-    protocol_http_Execution --> contracts_Policy
     protocol_http_Execution --> evaluation__
+    protocol_http_Execution --> expression_Interfaces
+    protocol_http_Execution --> protocol_http_Policy
+    protocol_http_Execution --> contracts_Exceptions
+    protocol_http_Execution --> contracts_Interfaces
     protocol_http_Execution --> expression_Data
     protocol_http_Execution --> expression_Enum
-    protocol_http_Execution --> expression_Interfaces
-    protocol_http_Execution --> contracts_Observability
-    protocol_http_Execution --> protocol_http_Policy
     protocol_http_Plugins --> contracts_Attributes
     protocol_http_Plugins --> contracts_Interfaces
     protocol_http_Plugins --> contracts_Spec
     protocol_http_Plugins --> contracts_State
+    protocol_http_Plugins --> engine_Exceptions
     protocol_http_Plugins --> engine_Execution
     protocol_http_Plugins --> evaluation__
-    protocol_http_Plugins --> protocol_http_Execution
-    protocol_http_Plugins --> protocol_http_Resolver
-    protocol_http_Plugins --> engine_Exceptions
     protocol_http_Plugins --> expression_Data
     protocol_http_Plugins --> protocol_http_Exceptions
+    protocol_http_Plugins --> protocol_http_Execution
+    protocol_http_Plugins --> protocol_http_Resolver
     protocol_http_Policy --> engine_Execution
-    protocol_http_Resolver --> contracts_Spec
     protocol_http_Resolver --> contracts_Interfaces
+    protocol_http_Resolver --> contracts_Spec
     protocol_http_Resolver --> document__
     protocol_http_Resolver --> protocol_http_Exceptions
     protocol_http_Resolver --> sources_Normalizer
@@ -456,19 +457,18 @@ flowchart LR
     protocol_http__ --> sources__
     protocol_rpc_Exceptions --> engine_Exceptions
     protocol_rpc_Execution --> contracts_Spec
+    protocol_rpc_Execution --> protocol_rpc_Transfer
     protocol_rpc_Execution --> contracts_State
     protocol_rpc_Execution --> engine_Execution
     protocol_rpc_Execution --> evaluation__
     protocol_rpc_Execution --> protocol_rpc_Exceptions
     protocol_rpc_Execution --> protocol_rpc_Protocol
-    protocol_rpc_Execution --> protocol_rpc_Transfer
     protocol_rpc_Normalizer --> protocol_rpc_Exceptions
     protocol_rpc_Plugins --> contracts_Attributes
     protocol_rpc_Plugins --> contracts_Interfaces
-    protocol_rpc_Plugins --> contracts_Spec
-    protocol_rpc_Plugins --> contracts_Validation
     protocol_rpc_Plugins --> contracts_Observability
     protocol_rpc_Plugins --> contracts_Policy
+    protocol_rpc_Plugins --> contracts_Spec
     protocol_rpc_Plugins --> contracts_State
     protocol_rpc_Plugins --> document__
     protocol_rpc_Plugins --> protocol_rpc_Exceptions
@@ -476,6 +476,7 @@ flowchart LR
     protocol_rpc_Plugins --> protocol_rpc_Protocol
     protocol_rpc_Plugins --> protocol_rpc_Transfer
     protocol_rpc_Plugins --> protocol_rpc_Normalizer
+    protocol_rpc_Plugins --> contracts_Validation
     protocol_rpc_Protocol --> contracts_Interfaces
     protocol_rpc_Protocol --> contracts_Spec
     protocol_rpc_Protocol --> document__
@@ -485,28 +486,28 @@ flowchart LR
     protocol_rpc_Transfer --> contracts_Spec
     protocol_rpc_Transfer --> protocol_rpc_Protocol
     protocol_soap_Exceptions --> engine_Exceptions
+    protocol_soap_Execution --> protocol_soap_Exceptions
     protocol_soap_Execution --> contracts_Spec
     protocol_soap_Execution --> protocol_soap_Transfer
     protocol_soap_Execution --> contracts_Interfaces
-    protocol_soap_Execution --> document__
-    protocol_soap_Execution --> protocol_soap_Exceptions
-    protocol_soap_Execution --> protocol_soap_Plugins
     protocol_soap_Execution --> contracts_State
     protocol_soap_Execution --> engine_Execution
     protocol_soap_Execution --> evaluation__
+    protocol_soap_Execution --> document__
+    protocol_soap_Execution --> protocol_soap_Plugins
     protocol_soap_Plugins --> contracts_Attributes
     protocol_soap_Plugins --> contracts_Interfaces
-    protocol_soap_Plugins --> contracts_Spec
-    protocol_soap_Plugins --> contracts_Validation
-    protocol_soap_Plugins --> expression_Exceptions
-    protocol_soap_Plugins --> expression_Interfaces
     protocol_soap_Plugins --> contracts_Observability
     protocol_soap_Plugins --> contracts_Policy
+    protocol_soap_Plugins --> contracts_Spec
     protocol_soap_Plugins --> contracts_State
     protocol_soap_Plugins --> document__
     protocol_soap_Plugins --> protocol_soap_Exceptions
     protocol_soap_Plugins --> protocol_soap_Execution
     protocol_soap_Plugins --> protocol_soap_Transfer
+    protocol_soap_Plugins --> contracts_Validation
+    protocol_soap_Plugins --> expression_Exceptions
+    protocol_soap_Plugins --> expression_Interfaces
     protocol_soap_Resolver --> contracts_Interfaces
     protocol_soap_Transfer --> contracts_Interfaces
     protocol_soap_Validation --> contracts_Exceptions

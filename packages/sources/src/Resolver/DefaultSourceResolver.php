@@ -8,6 +8,7 @@ use Alama\Arazzo\Contracts\Interfaces\SourceFetcherInterface;
 use Alama\Arazzo\Contracts\Spec\Enum\Format;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Spec\SourceDocument;
+use Alama\Arazzo\Contracts\Spec\SourceIdentity;
 use Alama\Arazzo\Document\Parser\DecodePolicy;
 use Alama\Arazzo\Document\Parser\Decoders;
 use Alama\Arazzo\Sources\Exceptions\SourceFetchException;
@@ -41,6 +42,8 @@ final class DefaultSourceResolver implements SourceResolver
     /** @var array<string, true> */
     private array $resolving = [];
 
+    private SourceIdentityCollection $identities;
+
     /**
      * @param  array<string, SourceFetcherInterface>  $fetchers
      * @param  array<string, SourceDocument>  $seeded
@@ -49,8 +52,19 @@ final class DefaultSourceResolver implements SourceResolver
         private readonly array $fetchers = [],
         private readonly ?DecodePolicy $decodePolicy = null,
         array $seeded = [],
+        ?SourceIdentityCollection $identities = null,
     ) {
         $this->seeded = $seeded;
+
+        if ($identities !== null) {
+            $this->identities = $identities;
+        } else {
+            $collection = SourceIdentityCollection::empty();
+            foreach ($seeded as $doc) {
+                $collection = $collection->with(new SourceIdentity($doc->canonicalUri, $doc->selfUri, $doc));
+            }
+            $this->identities = $collection;
+        }
     }
 
     public function withFetcher(string $scheme, SourceFetcherInterface $fetcher): self
@@ -58,7 +72,7 @@ final class DefaultSourceResolver implements SourceResolver
         $fetchers = $this->fetchers;
         $fetchers[strtolower($scheme)] = $fetcher;
 
-        // Preserve explicitly seeded documents; clear fetched cache so the new fetcher takes effect.
+        // Preserve explicitly seeded documents; clear fetched cache and dynamic identities so the new fetcher takes effect.
         return new self($fetchers, $this->decodePolicy, $this->seeded);
     }
 
@@ -67,7 +81,10 @@ final class DefaultSourceResolver implements SourceResolver
         $seeded = $this->seeded;
         $seeded[$document->name] = $document;
 
-        return new self($this->fetchers, $this->decodePolicy, $seeded);
+        $identity = new SourceIdentity($document->canonicalUri, $document->selfUri, $document);
+        $identities = $this->identities->with($identity);
+
+        return new self($this->fetchers, $this->decodePolicy, $seeded, $identities);
     }
 
     public function withDecodePolicy(?DecodePolicy $decodePolicy): self
@@ -125,6 +142,13 @@ final class DefaultSourceResolver implements SourceResolver
     public function register(SourceDocument $document): void
     {
         $this->seeded[$document->name] = $document;
+        $identity = new SourceIdentity($document->canonicalUri, $document->selfUri, $document);
+        $this->identities = $this->identities->with($identity);
+    }
+
+    public function identities(): SourceIdentityCollection
+    {
+        return $this->identities;
     }
 
     public function resolve(SourceDescription $source, string $basePath): SourceDocument
@@ -137,6 +161,17 @@ final class DefaultSourceResolver implements SourceResolver
             return $this->cache[$source->name];
         }
 
+        // Derive candidate target URI: resolve relative source URL against basePath
+        $canonicalTarget = UriReferenceResolver::resolve($source->url, $basePath);
+
+        // Check identity collection: identity ($self) first, then retrieval location (Arazzo 1.1.0 §5.2, S2, S3)
+        $knownIdentity = $this->identities->find($canonicalTarget) ?? $this->identities->find($source->url);
+        if ($knownIdentity?->document !== null) {
+            $this->cache[$source->name] = $knownIdentity->document;
+
+            return $knownIdentity->document;
+        }
+
         if (isset($this->resolving[$source->name])) {
             throw UnresolvableReferenceException::circularReference($source->name);
         }
@@ -144,8 +179,10 @@ final class DefaultSourceResolver implements SourceResolver
         $this->resolving[$source->name] = true;
 
         try {
-            $document = $this->fetchAndDecode($source, $basePath);
+            $document = $this->fetchAndDecode($source, $basePath, $canonicalTarget);
             $this->cache[$document->name] = $document;
+            $identity = new SourceIdentity($document->canonicalUri, $document->selfUri, $document);
+            $this->identities = $this->identities->with($identity);
 
             return $document;
         } finally {
@@ -153,9 +190,14 @@ final class DefaultSourceResolver implements SourceResolver
         }
     }
 
-    private function fetchAndDecode(SourceDescription $source, string $basePath): SourceDocument
+    private function fetchAndDecode(SourceDescription $source, string $basePath, string $canonicalUri): SourceDocument
     {
-        $scheme = $source->scheme();
+        $scheme = parse_url($canonicalUri, PHP_URL_SCHEME);
+        if (!is_string($scheme) || $scheme === '') {
+            $scheme = $source->scheme();
+        } else {
+            $scheme = strtolower($scheme);
+        }
 
         $fetcher = $this->fetchers[$scheme] ?? null;
         if ($fetcher === null) {
@@ -167,11 +209,20 @@ final class DefaultSourceResolver implements SourceResolver
 
         $type = $source->type ?? SourceDescription::inferFromContent($decoded);
 
+        $selfUri = null;
+        if (isset($decoded['$self']) && is_string($decoded['$self'])) {
+            $rawSelf = trim($decoded['$self']);
+            if ($rawSelf !== '') {
+                $selfUri = UriReferenceResolver::resolve($rawSelf, $canonicalUri);
+            }
+        }
+
         return new SourceDocument(
             name: $source->name,
             type: $type,
-            canonicalUri: $this->resolveCanonicalUri($source->url, $basePath),
+            canonicalUri: $canonicalUri,
             content: $decoded,
+            selfUri: $selfUri,
         );
     }
 
@@ -194,41 +245,5 @@ final class DefaultSourceResolver implements SourceResolver
 
         /** @var array<string, mixed> $decoded */
         return $decoded;
-    }
-
-    private function resolveCanonicalUri(string $url, string $basePath): string
-    {
-        $url = str_replace('\\', '/', $url);
-        $basePath = str_replace('\\', '/', $basePath);
-        $scheme = parse_url($url, PHP_URL_SCHEME);
-        if (is_string($scheme) && $scheme !== '') {
-            return $url; // Already absolute with scheme
-        }
-
-        // Relative file path
-        if (str_starts_with($url, '/')) {
-            return 'file://'.$url;
-        }
-
-        $base = rtrim($basePath, '/');
-
-        // Let's do basic relative path resolution
-        $path = $base.'/'.$url;
-
-        // Resolve . and ..
-        $parts = explode('/', $path);
-        $resolved = [];
-        foreach ($parts as $part) {
-            if ($part === '.' || $part === '') {
-                continue;
-            }
-            if ($part === '..') {
-                array_pop($resolved);
-            } else {
-                $resolved[] = $part;
-            }
-        }
-
-        return 'file:///'.implode('/', $resolved);
     }
 }

@@ -23,6 +23,7 @@ use Alama\Arazzo\Sources\Registries\SourceNormalizerRegistry;
 use Alama\Arazzo\Sources\Resolver\DefaultSourceResolver;
 use Alama\Arazzo\Sources\Resolver\Fetchers\HttpFetcher;
 use Alama\Arazzo\Sources\Resolver\SourcesRuntimeConfig;
+use Alama\Arazzo\Sources\Resolver\UriReferenceResolver;
 use GuzzleHttp\Psr7\HttpFactory;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
@@ -83,7 +84,7 @@ final readonly class Sources implements SourcesInterface
                 return $this->documents[$source->name];
             }
 
-            $this->assertAllowedScheme($source);
+            $this->assertAllowedScheme($source, $basePath);
 
             $document = $this->resolver->resolve($source, $basePath);
             $span->setAttribute('arazzo.source.seeded', false);
@@ -102,9 +103,14 @@ final readonly class Sources implements SourcesInterface
 
     public function normalizeSources(ArazzoDocument $document, string $basePath = ''): ResolvedOperationCollection
     {
+        $effectiveBasePath = $basePath;
+        if ($document->self !== null && trim($document->self) !== '') {
+            $effectiveBasePath = UriReferenceResolver::resolve(trim($document->self), $basePath);
+        }
+
         $operations = [];
         foreach ($document->sourceDescriptions as $source) {
-            $operations += $this->normalizeSource($source, $document, $basePath);
+            $operations += $this->normalizeSource($source, $document, $effectiveBasePath);
         }
 
         return ResolvedOperationCollection::fromArray($operations);
@@ -260,9 +266,19 @@ final readonly class Sources implements SourcesInterface
         return new self($resolver, $this->normalizers, $documents, $this->policy, $this->runtime);
     }
 
-    private function assertAllowedScheme(SourceDescription $source): void
+    private function assertAllowedScheme(SourceDescription $source, string $basePath = ''): void
     {
-        $scheme = $source->scheme();
+        $canonicalTarget = UriReferenceResolver::resolve($source->url, $basePath);
+        if (str_starts_with($canonicalTarget, 'file://')) {
+            $scheme = 'file';
+        } else {
+            $parsed = parse_url($canonicalTarget, PHP_URL_SCHEME);
+            if (is_string($parsed) && strlen($parsed) > 1) {
+                $scheme = strtolower($parsed);
+            } else {
+                $scheme = $source->scheme();
+            }
+        }
 
         if (!$this->policy->allowsScheme($scheme)) {
             $this->runtime->logger->warning('Source scheme disallowed by FetchPolicy.', [

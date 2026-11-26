@@ -15,7 +15,7 @@ the declaration honest.
 ```mermaid
 flowchart LR
     subgraph S_core["Core domain"]
-        S_contracts_Spec["contracts:Spec<br/><small>2801 LOC</small>"]:::coreDomain
+        S_contracts_Spec["contracts:Spec<br/><small>2837 LOC</small>"]:::coreDomain
     end
     subgraph S_supporting["Supporting"]
         S_cli_Console["cli:Console<br/><small>797 LOC</small>"]:::supportingDomain
@@ -25,13 +25,13 @@ flowchart LR
         S_document_Validator["document:Validator<br/><small>659 LOC</small>"]:::supportingDomain
         S_protocol_http_Resolver["protocol-http:Resolver<br/><small>307 LOC</small>"]:::supportingDomain
         S_protocol_soap_Resolver["protocol-soap:Resolver<br/><small>136 LOC</small>"]:::supportingDomain
-        S_sources_Resolver["sources:Resolver<br/><small>625 LOC</small>"]:::supportingDomain
+        S_sources_Resolver["sources:Resolver<br/><small>890 LOC</small>"]:::supportingDomain
     end
     subgraph S_generic["Generic subdomain"]
         S_contracts_State["contracts:State<br/><small>1242 LOC</small>"]:::genericDomain
         S_contracts_Support["contracts:Support<br/><small>185 LOC</small>"]:::genericDomain
         S_evaluation_Events["evaluation:Events<br/><small>27 LOC</small>"]:::genericDomain
-        S_expression_Support["expression:Support<br/><small>192 LOC</small>"]:::genericDomain
+        S_expression_Support["expression:Support<br/><small>339 LOC</small>"]:::genericDomain
         S_runner_Events["runner:Events<br/><small>187 LOC</small>"]:::genericDomain
         S_runner_Queue["runner:Queue<br/><small>25 LOC</small>"]:::genericDomain
     end
@@ -47,7 +47,7 @@ flowchart LR
         S_contracts_Observability["contracts:Observability<br/><small>108 LOC</small>"]:::unknownDomain
         S_contracts_Policy["contracts:Policy<br/><small>268 LOC</small>"]:::unknownDomain
         S_contracts_Validation["contracts:Validation<br/><small>373 LOC</small>"]:::unknownDomain
-        S_document_Plugins["document:Plugins<br/><small>3112 LOC</small>"]:::unknownDomain
+        S_document_Plugins["document:Plugins<br/><small>3170 LOC</small>"]:::unknownDomain
         S_document_Registries["document:Registries<br/><small>97 LOC</small>"]:::unknownDomain
         S_engine_Data["engine:Data<br/><small>99 LOC</small>"]:::unknownDomain
         S_engine_Enum["engine:Enum<br/><small>17 LOC</small>"]:::unknownDomain
@@ -62,8 +62,8 @@ flowchart LR
         S_evaluation_Plugins["evaluation:Plugins<br/><small>125 LOC</small>"]:::unknownDomain
         S_evaluation_Registries["evaluation:Registries<br/><small>190 LOC</small>"]:::unknownDomain
         S_expression_Ast["expression:Ast<br/><small>355 LOC</small>"]:::unknownDomain
-        S_expression_Data["expression:Data<br/><small>394 LOC</small>"]:::unknownDomain
-        S_expression_Enum["expression:Enum<br/><small>47 LOC</small>"]:::unknownDomain
+        S_expression_Data["expression:Data<br/><small>390 LOC</small>"]:::unknownDomain
+        S_expression_Enum["expression:Enum<br/><small>79 LOC</small>"]:::unknownDomain
         S_expression_Exceptions["expression:Exceptions<br/><small>209 LOC</small>"]:::unknownDomain
         S_expression_Interfaces["expression:Interfaces<br/><small>252 LOC</small>"]:::unknownDomain
         S_expression_Internal["expression:Internal<br/><small>885 LOC</small>"]:::unknownDomain
@@ -97,7 +97,7 @@ flowchart LR
         S_runner_Registries["runner:Registries<br/><small>151 LOC</small>"]:::unknownDomain
         S_runner_Store["runner:Store<br/><small>138 LOC</small>"]:::unknownDomain
         S_runner_Sync["runner:Sync<br/><small>1146 LOC</small>"]:::unknownDomain
-        S_sources_Exceptions["sources:Exceptions<br/><small>220 LOC</small>"]:::unknownDomain
+        S_sources_Exceptions["sources:Exceptions<br/><small>258 LOC</small>"]:::unknownDomain
         S_sources_Normalizer["sources:Normalizer<br/><small>498 LOC</small>"]:::unknownDomain
         S_sources_Plugins["sources:Plugins<br/><small>159 LOC</small>"]:::unknownDomain
         S_sources_Policy["sources:Policy<br/><small>125 LOC</small>"]:::unknownDomain
@@ -111,10 +111,10 @@ flowchart LR
 
 | Subdomain | Modules | Core pkg LOC | Laravel pkg LOC | Share |
 |---|---:|---:|---:|---:|
-| Core domain | 1 | 2,801 | 0 | 8% |
-| Supporting | 8 | 5,461 | 0 | 15% |
-| Generic subdomain | 6 | 1,858 | 0 | 5% |
-| Unclassified | 66 | 27,093 | 0 | 73% |
+| Core domain | 1 | 2,837 | 0 | 8% |
+| Supporting | 8 | 5,726 | 0 | 15% |
+| Generic subdomain | 6 | 2,005 | 0 | 5% |
+| Unclassified | 66 | 27,217 | 0 | 72% |
 
 **Unclassified modules** — classify them in `SUBDOMAINS` or delete them:
 - `cli:Exceptions`
