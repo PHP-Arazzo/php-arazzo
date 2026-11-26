@@ -125,12 +125,24 @@ final class OpenApiSourceNormalizer implements SourceNormalizerInterface
                     $index['$sourceDescriptions.'.$source->name.'.'.$operationId] = $resolved;
                 }
 
-                $pointer = $this->jsonPointerForPath((string) $path, $method);
-                $index[$pointer] = $resolved;
+                $rfcPointer = $this->rfcPointerForPath((string) $path, $method);
+                $index[$rfcPointer] = $resolved;
+                $index[ltrim($rfcPointer, '#')] = $resolved;
+
+                $legacyPointer = $this->jsonPointerForPath((string) $path, $method);
+                $index[$legacyPointer] = $resolved;
+                $index[ltrim($legacyPointer, '#')] = $resolved;
             }
         }
 
         return $index;
+    }
+
+    private function rfcPointerForPath(string $path, string $method): string
+    {
+        $escapedPath = str_replace(['~', '/'], ['~0', '~1'], $path);
+
+        return '#/paths/'.$escapedPath.'/'.strtolower($method);
     }
 
     private function jsonPointerForPath(string $path, string $method): string

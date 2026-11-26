@@ -116,6 +116,8 @@ flowchart LR
     C_expression_expression_Plugins_MessageRefRequiresReceiveRule -.->|implements| I_ValidationRuleInterface
     C_expression_expression_Plugins_SelectorTypeSupportedRule["SelectorTypeSupportedRule<br/><small>expression:Plugins</small>"]:::implCore
     C_expression_expression_Plugins_SelectorTypeSupportedRule -.->|implements| I_ValidationRuleInterface
+    C_expression_expression_Plugins_StepOperationPathResolvesRule["StepOperationPathResolvesRule<br/><small>expression:Plugins</small>"]:::implCore
+    C_expression_expression_Plugins_StepOperationPathResolvesRule -.->|implements| I_ValidationRuleInterface
     C_expression_expression_Plugins_StepOperationPathSyntaxRule["StepOperationPathSyntaxRule<br/><small>expression:Plugins</small>"]:::implCore
     C_expression_expression_Plugins_StepOperationPathSyntaxRule -.->|implements| I_ValidationRuleInterface
     C_expression_expression_Plugins_SuccessCriteriaVersionSupportedRule["SuccessCriteriaVersionSupportedRule<br/><small>expression:Plugins</small>"]:::implCore

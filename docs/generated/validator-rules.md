@@ -9,7 +9,7 @@ prefixes). Regenerated before every commit.
 
 ```mermaid
 flowchart TD
-    ROOT["Validator rules (66)"]
+    ROOT["Validator rules (67)"]
     G_Actions["Actions — 8"]
     ROOT --> G_Actions
     R_ActionDuplicateRule["ActionDuplicate"]
@@ -110,7 +110,7 @@ flowchart TD
     ROOT --> G_Specification_extensions
     R_ExtensionsXPrefixRule["ExtensionsXPrefix"]
     G_Specification_extensions --> R_ExtensionsXPrefixRule
-    G_Step_level["Step-level — 22"]
+    G_Step_level["Step-level — 23"]
     ROOT --> G_Step_level
     R_InteractionStepRule["InteractionStep"]
     G_Step_level --> R_InteractionStepRule
@@ -130,6 +130,8 @@ flowchart TD
     G_Step_level --> R_StepOperationIdResolvesRule
     R_StepOperationIdSourceScopedRule["StepOperationIdSourceScoped"]
     G_Step_level --> R_StepOperationIdSourceScopedRule
+    R_StepOperationPathResolvesRule["StepOperationPathResolves"]
+    G_Step_level --> R_StepOperationPathResolvesRule
     R_StepOperationPathSyntaxRule["StepOperationPathSyntax"]
     G_Step_level --> R_StepOperationPathSyntaxRule
     R_StepOperationTargetPresentRule["StepOperationTargetPresent"]
@@ -186,5 +188,5 @@ flowchart TD
 | **Selectors** | `SelectorTypeSupportedRule` <small>expression</small> |
 | **Sources** | `SelfUriSyntaxRule` <small>document</small>, `SourceTypeMatchesRule` <small>document</small>, `SourceUniqueNameRule` <small>document</small>, `SourceUrlSyntaxRule` <small>document</small> |
 | **Specification extensions** | `ExtensionsXPrefixRule` <small>document</small> |
-| **Step-level** | `InteractionStepRule` <small>document</small>, `StepAtLeastOneRule` <small>document</small>, `StepCriteriaTypeContextRule` <small>document</small>, `StepDependsOnNoCycleRule` <small>document</small>, `StepIdPatternRule` <small>document</small>, `StepNestedWorkflowExistsRule` <small>document</small>, `StepNestedWorkflowNoCycleRule` <small>document</small>, `StepOperationIdResolvesRule` <small>document</small>, `StepOperationIdSourceScopedRule` <small>document</small>, `StepOperationPathSyntaxRule` <small>expression</small>, `StepOperationTargetPresentRule` <small>document</small>, `StepOutputsUniqueRule` <small>document</small>, `StepParameterDuplicateRule` <small>document</small>, `StepParameterInValidRule` <small>document</small>, `StepParameterRequiresInRule` <small>document</small>, `StepParametersHaveNameRule` <small>document</small>, `StepRequestBodyReplacementsTargetRule` <small>document</small>, `StepRequestBodyWorkflowRule` <small>document</small>, `StepSuccessCriteriaConditionRule` <small>document</small>, `StepTimeoutRequires11Rule` <small>document</small>, `StepUniqueIdRule` <small>document</small>, `SuccessCriteriaVersionSupportedRule` <small>expression</small> |
+| **Step-level** | `InteractionStepRule` <small>document</small>, `StepAtLeastOneRule` <small>document</small>, `StepCriteriaTypeContextRule` <small>document</small>, `StepDependsOnNoCycleRule` <small>document</small>, `StepIdPatternRule` <small>document</small>, `StepNestedWorkflowExistsRule` <small>document</small>, `StepNestedWorkflowNoCycleRule` <small>document</small>, `StepOperationIdResolvesRule` <small>document</small>, `StepOperationIdSourceScopedRule` <small>document</small>, `StepOperationPathResolvesRule` <small>expression</small>, `StepOperationPathSyntaxRule` <small>expression</small>, `StepOperationTargetPresentRule` <small>document</small>, `StepOutputsUniqueRule` <small>document</small>, `StepParameterDuplicateRule` <small>document</small>, `StepParameterInValidRule` <small>document</small>, `StepParameterRequiresInRule` <small>document</small>, `StepParametersHaveNameRule` <small>document</small>, `StepRequestBodyReplacementsTargetRule` <small>document</small>, `StepRequestBodyWorkflowRule` <small>document</small>, `StepSuccessCriteriaConditionRule` <small>document</small>, `StepTimeoutRequires11Rule` <small>document</small>, `StepUniqueIdRule` <small>document</small>, `SuccessCriteriaVersionSupportedRule` <small>expression</small> |
 | **Workflow-level** | `WorkflowAtLeastOneRule` <small>document</small>, `WorkflowDependsOnExistsRule` <small>document</small>, `WorkflowDependsOnNoCycleRule` <small>document</small>, `WorkflowIdPatternRule` <small>document</small>, `WorkflowInputsValidSchemaRule` <small>document</small>, `WorkflowUniqueIdRule` <small>document</small> |
