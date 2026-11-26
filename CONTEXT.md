@@ -59,6 +59,7 @@ same pull request.
 | **Strict validation** | Default `true`: a response violating its OpenAPI response schema fails the step (issue #334). Opt-out per step via `x-strict-validation: false`. |
 | **Reference resolution (validate)** | `operationId` is resolved against locally-loaded source operations; `$sourceDescriptions.<name>` and `$components.<type>.<name>` are checked against the symbol table. Local sources resolve offline; unreachable remote sources are skipped, never fail validation (issue #384). |
 | **Source resolution seam** | Performed in `cli` (`ValidateCommand` → `SourceLoader`); the `document` validator never imports `sources` (issue #384). |
+| **Replacement target uniqueness** | Within a step's `requestBody.replacements`, each `target` must be distinct. Duplicate targets are rejected with error code `step.request_body_replacements_duplicate_target` pointing to the duplicate entry. |
 
 ## 5. Packages
 
