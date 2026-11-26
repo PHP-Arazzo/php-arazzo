@@ -31,7 +31,7 @@ same pull request.
 | **Step** | An action within a workflow: an `operationId` call, a `workflowId` sub-workflow invocation, or a `successAction`/`failureAction`. |
 | **dependsOn** | Declares that a step or workflow must wait for another to complete. Workflow-level `dependsOn` (issue #341) runs dependency workflows before the target. Cross-workflow step `dependsOn` (`$workflows.<id>.steps.<stepId>`, issue #388) references steps in sibling workflows. |
 | **Retry** | `onFailure.retry.retryLimit: N` means N+1 total requests (issue #382 R2). |
-| **Goto** | `onSuccess.goto.stepId` / `onFailure.goto.stepId` transfers execution to a target step, skipping intermediates (issue #382 R3/R4). |
+| **Goto** | Step-level (`onSuccess`/`onFailure`) or workflow-level (`successActions`/`failureActions`) action transferring execution to a target step (`stepId` within current workflow) or workflow (`workflowId` within document), skipping intermediates (issue #382 R3/R4, #343). |
 | **Success criteria** | `successCriteria` evaluated via `EvaluationEngine`: regex match, body comparison, simple comparison (issue #382 R5). |
 | **Sub-workflow (workflowId step)** | A step that references another workflow by `workflowId`; the child runs and its outputs are exposed as `$steps.<childStepId>.outputs` (issue #382 R6). |
 | **ExecutionState** | Mutable in-flight working state of an active run (`packages/contracts/src/State/ExecutionState.php` — inputs, step results, outputs, attempts, budget, call stack). Stored in hot state between queued jobs; evictable, not the source of truth for audit or replay. |

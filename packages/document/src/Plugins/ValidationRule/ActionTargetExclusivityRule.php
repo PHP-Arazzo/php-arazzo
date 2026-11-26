@@ -22,6 +22,9 @@ final class ActionTargetExclusivityRule implements ValidationRuleInterface
     public function check(ArazzoDocument $doc, SymbolTable $symbols, ErrorCollector $errors): void
     {
         foreach ($doc->workflows as $wi => $w) {
+            $this->checkList($w->successActions->all(), $errors, "/workflows/{$wi}/successActions");
+            $this->checkList($w->failureActions->all(), $errors, "/workflows/{$wi}/failureActions");
+
             foreach ($w->steps as $si => $s) {
                 $this->checkList($s->flow->onSuccess, $errors, "/workflows/{$wi}/steps/{$si}/onSuccess");
                 $this->checkList($s->flow->onFailure, $errors, "/workflows/{$wi}/steps/{$si}/onFailure");

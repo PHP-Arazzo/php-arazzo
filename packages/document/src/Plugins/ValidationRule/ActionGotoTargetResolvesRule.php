@@ -24,6 +24,10 @@ final class ActionGotoTargetResolvesRule implements ValidationRuleInterface
     {
         foreach ($doc->workflows as $wi => $w) {
             $syms = $symbols->workflows[$w->workflowId] ?? null;
+
+            $this->checkList($w->successActions->all(), $syms, $symbols, $errors, "/workflows/{$wi}/successActions");
+            $this->checkList($w->failureActions->all(), $syms, $symbols, $errors, "/workflows/{$wi}/failureActions");
+
             foreach ($w->steps as $si => $s) {
                 $this->checkList($s->flow->onSuccess, $syms, $symbols, $errors, "/workflows/{$wi}/steps/{$si}/onSuccess");
                 $this->checkList($s->flow->onFailure, $syms, $symbols, $errors, "/workflows/{$wi}/steps/{$si}/onFailure");
