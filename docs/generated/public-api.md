@@ -294,7 +294,7 @@ this file on a commit is a public API change — review it deliberately.
 - `public function __construct(public string $reference, public mixed $value = null)`
 
 #### `SourceDescription` class
-- `public function __construct(public string $name, public string $url, public SourceType $type)`
+- `public function __construct(public string $name, public string $url, public ?SourceType $type)`
 - `public function isLocal(): bool`
 - `public function isOpenApi(): bool`
 - `public function isProtobuf(): bool`

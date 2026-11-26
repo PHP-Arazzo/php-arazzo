@@ -72,7 +72,7 @@ final readonly class Sources implements SourcesInterface
     {
         $span = $this->runtime->tracer->startSpan('arazzo.source.resolve', [
             'arazzo.source.name' => $source->name,
-            'arazzo.source.type' => $source->type->value,
+            'arazzo.source.type' => $source->type === null ? 'unknown' : $source->type->value,
         ]);
 
         try {
@@ -104,6 +104,9 @@ final readonly class Sources implements SourcesInterface
     {
         $operations = [];
         foreach ($document->sourceDescriptions as $source) {
+            if ($source->type === null) {
+                continue;
+            }
             $normalizer = $this->findNormalizer($source->type);
             if ($normalizer === null) {
                 continue;

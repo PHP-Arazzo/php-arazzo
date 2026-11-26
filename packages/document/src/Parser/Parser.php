@@ -114,11 +114,13 @@ class Parser extends FieldParser
     protected function parseSourceDescription(mixed $node, ParseContext $ctx): SourceDescription
     {
         $obj = $this->requireObjectMap($node, $ctx);
-        $type = $this->requireString($obj, 'type', $ctx);
-        $enum = SourceType::tryFrom($type)
-            ?? throw ParserException::invalidEnum(
-                $ctx->push('type'), 'openapi|arazzo|asyncapi|wsdl|protobuf|graphql', $type,
-            );
+        $typeString = $this->optionalString($obj, 'type', $ctx);
+        $enum = $typeString !== null
+            ? (SourceType::tryFrom($typeString)
+                ?? throw ParserException::invalidEnum(
+                    $ctx->push('type'), 'openapi|arazzo|asyncapi|wsdl|protobuf|graphql', $typeString,
+                ))
+            : null;
 
         return new SourceDescription(
             name: $this->requireString($obj, 'name', $ctx),

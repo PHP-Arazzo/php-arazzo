@@ -6,6 +6,7 @@ namespace Alama\Arazzo\Sources\Resolver;
 
 use Alama\Arazzo\Contracts\Interfaces\SourceFetcherInterface;
 use Alama\Arazzo\Contracts\Spec\Enum\Format;
+use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Spec\SourceDocument;
 use Alama\Arazzo\Document\Parser\DecodePolicy;
@@ -165,12 +166,34 @@ final class DefaultSourceResolver implements SourceResolver
         $content = $fetcher->fetch($source->url, $basePath);
         $decoded = $this->decodeContent($content, $source->name);
 
+        $type = $source->type ?? self::inferTypeFromContent($decoded);
+
         return new SourceDocument(
             name: $source->name,
-            type: $source->type,
+            type: $type,
             canonicalUri: $this->resolveCanonicalUri($source->url, $basePath),
             content: $decoded,
         );
+    }
+
+    /**
+     * Infer SourceType from decoded document content when no explicit `type` was declared.
+     *
+     * @param  array<string, mixed>  $decoded
+     */
+    private function inferTypeFromContent(array $decoded): ?SourceType
+    {
+        if (isset($decoded['openapi']) || isset($decoded['swagger'])) {
+            return SourceType::Openapi;
+        }
+        if (isset($decoded['arazzo'])) {
+            return SourceType::Arazzo;
+        }
+        if (isset($decoded['asyncapi'])) {
+            return SourceType::Asyncapi;
+        }
+
+        return null;
     }
 
     /**

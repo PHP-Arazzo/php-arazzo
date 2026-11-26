@@ -11,7 +11,7 @@ final readonly class SourceDescription
     public function __construct(
         public string $name,
         public string $url,
-        public SourceType $type,
+        public ?SourceType $type,
     ) {}
 
     public function isArazzo(): bool

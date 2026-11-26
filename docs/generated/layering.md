@@ -596,7 +596,7 @@ flowchart TB
 | `runner` | `engine` | 11 |
 | `runner` | `evaluation` | 14 |
 | `runner` | `expression` | 8 |
-| `sources` | `contracts` | 47 |
+| `sources` | `contracts` | 48 |
 | `sources` | `document` | 3 |
 
 ## Module-level detail
