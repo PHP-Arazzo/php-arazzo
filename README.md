@@ -23,20 +23,20 @@ This repository is organized as a monorepo containing the following Composer pac
 
 | Package | Description | Version |
 |---------|-------------|---------|
-| **[php-arazzo/arazzo-contracts](packages/contracts)** | Shared contracts, DTOs, port interfaces, and parsed document model (Spec, Workflow, Step, SourceDescription, ExecutionState, WorkflowContext). | `^1.0.0-alpha.1` |
-| **[php-arazzo/arazzo-core](packages/core)** | Framework-agnostic PHP engine. Includes the Arazzo parser, validator, document loader, shared services. | `^1.0.0-alpha.1` |
-| **[php-arazzo/arazzo-engine](packages/engine)** | Application core: step state machine, execution pipeline, retry policy, telemetry, lock strategies, state stores. Merged from `engine` + `runtime`. | `^1.0.0-alpha.1` |
-| **[php-arazzo/arazzo-runner](packages/runner)** | Workflow execution facade (`RunnerFacade`), execution machinery, events. Includes folded-in `events` package. | `^1.0.0-alpha.1` |
-| **[php-arazzo/arazzo-document](packages/document)** | Document parsing, validation and vendor-free model types. | `^1.0.0-alpha.1` |
-| **[php-arazzo/arazzo-expression](packages/expression)** | Expression engine: parsing, evaluation, criteria evaluation, JSONPath, JSON Pointer. | `^1.0.0-alpha.1` |
-| **[php-arazzo/arazzo-evaluation](packages/evaluation)** | Expression evaluation: criteria evaluation, selector evaluation, string interpolation, payload replacement. | `^1.0.0-alpha.1` |
-| **[php-arazzo/arazzo-sources](packages/sources)** | Source resolution, fetching, OpenAPI normalization. | `^1.0.0-alpha.1` |
-| **[php-arazzo/arazzi-protocol-http](packages/protocol-http)** | HTTP/OpenAPI + AsyncAPI vertical slice: normalizers, operation executors, transport, response validation. | `^1.0.0-alpha.1` |
-| **[php-arazzo/arazzo-protocol-rpc](packages/protocol-rpc)** | Protocol-Buffer RPC vertical slice: gRPC, gRPC-Web, Twirp and Connect executors. | `^1.0.0-alpha.1` |
-| **[php-arazzo/arazzo-protocol-soap](packages/protocol-soap)** | SOAP vertical slice: SOAP executor, SoapResponseTransfer mapper, XSD response validator. | `^1.0.0-alpha.1` |
-| **[php-arazzo/arazzo-cli](packages/cli)** | Console terminal edge: `arazzo run`, `validate`, `list`, `explain`, `render` commands. Thin OSS port using `RunnerFacadeInterface`. | `^1.0.0-alpha.1` |
+| **[arazzo-contracts](packages/contracts)** | Shared contracts, DTOs, port interfaces, and parsed document model (Spec, Workflow, Step, SourceDescription, ExecutionState, WorkflowContext). | `^1.0.0-alpha.1` |
+| **[arazzo-core](packages/core)** | Framework-agnostic PHP engine. Includes the Arazzo parser, validator, document loader, shared services. | `^1.0.0-alpha.1` |
+| **[arazzo-engine](packages/engine)** | Application core: step state machine, execution pipeline, retry policy, telemetry, lock strategies, state stores. Merged from `engine` + `runtime`. | `^1.0.0-alpha.1` |
+| **[arazzo-runner](packages/runner)** | Workflow execution facade (`RunnerFacade`), execution machinery, events. Includes folded-in `events` package. | `^1.0.0-alpha.1` |
+| **[arazzo-document](packages/document)** | Document parsing, validation and vendor-free model types. | `^1.0.0-alpha.1` |
+| **[arazzo-expression](packages/expression)** | Expression engine: parsing, evaluation, criteria evaluation, JSONPath, JSON Pointer. | `^1.0.0-alpha.1` |
+| **[arazzo-evaluation](packages/evaluation)** | Expression evaluation: criteria evaluation, selector evaluation, string interpolation, payload replacement. | `^1.0.0-alpha.1` |
+| **[arazzo-sources](packages/sources)** | Source resolution, fetching, OpenAPI normalization. | `^1.0.0-alpha.1` |
+| **[arazzi-protocol-http](packages/protocol-http)** | HTTP/OpenAPI + AsyncAPI vertical slice: normalizers, operation executors, transport, response validation. | `^1.0.0-alpha.1` |
+| **[arazzo-protocol-rpc](packages/protocol-rpc)** | Protocol-Buffer RPC vertical slice: gRPC, gRPC-Web, Twirp and Connect executors. | `^1.0.0-alpha.1` |
+| **[arazzo-protocol-soap](packages/protocol-soap)** | SOAP vertical slice: SOAP executor, SoapResponseTransfer mapper, XSD response validator. | `^1.0.0-alpha.1` |
+| **[arazzo-cli](packages/cli)** | Console terminal edge: `arazzo run`, `validate`, `list`, `explain`, `render` commands. Thin OSS port using `RunnerFacadeInterface`. | `^1.0.0-alpha.1` |
 
-> **Note:** `alama/laravel-arazzo` has been extracted to its own repository at [`php-arazzo/laravel-arazzo`](https://github.com/PHP-Arazzo/laravel-arazzo). Use that repo for Laravel integration.
+> **Note:** `php-arazzo/laravel-arazzo` has been extracted to its own repository at [`php-arazzo/laravel-arazzo`](https://github.com/PHP-Arazzo/laravel-arazzo). Use that repo for Laravel integration.
 >
 > **Modular Validation Discovery:** Installing `php-arazzo/arazzo-document` standalone validates structural and referential Arazzo rules only. Expression & selector validation rules ship in `php-arazzo/arazzo-expression` (and WSDL/RPC step rules in `arazzo-protocol-soap` / `arazzo-protocol-rpc`) and are auto-discovered via `extra.arazzo.plugins` whenever installed — in default setups using `php-arazzo/arazzo-core`, all of them are installed and active automatically.
 
@@ -121,7 +121,7 @@ $result = $runner->execute(
 
 ### Laravel Example
 
-`alama/laravel-arazzo` is now maintained in its own repository at [`php-arazzo/laravel-arazzo`](https://github.com/PHP-Arazzo/laravel-arazzo).
+`php-arazzo/laravel-arazzo` is now maintained in its own repository at [`php-arazzo/laravel-arazzo`](https://github.com/PHP-Arazzo/laravel-arazzo).
 
 ### Document & Source Validation Example
 
@@ -210,12 +210,12 @@ The MIT License (MIT). Please see the [License File](LICENSE.md) for more inform
 
 ## 📡 Ecosystem feed — Digest
 
-Daily **human-readable** poll of 54 github sources via `gh` (30 `OAI/*`, 4 `usearazzo/*`, 20 runners/validators/generators) — see `config/ecosystem/sources.json` + `config/ecosystem/sources.oai.json`. Captures SOAP/WSDL, `application/xml` payloads, actor-in-loop, `MCP`/`CLI`/`A2A`/`gRPC` proposals early and maps each event to `P0-P2` gaps.
+Daily **human-readable** poll of 54 github sources via `gh` (30 `OAI/*`, 4 `usearazzo/*`, 20 runners/validators/generators) — see `config/ecosystem/sources.json` + `config/ecosystem/sources.oai.json`.
 
 > **Digest:** [`docs/ECOSYSTEM_FEED.md`](docs/ECOSYSTEM_FEED.md) — a bounded, evidence-first digest: **Act** (everything worth a decision, with links and what changed), the tracked **watchlist** status table, collapsed **peer releases**, the **meeting agenda**, and a one-line `suppressed:` count. Any contributor can open it without running a command.
 
 > **Digest:** [`docs/ECOSYSTEM_FEED.md`](docs/ECOSYSTEM_FEED.md) (generated) · **State:** `storage/ecosystem-feed/state/`
-* **Poll locally:** `composer ecosystem:poll:dry` (dry) / `composer ecosystem:poll` (commit) or `php scripts/ecosystem/poll.php --fixtures --dry-run` (offline fixtures including `OAI/Arazzo-Specification#533` SOAP + `#410` actor/loop)
+* **Poll locally:** `composer ecosystem:poll:dry` (dry) / `composer ecosystem:poll` (commit) or `php scripts/ecosystem/poll.php --fixtures --dry-run`
 * **Triage:** `php .agents/skills/ecosystem-triage/scripts/analyze.php --verbose` → `.scratch/ecosystem-triage/<date>.md` → `/to-tickets`
 * **Workflow:** `.github/workflows/ecosystem-feed.yml` (`cron 17 6 * * *`, `workflow_dispatch` with `source` filter), `actions/cache` for ETags
 
