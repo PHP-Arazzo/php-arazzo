@@ -282,8 +282,10 @@ final class Scanner
 
     private static function scanFile(string $pathname, string $srcDir, string $namespacePrefix, string $package): ScannedFile
     {
-        $content = (string) file_get_contents($pathname);
-        $relative = str_replace($srcDir.'/', '', $pathname);
+        $content = str_replace(["\r\n", "\r"], "\n", (string) file_get_contents($pathname));
+        $normalizedPath = str_replace('\\', '/', $pathname);
+        $normalizedSrcDir = rtrim(str_replace('\\', '/', $srcDir), '/');
+        $relative = str_replace($normalizedSrcDir.'/', '', $normalizedPath);
 
         preg_match('/^namespace\s+([^;]+);/m', $content, $nsMatches);
         $namespace = trim($nsMatches[1] ?? $namespacePrefix);

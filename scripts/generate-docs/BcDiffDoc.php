@@ -74,8 +74,9 @@ function render(string $root): string
         return BANNER.sprintf("_No comparison tag available (%s). Tag a release to enable this report._\n", $reason);
     }
 
+    $nullSink = PHP_OS_FAMILY === 'Windows' ? 'NUL' : '/dev/null';
     $oldContent = shell_exec(
-        'git -C '.escapeshellarg($root).' show '.escapeshellarg($tag.':docs/generated/public-api.md').' 2>/dev/null',
+        'git -C '.escapeshellarg($root).' show '.escapeshellarg($tag.':docs/generated/public-api.md').' 2>'.$nullSink,
     );
     if (!is_string($oldContent) || $oldContent === '') {
         return BANNER.sprintf("_Tag `%s` has no docs/generated/public-api.md — report unavailable._\n", $tag);
@@ -179,14 +180,15 @@ function resolveTag(string $root): array
         return [$override, 'via ARAZZO_BC_TAG'];
     }
 
-    exec('git -C '.escapeshellarg($root).' tag --sort=-creatordate 2>/dev/null', $tags);
+    $nullSink = PHP_OS_FAMILY === 'Windows' ? 'NUL' : '/dev/null';
+    exec('git -C '.escapeshellarg($root).' tag --sort=-creatordate 2>'.$nullSink, $tags);
     $tags = array_values(array_filter($tags));
     if ($tags === []) {
         return [null, 'no tags exist yet'];
     }
 
     // when HEAD is exactly on the latest tag (just released), compare to the one before it
-    exec('git -C '.escapeshellarg($root).' describe --tags --exact-match 2>/dev/null', $exact);
+    exec('git -C '.escapeshellarg($root).' describe --tags --exact-match 2>'.$nullSink, $exact);
     $onTag = $exact[0] ?? null;
 
     return $tags[0] === $onTag && isset($tags[1])

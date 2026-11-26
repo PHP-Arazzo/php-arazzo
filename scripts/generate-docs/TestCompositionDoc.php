@@ -85,6 +85,7 @@ function countSuite(string $testsDir): array
     }
 
     $counts = [];
+    $normalizedTestsDir = rtrim(str_replace('\\', '/', $testsDir), '/');
     $iterator = new \RecursiveIteratorIterator(
         new \RecursiveDirectoryIterator($testsDir, \FilesystemIterator::SKIP_DOTS),
     );
@@ -95,7 +96,7 @@ function countSuite(string $testsDir): array
             || !str_ends_with($file->getFilename(), 'Test.php')) {
             continue;
         }
-        $relative = str_replace($testsDir.'/', '', (string) $file->getPathname());
+        $relative = str_replace($normalizedTestsDir.'/', '', str_replace('\\', '/', (string) $file->getPathname()));
         $parts = explode('/', $relative);
         $top = $parts[0];
         $category = CATEGORY_DIRS[$top] ?? (count($parts) > 1 ? 'Module-scoped ('.$top.')' : 'Root');
