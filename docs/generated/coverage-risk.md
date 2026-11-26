@@ -185,6 +185,6 @@ quadrantChart
 | `sources/Plugins` | 1.00 | 3 | 1 | 100% |
 | `sources/Policy` | 0.33 | 3 | 1 | 100% |
 | `sources/Registries` | 0.80 | 5 | 1 | 100% |
-| `sources/Resolver` | 0.67 | 28 | 14 | 100% |
+| `sources/Resolver` | 0.67 | 28 | 15 | 100% |
 
 **Refactor-now list** (untested churn): `expression/Internal`, `protocol-rpc/Normalizer`

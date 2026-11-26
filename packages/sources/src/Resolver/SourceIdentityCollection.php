@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Sources\Resolver;
 
+use Alama\Arazzo\Contracts\Spec\SourceDocument;
 use Alama\Arazzo\Contracts\Spec\SourceIdentity;
 use Alama\Arazzo\Sources\Exceptions\SourceResolutionException;
 use ArrayIterator;
@@ -34,19 +35,6 @@ final readonly class SourceIdentityCollection implements Countable, IteratorAggr
     public static function empty(): self
     {
         return new self();
-    }
-
-    /**
-     * @param  array<SourceIdentity>  $identities
-     */
-    public static function fromArray(array $identities): self
-    {
-        $collection = new self();
-        foreach ($identities as $identity) {
-            $collection = $collection->with($identity);
-        }
-
-        return $collection;
     }
 
     /**
@@ -92,14 +80,13 @@ final readonly class SourceIdentityCollection implements Countable, IteratorAggr
         return new self($bySelf, $byRetrieval, $all);
     }
 
-    public function findBySelf(string $uri): ?SourceIdentity
+    public function withDocument(SourceDocument $document): self
     {
-        return $this->bySelf[$uri] ?? null;
-    }
-
-    public function findByRetrieval(string $uri): ?SourceIdentity
-    {
-        return $this->byRetrieval[$uri] ?? null;
+        return $this->with(new SourceIdentity(
+            retrievalUri: $document->canonicalUri,
+            selfUri: $document->selfUri,
+            document: $document,
+        ));
     }
 
     /**
@@ -110,37 +97,34 @@ final readonly class SourceIdentityCollection implements Countable, IteratorAggr
         return $this->bySelf[$uri] ?? $this->byRetrieval[$uri] ?? null;
     }
 
-    public function hasSelf(string $uri): bool
+    public function findDocument(string $uri): ?SourceDocument
     {
-        return isset($this->bySelf[$uri]);
+        return $this->find($uri)?->document;
     }
 
-    public function hasRetrieval(string $uri): bool
+    public static function resolveUri(string $reference, string $baseUri): string
     {
-        return isset($this->byRetrieval[$uri]);
-    }
-
-    public function has(string $uri): bool
-    {
-        return isset($this->bySelf[$uri]) || isset($this->byRetrieval[$uri]);
+        return UriReferenceResolver::resolve($reference, $baseUri);
     }
 
     /**
-     * @return list<SourceIdentity>
+     * @param  array<string, mixed>  $decoded
      */
-    public function all(): array
+    public static function extractSelfUri(array $decoded, string $canonicalUri): ?string
     {
-        return $this->all;
+        if (isset($decoded['$self']) && is_string($decoded['$self'])) {
+            $rawSelf = trim($decoded['$self']);
+            if ($rawSelf !== '') {
+                return UriReferenceResolver::resolve($rawSelf, $canonicalUri);
+            }
+        }
+
+        return null;
     }
 
     public function count(): int
     {
         return count($this->all);
-    }
-
-    public function isEmpty(): bool
-    {
-        return $this->all === [];
     }
 
     /**

@@ -947,7 +947,7 @@ this file on a commit is a public API change — review it deliberately.
 - `public static function rootMustBeArray(string $sourceName): self`
 
 #### `SourceResolutionException` class
-- `public function __construct(string $message = '', int $code = 0, ?Throwable $previous = null, string $selfUri = '', array $conflictingRetrievalUris = [])`
+- `public function __construct(string $message = '', int $code = 0, ?Throwable $previous = null, string $selfUri = '', array $conflictingUris = [])`
 - `public static function duplicateSelfUri(string $selfUri, string $existingRetrievalUri, string $newRetrievalUri, ): self`
 
 #### `UnresolvableReferenceException` class

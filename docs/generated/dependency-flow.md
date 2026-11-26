@@ -404,7 +404,7 @@ sources-Registries,contracts-Attributes,1
 sources-Registries,contracts-Discovery,1
 sources-Registries,contracts-Interfaces,1
 sources-Registries,contracts-Spec,1
-sources-Resolver,contracts-Interfaces,3
+sources-Resolver,contracts-Interfaces,4
 sources-Resolver,contracts-Observability,4
 sources-Resolver,contracts-Spec,7
 sources-Resolver,document-Parser,2

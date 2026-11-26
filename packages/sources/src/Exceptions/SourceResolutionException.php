@@ -16,19 +16,19 @@ class SourceResolutionException extends RuntimeException
     public readonly string $newRetrievalUri;
 
     /**
-     * @param  list<string>  $conflictingRetrievalUris
+     * @param  list<string>  $conflictingUris
      */
     public function __construct(
         string $message = '',
         int $code = 0,
         ?Throwable $previous = null,
         string $selfUri = '',
-        array $conflictingRetrievalUris = [],
+        array $conflictingUris = [],
     ) {
         parent::__construct($message, $code, $previous);
         $this->selfUri = $selfUri;
-        $this->existingRetrievalUri = $conflictingRetrievalUris[0] ?? '';
-        $this->newRetrievalUri = $conflictingRetrievalUris[1] ?? '';
+        $this->existingRetrievalUri = $conflictingUris[0] ?? '';
+        $this->newRetrievalUri = $conflictingUris[1] ?? '';
     }
 
     public static function duplicateSelfUri(
@@ -41,7 +41,7 @@ class SourceResolutionException extends RuntimeException
             code: 0,
             previous: null,
             selfUri: $selfUri,
-            conflictingRetrievalUris: [$existingRetrievalUri, $newRetrievalUri],
+            conflictingUris: [$existingRetrievalUri, $newRetrievalUri],
         );
     }
 }

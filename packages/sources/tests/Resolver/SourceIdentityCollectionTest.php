@@ -28,14 +28,12 @@ it('resolves by self before location (S2)', function (): void {
     $collection = SourceIdentityCollection::empty()->with($identity);
 
     // Resolves by identity
-    expect($collection->findBySelf('https://example.com/doc.arazzo'))->toBe($identity)
-        ->and($collection->find('https://example.com/doc.arazzo'))->toBe($identity)
-        ->and($collection->hasSelf('https://example.com/doc.arazzo'))->toBeTrue()
-        ->and($collection->has('https://example.com/doc.arazzo'))->toBeTrue();
+    expect($collection->find('https://example.com/doc.arazzo'))->toBe($identity)
+        ->and($collection->findDocument('https://example.com/doc.arazzo'))->toBe($doc);
 
     // Also reachable by retrieval location
-    expect($collection->findByRetrieval('https://cache.example.com/copy.arazzo'))->toBe($identity)
-        ->and($collection->find('https://cache.example.com/copy.arazzo'))->toBe($identity);
+    expect($collection->find('https://cache.example.com/copy.arazzo'))->toBe($identity)
+        ->and($collection->findDocument('https://cache.example.com/copy.arazzo'))->toBe($doc);
 });
 
 it('falls back to location on identity miss (S3)', function (): void {
@@ -46,8 +44,7 @@ it('falls back to location on identity miss (S3)', function (): void {
 
     $collection = SourceIdentityCollection::empty()->with($identity);
 
-    expect($collection->findBySelf('https://example.com/unknown.arazzo'))->toBeNull()
-        ->and($collection->find('https://example.com/unknown.arazzo'))->toBeNull()
+    expect($collection->find('https://example.com/unknown.arazzo'))->toBeNull()
         ->and($collection->find('https://example.com/local.arazzo'))->toBe($identity);
 });
 
@@ -96,6 +93,6 @@ it('indexes documents without selfUri by retrieval URI only without conflict', f
         ->with($doc2);
 
     expect($collection->count())->toBe(2)
-        ->and($collection->findByRetrieval('https://example.com/a.json'))->toBe($doc1)
-        ->and($collection->findByRetrieval('https://example.com/b.json'))->toBe($doc2);
+        ->and($collection->find('https://example.com/a.json'))->toBe($doc1)
+        ->and($collection->find('https://example.com/b.json'))->toBe($doc2);
 });

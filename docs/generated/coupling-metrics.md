@@ -97,10 +97,10 @@ targets. Regenerated before every commit.
 | `sources:Plugins` | 1 | 158 | 0 | 6 | 1.00 |  |
 | `sources:Policy` | 1 | 124 | 2 | 1 | 0.33 |  |
 | `sources:Registries` | 1 | 80 | 1 | 4 | 0.80 |  |
-| `sources:Resolver` | 14 | 876 | 3 | 6 | 0.67 |  |
+| `sources:Resolver` | 15 | 884 | 3 | 6 | 0.67 |  |
 | `(sources root)` | 2 | 410 | 3 | 9 | 0.75 |  |
 
-Total cross-module edges: **1734**
+Total cross-module edges: **1735**
 
 ## Most entangled module pairs
 

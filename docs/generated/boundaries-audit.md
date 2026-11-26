@@ -17,7 +17,7 @@ when a boundary consciously moves.
 | Vendor | core refs | laravel refs | Policy in core |
 |---|---:|---:|---|
 | `Composer` | 1 | 0 | _unclassified_ ⚠ |
-| `GuzzleHttp` | 11 | 0 | **forbidden** ⚠ |
+| `GuzzleHttp` | 12 | 0 | **forbidden** ⚠ |
 | `JsonSchema` | 7 | 0 | _unclassified_ ⚠ |
 | `OpenTelemetry` | 26 | 0 | _unclassified_ ⚠ |
 | `Psr` | 105 | 0 | allowed |
@@ -62,7 +62,7 @@ when a boundary consciously moves.
 | runner | `runner:Store` | `Psr` | 1 |
 | runner | `runner:Sync` | `Psr` | 3 |
 | runner | `runner:_` | `Psr` | 12 |
-| sources | `sources:Resolver` | `GuzzleHttp` | 4 |
+| sources | `sources:Resolver` | `GuzzleHttp` | 5 |
 | sources | `sources:Resolver` | `Psr` | 10 |
 | sources | `sources:_` | `GuzzleHttp` | 1 |
 | sources | `sources:_` | `Psr` | 6 |
@@ -80,7 +80,7 @@ when a boundary consciously moves.
 - `protocol-http:Execution` imports `cebe\*` (11 refs)
 - `protocol-http:Resolver` imports `cebe\*` (7 refs)
 - `protocol-http:_` imports `GuzzleHttp\*` (2 refs)
-- `sources:Resolver` imports `GuzzleHttp\*` (4 refs)
+- `sources:Resolver` imports `GuzzleHttp\*` (5 refs)
 - `sources:_` imports `GuzzleHttp\*` (1 refs)
 
 ## Core aggregator emptiness

@@ -109,7 +109,7 @@ quadrantChart
     sources/Plugins: [1, 0]
     sources/Policy: [0.333, 0]
     sources/Registries: [0.8, 0]
-    sources/Resolver: [0.667, 0.214]
+    sources/Resolver: [0.667, 0.2]
     sources/_: [0.75, 0.5]
 ```
 

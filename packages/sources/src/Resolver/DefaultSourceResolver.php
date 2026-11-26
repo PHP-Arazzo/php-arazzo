@@ -8,14 +8,12 @@ use Alama\Arazzo\Contracts\Interfaces\SourceFetcherInterface;
 use Alama\Arazzo\Contracts\Spec\Enum\Format;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Spec\SourceDocument;
-use Alama\Arazzo\Contracts\Spec\SourceIdentity;
 use Alama\Arazzo\Document\Parser\DecodePolicy;
 use Alama\Arazzo\Document\Parser\Decoders;
 use Alama\Arazzo\Sources\Exceptions\SourceFetchException;
 use Alama\Arazzo\Sources\Exceptions\SourceParseException;
 use Alama\Arazzo\Sources\Exceptions\UnresolvableReferenceException;
-use Alama\Arazzo\Sources\Resolver\Fetchers\HttpFetcher;
-use Alama\Arazzo\Sources\Resolver\Fetchers\LocalFetcher;
+use Alama\Arazzo\Sources\Resolver\Fetchers\DefaultFetchers;
 use Alama\Arazzo\Sources\Resolver\Interfaces\SourceResolver;
 use GuzzleHttp\Client;
 use Throwable;
@@ -61,7 +59,7 @@ final class DefaultSourceResolver implements SourceResolver
         } else {
             $collection = SourceIdentityCollection::empty();
             foreach ($seeded as $doc) {
-                $collection = $collection->with(new SourceIdentity($doc->canonicalUri, $doc->selfUri, $doc));
+                $collection = $collection->withDocument($doc);
             }
             $this->identities = $collection;
         }
@@ -81,8 +79,7 @@ final class DefaultSourceResolver implements SourceResolver
         $seeded = $this->seeded;
         $seeded[$document->name] = $document;
 
-        $identity = new SourceIdentity($document->canonicalUri, $document->selfUri, $document);
-        $identities = $this->identities->with($identity);
+        $identities = $this->identities->withDocument($document);
 
         return new self($this->fetchers, $this->decodePolicy, $seeded, $identities);
     }
@@ -102,10 +99,7 @@ final class DefaultSourceResolver implements SourceResolver
         float $connectTimeout = self::HTTP_CONNECT_TIMEOUT,
         float $timeout = self::HTTP_REQUEST_TIMEOUT,
     ): Client {
-        return new Client([
-            'connect_timeout' => $connectTimeout,
-            'timeout' => $timeout,
-        ]);
+        return DefaultFetchers::httpClient($connectTimeout, $timeout);
     }
 
     /**
@@ -114,13 +108,7 @@ final class DefaultSourceResolver implements SourceResolver
      */
     public static function withDefaults(?DecodePolicy $decodePolicy = null): self
     {
-        $client = self::defaultHttpClient();
-
-        return new self([
-            'http' => new HttpFetcher($client),
-            'https' => new HttpFetcher($client),
-            'file' => new LocalFetcher(),
-        ], $decodePolicy);
+        return new self(DefaultFetchers::create(), $decodePolicy);
     }
 
     /**
@@ -142,8 +130,7 @@ final class DefaultSourceResolver implements SourceResolver
     public function register(SourceDocument $document): void
     {
         $this->seeded[$document->name] = $document;
-        $identity = new SourceIdentity($document->canonicalUri, $document->selfUri, $document);
-        $this->identities = $this->identities->with($identity);
+        $this->identities = $this->identities->withDocument($document);
     }
 
     public function identities(): SourceIdentityCollection
@@ -162,14 +149,14 @@ final class DefaultSourceResolver implements SourceResolver
         }
 
         // Derive candidate target URI: resolve relative source URL against basePath
-        $canonicalTarget = UriReferenceResolver::resolve($source->url, $basePath);
+        $canonicalTarget = SourceIdentityCollection::resolveUri($source->url, $basePath);
 
         // Check identity collection: identity ($self) first, then retrieval location (Arazzo 1.1.0 §5.2, S2, S3)
-        $knownIdentity = $this->identities->find($canonicalTarget) ?? $this->identities->find($source->url);
-        if ($knownIdentity?->document !== null) {
-            $this->cache[$source->name] = $knownIdentity->document;
+        $knownDoc = $this->identities->findDocument($canonicalTarget) ?? $this->identities->findDocument($source->url);
+        if ($knownDoc !== null) {
+            $this->cache[$source->name] = $knownDoc;
 
-            return $knownIdentity->document;
+            return $knownDoc;
         }
 
         if (isset($this->resolving[$source->name])) {
@@ -181,8 +168,7 @@ final class DefaultSourceResolver implements SourceResolver
         try {
             $document = $this->fetchAndDecode($source, $basePath, $canonicalTarget);
             $this->cache[$document->name] = $document;
-            $identity = new SourceIdentity($document->canonicalUri, $document->selfUri, $document);
-            $this->identities = $this->identities->with($identity);
+            $this->identities = $this->identities->withDocument($document);
 
             return $document;
         } finally {
@@ -209,13 +195,7 @@ final class DefaultSourceResolver implements SourceResolver
 
         $type = $source->type ?? SourceDescription::inferFromContent($decoded);
 
-        $selfUri = null;
-        if (isset($decoded['$self']) && is_string($decoded['$self'])) {
-            $rawSelf = trim($decoded['$self']);
-            if ($rawSelf !== '') {
-                $selfUri = UriReferenceResolver::resolve($rawSelf, $canonicalUri);
-            }
-        }
+        $selfUri = SourceIdentityCollection::extractSelfUri($decoded, $canonicalUri);
 
         return new SourceDocument(
             name: $source->name,
