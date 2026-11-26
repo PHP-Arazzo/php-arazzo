@@ -41,7 +41,7 @@ final readonly class Validator
         };
 
         $symbols = SymbolTable::build($doc, $ops);
-        $collector = new ErrorCollector();
+        $collector = new ErrorCollector($this->rules->policy);
 
         foreach ($this->rules->activeRules() as $rule) {
             $rule->check($doc, $symbols, $collector);

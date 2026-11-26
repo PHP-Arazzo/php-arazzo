@@ -54,6 +54,7 @@ same pull request.
 | Term | Meaning |
 |------|---------|
 | **RuleSet** | Collection of validator rules in `packages/document/src/Validator/RuleSet.php`. |
+| **ValidatorPolicy** | Immutable validation policy value object (`Alama\Arazzo\Contracts\Validation\ValidatorPolicy`) configuring per-rule severity overrides, disabled rules, and strict validation mode. _Avoid_: `ValidatorOptions`, `ValidatorConfig`. |
 | **Source qualification** | Requiring `operationId` to be source-qualified (e.g. `sourceName.operationId`) only when multiple non-arazo sources exist; single source allows unqualified (issue #388 R2/C1). |
 | **Cross-workflow dependsOn** | Validator accepts `$workflows.<id>.steps.<stepId>` in `dependsOn` (issue #388 R1). |
 | **Strict validation** | Default `true`: a response violating its OpenAPI response schema fails the step (issue #334). Opt-out per step via `x-strict-validation: false`. |
@@ -92,6 +93,7 @@ same pull request.
 | ADR-009 | Runner package public interface (`Runner` / `AsyncRunner`), `ExecutionStore`, `ExecutionPolicy` & protocol-agnostic execution | — |
 | ADR-010 | Monorepo observability tiers, vendor-agnostic `TracerInterface` & `*Policy` value-object standard | — |
 | ADR-011 | Static expression walking for action criteria & parameters with step/workflow context isolation | #344 |
+| ADR-012 | Validator policy, `contracts` placement & collector severity interception | #346 |
 
 ## 7. How to update this file
 
