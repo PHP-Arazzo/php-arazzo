@@ -74,7 +74,7 @@ final class WsdlStepRule implements ValidationRuleInterface
         if ($source !== null && !$source->isWsdl()) {
             $errors->error(
                 $this->code(),
-                "Step '{$step->stepId}' uses operationName (wsdl) but references source '{$source->name}' of type {$source->type->value}. wsdl steps require a wsdl source.",
+                "Step '{$step->stepId}' uses operationName (wsdl) but references source '{$source->name}' of type ".($source->type === null ? 'unknown' : $source->type->value).'. wsdl steps require a wsdl source.',
                 $pointer,
             );
         }

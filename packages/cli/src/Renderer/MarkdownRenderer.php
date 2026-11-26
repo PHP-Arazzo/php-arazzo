@@ -46,7 +46,7 @@ final class MarkdownRenderer
         $out = "## Sources\n\n| Name | Type | URL |\n|---|---|---|\n";
 
         foreach ($sources as $source) {
-            $out .= sprintf("| %s | %s | %s |\n", $source->name, $source->type->value, $source->url);
+            $out .= sprintf("| %s | %s | %s |\n", $source->name, $source->type === null ? 'unknown' : $source->type->value, $source->url);
         }
 
         return $out."\n";

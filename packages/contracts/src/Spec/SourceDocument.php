@@ -13,7 +13,7 @@ final readonly class SourceDocument
      */
     public function __construct(
         public string $name,
-        public SourceType $type,
+        public ?SourceType $type,
         public string $canonicalUri,
         public array $content,
     ) {}

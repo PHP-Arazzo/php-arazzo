@@ -14,31 +14,31 @@ xychart-beta
     title "Edit churn per module (git touches)"
     x-axis ["document:Validator", "cli:Console", "runner:Execution", "runner:Async", "runner:Sync", "contracts:Spec", "sources:Normalizer", "document:Parser", "expression:Interfaces", "contracts:Interfaces", "expression:Data", "sources:Resolver"]
     y-axis "Touches" 0 --> 70
-    bar [54, 44, 33, 26, 24, 22, 21, 19, 19, 16, 14, 13]
+    bar [54, 44, 33, 26, 24, 23, 21, 20, 19, 16, 14, 14]
 ```
 
-Analyzed 583 total file-touches across 81 modules.
+Analyzed 588 total file-touches across 81 modules.
 
 | Module | Touches | Share | LOC | Touches/KLOC |
 |---|---:|---:|---:|---:|
 | `document:Validator` | 54 | 9% | 659 | 81.9 |
-| `cli:Console` | 44 | 8% | 791 | 55.6 |
+| `cli:Console` | 44 | 7% | 791 | 55.6 |
 | `runner:Execution` | 33 | 6% | 723 | 45.6 |
 | `runner:Async` | 26 | 4% | 1,457 | 17.8 |
 | `runner:Sync` | 24 | 4% | 1,146 | 20.9 |
-| `contracts:Spec` | 22 | 4% | 2,776 | 7.9 |
+| `contracts:Spec` | 23 | 4% | 2,797 | 8.2 |
 | `sources:Normalizer` | 21 | 4% | 498 | 42.2 |
-| `document:Parser` | 19 | 3% | 2,477 | 7.7 |
+| `document:Parser` | 20 | 3% | 2,479 | 8.1 |
 | `expression:Interfaces` | 19 | 3% | 252 | 75.4 |
 | `contracts:Interfaces` | 16 | 3% | 387 | 41.3 |
 | `expression:Data` | 14 | 2% | 394 | 35.5 |
-| `sources:Resolver` | 13 | 2% | 623 | 20.9 |
+| `sources:Resolver` | 14 | 2% | 625 | 22.4 |
 | `engine:Execution` | 12 | 2% | 1,204 | 10 |
 | `expression:Plugins` | 11 | 2% | 1,339 | 8.2 |
+| `cli:Renderer` | 10 | 2% | 317 | 31.5 |
 | `evaluation:Plugins` | 10 | 2% | 125 | 80 |
 | `evaluation:Registries` | 10 | 2% | 190 | 52.6 |
 | `protocol-soap:Execution` | 10 | 2% | 444 | 22.5 |
-| `cli:Renderer` | 9 | 2% | 317 | 28.4 |
 | `evaluation:Condition` | 9 | 2% | 1,149 | 7.8 |
 | `contracts:State` | 8 | 1% | 1,242 | 6.4 |
 | `expression:Internal` | 8 | 1% | 885 | 9 |
@@ -56,6 +56,7 @@ Analyzed 583 total file-touches across 81 modules.
 | `expression:Ast` | 5 | 1% | 355 | 14.1 |
 | `expression:Xpath` | 5 | 1% | 173 | 28.9 |
 | `protocol-http:Plugins` | 5 | 1% | 336 | 14.9 |
+| `protocol-soap:Plugins` | 5 | 1% | 867 | 5.8 |
 | `runner:Policy` | 5 | 1% | 124 | 40.3 |
 | `contracts:Validation` | 4 | 1% | 373 | 10.7 |
 | `document:Plugins` | 4 | 1% | 3,112 | 1.3 |
@@ -63,7 +64,6 @@ Analyzed 583 total file-touches across 81 modules.
 | `expression:Exceptions` | 4 | 1% | 209 | 19.1 |
 | `expression:JsonPath` | 4 | 1% | 1,470 | 2.7 |
 | `protocol-rpc:Protocol` | 4 | 1% | 501 | 8 |
-| `protocol-soap:Plugins` | 4 | 1% | 867 | 4.6 |
 | `runner:Exceptions` | 4 | 1% | 283 | 14.1 |
 | `contracts:Discovery` | 3 | 1% | 416 | 7.2 |
 | `contracts:Exceptions` | 3 | 1% | 123 | 24.4 |

@@ -75,6 +75,11 @@ it('rejects bad source type', function () use ($ctx): void {
     (new LeafProbe())->pSrc(['name' => 'api', 'url' => '/x', 'type' => 'soap'], $ctx());
 })->throws(ParserException::class);
 
+it('parses SourceDescription without type (type is null)', function () use ($ctx): void {
+    $s = (new LeafProbe())->pSrc(['name' => 'api', 'url' => '/x'], $ctx());
+    expect($s->type)->toBeNull();
+});
+
 it('parses Parameter with expression value', function () use ($ctx): void {
     $p = (new LeafProbe())->pParam(['name' => 'id', 'in' => 'query', 'value' => '{$inputs.id}'], $ctx());
     expect($p->in)->toBe(ParameterIn::Query)

@@ -19,7 +19,7 @@ readonly class ResolvedOperation
         public ?Interaction $interaction = null,
     ) {}
 
-    public function sourceType(): SourceType
+    public function sourceType(): ?SourceType
     {
         return $this->source->type;
     }
@@ -37,6 +37,7 @@ readonly class ResolvedOperation
             SourceType::Wsdl => 'soap',
             SourceType::Protobuf => 'protobuf',
             SourceType::Graphql => 'graphql',
+            default => 'http',
         };
     }
 

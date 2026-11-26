@@ -24,11 +24,11 @@ targets. Regenerated before every commit.
 | `contracts:Interfaces` | 20 | 367 | 35 | 4 | 0.10 |  |
 | `contracts:Observability` | 4 | 104 | 12 | 0 | 0.00 |  |
 | `contracts:Policy` | 5 | 263 | 6 | 0 | 0.00 |  |
-| `contracts:Spec` | 60 | 2716 | 54 | 2 | 0.04 |  |
+| `contracts:Spec` | 60 | 2737 | 54 | 2 | 0.04 |  |
 | `contracts:State` | 4 | 1238 | 17 | 2 | 0.11 |  |
 | `contracts:Support` | 5 | 180 | 10 | 0 | 0.00 |  |
 | `contracts:Validation` | 9 | 364 | 16 | 2 | 0.11 |  |
-| `document:Parser` | 31 | 2446 | 5 | 2 | 0.29 |  |
+| `document:Parser` | 31 | 2448 | 5 | 2 | 0.29 |  |
 | `document:Plugins` | 50 | 3062 | 0 | 7 | 1.00 |  |
 | `document:Registries` | 1 | 96 | 1 | 4 | 0.80 |  |
 | `document:Validator` | 6 | 653 | 2 | 5 | 0.71 |  |
@@ -97,8 +97,8 @@ targets. Regenerated before every commit.
 | `sources:Plugins` | 1 | 146 | 0 | 6 | 1.00 |  |
 | `sources:Policy` | 1 | 124 | 2 | 1 | 0.33 |  |
 | `sources:Registries` | 1 | 80 | 1 | 4 | 0.80 |  |
-| `sources:Resolver` | 12 | 611 | 3 | 6 | 0.67 |  |
-| `(sources root)` | 2 | 339 | 3 | 9 | 0.75 |  |
+| `sources:Resolver` | 12 | 613 | 3 | 6 | 0.67 |  |
+| `(sources root)` | 2 | 342 | 3 | 9 | 0.75 |  |
 
 Total cross-module edges: **1707**
 

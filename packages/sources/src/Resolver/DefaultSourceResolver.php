@@ -165,9 +165,11 @@ final class DefaultSourceResolver implements SourceResolver
         $content = $fetcher->fetch($source->url, $basePath);
         $decoded = $this->decodeContent($content, $source->name);
 
+        $type = $source->type ?? SourceDescription::inferFromContent($decoded);
+
         return new SourceDocument(
             name: $source->name,
-            type: $source->type,
+            type: $type,
             canonicalUri: $this->resolveCanonicalUri($source->url, $basePath),
             content: $decoded,
         );

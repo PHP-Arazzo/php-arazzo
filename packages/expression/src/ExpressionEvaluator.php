@@ -107,7 +107,7 @@ final class ExpressionEvaluator
 
         return match ($ast->subPath) {
             'url' => $sourceDesc->url,
-            'type' => $sourceDesc->type->value,
+            'type' => $sourceDesc->type?->value,
             default => null,
         };
     }
