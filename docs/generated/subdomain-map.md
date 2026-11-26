@@ -18,7 +18,7 @@ flowchart LR
         S_contracts_Spec["contracts:Spec<br/><small>2797 LOC</small>"]:::coreDomain
     end
     subgraph S_supporting["Supporting"]
-        S_cli_Console["cli:Console<br/><small>791 LOC</small>"]:::supportingDomain
+        S_cli_Console["cli:Console<br/><small>797 LOC</small>"]:::supportingDomain
         S_cli_Generator["cli:Generator<br/><small>141 LOC</small>"]:::supportingDomain
         S_cli_Renderer["cli:Renderer<br/><small>317 LOC</small>"]:::supportingDomain
         S_document_Parser["document:Parser<br/><small>2479 LOC</small>"]:::supportingDomain

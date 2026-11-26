@@ -11,7 +11,7 @@ targets. Regenerated before every commit.
 
 | Module | Files | LOC | Fan-in | Fan-out | Instability | Flag |
 |---|---:|---:|---:|---:|---:|---|
-| `cli:Console` | 10 | 781 | 0 | 20 | 1.00 |  |
+| `cli:Console` | 10 | 787 | 0 | 20 | 1.00 |  |
 | `cli:Exceptions` | 3 | 48 | 2 | 1 | 0.33 |  |
 | `cli:Generator` | 2 | 139 | 0 | 2 | 1.00 |  |
 | `cli:Renderer` | 3 | 314 | 1 | 1 | 0.50 |  |
