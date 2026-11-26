@@ -5,15 +5,8 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Cli\Console\Command;
 
 use Alama\Arazzo\Cli\Console\Config\ValidateConfigLoader;
-use Alama\Arazzo\Contracts\Data\KnownOperations;
-use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
-use Alama\Arazzo\Contracts\Validation\Error;
-use Alama\Arazzo\Contracts\Validation\ValidationResult;
 use Alama\Arazzo\Contracts\Validation\ValidatorPolicy;
-use Alama\Arazzo\Contracts\Validation\Warning;
 use Alama\Arazzo\Document\Document;
-use Alama\Arazzo\Document\Parser\Exceptions\LoaderException;
-use Alama\Arazzo\Document\Parser\Exceptions\ParserException;
 use Alama\Arazzo\Sources\Sources;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -21,6 +14,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Throwable;
 
 #[AsCommand(name: 'validate', description: 'Parse and validate an Arazzo document')]
 final class ValidateCommand extends Command
@@ -80,7 +74,7 @@ final class ValidateCommand extends Command
 
         try {
             $document = Document::create()->load($file);
-        } catch (LoaderException|ParserException $e) {
+        } catch (Throwable $e) {
             $output->writeln('<error>PARSE ERROR</error> '.$e->getMessage());
 
             return Command::FAILURE;
@@ -91,13 +85,29 @@ final class ValidateCommand extends Command
             return $policyOrExit;
         }
 
-        $knownOperations = $this->resolveKnownOperations($document, (string) dirname($file));
+        $knownOperations = null;
+        try {
+            $knownOperations = Sources::create()->knownOperations($document, (string) dirname($file));
+        } catch (Throwable) {
+            // Degrade gracefully
+        }
 
         $result = Document::create()
             ->withValidatorPolicy($policyOrExit)
             ->validate($document, $knownOperations);
 
-        return $this->renderResult($result, $file, $output);
+        if ($result->isValid()) {
+            $output->writeln('<info>✔ valid</info> '.$file);
+            $this->printDiagnostics($result->warnings, '<comment>Warnings:</comment>', 'yellow', $output);
+
+            return Command::SUCCESS;
+        }
+
+        $output->writeln('<error>✘ invalid</error> '.$file);
+        $this->printDiagnostics($result->errors, '<fg=red>Errors:</>', 'red', $output);
+        $this->printDiagnostics($result->warnings, '<comment>Warnings:</comment>', 'yellow', $output);
+
+        return Command::FAILURE;
     }
 
     /**
@@ -112,7 +122,7 @@ final class ValidateCommand extends Command
                 explicitPath: is_string($configPath) ? $configPath : null,
                 workingDirectory: dirname($file),
             );
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $output->writeln('<error>CONFIG ERROR</error> '.$e->getMessage());
 
             return Command::FAILURE;
@@ -164,69 +174,24 @@ final class ValidateCommand extends Command
         return $policy;
     }
 
-    private function resolveKnownOperations(ArazzoDocument $document, string $dir): KnownOperations
-    {
-        try {
-            return Sources::create()->knownOperations($document, $dir);
-        } catch (\Throwable) {
-            return KnownOperations::none();
-        }
-    }
-
-    private function renderResult(ValidationResult $result, string $file, OutputInterface $output): int
-    {
-        if ($result->isValid()) {
-            $output->writeln('<info>✔ valid</info> '.$file);
-            $this->printWarnings($result->warnings, $output);
-
-            return Command::SUCCESS;
-        }
-
-        $output->writeln('<error>✘ invalid</error> '.$file);
-        $this->printErrors($result->errors, $output);
-        $this->printWarnings($result->warnings, $output);
-
-        return Command::FAILURE;
-    }
-
     /**
-     * @param  list<Error>  $errors
+     * @param  list<\Alama\Arazzo\Contracts\Validation\Error|\Alama\Arazzo\Contracts\Validation\Warning>  $diagnostics
      */
-    private function printErrors(array $errors, OutputInterface $output): void
+    private function printDiagnostics(array $diagnostics, string $heading, string $color, OutputInterface $output): void
     {
-        if ($errors === []) {
+        if ($diagnostics === []) {
             return;
         }
 
         $output->writeln('');
-        $output->writeln('<fg=red>Errors:</>');
-        foreach ($errors as $error) {
+        $output->writeln($heading);
+        foreach ($diagnostics as $diagnostic) {
             $output->writeln(sprintf(
-                '  <fg=red>[%s]</> %s <comment>%s</comment>',
-                $error->code,
-                $error->message,
-                $error->path,
-            ));
-        }
-    }
-
-    /**
-     * @param  list<Warning>  $warnings
-     */
-    private function printWarnings(array $warnings, OutputInterface $output): void
-    {
-        if ($warnings === []) {
-            return;
-        }
-
-        $output->writeln('');
-        $output->writeln('<comment>Warnings:</comment>');
-        foreach ($warnings as $warning) {
-            $output->writeln(sprintf(
-                '  <fg=yellow>[%s]</> %s <comment>%s</comment>',
-                $warning->code,
-                $warning->message,
-                $warning->path,
+                '  <fg=%s>[%s]</> %s <comment>%s</comment>',
+                $color,
+                $diagnostic->code,
+                $diagnostic->message,
+                $diagnostic->path,
             ));
         }
     }
