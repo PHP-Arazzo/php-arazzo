@@ -112,7 +112,7 @@ flowchart LR
 | Subdomain | Modules | Core pkg LOC | Laravel pkg LOC | Share |
 |---|---:|---:|---:|---:|
 | Core domain | 1 | 2,797 | 0 | 8% |
-| Supporting | 8 | 5,455 | 0 | 15% |
+| Supporting | 8 | 5,461 | 0 | 15% |
 | Generic subdomain | 6 | 1,858 | 0 | 5% |
 | Unclassified | 66 | 26,934 | 0 | 73% |
 

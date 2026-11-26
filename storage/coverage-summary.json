@@ -1,1 +1,115 @@
-{"package":"all","error":"coverage-report-all\/packages\/ not found \u2014 run make coverage first"}
+{
+    "package": "all",
+    "total": {
+        "lines_percent": 93.88,
+        "lines_covered": 8972,
+        "lines_total": 9557,
+        "methods_percent": 88.8,
+        "methods_covered": 1737,
+        "methods_total": 1956,
+        "classes_percent": 78.77,
+        "classes_covered": 319,
+        "classes_total": 405
+    },
+    "packages": {
+        "cli": {
+            "lines_percent": 95.04,
+            "lines_covered": 383,
+            "lines_total": 403,
+            "methods_percent": 91.67,
+            "methods_covered": 55,
+            "methods_total": 60,
+            "classes_percent": 70.59,
+            "classes_covered": 12,
+            "classes_total": 17,
+            "report": "coverage-report-all/packages/cli/index.html"
+        },
+        "contracts": {
+            "lines_percent": 94.88,
+            "lines_covered": 1279,
+            "lines_total": 1348,
+            "methods_percent": 91.61,
+            "methods_covered": 437,
+            "methods_total": 477,
+            "classes_percent": 75,
+            "classes_covered": 66,
+            "classes_total": 88,
+            "report": "coverage-report-all/packages/contracts/index.html"
+        },
+        "document": {
+            "lines_percent": 98.84,
+            "lines_covered": 2052,
+            "lines_total": 2076,
+            "methods_percent": 94.94,
+            "methods_covered": 300,
+            "methods_total": 316,
+            "classes_percent": 92.05,
+            "classes_covered": 81,
+            "classes_total": 88,
+            "report": "coverage-report-all/packages/document/index.html"
+        },
+        "engine": {
+            "lines_percent": 91.02,
+            "lines_covered": 1075,
+            "lines_total": 1181,
+            "methods_percent": 82.78,
+            "methods_covered": 173,
+            "methods_total": 209,
+            "classes_percent": 72.22,
+            "classes_covered": 26,
+            "classes_total": 36,
+            "report": "coverage-report-all/packages/engine/index.html"
+        },
+        "evaluation": {
+            "lines_percent": 94.56,
+            "lines_covered": 556,
+            "lines_total": 588,
+            "methods_percent": 90.41,
+            "methods_covered": 132,
+            "methods_total": 146,
+            "classes_percent": 80,
+            "classes_covered": 24,
+            "classes_total": 30,
+            "report": "coverage-report-all/packages/evaluation/index.html"
+        },
+        "expression": {
+            "lines_percent": 97.03,
+            "lines_covered": 1732,
+            "lines_total": 1785,
+            "methods_percent": 90.7,
+            "methods_covered": 322,
+            "methods_total": 355,
+            "classes_percent": 78.26,
+            "classes_covered": 54,
+            "classes_total": 69,
+            "report": "coverage-report-all/packages/expression/index.html"
+        },
+        "runner": {
+            "lines_percent": 99.94,
+            "lines_covered": 1588,
+            "lines_total": 1589,
+            "methods_percent": 99.65,
+            "methods_covered": 284,
+            "methods_total": 285,
+            "classes_percent": 98.25,
+            "classes_covered": 56,
+            "classes_total": 57,
+            "report": "coverage-report-all/packages/runner/index.html"
+        },
+        "sources": {
+            "lines_percent": 52.3,
+            "lines_covered": 307,
+            "lines_total": 587,
+            "methods_percent": 31.48,
+            "methods_covered": 34,
+            "methods_total": 108,
+            "classes_percent": 0,
+            "classes_covered": 0,
+            "classes_total": 20,
+            "report": "coverage-report-all/packages/sources/index.html"
+        }
+    },
+    "report": "coverage-report-all/index.html",
+    "dashboard": "coverage-report-all/dashboard.html",
+    "laravel_report": "packages/laravel/coverage-report/index.html"
+}

@@ -12,27 +12,27 @@ same corner every week" signal that static structure graphs cannot show.
 ```mermaid
 xychart-beta
     title "Edit churn per module (git touches)"
-    x-axis ["document:Validator", "cli:Console", "runner:Execution", "runner:Async", "runner:Sync", "contracts:Spec", "sources:Normalizer", "document:Parser", "expression:Interfaces", "contracts:Interfaces", "expression:Data", "sources:Resolver"]
+    x-axis ["document:Validator", "cli:Console", "runner:Execution", "runner:Async", "contracts:Spec", "runner:Sync", "sources:Normalizer", "document:Parser", "expression:Interfaces", "contracts:Interfaces", "sources:Resolver", "expression:Data"]
     y-axis "Touches" 0 --> 70
-    bar [54, 44, 33, 26, 24, 23, 21, 20, 19, 16, 14, 14]
+    bar [54, 45, 33, 26, 24, 24, 21, 20, 19, 16, 15, 14]
 ```
 
-Analyzed 588 total file-touches across 81 modules.
+Analyzed 591 total file-touches across 81 modules.
 
 | Module | Touches | Share | LOC | Touches/KLOC |
 |---|---:|---:|---:|---:|
 | `document:Validator` | 54 | 9% | 659 | 81.9 |
-| `cli:Console` | 44 | 7% | 791 | 55.6 |
+| `cli:Console` | 45 | 8% | 797 | 56.5 |
 | `runner:Execution` | 33 | 6% | 723 | 45.6 |
 | `runner:Async` | 26 | 4% | 1,457 | 17.8 |
+| `contracts:Spec` | 24 | 4% | 2,797 | 8.6 |
 | `runner:Sync` | 24 | 4% | 1,146 | 20.9 |
-| `contracts:Spec` | 23 | 4% | 2,797 | 8.2 |
 | `sources:Normalizer` | 21 | 4% | 498 | 42.2 |
 | `document:Parser` | 20 | 3% | 2,479 | 8.1 |
 | `expression:Interfaces` | 19 | 3% | 252 | 75.4 |
 | `contracts:Interfaces` | 16 | 3% | 387 | 41.3 |
+| `sources:Resolver` | 15 | 3% | 625 | 24 |
 | `expression:Data` | 14 | 2% | 394 | 35.5 |
-| `sources:Resolver` | 14 | 2% | 625 | 22.4 |
 | `engine:Execution` | 12 | 2% | 1,204 | 10 |
 | `expression:Plugins` | 11 | 2% | 1,339 | 8.2 |
 | `cli:Renderer` | 10 | 2% | 317 | 31.5 |
