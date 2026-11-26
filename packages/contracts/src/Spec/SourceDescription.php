@@ -50,4 +50,24 @@ final readonly class SourceDescription
     {
         return in_array($this->scheme(), ['http', 'https'], true);
     }
+
+    /**
+     * Infer SourceType from decoded document content when no explicit `type` was declared.
+     *
+     * @param  array<string, mixed>  $decoded
+     */
+    public static function inferFromContent(array $decoded): ?SourceType
+    {
+        if (isset($decoded['openapi']) || isset($decoded['swagger'])) {
+            return SourceType::Openapi;
+        }
+        if (isset($decoded['arazzo'])) {
+            return SourceType::Arazzo;
+        }
+        if (isset($decoded['asyncapi'])) {
+            return SourceType::Asyncapi;
+        }
+
+        return null;
+    }
 }

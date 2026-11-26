@@ -24,7 +24,7 @@ targets. Regenerated before every commit.
 | `contracts:Interfaces` | 20 | 367 | 35 | 4 | 0.10 |  |
 | `contracts:Observability` | 4 | 104 | 12 | 0 | 0.00 |  |
 | `contracts:Policy` | 5 | 263 | 6 | 0 | 0.00 |  |
-| `contracts:Spec` | 60 | 2717 | 54 | 2 | 0.04 |  |
+| `contracts:Spec` | 60 | 2737 | 54 | 2 | 0.04 |  |
 | `contracts:State` | 4 | 1238 | 17 | 2 | 0.11 |  |
 | `contracts:Support` | 5 | 180 | 10 | 0 | 0.00 |  |
 | `contracts:Validation` | 9 | 364 | 16 | 2 | 0.11 |  |
@@ -97,10 +97,10 @@ targets. Regenerated before every commit.
 | `sources:Plugins` | 1 | 146 | 0 | 6 | 1.00 |  |
 | `sources:Policy` | 1 | 124 | 2 | 1 | 0.33 |  |
 | `sources:Registries` | 1 | 80 | 1 | 4 | 0.80 |  |
-| `sources:Resolver` | 12 | 634 | 3 | 6 | 0.67 |  |
+| `sources:Resolver` | 12 | 613 | 3 | 6 | 0.67 |  |
 | `(sources root)` | 2 | 342 | 3 | 9 | 0.75 |  |
 
-Total cross-module edges: **1708**
+Total cross-module edges: **1707**
 
 ## Most entangled module pairs
 

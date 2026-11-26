@@ -15,7 +15,7 @@ the declaration honest.
 ```mermaid
 flowchart LR
     subgraph S_core["Core domain"]
-        S_contracts_Spec["contracts:Spec<br/><small>2777 LOC</small>"]:::coreDomain
+        S_contracts_Spec["contracts:Spec<br/><small>2797 LOC</small>"]:::coreDomain
     end
     subgraph S_supporting["Supporting"]
         S_cli_Console["cli:Console<br/><small>791 LOC</small>"]:::supportingDomain
@@ -25,7 +25,7 @@ flowchart LR
         S_document_Validator["document:Validator<br/><small>659 LOC</small>"]:::supportingDomain
         S_protocol_http_Resolver["protocol-http:Resolver<br/><small>307 LOC</small>"]:::supportingDomain
         S_protocol_soap_Resolver["protocol-soap:Resolver<br/><small>136 LOC</small>"]:::supportingDomain
-        S_sources_Resolver["sources:Resolver<br/><small>646 LOC</small>"]:::supportingDomain
+        S_sources_Resolver["sources:Resolver<br/><small>625 LOC</small>"]:::supportingDomain
     end
     subgraph S_generic["Generic subdomain"]
         S_contracts_State["contracts:State<br/><small>1242 LOC</small>"]:::genericDomain
@@ -111,8 +111,8 @@ flowchart LR
 
 | Subdomain | Modules | Core pkg LOC | Laravel pkg LOC | Share |
 |---|---:|---:|---:|---:|
-| Core domain | 1 | 2,777 | 0 | 7% |
-| Supporting | 8 | 5,476 | 0 | 15% |
+| Core domain | 1 | 2,797 | 0 | 8% |
+| Supporting | 8 | 5,455 | 0 | 15% |
 | Generic subdomain | 6 | 1,858 | 0 | 5% |
 | Unclassified | 66 | 26,934 | 0 | 73% |
 

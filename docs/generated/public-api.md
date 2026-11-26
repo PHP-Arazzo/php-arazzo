@@ -301,6 +301,7 @@ this file on a commit is a public API change — review it deliberately.
 - `public function isRemote(): bool`
 - `public function isWsdl(): bool`
 - `public function scheme(): string`
+- `public static function inferFromContent(array $decoded): ?SourceType`
 
 #### `SourceDescriptionCollection` class
 - `public function __construct(private array $sources = [])`
