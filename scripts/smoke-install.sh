@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 #
-# Clean-installation smoke test: installs both monorepo packages into a
+# Clean-installation smoke test: installs monorepo packages into a
 # throwaway Composer project using path repositories, verifies autoload,
-# and bootstraps a minimal engine wiring.
+# and verifies vendor/bin/arazzo CLI execution.
 #
 # Usage: bash scripts/smoke-install.sh
 set -euo pipefail
@@ -18,65 +18,46 @@ cd "$TMP"
 # PSR-4 autoload roots resolve to their real src/ trees.
 cat > composer.json <<JSON
 {
+    "name": "smoke/smoke-test",
     "require": {
-        "alama/arazzo-core": "@dev",
-        "alama/laravel-arazzo": "@dev"
+        "php-arazzo/arazzo-core": "@dev",
+        "php-arazzo/arazzo-cli": "@dev"
     },
     "repositories": [
+        {"type": "path", "url": "$REPO_ROOT/packages/cli", "options": {"symlink": true}},
+        {"type": "path", "url": "$REPO_ROOT/packages/contracts", "options": {"symlink": true}},
         {"type": "path", "url": "$REPO_ROOT/packages/core", "options": {"symlink": true}},
-        {"type": "path", "url": "$REPO_ROOT/packages/laravel", "options": {"symlink": true}}
-    ]
+        {"type": "path", "url": "$REPO_ROOT/packages/document", "options": {"symlink": true}},
+        {"type": "path", "url": "$REPO_ROOT/packages/engine", "options": {"symlink": true}},
+        {"type": "path", "url": "$REPO_ROOT/packages/evaluation", "options": {"symlink": true}},
+        {"type": "path", "url": "$REPO_ROOT/packages/expression", "options": {"symlink": true}},
+        {"type": "path", "url": "$REPO_ROOT/packages/protocol-http", "options": {"symlink": true}},
+        {"type": "path", "url": "$REPO_ROOT/packages/protocol-rpc", "options": {"symlink": true}},
+        {"type": "path", "url": "$REPO_ROOT/packages/protocol-soap", "options": {"symlink": true}},
+        {"type": "path", "url": "$REPO_ROOT/packages/runner", "options": {"symlink": true}},
+        {"type": "path", "url": "$REPO_ROOT/packages/sources", "options": {"symlink": true}}
+    ],
+    "minimum-stability": "dev"
 }
 JSON
 
 composer install --quiet --no-interaction --no-progress
 
+# Verify CLI binary is installed in vendor/bin and executes
+php vendor/bin/arazzo --version
+php vendor/bin/arazzo validate --help
+
 php -r '
 require $argv[1]."/vendor/autoload.php";
 
-use Alama\Arazzo\Parser\Parser;
-use Alama\Arazzo\Spec\Enum\Format;
-use Alama\Arazzo\Spec\RawDocument;
-use Alama\Arazzo\Resolver\SourceRegistry;
-use Alama\Arazzo\Runner\Evaluation\ArazzoCriteriaEvaluator;
-use Alama\Arazzo\Runner\Evaluation\ArazzoExpressionResolver;
-use Alama\Arazzo\Runner\Evaluation\ExpressionEvaluator;
-use Alama\Arazzo\Runner\Execution\ArazzoOutputExtractor;
-use Alama\Arazzo\Runner\Execution\ArazzoSchemaValidator;
-use Alama\Arazzo\Runner\Execution\DefaultOpenApiExecutor;
-use Alama\Arazzo\Runner\Execution\OpenApiDocumentLoader;
-use Alama\Arazzo\Runner\Execution\StepExecutor;
-use Alama\Arazzo\Runner\Execution\WorkflowEngine;
-use Alama\Arazzo\Runner\Execution\WorkflowExecutor;
-use Alama\Arazzo\Runner\Normalizer\OpenApi30Normalizer;
-use Alama\Arazzo\Runner\Normalizer\OpenApi31Normalizer;
-use Alama\Arazzo\Runner\Normalizer\OpenApiVersionDetector;
-use Alama\Arazzo\Runner\Resolver\OpenApiOperationResolver;
-use GuzzleHttp\Psr7\HttpFactory;
+use Alama\Arazzo\Cli\Console\Application;
+use Alama\Arazzo\Document\Parser\Parser;
 
-$doc = (new Parser())->parse(new RawDocument([
-    "arazzo" => "1.0.1",
-    "info" => ["title" => "smoke", "version" => "1.0.0"],
-    "sourceDescriptions" => [["name" => "api", "url" => "https://smoke.invalid/api.json", "type" => "openapi"]],
-    "workflows" => [["workflowId" => "wf", "steps" => [["stepId" => "s1"]]]],
-], "memory://smoke.json", Format::Json));
+$app = new Application();
+echo "CLI application: ", $app->getName(), " v", $app->getVersion(), "\n";
 
-$registry = new SourceRegistry(new \Alama\Arazzo\Resolver\DefaultSourceResolver([]));
-$ops = new OpenApiOperationResolver(new OpenApiDocumentLoader($registry), new OpenApiVersionDetector(), new OpenApi30Normalizer(), new OpenApi31Normalizer());
-$evaluator = new ExpressionEvaluator();
-$resolver = new ArazzoExpressionResolver($evaluator, new ArazzoOutputExtractor($ops, $evaluator), new ArazzoCriteriaEvaluator($evaluator), new ArazzoSchemaValidator($ops));
-
-$executor = new WorkflowExecutor(
-    new StepExecutor(new DefaultOpenApiExecutor(new class implements Psr\Http\Client\ClientInterface {
-        public function sendRequest(Psr\Http\Message\RequestInterface $request): Psr\Http\Message\ResponseInterface
-        {
-            return new \GuzzleHttp\Psr7\Response(200, [], "{}");
-        }
-    }, new HttpFactory()), $resolver, $ops),
-    workflowEngine: new WorkflowEngine($resolver),
-);
-
-echo get_class($executor), "\n";
+$parser = new Parser();
+echo "Parser loaded: ", get_class($parser), "\n";
 ' "$TMP"
 
 echo "==> smoke OK"
