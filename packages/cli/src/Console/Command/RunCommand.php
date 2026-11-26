@@ -51,6 +51,12 @@ final class RunCommand extends Command
             return Command::FAILURE;
         }
 
+        // Resolve relative sourceDescription URLs against the document's
+        // directory, not the CWD (the conformance suite runs from the suite
+        // root, while case files live in subdirectories). OpenApiOperationResolver
+        // uses getcwd() as the base path for relative source URLs.
+        chdir(dirname($file));
+
         /** @var string|null $workflowId */
         $workflowId = $input->getOption('workflow');
         $workflow = $workflowId !== null
