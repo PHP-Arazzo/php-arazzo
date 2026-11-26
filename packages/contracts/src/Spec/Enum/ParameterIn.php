@@ -14,4 +14,24 @@ enum ParameterIn: string
     case Querystring = 'querystring';
     case Metadata = 'metadata';
     case Variable = 'variable';
+
+    public function isSpec(): bool
+    {
+        return match ($this) {
+            self::Path, self::Query, self::Header, self::Cookie => true,
+            default => false,
+        };
+    }
+
+    public function isExtension(): bool
+    {
+        return !$this->isSpec();
+    }
+
+    public static function tryFromRaw(string $value): ?self
+    {
+        $normalized = str_starts_with($value, 'x-') ? substr($value, 2) : $value;
+
+        return self::tryFrom($normalized);
+    }
 }

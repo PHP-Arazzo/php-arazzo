@@ -133,6 +133,12 @@ it('loads from explicit config path', function (): void {
     }
 });
 
+it('loads conformance option from config array', function (): void {
+    $loader = new ValidateConfigLoader();
+    $policy = $loader->buildFromArray(['conformance' => true]);
+    expect($policy->isConformance())->toBeTrue();
+});
+
 it('throws InvalidArgumentException when explicit config path does not exist', function (): void {
     $loader = new ValidateConfigLoader();
     $loader->load('/non/existent/path/arazzo.json');

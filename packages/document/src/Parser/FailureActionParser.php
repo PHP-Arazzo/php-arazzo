@@ -50,12 +50,13 @@ final class FailureActionParser extends FieldParser
                 workflowId: $this->optionalString($obj, 'workflowId', $ctx),
                 criteria: $criteria,
             ),
-            'invoke' => new SubWorkflowFailureAction(
+            'invoke', 'x-invoke' => new SubWorkflowFailureAction(
                 $name,
                 $this->requireString($obj, 'workflowId', $ctx),
                 $this->values->parseInvokeParameters($obj, $ctx),
                 $criteria,
                 $this->optionalString($obj, 'version', $ctx),
+                $type,
             ),
             default => throw ParserException::invalidActionType($ctx->push('type'), $type),
         };

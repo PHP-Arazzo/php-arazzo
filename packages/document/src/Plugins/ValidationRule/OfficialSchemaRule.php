@@ -45,7 +45,7 @@ final class OfficialSchemaRule implements ValidationRuleInterface
             return; // parser-built documents (tests) carry no raw payload
         }
 
-        $schema = self::loadSchema($doc->arazzo);
+        $schema = self::loadSchema($doc->arazzo, $symbols->conformance);
 
         if ($schema !== null) {
             $data = json_decode(json_encode($raw) ?: '{}');
@@ -81,7 +81,7 @@ final class OfficialSchemaRule implements ValidationRuleInterface
      * Loads and prepares the official schema for the document's minor version,
      * returning null when the schema cannot be used offline.
      */
-    private static function loadSchema(string $arazzo): ?object
+    private static function loadSchema(string $arazzo, bool $conformance = false): ?object
     {
         $minor = match (true) {
             str_starts_with($arazzo, '1.0') => '1.0',
@@ -112,7 +112,7 @@ final class OfficialSchemaRule implements ValidationRuleInterface
 
         // Repair defects in the vendored schema where it disagrees with the
         // spec prose. Each repair names the section it enforces.
-        $decoded = DefectRepairs::apply($decoded, $minor);
+        $decoded = DefectRepairs::apply($decoded, $minor, $conformance);
 
         // The official schemas are written for draft 2020-12, where $ref may
         // appear alongside sibling keywords. Justinrainbow treats a $ref as

@@ -17,7 +17,13 @@ final readonly class Parameter
         public ?ParameterIn $in,
         public mixed $value,
         public ?ValueMode $valueMode = null,
+        public ?string $rawIn = null,
     ) {}
+
+    public function isExtension(): bool
+    {
+        return $this->in?->isExtension() ?? false;
+    }
 
     public function isQuery(): bool
     {

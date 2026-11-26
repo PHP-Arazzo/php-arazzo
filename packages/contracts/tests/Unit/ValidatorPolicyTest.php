@@ -15,8 +15,20 @@ it('builds immutable ValidatorPolicy with default values', function (): void {
         ->and($policy->disabled)->toBe([])
         ->and($policy->strict)->toBeTrue()
         ->and($policy->isStrict())->toBeTrue()
+        ->and($policy->conformance)->toBeFalse()
+        ->and($policy->isConformance())->toBeFalse()
         ->and($policy->isDisabled('any.rule'))->toBeFalse()
         ->and($policy->severityFor('any.rule'))->toBe(Severity::Error);
+});
+
+it('supports withConformance immutably', function (): void {
+    $base = ValidatorPolicy::default();
+    $conformance = $base->withConformance(true);
+    $back = $conformance->withConformance(false);
+
+    expect($base->isConformance())->toBeFalse()
+        ->and($conformance->isConformance())->toBeTrue()
+        ->and($back->isConformance())->toBeFalse();
 });
 
 it('supports withSeverity, withDisabled, withEnabled, and withStrict immutably', function (): void {

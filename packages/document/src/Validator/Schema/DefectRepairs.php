@@ -17,7 +17,7 @@ final class DefectRepairs
      * @param  array<array-key, mixed>  $schema
      * @return array<array-key, mixed>
      */
-    public static function apply(array $schema, string $minor): array
+    public static function apply(array $schema, string $minor, bool $conformance = false): array
     {
         $defs = $schema['$defs'] ?? null;
         if (!is_array($defs)) {
@@ -32,9 +32,75 @@ final class DefectRepairs
             $defs = self::payloadReplacementValue($defs);
         }
 
+        if (!$conformance) {
+            $defs = self::allowExtensions($defs);
+        }
+
         $schema['$defs'] = $defs;
 
         return $schema;
+    }
+
+    /**
+     * In permissive mode, allow php-arazzo beyond-spec extensions in the schema.
+     * In strict conformance mode, this is skipped so the official schema rejects them.
+     *
+     * @param  array<array-key, mixed>  $defs
+     * @return array<array-key, mixed>
+     */
+    private static function allowExtensions(array $defs): array
+    {
+        $defs = self::appendEnumValues($defs, 'parameter-object', 'in', [
+            'body', 'x-body',
+            'querystring', 'x-querystring',
+            'metadata', 'x-metadata',
+            'variable', 'x-variable',
+        ]);
+
+        $defs = self::appendEnumValues($defs, 'success-action-object', 'type', [
+            'invoke', 'x-invoke',
+        ]);
+
+        return self::appendEnumValues($defs, 'failure-action-object', 'type', [
+            'invoke', 'x-invoke',
+        ]);
+    }
+
+    /**
+     * @param  array<array-key, mixed>  $defs
+     * @param  list<string>  $values
+     * @return array<array-key, mixed>
+     */
+    private static function appendEnumValues(array $defs, string $defKey, string $propKey, array $values): array
+    {
+        $def = $defs[$defKey] ?? null;
+        if (!is_array($def)) {
+            return $defs;
+        }
+
+        $props = $def['properties'] ?? null;
+        if (!is_array($props)) {
+            return $defs;
+        }
+
+        $prop = $props[$propKey] ?? null;
+        if (!is_array($prop)) {
+            return $defs;
+        }
+
+        $enum = $prop['enum'] ?? null;
+        if (!is_array($enum)) {
+            return $defs;
+        }
+
+        /** @var list<string> $current */
+        $current = array_values(array_filter($enum, 'is_string'));
+        $prop['enum'] = array_values(array_unique([...$current, ...$values]));
+        $props[$propKey] = $prop;
+        $def['properties'] = $props;
+        $defs[$defKey] = $def;
+
+        return $defs;
     }
 
     /**

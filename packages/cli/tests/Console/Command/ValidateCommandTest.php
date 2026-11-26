@@ -8,6 +8,37 @@ use Alama\Arazzo\Cli\Console\Command\ValidateCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 
+function createDocWithExtensions(string $dir): string
+{
+    $path = $dir.'/extensions.arazzo.yaml';
+    $content = <<<'YAML'
+arazzo: "1.1.0"
+info:
+  title: Extensions Repro
+  version: "1.0"
+sourceDescriptions:
+  - name: api
+    url: http://localhost:8002/docs/api.json
+    type: openapi
+workflows:
+  - workflowId: testWf
+    steps:
+      - stepId: step1
+        operationId: api.doSomething
+        parameters:
+          - name: payload
+            in: x-body
+            value: data
+        onSuccess:
+          - name: invokeSub
+            type: x-invoke
+            workflowId: testWf
+YAML;
+    file_put_contents($path, $content);
+
+    return $path;
+}
+
 function createDocWithDuplicateReplacements(string $dir): string
 {
     $path = $dir.'/duplicate-replacements.arazzo.yaml';
@@ -211,6 +242,34 @@ it('rejects invalid --severity format with exit code 2 (Command::INVALID)', func
         ]);
         expect($statusBogus)->toBe(Command::INVALID)
             ->and($tester->getDisplay())->toContain("Invalid severity option 'some-rule:bogus'");
+    } finally {
+        unlink($file);
+        rmdir($tempDir);
+    }
+});
+
+it('passes documents with beyond-spec extensions in default permissive mode but rejects them with --conformance', function (): void {
+    $tempDir = sys_get_temp_dir().'/arazzo_val_conf_'.uniqid();
+    mkdir($tempDir);
+    $file = createDocWithExtensions($tempDir);
+
+    try {
+        // 1. Default (permissive) -> SUCCESS
+        $tester = new CommandTester(new ValidateCommand());
+        $status = $tester->execute(['file' => $file]);
+        expect($status)->toBe(Command::SUCCESS)
+            ->and($tester->getDisplay())->toContain('✔ valid');
+
+        // 2. Conformance mode -> FAILURE
+        $confTester = new CommandTester(new ValidateCommand());
+        $confStatus = $confTester->execute([
+            'file' => $file,
+            '--conformance' => true,
+        ]);
+        expect($confStatus)->toBe(Command::FAILURE)
+            ->and($confTester->getDisplay())->toContain('✘ invalid')
+            ->and($confTester->getDisplay())->toContain('step.parameter_in_valid')
+            ->and($confTester->getDisplay())->toContain('action.type_valid');
     } finally {
         unlink($file);
         rmdir($tempDir);

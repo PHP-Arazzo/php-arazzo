@@ -135,3 +135,21 @@ it('skips reusable parameters', function () {
     );
     expect($errors->errors())->toBe([]);
 });
+
+it('rejects beyond-spec in values on 1.1 docs when conformance mode is enabled', function () {
+    $errors = new ErrorCollector();
+    $doc = docWithParams([
+        new Parameter('body', ParameterIn::Body, 'x', null, 'x-body'),
+        new Parameter('meta', ParameterIn::Metadata, 'x'),
+    ]);
+    (new StepParameterInValidRule(conformance: true))->check(
+        $doc,
+        SymbolTable::build($doc),
+        $errors,
+    );
+    $errs = $errors->errors();
+    expect($errs)->toHaveCount(2)
+        ->and($errs[0]->code)->toBe('step.parameter_in_valid')
+        ->and($errs[0]->message)->toContain('non-spec extension')
+        ->and($errs[1]->code)->toBe('step.parameter_in_valid');
+});

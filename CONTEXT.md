@@ -20,6 +20,8 @@ same pull request.
 |------|---------|
 | **arazzo-conformance** | The [`api-evangelist/arazzo-conformance`](https://github.com/api-evangelist/arazzo-conformance) scored test suite (SHA `6e93591` is the conformance oracle). php-arazzo targets 100% of scored validation cases (127) and 100% of scored execution cases (14). |
 | **Conformance capability manifest** | Machine-readable JSON at `docs/conformance/manifest.json` recording, per capability, whether php-arazzo supports it (`supported` / `partial` / `unsupported` / `not-applicable`), with `evidence` references. Emitted by `scripts/generate-conformance-matrix.php` alongside `docs/CONFORMANCE.md`. |
+| **Conformance mode** | Validation mode (`conformance: true` via `ValidationPolicy` / `arazzo validate --conformance`) where documents must strictly conform to official Arazzo specifications; beyond-spec extensions (such as `invoke` actions and `body`/`querystring`/`metadata`/`variable` parameter locations) are rejected. Default is permissive (`conformance: false`). |
+| **Beyond-spec extension** | Proprietary features implemented by php-arazzo outside official Arazzo specifications (e.g. `invoke` action type, `ParameterIn` extensions `body`, `querystring`, `metadata`, `variable`), accepted in permissive mode with dual syntax (`x-*` or bare). |
 | **Drift guard** | `scripts/check-conformance-manifest.php`: re-runs the corpus, rebuilds the manifest model, compares to the committed manifest, exits non-zero on mismatch. Runs in CI on every PR. |
 | **OAI corpus** | Vendored official OAI Arazzo examples under `packages/core/tests/Conformance/corpus/oai/`. Source of truth for what the manifest claims. |
 
@@ -54,7 +56,7 @@ same pull request.
 | Term | Meaning |
 |------|---------|
 | **RuleSet** | Collection of validator rules in `packages/document/src/Validator/RuleSet.php`. |
-| **ValidatorPolicy** | Immutable validation policy value object (`Alama\Arazzo\Contracts\Validation\ValidatorPolicy`) configuring per-rule severity overrides, disabled rules, and strict validation mode. _Avoid_: `ValidatorOptions`, `ValidatorConfig`. |
+| **ValidatorPolicy** | Immutable validation policy value object (`Alama\Arazzo\Contracts\Validation\ValidatorPolicy`) configuring per-rule severity overrides, disabled rules, strict validation mode, and conformance gating. _Avoid_: `ValidatorOptions`, `ValidatorConfig`. |
 | **Source qualification** | Requiring `operationId` to be source-qualified (e.g. `sourceName.operationId`) only when multiple non-arazo sources exist; single source allows unqualified (issue #388 R2/C1). |
 | **Cross-workflow dependsOn** | Validator accepts `$workflows.<id>.steps.<stepId>` in `dependsOn` (issue #388 R1). |
 | **Strict validation** | Default `true`: outbound request bodies and parameters, as well as inbound responses, are validated against the OpenAPI operation schema (issues #334, #333). Violations fail the step locally before dispatch (requests) or after receipt (responses). Opt-out per step via `x-strict-validation: false`. |
@@ -108,6 +110,7 @@ same pull request.
 | ADR-011 | Static expression walking for action criteria & parameters with step/workflow context isolation | #344 |
 | ADR-012 | Validator policy, `contracts` placement & collector severity interception | #346 |
 | ADR-013 | Outbound request schema validation default (`true`) & RequestValidatorInterface seam | #333 |
+| ADR-014 | Gating beyond-spec extensions via ValidatorPolicy & dual x-* naming | #171 |
 
 ## 8. How to update this file
 

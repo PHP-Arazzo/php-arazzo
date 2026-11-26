@@ -11,7 +11,13 @@ abstract readonly class Action
     public function __construct(
         public string $name,
         public ActionKind $kind,
+        public ?string $rawType = null,
     ) {}
+
+    public function isExtension(): bool
+    {
+        return $this->kind->isExtension();
+    }
 
     public function isEnd(): bool
     {
