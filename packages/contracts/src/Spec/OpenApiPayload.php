@@ -22,4 +22,27 @@ final readonly class OpenApiPayload
         public mixed $body = null,
         public ?string $bodyMediaType = null,
     ) {}
+
+    /**
+     * @param  array<string, mixed>  $path
+     * @param  array<string, mixed>  $query
+     * @param  array<string, mixed>  $header
+     * @param  array<string, mixed>  $cookie
+     */
+    public function withRouted(
+        array $path,
+        array $query,
+        array $header,
+        array $cookie,
+    ): self {
+        return new self(
+            path: $path,
+            query: $query,
+            header: $header,
+            cookie: $cookie,
+            auto: [],
+            body: $this->body,
+            bodyMediaType: $this->bodyMediaType,
+        );
+    }
 }

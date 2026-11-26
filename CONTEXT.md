@@ -59,7 +59,9 @@ same pull request.
 | **ValidatorPolicy** | Immutable validation policy value object (`Alama\Arazzo\Contracts\Validation\ValidatorPolicy`) configuring per-rule severity overrides, disabled rules, strict validation mode, and conformance gating. _Avoid_: `ValidatorOptions`, `ValidatorConfig`. |
 | **Source qualification** | Requiring `operationId` to be source-qualified (e.g. `sourceName.operationId`) only when multiple non-arazo sources exist; single source allows unqualified (issue #388 R2/C1). |
 | **Cross-workflow dependsOn** | Validator accepts `$workflows.<id>.steps.<stepId>` in `dependsOn` (issue #388 R1). |
-| **Strict validation** | Default `true`: a response violating its OpenAPI response schema fails the step (issue #334). Opt-out per step via `x-strict-validation: false`. |
+| **Strict validation** | Default `true`: outbound request bodies and parameters, as well as inbound responses, are validated against the OpenAPI operation schema (issues #334, #333). Violations fail the step locally before dispatch (requests) or after receipt (responses). Opt-out per step via `x-strict-validation: false`. |
+| **RequestValidatorInterface** | Public contracts seam (`Alama\Arazzo\Contracts\Interfaces\RequestValidatorInterface`) for protocol packages to validate outbound request parameters and bodies against operation schemas before transport dispatch. |
+| **RequestSchemaValidator** | OpenAPI 3.0/3.1 request schema validator (`Alama\Arazzo\Protocol\Http\Execution\RequestSchemaValidator`) in `protocol-http` validating routed parameters and request bodies prior to PSR-18 dispatch. |
 | **Reference resolution (validate)** | `operationId` is resolved against locally-loaded source operations; `$sourceDescriptions.<name>` and `$components.<type>.<name>` are checked against the symbol table. Local sources resolve offline; unreachable remote sources are skipped, never fail validation (issue #384). |
 | **Source resolution seam** | Performed in `cli` (`ValidateCommand` → `SourceLoader`); the `document` validator never imports `sources` (issue #384). |
 | **Replacement target uniqueness** | Within a step's `requestBody.replacements`, each `target` must be distinct. Duplicate targets are rejected with error code `step.request_body_replacements_duplicate_target` pointing to the duplicate entry. |
@@ -87,7 +89,7 @@ same pull request.
 | `packages/expression` | Runtime expression parsing & JSONPath (ABNF strictness, issue #386). |
 | `packages/engine` | Transport-agnostic request pipeline helpers (`RequestCompiler`, `StepParameterMerger`, `IdempotencyKeyInjector`) and runtime state/policy/telemetry utilities. |
 | `packages/runner` | Protocol-agnostic execution engine: `Runner` (sync), `AsyncRunner` (durable/queue), `ExecutionResult`, `Preflight`, and workflow lifecycle events. |
-| `packages/protocol-http` | PSR-18 HTTP/OpenAPI + AsyncAPI protocol slice (`HttpProtocol`, `HttpStepExecutor`, response validation). |
+| `packages/protocol-http` | PSR-18 HTTP/OpenAPI + AsyncAPI protocol slice (`HttpProtocol`, `HttpStepExecutor`, request and response schema validation). |
 | `packages/sources` | Source resolution & reachability (`Sources`, `SourceNormalizerRegistry`). |
 | `packages/cli` | Console terminal edge: ships the `arazzo` executable binary (`bin/arazzo`), providing `run`, `validate`, `list-workflows`, `explain`, and `render` commands. |
 
@@ -107,7 +109,8 @@ same pull request.
 | ADR-010 | Monorepo observability tiers, vendor-agnostic `TracerInterface` & `*Policy` value-object standard | — |
 | ADR-011 | Static expression walking for action criteria & parameters with step/workflow context isolation | #344 |
 | ADR-012 | Validator policy, `contracts` placement & collector severity interception | #346 |
-| ADR-013 | Gating beyond-spec extensions via ValidatorPolicy & dual x-* naming | #171 |
+| ADR-013 | Outbound request schema validation default (`true`) & RequestValidatorInterface seam | #333 |
+| ADR-014 | Gating beyond-spec extensions via ValidatorPolicy & dual x-* naming | #171 |
 
 ## 8. How to update this file
 
