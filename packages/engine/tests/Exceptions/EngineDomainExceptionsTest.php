@@ -36,10 +36,12 @@ test('engine domain exception factories construct typed exceptions', function ()
 });
 
 test('FileStateStore and FileLockStrategy throw typed domain exceptions when filesystem paths are unwritable', function (): void {
-    expect(fn () => new FileStateStore('/dev/null/arazzo-cannot-create-dir'))
+    $unwritable = PHP_OS_FAMILY === 'Windows' ? 'CON/arazzo-cannot-create-dir' : '/dev/null/arazzo-cannot-create-dir';
+    expect(fn () => new FileStateStore($unwritable))
         ->toThrow(StateStoreException::class);
 
-    $lock = new FileLockStrategy('/dev/null/arazzo-cannot-create-lock');
+    $unwritableLock = PHP_OS_FAMILY === 'Windows' ? 'CON/arazzo-cannot-create-lock' : '/dev/null/arazzo-cannot-create-lock';
+    $lock = new FileLockStrategy($unwritableLock);
     expect(fn () => $lock->acquire('k', 5, static fn (): bool => true))
         ->toThrow(LockException::class)
         ->and($lock->tryAcquire('k', 5))->toBeFalse();

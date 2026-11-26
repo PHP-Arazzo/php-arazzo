@@ -15,6 +15,7 @@ use Alama\Arazzo\Expression\ExpressionEngine;
 use Alama\Arazzo\Expression\Interfaces\ExpressionEngineInterface;
 use Alama\Arazzo\Protocol\Http\Execution\DefaultOpenApiExecutor;
 use Alama\Arazzo\Protocol\Http\Execution\HttpRuntimeContext;
+use Alama\Arazzo\Protocol\Http\Execution\RequestSchemaValidator;
 use Alama\Arazzo\Protocol\Http\Execution\ResponseSchemaValidator;
 use Alama\Arazzo\Protocol\Http\Execution\StepOutputExtractor;
 use Alama\Arazzo\Protocol\Http\Plugins\OperationExecutor\HttpStepExecutor;
@@ -109,6 +110,7 @@ final readonly class HttpProtocol
             schemaValidator: new ResponseSchemaValidator($this->operationResolver),
             strictDefault: $strictValidation ?? $this->runtime->policy->strictValidation,
             injector: $idempotencyInjector ?? $this->runtime->policy->idempotencyInjector,
+            requestValidator: new RequestSchemaValidator($this->operationResolver),
         );
     }
 

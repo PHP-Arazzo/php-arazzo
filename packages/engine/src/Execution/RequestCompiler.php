@@ -71,8 +71,18 @@ final readonly class RequestCompiler
         }
 
         $body = $bodyData === [] ? null : $bodyData;
+        $contentType = $step->io->requestBody !== null
+            ? $step->io->requestBody->contentType
+            : ($header['Content-Type'] ?? $header['content-type'] ?? null);
 
-        $payload = new OpenApiPayload(path: $path, query: $query, header: $header, auto: $auto, body: $body);
+        $payload = new OpenApiPayload(
+            path: $path,
+            query: $query,
+            header: $header,
+            auto: $auto,
+            body: $body,
+            bodyMediaType: is_string($contentType) ? $contentType : null,
+        );
 
         return ['payload' => $payload, 'resolvedInputs' => $resolvedInputs];
     }

@@ -17,9 +17,10 @@ final class SchemaValidationException extends RuntimeException
     public function __construct(
         public readonly string $stepId,
         public readonly array $violations,
+        string $phase = 'Response',
     ) {
         $count = count($violations);
-        $message = "Response schema validation failed for step '{$stepId}' with {$count} violation(s).";
+        $message = "{$phase} schema validation failed for step '{$stepId}' with {$count} violation(s).";
         if ($count > 0) {
             $first = $violations[0];
             $message .= " First violation at '{$first['path']}': {$first['message']}.";
@@ -33,6 +34,14 @@ final class SchemaValidationException extends RuntimeException
      */
     public static function forStep(string $stepId, array $violations): self
     {
-        return new self($stepId, $violations);
+        return new self($stepId, $violations, 'Response');
+    }
+
+    /**
+     * @param  list<array{path: string, message: string}>  $violations
+     */
+    public static function forRequestStep(string $stepId, array $violations): self
+    {
+        return new self($stepId, $violations, 'Request');
     }
 }

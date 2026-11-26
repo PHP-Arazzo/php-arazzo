@@ -7,6 +7,7 @@ namespace Alama\Arazzo\Protocol\Http\Plugins\OperationExecutor;
 use Alama\Arazzo\Contracts\Attributes\AsOperationExecutorPlugin;
 use Alama\Arazzo\Contracts\Interfaces\OperationExecutorPluginInterface;
 use Alama\Arazzo\Contracts\Interfaces\OutputExtractorInterface;
+use Alama\Arazzo\Contracts\Interfaces\RequestValidatorInterface;
 use Alama\Arazzo\Contracts\Interfaces\ResponseValidatorInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Enum\OperationProtocol;
@@ -17,6 +18,8 @@ use Alama\Arazzo\Engine\Execution\IdempotencyKeyInjector;
 use Alama\Arazzo\Engine\Execution\RequestCompiler;
 use Alama\Arazzo\Evaluation\EvaluationEngineInterface;
 use Alama\Arazzo\Protocol\Http\Execution\Interfaces\OpenApiExecutorInterface;
+use Alama\Arazzo\Protocol\Http\Execution\ParameterRouter;
+use Alama\Arazzo\Protocol\Http\Execution\RequestSchemaValidator;
 use Alama\Arazzo\Protocol\Http\Resolver\OpenApiOperationResolver;
 use Psr\Http\Message\RequestInterface as Psr7Request;
 
@@ -32,6 +35,10 @@ final class HttpStepExecutor implements OperationExecutorPluginInterface
      */
     public const PLUGIN_PRIORITY = 100;
 
+    private readonly RequestValidatorInterface $requestValidator;
+
+    private readonly ParameterRouter $parameterRouter;
+
     public function __construct(
         private OpenApiExecutorInterface $openApiExecutor,
         private OpenApiOperationResolver $operationResolver,
@@ -40,7 +47,12 @@ final class HttpStepExecutor implements OperationExecutorPluginInterface
         private ResponseValidatorInterface $schemaValidator,
         private bool $strictDefault = true,
         private ?IdempotencyKeyInjector $injector = null,
-    ) {}
+        ?RequestValidatorInterface $requestValidator = null,
+        ?ParameterRouter $parameterRouter = null,
+    ) {
+        $this->requestValidator = $requestValidator ?? new RequestSchemaValidator($this->operationResolver);
+        $this->parameterRouter = $parameterRouter ?? new ParameterRouter();
+    }
 
     public function name(): string
     {
@@ -65,6 +77,12 @@ final class HttpStepExecutor implements OperationExecutorPluginInterface
         $resolved = $this->operationResolver->resolve($step, $document);
         $sourcePolicy = $context->getActiveSourcePolicy();
         $timeoutSeconds = $step->flow->timeoutSeconds() ?? $sourcePolicy?->timeoutSeconds();
+
+        $payload = $this->parameterRouter->routeAndCast($resolved->normalized, $payload);
+
+        if ($this->shouldValidateSchema($step, $sourcePolicy?->strictValidation())) {
+            $this->requestValidator->validateRequest($step, $resolved, $payload, $document);
+        }
 
         $capturedRequest = null;
         try {
