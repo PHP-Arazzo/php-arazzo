@@ -18,10 +18,8 @@ use Alama\Arazzo\Engine\Execution\IdempotencyKeyInjector;
 use Alama\Arazzo\Engine\Execution\RequestCompiler;
 use Alama\Arazzo\Evaluation\EvaluationEngineInterface;
 use Alama\Arazzo\Protocol\Http\Execution\Interfaces\OpenApiExecutorInterface;
-use Alama\Arazzo\Protocol\Http\Execution\ParameterRouter;
-use Alama\Arazzo\Protocol\Http\Execution\RequestSchemaValidator;
 use Alama\Arazzo\Protocol\Http\Resolver\OpenApiOperationResolver;
-use Psr\Http\Message\RequestInterface as Psr7Request;
+use Psr\Http\Message\RequestInterface;
 
 /**
  * @internal stays out of the advertised contract; not part of the public API surface
@@ -35,10 +33,6 @@ final class HttpStepExecutor implements OperationExecutorPluginInterface
      */
     public const PLUGIN_PRIORITY = 100;
 
-    private readonly RequestValidatorInterface $requestValidator;
-
-    private readonly ParameterRouter $parameterRouter;
-
     public function __construct(
         private OpenApiExecutorInterface $openApiExecutor,
         private OpenApiOperationResolver $operationResolver,
@@ -47,12 +41,8 @@ final class HttpStepExecutor implements OperationExecutorPluginInterface
         private ResponseValidatorInterface $schemaValidator,
         private bool $strictDefault = true,
         private ?IdempotencyKeyInjector $injector = null,
-        ?RequestValidatorInterface $requestValidator = null,
-        ?ParameterRouter $parameterRouter = null,
-    ) {
-        $this->requestValidator = $requestValidator ?? new RequestSchemaValidator($this->operationResolver);
-        $this->parameterRouter = $parameterRouter ?? new ParameterRouter();
-    }
+        private ?RequestValidatorInterface $requestValidator = null,
+    ) {}
 
     public function name(): string
     {
@@ -78,18 +68,18 @@ final class HttpStepExecutor implements OperationExecutorPluginInterface
         $sourcePolicy = $context->getActiveSourcePolicy();
         $timeoutSeconds = $step->flow->timeoutSeconds() ?? $sourcePolicy?->timeoutSeconds();
 
-        $payload = $this->parameterRouter->routeAndCast($resolved->normalized, $payload);
-
-        if ($this->shouldValidateSchema($step, $sourcePolicy?->strictValidation())) {
+        if ($this->requestValidator !== null && $this->shouldValidateSchema($step, $sourcePolicy?->strictValidation())) {
             $this->requestValidator->validateRequest($step, $resolved, $payload, $document);
         }
 
+        /** @var RequestInterface|null $capturedRequest */
         $capturedRequest = null;
         try {
             $response = $this->openApiExecutor->execute(
                 $resolved,
                 $payload,
-                function (Psr7Request $request) use ($context, $step, &$capturedRequest) {
+                function ($request) use ($context, $step, &$capturedRequest) {
+                    /** @var RequestInterface $request */
                     $capturedRequest = $request;
 
                     if ($this->injector !== null) {
