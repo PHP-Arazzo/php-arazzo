@@ -21,7 +21,10 @@ use Alama\Arazzo\Contracts\Spec\StepIo;
 use Alama\Arazzo\Contracts\Spec\SuccessCriterion;
 use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Contracts\Validation\ErrorCollector;
+use Alama\Arazzo\Contracts\Validation\Severity;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
+use Alama\Arazzo\Contracts\Validation\ValidatorPolicy;
+use Alama\Arazzo\Document\Document;
 use Alama\Arazzo\Document\Validator\RuleSet;
 use Alama\Arazzo\Document\Validator\Validator;
 
@@ -47,6 +50,36 @@ it('collects errors and warnings', function (): void {
         ->and($result->errors)->toHaveCount(1)
         ->and($result->errors[0]->code)->toBe('r.a')
         ->and($result->warnings)->toHaveCount(1);
+});
+
+it('applies validator policy to demote errors to warnings during full validation', function (): void {
+    $doc = new ArazzoDocument('1.0.0', new Info('T', null, null, '1'), [], [], new Components([], [], [], []), []);
+    $policy = ValidatorPolicy::default()->withSeverity('r.a', Severity::Warning);
+
+    $validator = new Validator(new RuleSet([new RecordingRule()], $policy));
+    $result = $validator->validate($doc);
+
+    expect($result->isValid())->toBeTrue()
+        ->and($result->errors)->toHaveCount(0)
+        ->and($result->warnings)->toHaveCount(2)
+        ->and($result->warnings[0]->code)->toBe('r.a');
+});
+
+it('configures validator policy through Document::withValidatorPolicy()', function (): void {
+    $policy = ValidatorPolicy::default()->withSeverity('r.a', Severity::Warning);
+    $docFacade = Document::create()
+        ->withRule(new RecordingRule())
+        ->withValidatorPolicy($policy);
+
+    $doc = new ArazzoDocument('1.0.0', new Info('T', null, null, '1'), [], [], new Components([], [], [], []), []);
+    $result = $docFacade->validate($doc);
+
+    $errorCodes = array_map(fn ($e) => $e->code, $result->errors);
+    $warningCodes = array_map(fn ($w) => $w->code, $result->warnings);
+
+    expect($errorCodes)->not->toContain('r.a')
+        ->and($warningCodes)->toContain('r.a')
+        ->and($warningCodes)->toContain('r.a.warn');
 });
 
 it('flags unresolved expressions in action criteria and parameters during full validation', function (): void {

@@ -8,6 +8,7 @@ use Alama\Arazzo\Contracts\Interfaces\ValidationRuleInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Validation\ErrorCollector;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
+use Alama\Arazzo\Contracts\Validation\ValidatorPolicy;
 use Alama\Arazzo\Document\Plugins\ValidationRule\ReceiveStepSuccessCriteriaRule;
 use Alama\Arazzo\Document\Validator\RuleSet;
 
@@ -33,17 +34,26 @@ it('is immutable — withRule returns new instance', function (): void {
         ->and($b->rules())->toHaveCount(1);
 });
 
-it('honours disabled list', function (): void {
-    $set = (new RuleSet([], ['x'], false))
+it('honours disabled list from ValidatorPolicy', function (): void {
+    $policy = ValidatorPolicy::default()->withDisabled('x');
+    $set = (new RuleSet([], $policy))
         ->withRule(new DummyRule('x'))
         ->withRule(new DummyRule('y'));
     $codes = array_map(fn (ValidationRuleInterface $r) => $r->code(), $set->activeRules());
     expect($codes)->toBe(['y']);
 });
 
-it('exposes strict flag via isStrict()', function (): void {
-    expect(RuleSet::default(strict: true)->isStrict())->toBeTrue()
-        ->and(RuleSet::default(strict: false)->isStrict())->toBeFalse();
+it('exposes strict flag via isStrict() from ValidatorPolicy', function (): void {
+    expect(RuleSet::default(ValidatorPolicy::default()->withStrict(true))->isStrict())->toBeTrue()
+        ->and(RuleSet::default(ValidatorPolicy::default()->withStrict(false))->isStrict())->toBeFalse();
+});
+
+it('supports withPolicy immutably', function (): void {
+    $set = RuleSet::default();
+    $newSet = $set->withPolicy(ValidatorPolicy::default()->withDisabled('step.receive_missing_success_criteria'));
+
+    expect($newSet->policy->isDisabled('step.receive_missing_success_criteria'))->toBeTrue()
+        ->and($set->policy->isDisabled('step.receive_missing_success_criteria'))->toBeFalse();
 });
 
 it('registers the receive missing-criteria rule', function (): void {
@@ -65,9 +75,10 @@ it('warns rather than errors when a receive step omits successCriteria', functio
         ->and($receive[0]->strict)->toBeFalse();
 });
 
-it('lets the receive missing-criteria rule be disabled', function (): void {
+it('lets the receive missing-criteria rule be disabled via policy', function (): void {
+    $policy = ValidatorPolicy::default()->withDisabled('step.receive_missing_success_criteria');
     $codes = array_map(fn (ValidationRuleInterface $r) => $r->code(),
-        RuleSet::default(disabled: ['step.receive_missing_success_criteria'])->activeRules());
+        RuleSet::default($policy)->activeRules());
 
     expect($codes)->not->toContain('step.receive_missing_success_criteria');
 });

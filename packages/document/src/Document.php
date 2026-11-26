@@ -8,6 +8,7 @@ use Alama\Arazzo\Contracts\Data\KnownOperations;
 use Alama\Arazzo\Contracts\Interfaces\ValidationRuleInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Validation\ValidationResult;
+use Alama\Arazzo\Contracts\Validation\ValidatorPolicy;
 use Alama\Arazzo\Document\Parser\DecodePolicy;
 use Alama\Arazzo\Document\Parser\Loader;
 use Alama\Arazzo\Document\Parser\Parser;
@@ -31,22 +32,25 @@ final readonly class Document implements DocumentInterface
     /** @var array<string, ValidationRuleInterface> */
     private array $extraRules;
 
+    private ValidatorPolicy $validatorPolicy;
+
     /**
      * Public autowirable constructor for enterprise DI containers.
      *
      * @param  array<string, ValidationRuleInterface>  $extraRules
      */
     public function __construct(
-        ?DecodePolicy $decodePolicy = null,
         ?Loader $loader = null,
         ?Parser $parser = null,
         ?Validator $validator = null,
         array $extraRules = [],
+        ?ValidatorPolicy $validatorPolicy = null,
     ) {
-        $this->loader = $loader ?? ($decodePolicy !== null ? Loader::defineDecodePolicy($decodePolicy) : Loader::new());
+        $this->loader = $loader ?? Loader::new();
         $this->parser = $parser ?? new Parser();
         $this->validator = $validator;
         $this->extraRules = $extraRules;
+        $this->validatorPolicy = $validatorPolicy ?? ValidatorPolicy::default();
     }
 
     public static function create(): self
@@ -61,6 +65,7 @@ final readonly class Document implements DocumentInterface
             parser: $this->parser,
             validator: $this->validator,
             extraRules: $this->extraRules,
+            validatorPolicy: $this->validatorPolicy,
         );
     }
 
@@ -74,6 +79,18 @@ final readonly class Document implements DocumentInterface
             parser: $this->parser,
             validator: $this->validator,
             extraRules: $extraRules,
+            validatorPolicy: $this->validatorPolicy,
+        );
+    }
+
+    public function withValidatorPolicy(ValidatorPolicy $policy): self
+    {
+        return new self(
+            loader: $this->loader,
+            parser: $this->parser,
+            validator: $this->validator,
+            extraRules: $this->extraRules,
+            validatorPolicy: $policy,
         );
     }
 
@@ -108,7 +125,7 @@ final readonly class Document implements DocumentInterface
             return $this->validator;
         }
 
-        $ruleSet = RuleSet::default();
+        $ruleSet = RuleSet::default($this->validatorPolicy);
         foreach ($this->extraRules as $rule) {
             $ruleSet = $ruleSet->withRule($rule);
         }

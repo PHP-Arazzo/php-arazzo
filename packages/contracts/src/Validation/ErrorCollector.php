@@ -12,25 +12,50 @@ final class ErrorCollector
     /** @var list<Warning> */
     private array $warnings = [];
 
+    public function __construct(
+        private readonly ?ValidatorPolicy $policy = null,
+    ) {}
+
     public function error(string $code, string $message, string $path, ?int $line = null): void
     {
+        $severity = $this->policy?->severityFor($code, Severity::Error) ?? Severity::Error;
+        if ($severity === Severity::Warning) {
+            $this->warnings[] = new Warning($code, $message, $path, $line);
+
+            return;
+        }
+
         $this->errors[] = new Error($code, $message, $path, $line);
     }
 
     public function warning(string $code, string $message, string $path, ?int $line = null): void
     {
+        $severity = $this->policy?->severityFor($code, Severity::Warning) ?? Severity::Warning;
+        if ($severity === Severity::Error) {
+            $this->errors[] = new Error($code, $message, $path, $line);
+
+            return;
+        }
+
         $this->warnings[] = new Warning($code, $message, $path, $line);
     }
 
     public function add(Error|Warning $diagnostic): void
     {
-        if ($diagnostic instanceof Error) {
-            $this->errors[] = $diagnostic;
+        $defaultSeverity = $diagnostic instanceof Error ? Severity::Error : Severity::Warning;
+        $severity = $this->policy?->severityFor($diagnostic->code, $defaultSeverity) ?? $defaultSeverity;
+
+        if ($severity === Severity::Warning) {
+            $this->warnings[] = $diagnostic instanceof Warning
+                ? $diagnostic
+                : new Warning($diagnostic->code, $diagnostic->message, $diagnostic->path, $diagnostic->line);
 
             return;
         }
 
-        $this->warnings[] = $diagnostic;
+        $this->errors[] = $diagnostic instanceof Error
+            ? $diagnostic
+            : new Error($diagnostic->code, $diagnostic->message, $diagnostic->path, $diagnostic->line);
     }
 
     /** @return list<Error> */

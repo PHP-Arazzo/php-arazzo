@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Document\Validator;
 
 use Alama\Arazzo\Contracts\Interfaces\ValidationRuleInterface;
+use Alama\Arazzo\Contracts\Validation\ValidatorPolicy;
+use Alama\Arazzo\Document\Plugins\ValidationRule\DocUnknownFieldRule;
+use Alama\Arazzo\Document\Plugins\ValidationRule\ReceiveStepSuccessCriteriaRule;
 use Alama\Arazzo\Document\Registries\ValidationRuleRegistry;
 
 /**
- * Immutable set of active validation rules and strictness/disable filters.
+ * Immutable set of active validation rules and policy filters.
  *
  * @internal stays out of the advertised contract; not part of the public API surface
  */
@@ -16,12 +19,10 @@ final readonly class RuleSet
 {
     /**
      * @param  list<ValidationRuleInterface>  $rules
-     * @param  list<string>  $disabled
      */
     public function __construct(
         public array $rules,
-        public array $disabled = [],
-        public bool $strict = true,
+        public ValidatorPolicy $policy = new ValidatorPolicy(),
     ) {}
 
     /**
@@ -29,18 +30,17 @@ final readonly class RuleSet
      * which auto-discovers all `#[AsValidationRulePlugin]` rules across installed
      * packages (`arazzo-document`, `arazzo-expression`, protocol packages, and
      * user applications).
-     *
-     * @param  list<string>  $disabled
      */
-    public static function default(
-        array $disabled = [],
-        bool $strict = true,
-    ): self {
-        return new self(
-            ValidationRuleRegistry::create()->all(),
-            $disabled,
-            $strict,
-        );
+    public static function default(?ValidatorPolicy $policy = null): self
+    {
+        $policy ??= ValidatorPolicy::default();
+        $rules = ValidationRuleRegistry::create()->all();
+
+        if (!$policy->isStrict()) {
+            $rules = self::applyStrictness($rules, false);
+        }
+
+        return new self($rules, $policy);
     }
 
     public function withRule(ValidationRuleInterface $rule): self
@@ -50,7 +50,33 @@ final readonly class RuleSet
             static fn (ValidationRuleInterface $existing): bool => $existing->code() !== $rule->code(),
         ));
 
-        return new self([...$filtered, $rule], $this->disabled, $this->strict);
+        return new self([...$filtered, $rule], $this->policy);
+    }
+
+    public function withPolicy(ValidatorPolicy $policy): self
+    {
+        $rules = $this->rules;
+        if ($policy->isStrict() !== $this->policy->isStrict()) {
+            $rules = self::applyStrictness($rules, $policy->isStrict());
+        }
+
+        return new self($rules, $policy);
+    }
+
+    /**
+     * @param  list<ValidationRuleInterface>  $rules
+     * @return list<ValidationRuleInterface>
+     */
+    private static function applyStrictness(array $rules, bool $strict): array
+    {
+        return array_map(
+            static fn (ValidationRuleInterface $rule): ValidationRuleInterface => match (true) {
+                $rule instanceof DocUnknownFieldRule => new DocUnknownFieldRule($strict),
+                $rule instanceof ReceiveStepSuccessCriteriaRule => new ReceiveStepSuccessCriteriaRule($strict),
+                default => $rule,
+            },
+            $rules,
+        );
     }
 
     /** @return list<ValidationRuleInterface> */
@@ -64,12 +90,12 @@ final readonly class RuleSet
     {
         return array_values(array_filter(
             $this->rules,
-            fn (ValidationRuleInterface $r): bool => !in_array($r->code(), $this->disabled, true),
+            fn (ValidationRuleInterface $r): bool => !$this->policy->isDisabled($r->code()),
         ));
     }
 
     public function isStrict(): bool
     {
-        return $this->strict;
+        return $this->policy->isStrict();
     }
 }
