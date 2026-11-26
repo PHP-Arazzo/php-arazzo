@@ -4,16 +4,11 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Expression\Support;
 
-use Alama\Arazzo\Contracts\Spec\Action\Action;
-use Alama\Arazzo\Contracts\Spec\Action\FailureAction;
-use Alama\Arazzo\Contracts\Spec\Action\SuccessAction;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Expression;
-use Alama\Arazzo\Contracts\Spec\Parameter;
 use Alama\Arazzo\Contracts\Spec\Reusable;
 use Alama\Arazzo\Contracts\Spec\Selector;
 use Alama\Arazzo\Contracts\Spec\Step;
-use Alama\Arazzo\Contracts\Spec\SuccessCriterion;
 use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Contracts\Validation\SymbolTable;
 use Alama\Arazzo\Contracts\Validation\WorkflowSymbols;
@@ -25,7 +20,12 @@ use Alama\Arazzo\Expression\Enum\ExpressionContext;
  */
 final class ExpressionWalker
 {
-    private const string RUNTIME_EXPR_PATTERN = '/\{\$([^}]+)\}|\$\{([^}]+)\}|\$(?:inputs|outputs|steps|workflows|sourceDescriptions|components|response|request|url|method|statusCode|message|self)(?:[A-Za-z0-9_\-\.#~%@+:\/]+|\b)/';
+    private ActionWalker $actionWalker;
+
+    public function __construct(?ActionWalker $actionWalker = null)
+    {
+        $this->actionWalker = $actionWalker ?? new ActionWalker();
+    }
 
     /**
      * @return iterable<ExpressionSite>
@@ -68,14 +68,14 @@ final class ExpressionWalker
     /** @return iterable<ExpressionSite> */
     private function walkWorkflowActions(Workflow $wf, int $wi, ?WorkflowSymbols $syms): iterable
     {
-        yield from $this->walkActions(
+        yield from $this->actionWalker->walk(
             $wf->successActions->all(),
             "/workflows/{$wi}/successActions",
             $syms,
             null,
             ExpressionContext::WorkflowSuccessActions,
         );
-        yield from $this->walkActions(
+        yield from $this->actionWalker->walk(
             $wf->failureActions->all(),
             "/workflows/{$wi}/failureActions",
             $syms,
@@ -122,7 +122,7 @@ final class ExpressionWalker
     /** @return iterable<ExpressionSite> */
     private function walkSuccessCriteria(Step $s, int $wi, int $si, ?WorkflowSymbols $syms): iterable
     {
-        yield from $this->walkCriteria(
+        yield from $this->actionWalker->walkCriteria(
             $s->io->successCriteria,
             "/workflows/{$wi}/steps/{$si}/successCriteria",
             $syms,
@@ -142,94 +142,16 @@ final class ExpressionWalker
     /** @return iterable<ExpressionSite> */
     private function walkStepFlow(Step $s, int $wi, int $si, ?WorkflowSymbols $syms): iterable
     {
-        yield from $this->walkActions($s->flow->onSuccess, "/workflows/{$wi}/steps/{$si}/onSuccess", $syms, $s->stepId, ExpressionContext::OnSuccess);
-        yield from $this->walkActions($s->flow->onFailure, "/workflows/{$wi}/steps/{$si}/onFailure", $syms, $s->stepId, ExpressionContext::OnFailure);
-        yield from $this->walkActions($s->flow->onTimeout, "/workflows/{$wi}/steps/{$si}/onTimeout", $syms, $s->stepId, ExpressionContext::OnFailure);
-        yield from $this->walkActions($s->flow->onCancel, "/workflows/{$wi}/steps/{$si}/onCancel", $syms, $s->stepId, ExpressionContext::OnFailure);
-    }
+        $flows = [
+            'onSuccess' => [$s->flow->onSuccess, ExpressionContext::OnSuccess],
+            'onFailure' => [$s->flow->onFailure, ExpressionContext::OnFailure],
+            'onTimeout' => [$s->flow->onTimeout, ExpressionContext::OnFailure],
+            'onCancel' => [$s->flow->onCancel, ExpressionContext::OnFailure],
+        ];
 
-    /**
-     * @param  array<Action|Reusable>  $actions
-     * @return iterable<ExpressionSite>
-     */
-    private function walkActions(array $actions, string $basePointer, ?WorkflowSymbols $syms, ?string $stepId, ExpressionContext $context): iterable
-    {
-        foreach ($actions as $ai => $action) {
-            if ($action instanceof Reusable) {
-                continue;
-            }
-
-            $actionPointer = "{$basePointer}/{$ai}";
-
-            if ($action instanceof SuccessAction || $action instanceof FailureAction) {
-                yield from $this->walkCriteria($action->criteria, "{$actionPointer}/criteria", $syms, $stepId, $context);
-            }
-
-            if (property_exists($action, 'parameters') && is_array($action->parameters)) {
-                yield from $this->walkActionParameters($action->parameters, "{$actionPointer}/parameters", $syms, $stepId, $context);
-            }
+        foreach ($flows as $field => [$actions, $ctx]) {
+            yield from $this->actionWalker->walk($actions, "/workflows/{$wi}/steps/{$si}/{$field}", $syms, $s->stepId, $ctx);
         }
-    }
-
-    /**
-     * @param  array<mixed>  $parameters
-     * @return iterable<ExpressionSite>
-     */
-    private function walkActionParameters(array $parameters, string $basePointer, ?WorkflowSymbols $syms, ?string $stepId, ExpressionContext $context): iterable
-    {
-        if (array_is_list($parameters)) {
-            foreach ($parameters as $pi => $p) {
-                if ($p instanceof Reusable) {
-                    continue;
-                }
-                if ($p instanceof Parameter) {
-                    yield from $this->extract($p->value, "{$basePointer}/{$pi}/value", $syms, $stepId, $context);
-                }
-            }
-        } else {
-            foreach ($parameters as $name => $value) {
-                yield from $this->extract($value, "{$basePointer}/{$name}", $syms, $stepId, $context);
-            }
-        }
-    }
-
-    /**
-     * @param  list<SuccessCriterion>  $criteria
-     * @return iterable<ExpressionSite>
-     */
-    private function walkCriteria(array $criteria, string $basePointer, ?WorkflowSymbols $syms, ?string $stepId, ExpressionContext $context): iterable
-    {
-        foreach ($criteria as $ci => $c) {
-            if ($c->context !== null) {
-                foreach ($this->extractExpressionTokens($c->context) as $token) {
-                    yield new ExpressionSite("{$basePointer}/{$ci}/context", new Expression($token), $syms, $stepId, $context);
-                }
-            }
-            foreach ($this->extractExpressionTokens($c->condition) as $token) {
-                yield new ExpressionSite("{$basePointer}/{$ci}/condition", new Expression($token), $syms, $stepId, $context);
-            }
-        }
-    }
-
-    /** @return list<string> */
-    private function extractExpressionTokens(string $text): array
-    {
-        $tokens = [];
-        if (preg_match_all(self::RUNTIME_EXPR_PATTERN, $text, $matches, PREG_SET_ORDER) !== false) {
-            foreach ($matches as $match) {
-                $raw = $match[0];
-                if (str_starts_with($raw, '{') && str_ends_with($raw, '}')) {
-                    $inner = trim(!empty($match[1]) ? $match[1] : (!empty($match[2]) ? $match[2] : ''));
-                    if ($inner !== '') {
-                        $tokens[] = str_starts_with($inner, '$') ? $inner : '$'.$inner;
-                    }
-                } else {
-                    $tokens[] = rtrim($raw, " \t\n\r,;)");
-                }
-            }
-        }
-
-        return $tokens;
     }
 
     /**
@@ -239,10 +161,8 @@ final class ExpressionWalker
     {
         if ($value instanceof Expression) {
             yield new ExpressionSite($pointer, $value, $syms, $stepId, $context);
-        } elseif ($value instanceof Selector) {
-            if ($value->context !== null && str_starts_with($value->context, '$')) {
-                yield new ExpressionSite("{$pointer}/context", new Expression('{'.$value->context.'}'), $syms, $stepId, $context);
-            }
+        } elseif ($value instanceof Selector && $value->context !== null && str_starts_with($value->context, '$')) {
+            yield new ExpressionSite("{$pointer}/context", new Expression('{'.$value->context.'}'), $syms, $stepId, $context);
         }
     }
 }
