@@ -71,6 +71,27 @@ it('validates document with known operations', function (): void {
         ->and($resultFailed->errors[0]->code)->toBe('step.operationid_resolves');
 });
 
+it('validates document with known operations for operationPath', function (): void {
+    $doc = createDocument();
+    $arazzoDoc = $doc->loadFromYaml("arazzo: '1.0.0'\ninfo:\n  title: Test\n  version: '1.0'\nsourceDescriptions:\n  - name: myApi\n    url: https://example.com/api.json\n    type: openapi\nworkflows:\n  - workflowId: wf1\n    steps:\n      - stepId: step1\n        operationPath: '{\$sourceDescriptions.myApi.url}#/paths/~1pets/get'\n");
+
+    // Without knowing operations, remote source is skipped per ADR-005
+    $resultNoOps = $doc->validate($arazzoDoc);
+    expect($resultNoOps->isValid())->toBeTrue();
+
+    // With known operations that do not contain /paths/~1pets/get, it fails validation
+    $knownOps = KnownOperations::none()->withSource('myApi', ['/paths/~1other/get']);
+    $resultFailed = $doc->validate($arazzoDoc, $knownOps);
+    expect($resultFailed->isValid())->toBeFalse()
+        ->and($resultFailed->errors[0]->code)->toBe('step.operationpath_resolves')
+        ->and($resultFailed->errors[0]->path)->toBe('/workflows/0/steps/0/operationPath');
+
+    // With known operations containing the path, it passes validation
+    $knownOpsPass = KnownOperations::none()->withSource('myApi', ['/paths/~1pets/get']);
+    $resultPass = $doc->validate($arazzoDoc, $knownOpsPass);
+    expect($resultPass->isValid())->toBeTrue();
+});
+
 it('validates workflow runtime inputs', function (): void {
     $doc = createDocument();
     $yaml = <<<'YAML'

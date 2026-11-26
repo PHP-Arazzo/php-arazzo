@@ -36,6 +36,10 @@ final readonly class SourceDescription
 
     public function scheme(): string
     {
+        if (preg_match('/^[a-zA-Z]:[\\\\\/]/', $this->url) === 1) {
+            return 'file';
+        }
+
         $raw = parse_url($this->url, PHP_URL_SCHEME);
 
         return (is_string($raw) && $raw !== '') ? strtolower($raw) : 'file';

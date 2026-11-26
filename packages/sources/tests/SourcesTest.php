@@ -96,6 +96,28 @@ it('derives KnownOperations suitable for Rule 03 validation', function (): void 
         ->and($known->has('petstore', 'listPets'))->toBeTrue();
 });
 
+it('infers OpenAPI source type from content when type is null and derives KnownOperations', function (): void {
+    $file = __DIR__.'/fixtures/document/openapi30.yaml';
+    $source = new SourceDescription('petstore', $file, null);
+
+    $arazzoDoc = new ArazzoDocument(
+        arazzo: '1.1.0',
+        info: new Info('Test', null, null, '1.0.0'),
+        sourceDescriptions: [$source],
+        workflows: [],
+        components: new Components([], [], [], []),
+        specificationExtensions: [],
+    );
+
+    $sources = Sources::create();
+    $known = $sources->knownOperations($arazzoDoc, __DIR__);
+
+    expect($known)->toBeInstanceOf(KnownOperations::class)
+        ->and($known->has('petstore', 'listPets'))->toBeTrue()
+        ->and($known->has('petstore', '/paths/~1pets/get'))->toBeTrue()
+        ->and($known->has('petstore', '#/paths/~1pets/get'))->toBeTrue();
+});
+
 it('supports immutable rebinding of HTTP client and fetchers', function (): void {
     $sources = Sources::create();
 
