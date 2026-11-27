@@ -9,6 +9,7 @@
     stopOnFailure="false"
     executionOrder="random"
     failOnWarning="true"
+    displayDetailsOnTestsThatTriggerWarnings="true"
     displayDetailsOnTestsThatTriggerDeprecations="false"
     failOnDeprecation="false"
     failOnRisky="true"
