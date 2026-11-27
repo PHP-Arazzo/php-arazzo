@@ -30,3 +30,12 @@ arch('protocol-http stays vendor-agnostic on observability (ADR-010 Tier 2)')
     ->expect('Alama\Arazzo\Protocol\Http')
     ->not->toUse('OpenTelemetry')
     ->not->toUse('Psr\EventDispatcher');
+
+arch('protocol-http enums live in the Enum namespace')
+    ->expect('Alama\Arazzo\Protocol\Http\Enum')
+    ->toBeEnums();
+
+arch('protocol-http policy namespace does not contain enums')
+    ->expect('Alama\Arazzo\Protocol\Http\Policy')
+    ->classes()
+    ->not->toBeEnums();

@@ -13,6 +13,9 @@ it('throws on missing file', function (): void {
 });
 
 it('throws on unreadable file', function (): void {
+    if (PHP_OS_FAMILY === 'Windows') {
+        test()->markTestSkipped('POSIX file permissions (chmod 0) are not supported on Windows NTFS.');
+    }
     $tmp = tempnam(sys_get_temp_dir(), 'arazzo').'.yaml';
     file_put_contents($tmp, "arazzo: '1.0.0'\ninfo:\n  title: T\n  version: '1'\nworkflows: []\n");
     chmod($tmp, 0);

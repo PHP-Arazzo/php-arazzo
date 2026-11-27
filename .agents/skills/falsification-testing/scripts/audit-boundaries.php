@@ -31,8 +31,12 @@ foreach ($argv as $i => $a) {
 }
 
 $srcPath = $arg;
-if (!str_starts_with($arg, '/') && file_exists("{$root}/{$arg}")) {
-    $srcPath = "{$root}/{$arg}";
+if (DIRECTORY_SEPARATOR === '\\' && preg_match('#^/([a-zA-Z])/(.*)$#', $arg, $m)) {
+    $srcPath = "{$m[1]}:/{$m[2]}";
+}
+$isAbs = str_starts_with($srcPath, '/') || str_starts_with($srcPath, '\\') || preg_match('/^[a-zA-Z]:[\\\\\/]/', $srcPath) === 1;
+if (!$isAbs && file_exists("{$root}/{$srcPath}")) {
+    $srcPath = "{$root}/{$srcPath}";
 }
 
 $isFile = is_file($srcPath);
@@ -89,13 +93,20 @@ if ($isFile && $content !== '') {
 $hits = [];
 $misses = [];
 if ($testsDir !== null) {
-    if (!str_starts_with($testsDir, '/')) {
+    if (DIRECTORY_SEPARATOR === '\\' && preg_match('#^/([a-zA-Z])/(.*)$#', $testsDir, $m)) {
+        $testsDir = "{$m[1]}:/{$m[2]}";
+    }
+    $isAbs = str_starts_with($testsDir, '/') || str_starts_with($testsDir, '\\') || preg_match('/^[a-zA-Z]:[\\\\\/]/', $testsDir) === 1;
+    if (!$isAbs) {
         $testsDir = "{$root}/{$testsDir}";
     }
 }
 if ($testsDir === null) {
     // infer tests dir from the source path: packages/<pkg>/src/... -> packages/<pkg>/tests
-    if (preg_match('#^packages/([^/]+)/src/#', $isFile ? $srcPath : $arg, $m)) {
+    $normSrc = str_replace('\\', '/', $isFile ? $srcPath : $arg);
+    $normRoot = rtrim(str_replace('\\', '/', $root), '/');
+    $relSrc = str_starts_with($normSrc, $normRoot.'/') ? substr($normSrc, strlen($normRoot) + 1) : $normSrc;
+    if (preg_match('#^packages/([^/]+)/src/#', $relSrc, $m)) {
         $testsDir = "{$root}/packages/{$m[1]}/tests";
     } elseif (is_dir("{$root}/packages/core/tests")) {
         $testsDir = "{$root}/packages/core/tests";

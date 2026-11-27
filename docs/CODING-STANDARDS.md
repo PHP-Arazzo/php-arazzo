@@ -69,14 +69,23 @@ These standards apply to every package in the `php-arazzo` monorepo and are bind
 
 ## 4. Design Metrics & Single-Concern Decomposition
 
-To prevent architectural degradation and avoid CI quality gate rejections, every class in the monorepo must strictly adhere to PHPMD design and codesize thresholds:
+To prevent architectural degradation and avoid CI quality gate rejections, every class in the monorepo must strictly adhere to PHPMD design and codesize thresholds and PHPStan architectural rules:
 
 1. **Design Metric Ceilings:**
    - **`CouplingBetweenObjects` (CBO) ≤ 13:** A class must not couple with more than 13 unique external classes (excluding primitive scalar types).
    - **`ExcessiveClassComplexity` (WMC) ≤ 50:** Weighted Methods per Class cyclomatic complexity must not exceed 50.
    - **`TooManyPublicMethods` ≤ 10:** Public methods must not exceed 10 (excluding standard getters and withers).
+   - **Method & Constructor Parameter Count ≤ 5 (`arazzo.custom.maxParameterCount`):** Methods and constructors must not exceed 5 parameters. Collapse multiple parameters into cohesive Value Objects or DTOs.
 
-2. **Single-Concern Collaborator Decomposition Guidance:**
+2. **Facade Seam Policy:**
+   - Cross-package references from library code must target `*Interface` contracts, allow-listed value types, or throwables.
+   - Non-facade code within library packages must NEVER reference another library package's concrete entry-point facade (`ExpressionEngine`, `Document`, `Runner`, `AsyncRunner`, `HttpProtocol`, `SourceGraph`). Always reference their contracts (`*Interface`) or internal workers (e.g. `ExpressionEvaluator`) instead. Facade-to-facade transitions are permitted only between entry-point facades.
+
+3. **Domain Enums Namespace Convention:**
+   - Domain enums must reside exclusively in the package's `Enum\` sub-namespace (e.g., `Alama\Arazzo\<Package>\Enum`), matching monorepo conventions (`Spec\Enum`, `Evaluation\Enum`, `Protocol\Http\Enum`).
+   - Never place enums directly inside `Policy\` or DTO namespaces subject to `->toBeReadonly()` Pest architecture assertions, as PHP enums cannot be declared `readonly`.
+
+4. **Single-Concern Collaborator Decomposition Guidance:**
    - When a class approaches or exceeds metric ceilings (`ExcessiveClassComplexity` > 50 or `CouplingBetweenObjects` > 13), do not silence the rule or add baseline entries.
    - Decompose the class into cohesive, single-concern collaborators marked `@internal` to keep implementation details off the public API surface.
    - Separate orchestration/coordination from evaluation, schema validation, and transport execution.
