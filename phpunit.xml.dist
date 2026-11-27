@@ -39,6 +39,12 @@
         <testsuite name="Arazzo Engine Test Suite">
             <directory>packages/engine/tests</directory>
         </testsuite>
+        <testsuite name="Arazzo Sources Test Suite">
+            <directory>packages/sources/tests</directory>
+        </testsuite>
+        <testsuite name="Arazzo Protocol HTTP Test Suite">
+            <directory>packages/protocol-http/tests</directory>
+        </testsuite>
         <testsuite name="Arazzo Core Test Suite">
             <directory>packages/core/tests</directory>
         </testsuite>
@@ -65,6 +71,7 @@
             <directory suffix=".php">packages/evaluation/src</directory>
             <directory suffix=".php">packages/document/src</directory>
             <directory suffix=".php">packages/sources/src</directory>
+            <directory suffix=".php">packages/protocol-http/src</directory>
             <directory suffix=".php">packages/engine/src</directory>
             <directory suffix=".php">packages/runner/src</directory>
             <directory suffix=".php">packages/cli/src</directory>

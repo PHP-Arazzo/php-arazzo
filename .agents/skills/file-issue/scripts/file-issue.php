@@ -41,7 +41,11 @@ require $autoload;
 
 spl_autoload_register(function (string $class): void {
     if (str_starts_with($class, 'Alama\\Tools\\IssueIntake\\')) {
-        $file = dirname(__DIR__, 4).'/tools/issue-intake/src/'.str_replace('\\', '/', substr($class, strlen('Alama\\Tools\\IssueIntake\\'))).'.php';
+        $relative = str_replace('\\', '/', substr($class, strlen('Alama\\Tools\\IssueIntake\\'))).'.php';
+        $file = dirname(__DIR__, 4).'/tools/issue-intake/src/'.$relative;
+        if (!is_file($file)) {
+            $file = dirname(__DIR__, 4).'/dev-tools/tools/issue-intake/src/'.$relative;
+        }
         if (is_file($file)) {
             require $file;
         }
@@ -87,9 +91,10 @@ function usage(): void
  */
 function run(array $command): array
 {
+    $nullDevice = PHP_OS_FAMILY === 'Windows' ? 'NUL' : '/dev/null';
     $pipes = [];
     $process = proc_open($command, [
-        0 => ['file', '/dev/null', 'r'],
+        0 => ['file', $nullDevice, 'r'],
         1 => ['pipe', 'w'],
         2 => ['pipe', 'w'],
     ], $pipes);
@@ -356,7 +361,7 @@ $labels = $packageEpic
     ? [$level, 'package:'.$package, 'priority:'.$priority]
     : [$kind, $level, 'package:'.$package, 'priority:'.$priority];
 
-$root = dirname(__DIR__, 3);
+$root = dirname(__DIR__, 4);
 $findings = (new Validator($schema, new GitPermalinkResolver($root)))->validate([
     'body' => $body,
     'labels' => $labels,
@@ -383,11 +388,11 @@ file_put_contents($bodyFile, $body);
 
 $command = $packageEpic
     ? ($edit === null
-        ? [$gh, 'issue', 'create', '--title', $options['title'], '--body-file', $bodyFile, '--label', $level, '--label', 'package:'.$package]
-        : [$gh, 'issue', 'edit', (string) $edit, '--body-file', $bodyFile, '--add-label', $level, '--add-label', 'package:'.$package])
+        ? [$gh, 'issue', 'create', '--title', $options['title'], '--body-file', $bodyFile, '--label', $level, '--label', 'package:'.$package, '--label', 'priority:'.$priority]
+        : [$gh, 'issue', 'edit', (string) $edit, '--body-file', $bodyFile, '--add-label', $level, '--add-label', 'package:'.$package, '--add-label', 'priority:'.$priority])
     : ($edit === null
-        ? [$gh, 'issue', 'create', '--title', $options['title'], '--body-file', $bodyFile, '--label', $kind, '--label', $level]
-        : [$gh, 'issue', 'edit', (string) $edit, '--body-file', $bodyFile, '--add-label', $kind, '--add-label', $level]);
+        ? [$gh, 'issue', 'create', '--title', $options['title'], '--body-file', $bodyFile, '--label', $kind, '--label', $level, '--label', 'package:'.$package, '--label', 'priority:'.$priority]
+        : [$gh, 'issue', 'edit', (string) $edit, '--body-file', $bodyFile, '--add-label', $kind, '--add-label', $level, '--add-label', 'package:'.$package, '--add-label', 'priority:'.$priority]);
 
 // --parent is only meaningful on create; on edit the sub-issue link already exists,
 // and re-passing it makes `gh` fail with "Issue may not contain duplicate sub-issues"
