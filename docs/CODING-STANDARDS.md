@@ -56,6 +56,10 @@ These standards apply to every package in the `php-arazzo` monorepo and are bind
      $operation = new NormalizedOpenApiOperation('/pets', 'get', 'https://api.example.com', [], [], [], [], [], []);
      ```
 
+4. **Encapsulate queries over nested payloads on Outcome and Result DTOs.**
+   - Outcome and result value objects (e.g. `StepExecutionOutcome`, `StepExecutionResult`) must encapsulate queries over their internal request/response records (e.g. `$outcome->targetUrl()`, `$outcome->requestMethod()`, `$outcome->isFailed()`).
+   - Consumers and taxonomy services (e.g. `ErrorClassifier`) must accept the outcome DTO directly rather than forcing caller-side decomposition of raw arrays.
+
 ## 3. Symmetric Decomposition & Quality Gates
 
 1. **Decompose peers symmetrically.**
@@ -82,3 +86,8 @@ To prevent architectural degradation and avoid CI quality gate rejections, every
    - Separate orchestration/coordination from evaluation, schema validation, and transport execution.
    - Group related parameter sets and domain concepts into rich Value Objects or DTOs to collapse parameter counts and coupling footprints.
    - Maintain entry points as thin facades that delegate to internal collaborators.
+
+3. **Preserve Clean Interface Boundaries Under Coupling Constraints:**
+   - Never use duck-typing, union types, or proxy aliasing in constructors to evade CBO ceilings. Keep domain interface contracts clean and separate responsibilities.
+   - High-traffic hub classes (`StepExecutor`, `HttpStepExecutor`, `WorkflowExecutor`) operate near the CBO ceiling (≤ 13); inspect class coupling before introducing new type imports.
+   - Identifier length is strictly governed by `arazzo.custom.identifierLength` (allowed range: 3–30 characters).

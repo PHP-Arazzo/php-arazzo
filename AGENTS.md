@@ -34,6 +34,9 @@ composer run check-baselines  # Verify baseline policy compliance (no silent sup
 composer run format           # Format codebase with Laravel Pint
 ```
 
+- **Targeted Feedback Loops:** When developing or debugging, run the targeted package or file test suite first (e.g. `vendor/bin/pest packages/runner/tests/Sync/StepExecutorFailureHandlingTest.php`) before invoking full-monorepo test runs.
+- **Identifier Length Limit:** Custom PHPStan rule (`arazzo.custom.identifierLength`) strictly bounds identifier length between 3 and 30 characters.
+
 On hosts with GNU Make available, `make verify` executes the full pre-push gate.
 
 ## 4. Architectural Pointers & Standards
