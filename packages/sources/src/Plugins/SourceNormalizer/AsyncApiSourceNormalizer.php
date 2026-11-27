@@ -108,49 +108,71 @@ final class AsyncApiSourceNormalizer implements SourceNormalizerInterface
             }
         }
 
-        // Index operations defined in AsyncAPI 3.x
-        if ($version === '3.0' && isset($rawDocument['operations']) && is_array($rawDocument['operations'])) {
-            /** @var array<string, mixed> $operations */
-            $operations = $rawDocument['operations'];
-            foreach ($operations as $opKey => $opData) {
-                if (!is_array($opData)) {
-                    continue;
-                }
-
-                $channelRef = $opData['channel']['$ref'] ?? null;
-                if (is_string($channelRef)) {
-                    $refKey = basename($channelRef);
-                    $targetResolved = $index[$channelRef] ?? $index['#/channels/'.$refKey] ?? $index[$refKey] ?? null;
-                    if ($targetResolved !== null) {
-                        $index[(string) $opKey] = $targetResolved;
-                        $index['$sourceDescriptions.'.$source->name.'.'.$opKey] = $targetResolved;
-                    }
-                }
-            }
-        }
-
-        // Index operationIds defined in AsyncAPI 2.x
-        if ($version === '2.0' && isset($rawDocument['channels']) && is_array($rawDocument['channels'])) {
-            /** @var array<string, mixed> $rawChannels */
-            $rawChannels = $rawDocument['channels'];
-            foreach ($rawChannels as $channelKey => $channelData) {
-                if (!is_array($channelData)) {
-                    continue;
-                }
-
-                $targetResolved = $index[(string) $channelKey];
-
-                foreach (['publish', 'subscribe'] as $action) {
-                    $opId = $channelData[$action]['operationId'] ?? null;
-                    if (is_string($opId) && $opId !== '') {
-                        $index[$opId] = $targetResolved;
-                        $index['$sourceDescriptions.'.$source->name.'.'.$opId] = $targetResolved;
-                    }
-                }
-            }
+        if ($version === '3.0') {
+            $this->indexAsyncApi3Operations($index, $rawDocument, $source);
+        } elseif ($version === '2.0') {
+            $this->indexAsyncApi2Operations($index, $rawDocument, $source);
         }
 
         return $index;
+    }
+
+    /**
+     * @param  array<string, ResolvedOperation>  $index
+     * @param  array<string, mixed>  $rawDocument
+     */
+    private function indexAsyncApi3Operations(array &$index, array $rawDocument, SourceDescription $source): void
+    {
+        if (!isset($rawDocument['operations']) || !is_array($rawDocument['operations'])) {
+            return;
+        }
+
+        /** @var array<string, mixed> $operations */
+        $operations = $rawDocument['operations'];
+        foreach ($operations as $opKey => $opData) {
+            if (!is_array($opData)) {
+                continue;
+            }
+
+            $channelRef = $opData['channel']['$ref'] ?? null;
+            if (is_string($channelRef)) {
+                $refKey = basename($channelRef);
+                $targetResolved = $index[$channelRef] ?? $index['#/channels/'.$refKey] ?? $index[$refKey] ?? null;
+                if ($targetResolved !== null) {
+                    $index[(string) $opKey] = $targetResolved;
+                    $index['$sourceDescriptions.'.$source->name.'.'.$opKey] = $targetResolved;
+                }
+            }
+        }
+    }
+
+    /**
+     * @param  array<string, ResolvedOperation>  $index
+     * @param  array<string, mixed>  $rawDocument
+     */
+    private function indexAsyncApi2Operations(array &$index, array $rawDocument, SourceDescription $source): void
+    {
+        if (!isset($rawDocument['channels']) || !is_array($rawDocument['channels'])) {
+            return;
+        }
+
+        /** @var array<string, mixed> $rawChannels */
+        $rawChannels = $rawDocument['channels'];
+        foreach ($rawChannels as $channelKey => $channelData) {
+            if (!is_array($channelData)) {
+                continue;
+            }
+
+            $targetResolved = $index[(string) $channelKey];
+
+            foreach (['publish', 'subscribe'] as $action) {
+                $opId = $channelData[$action]['operationId'] ?? null;
+                if (is_string($opId) && $opId !== '') {
+                    $index[$opId] = $targetResolved;
+                    $index['$sourceDescriptions.'.$source->name.'.'.$opId] = $targetResolved;
+                }
+            }
+        }
     }
 
     /**

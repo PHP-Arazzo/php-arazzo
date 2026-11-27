@@ -8,35 +8,40 @@ use Alama\Arazzo\Contracts\Spec\NormalizedOpenApiOperation;
 use Alama\Arazzo\Sources\Normalizer\Interfaces\AsyncApiNormalizerInterface;
 
 /**
+ * Normalizes AsyncAPI 2.x documents into NormalizedOpenApiOperation objects.
+ *
  * @internal stays out of the advertised contract; not part of the public API surface
  */
 final class AsyncApi20Normalizer implements AsyncApiNormalizerInterface
 {
     /**
-     * @param  array<string, mixed>  $document
+     * @param  array<string, mixed>  $rawDocument
      * @return array<string, NormalizedOpenApiOperation>
      */
-    public function normalizeChannels(array $document): array
+    public function normalizeChannels(array $rawDocument): array
     {
-        /** @var array<string, mixed> $rawChannels */
-        $rawChannels = $document['channels'] ?? [];
-        /** @var array<string, mixed> $rawServers */
-        $rawServers = $document['servers'] ?? [];
-
         $normalized = [];
+        $channels = $rawDocument['channels'] ?? [];
+        if (!is_array($channels)) {
+            return [];
+        }
 
-        foreach ($rawChannels as $channelKey => $channelData) {
-            $channelKey = (string) $channelKey;
+        /** @var array<string, mixed> $servers */
+        $servers = (isset($rawDocument['servers']) && is_array($rawDocument['servers']))
+            ? $rawDocument['servers']
+            : [];
+
+        foreach ($channels as $channelPath => $channelData) {
             if (!is_array($channelData)) {
                 continue;
             }
 
-            $resolvedServerUrl = $this->resolveServerUrl($channelData, $rawServers);
+            $resolvedServer = AsyncApiServerUrlResolver::resolve($channelData, $servers);
 
-            $operation = new NormalizedOpenApiOperation(
-                path: $channelKey,
+            $normalized[(string) $channelPath] = new NormalizedOpenApiOperation(
+                path: (string) $channelPath,
                 method: 'POST',
-                resolvedServerUrl: $resolvedServerUrl,
+                resolvedServerUrl: $resolvedServer,
                 pathParameters: [],
                 queryParameters: [],
                 headerParameters: [],
@@ -44,82 +49,8 @@ final class AsyncApi20Normalizer implements AsyncApiNormalizerInterface
                 requestBodies: [],
                 responses: [],
             );
-
-            $normalized[$channelKey] = $operation;
         }
 
         return $normalized;
-    }
-
-    /**
-     * @param  array<string, mixed>  $channelData
-     * @param  array<string, mixed>  $servers
-     */
-    private function resolveServerUrl(array $channelData, array $servers): ?string
-    {
-        if ($servers === []) {
-            return null;
-        }
-
-        // 1. Channel-scoped server
-        if (isset($channelData['servers']) && is_array($channelData['servers'])) {
-            foreach ($channelData['servers'] as $serverRef) {
-                $serverKey = is_string($serverRef) ? $serverRef : null;
-                if ($serverKey !== null && isset($servers[$serverKey]) && is_array($servers[$serverKey])) {
-                    return $this->formatServerUrl($servers[$serverKey]);
-                }
-            }
-        }
-
-        // 2. First HTTP/HTTPS server
-        foreach ($servers as $server) {
-            if (is_array($server)) {
-                $protocol = strtolower((string) ($server['protocol'] ?? ''));
-                if ($protocol === 'http' || $protocol === 'https') {
-                    return $this->formatServerUrl($server);
-                }
-            }
-        }
-
-        // 3. First server regardless of protocol
-        foreach ($servers as $server) {
-            if (is_array($server)) {
-                return $this->formatServerUrl($server);
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * @param  array<string, mixed>  $server
-     */
-    private function formatServerUrl(array $server): string
-    {
-        $rawUrl = (string) ($server['url'] ?? '');
-        $protocol = strtolower((string) ($server['protocol'] ?? 'https'));
-
-        // Variable substitution if present
-        if (isset($server['variables']) && is_array($server['variables'])) {
-            foreach ($server['variables'] as $varName => $varDef) {
-                if (is_array($varDef) && isset($varDef['default'])) {
-                    $rawUrl = str_replace('{'.$varName.'}', (string) $varDef['default'], $rawUrl);
-                }
-            }
-        }
-
-        if (preg_match('#^https?://#i', $rawUrl) === 1) {
-            return rtrim($rawUrl, '/');
-        }
-
-        // Strip non-http protocol scheme if present (e.g. mqtt://broker -> broker)
-        if (str_contains($rawUrl, '://')) {
-            $parts = explode('://', $rawUrl, 2);
-            $rawUrl = $parts[1] ?? '';
-        }
-
-        $scheme = ($protocol === 'http' || $protocol === 'https') ? $protocol.'://' : 'https://';
-
-        return rtrim($scheme.ltrim($rawUrl, '/'), '/');
     }
 }

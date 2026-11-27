@@ -4,20 +4,12 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Protocol\Http\Resolver;
 
+use Alama\Arazzo\Document\OperationResolverInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
-use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
-use Alama\Arazzo\Contracts\Spec\Expression;
-use Alama\Arazzo\Contracts\Spec\NormalizedOpenApiOperation;
 use Alama\Arazzo\Contracts\Spec\ResolvedOperation;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
-use Alama\Arazzo\Document\OperationResolverInterface;
-use Alama\Arazzo\Engine\Execution\ReusableParameterResolver;
-use Alama\Arazzo\Evaluation\EvaluationEngine;
-use Alama\Arazzo\Evaluation\EvaluationEngineInterface;
-use Alama\Arazzo\Expression\Data\EvaluationContext;
-use Alama\Arazzo\Expression\ExpressionEngine;
 use Alama\Arazzo\Protocol\Http\Exceptions\AsyncApiResolutionException;
 use Alama\Arazzo\Protocol\Http\Exceptions\AsyncApiStepException;
 use Alama\Arazzo\Sources\Plugins\SourceNormalizer\AsyncApiSourceNormalizer;
@@ -32,12 +24,16 @@ use Throwable;
  */
 final class AsyncApiOperationResolver implements OperationResolverInterface
 {
+    private readonly AsyncApiPathInterpolator $interpolator;
+
     public function __construct(
         private readonly SourcesInterface $sources,
         private readonly AsyncApiSourceNormalizer $normalizer = new AsyncApiSourceNormalizer(),
-        private readonly ?EvaluationEngineInterface $evaluationEngine = null,
+        ?AsyncApiPathInterpolator $interpolator = null,
         private readonly string $basePath = '',
-    ) {}
+    ) {
+        $this->interpolator = $interpolator ?? new AsyncApiPathInterpolator();
+    }
 
     public static function create(?SourcesInterface $sources = null, string $basePath = ''): self
     {
@@ -46,65 +42,38 @@ final class AsyncApiOperationResolver implements OperationResolverInterface
 
     public function supportsStep(Step $step, ArazzoDocument $document): bool
     {
-        return $step->isAsyncAction() || ($step->target->channelPath !== null && $step->target->channelPath !== '');
+        return ($step->isAsyncAction() || ($step->target->channelPath !== null && $step->target->channelPath !== ''))
+            && $document->sourceDescriptions !== null;
     }
 
     public function resolve(Step $step, ArazzoDocument $document): ResolvedOperation
     {
         $channelPath = $step->target->channelPath;
         if ($channelPath === null || $channelPath === '') {
-            if ($step->isReceiveAction()) {
-                throw AsyncApiStepException::missingReceiveChannelPath($step->stepId);
-            }
-            throw AsyncApiStepException::missingSendChannelPath($step->stepId);
+            throw $step->isReceiveAction()
+                ? AsyncApiStepException::missingReceiveChannelPath($step->stepId)
+                : AsyncApiStepException::missingSendChannelPath($step->stepId);
         }
 
-        // Direct HTTP URL fallback
-        if (preg_match('#^https?://#i', $channelPath) === 1) {
-            $syntheticSource = new SourceDescription('direct', $channelPath, SourceType::Asyncapi);
-            $normalized = new NormalizedOpenApiOperation(
-                path: $channelPath,
-                method: 'POST',
-                resolvedServerUrl: $channelPath,
-                pathParameters: [],
-                queryParameters: [],
-                headerParameters: [],
-                cookieParameters: [],
-                requestBodies: [],
-                responses: [],
-            );
-
-            return new ResolvedOperation($syntheticSource, $normalized, operationName: $channelPath);
+        $direct = AsyncApiFallbackResolver::tryDirectHttp($channelPath);
+        if ($direct !== null) {
+            return $direct;
         }
 
-        // Bare channel path without source descriptions (e.g. standalone/mock workflows)
-        if (!str_contains($channelPath, '#') && !str_starts_with($channelPath, '$sourceDescriptions.')) {
-            $asyncSources = array_filter(
-                $document->sourceDescriptions,
-                static fn (SourceDescription $s): bool => $s->type === SourceType::Asyncapi,
-            );
-            if ($asyncSources === []) {
-                $syntheticSource = new SourceDescription('inline', $channelPath, SourceType::Asyncapi);
-                $normalized = new NormalizedOpenApiOperation(
-                    path: $channelPath,
-                    method: 'POST',
-                    resolvedServerUrl: null,
-                    pathParameters: [],
-                    queryParameters: [],
-                    headerParameters: [],
-                    cookieParameters: [],
-                    requestBodies: [],
-                    responses: [],
-                );
-
-                return new ResolvedOperation($syntheticSource, $normalized, operationName: $channelPath);
-            }
+        $inline = AsyncApiFallbackResolver::tryInlineMock($channelPath, $document);
+        if ($inline !== null) {
+            return $inline;
         }
 
-        [$sourceName, $channelReference] = $this->parseChannelReference($channelPath, $step->stepId, $document);
+        return $this->resolveFromSource($channelPath, $step->stepId, $document);
+    }
+
+    private function resolveFromSource(string $channelPath, string $stepId, ArazzoDocument $document): ResolvedOperation
+    {
+        [$sourceName, $channelReference] = $this->parseChannelReference($channelPath, $stepId, $document);
 
         $targetSource = $document->findSource($sourceName)
-            ?? throw AsyncApiResolutionException::sourceNotFound($sourceName, $step->stepId);
+            ?? throw AsyncApiResolutionException::sourceNotFound($sourceName, $stepId);
 
         try {
             $effectiveBasePath = $this->basePath !== ''
@@ -117,15 +86,23 @@ final class AsyncApiOperationResolver implements OperationResolverInterface
             throw AsyncApiResolutionException::documentLoadFailed($sourceName, $e);
         }
 
-        $resolved = $index[$channelReference]
-            ?? $index['#'.$channelReference]
-            ?? $index['#/channels/'.ltrim($channelReference, '/')]
-            ?? $index[ltrim($channelReference, '#')]
-            ?? $index[basename($channelReference)]
+        return $this->lookupChannel($index, $channelReference, $sourceName);
+    }
+
+    /**
+     * @param  array<string, ResolvedOperation>  $index
+     */
+    private function lookupChannel(array $index, string $reference, string $sourceName): ResolvedOperation
+    {
+        $resolved = $index[$reference]
+            ?? $index['#'.$reference]
+            ?? $index['#/channels/'.ltrim($reference, '/')]
+            ?? $index[ltrim($reference, '#')]
+            ?? $index[basename($reference)]
             ?? null;
 
         if ($resolved === null) {
-            throw AsyncApiResolutionException::channelNotFound($channelReference, $sourceName);
+            throw AsyncApiResolutionException::channelNotFound($reference, $sourceName);
         }
 
         return $resolved;
@@ -135,12 +112,12 @@ final class AsyncApiOperationResolver implements OperationResolverInterface
     {
         $channelPath = $step->target->channelPath ?? '';
         if (preg_match('#^https?://#i', $channelPath) === 1) {
-            return $this->interpolatePath($channelPath, $step, $context, $document);
+            return $this->interpolator->interpolate($channelPath, $step, $context, $document);
         }
 
         $resolved = $this->resolve($step, $document);
         $serverUrl = $resolved->normalized->resolvedServerUrl;
-        $path = $this->interpolatePath($resolved->normalized->path, $step, $context, $document);
+        $path = $this->interpolator->interpolate($resolved->normalized->path, $step, $context, $document);
 
         if ($serverUrl === null || $serverUrl === '') {
             return $path;
@@ -160,13 +137,10 @@ final class AsyncApiOperationResolver implements OperationResolverInterface
             $right = $parts[1] ?? '';
 
             if (str_starts_with($left, '{$sourceDescriptions.') && str_ends_with($left, '.url}')) {
-                $sourceName = substr($left, 21, -5);
-
-                return [$sourceName, $right];
+                return [substr($left, 21, -5), $right];
             }
 
             if ($left === '') {
-                // Bare pointer, e.g. #/channels/orderPlaced
                 $singleSource = $this->findSingleAsyncApiSource($document);
                 if ($singleSource !== null) {
                     return [$singleSource->name, '#'.$right];
@@ -190,37 +164,9 @@ final class AsyncApiOperationResolver implements OperationResolverInterface
     {
         $asyncSources = array_filter(
             $document->sourceDescriptions,
-            static fn (SourceDescription $s): bool => $s->type === SourceType::Asyncapi,
+            static fn (SourceDescription $s): bool => $s->type->value === 'asyncapi',
         );
 
         return count($asyncSources) === 1 ? reset($asyncSources) : null;
-    }
-
-    private function interpolatePath(string $path, Step $step, ?WorkflowContext $context, ArazzoDocument $document): string
-    {
-        if (!str_contains($path, '{')) {
-            return $path;
-        }
-
-        $parameters = new ReusableParameterResolver()->resolve($step->io->parameters, $document);
-        if ($parameters === []) {
-            return $path;
-        }
-
-        $evaluator = $this->evaluationEngine ?? new EvaluationEngine(expression: new ExpressionEngine());
-        $evalContext = $context !== null ? new EvaluationContext($context, $step->stepId, $document) : null;
-
-        $replacements = [];
-        foreach ($parameters as $parameter) {
-            $val = $parameter->value;
-            if ($val instanceof Expression && $evalContext !== null) {
-                $val = $evaluator->evaluate($val, $evalContext);
-            }
-
-            $stringVal = is_scalar($val) || $val instanceof \Stringable ? (string) $val : '';
-            $replacements['{'.$parameter->name.'}'] = $stringVal;
-        }
-
-        return strtr($path, $replacements);
     }
 }
