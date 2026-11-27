@@ -79,6 +79,8 @@ To prevent architectural degradation and avoid CI quality gate rejections, every
    - **`CouplingBetweenObjects` (CBO) ≤ 13:** A class must not couple with more than 13 unique external classes (excluding primitive scalar types).
    - **`ExcessiveClassComplexity` (WMC) ≤ 50:** Weighted Methods per Class cyclomatic complexity must not exceed 50.
    - **`TooManyPublicMethods` ≤ 10:** Public methods must not exceed 10 (excluding standard getters and withers).
+   - **Method Cyclomatic Complexity ≤ 10 (`arazzo.custom.cyclomaticComplexity`):** Individual methods must not exceed cyclomatic complexity 10.
+   - **Identifier Length 3–30 chars (`arazzo.custom.identifierLength`):** Method and symbol identifiers must be between 3 and 30 characters.
    - **Method & Constructor Parameter Count ≤ 5 (`arazzo.custom.maxParameterCount`):** Methods and constructors must not exceed 5 parameters. Collapse multiple parameters into cohesive Value Objects or DTOs.
 
 2. **Facade Seam Policy:**
@@ -96,7 +98,14 @@ To prevent architectural degradation and avoid CI quality gate rejections, every
    - Group related parameter sets and domain concepts into rich Value Objects or DTOs to collapse parameter counts and coupling footprints.
    - Maintain entry points as thin facades that delegate to internal collaborators.
 
-5. **Preserve Clean Interface Boundaries Under Coupling Constraints:**
+5. **Attributed Entry-Point Namespace Purity:**
+   - Keep `Alama\Arazzo\Cli\Console\Command\` strictly for Symfony `#[AsCommand]` classes (enforced by `packages/cli/tests/ArchTest.php`).
+   - Place internal command collaborators in dedicated sibling sub-namespaces (e.g., `Console\Run\`, `Console\Config\`).
+
+6. **Concrete Collaborators Over Speculative Interfaces & Untyped Callables:**
+   - Avoid introducing single-implementation `*Interface` contracts purely as test doubles, and avoid untyped `?callable` / `mixed` factory properties on constructors.
+   - Prefer concrete injectable collaborators (non-`final` when subclass-spying is needed in tests, or constructor-injected dependencies); reserve `*Interface` contracts for cross-package ports and multi-implementation extension seams.
+
+7. **Preserve Clean Interface Boundaries Under Coupling Constraints:**
    - Never use duck-typing, union types, or proxy aliasing in constructors to evade CBO ceilings. Keep domain interface contracts clean and separate responsibilities.
    - High-traffic hub classes (`StepExecutor`, `HttpStepExecutor`, `WorkflowExecutor`) operate near the CBO ceiling (≤ 13); inspect class coupling before introducing new type imports.
-   - Identifier length is strictly governed by `arazzo.custom.identifierLength` (allowed range: 3–30 characters).

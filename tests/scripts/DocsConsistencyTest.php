@@ -78,7 +78,14 @@ it('test_agents_doc_windows_guidance', function () {
         ->toContain('8.4')
         ->toContain('Windows')
         ->toContain('PATH')
+        ->toContain('docs/WINDOWS.md')
         ->toContain('reactive');
+
+    $windowsDoc = $repo.'/docs/WINDOWS.md';
+    expect(file_exists($windowsDoc))->toBeTrue('docs/WINDOWS.md must exist');
+    expect((string) file_get_contents($windowsDoc))
+        ->toContain('8.4')
+        ->toContain('bootstrap-worktree.ps1');
 });
 
 it('test_gitattributes_lf_rules', function () {
