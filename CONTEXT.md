@@ -41,6 +41,7 @@ same pull request.
 | **ExecutionSnapshot** | Immutable, content-hashed (`sha256`), sequence-pinned durable freeze of `ExecutionState` written after terminal steps or joins so workers resume crashed or long-parked runs in O(1) without full-history replay (`persist-70`, `persist-120`). _Avoid_: `SuperstepCheckpoint`. |
 | **Runner** | Synchronous, protocol-agnostic, in-process workflow runner facade (`Alama\Arazzo\Runner\Runner`) that executes steps exclusively via `OperationExecutorPluginInterface` plugins. _Avoid_: `RunnerFacade`. |
 | **AsyncRunner** | Durable, queue-driven workflow runner facade (`Alama\Arazzo\Runner\AsyncRunner`) for hosts executing persisted steps and resuming suspended correlations. _Avoid_: `RunnerGraphBuilder`, `AsyncGraphSeams`. |
+| **AsyncApiOperationResolver** | Protocol resolver (`Alama\Arazzo\Protocol\Http\Resolver\AsyncApiOperationResolver`) implementing `OperationResolverInterface` that dereferences an AsyncAPI step's `channelPath` reference against loaded AsyncAPI sources into a `ResolvedOperation`. |
 | **ExecutionResult** | Immutable typed outcome returned by `Runner::run()`, carrying workflow status (`ExecutionStatus`), outputs, per-step `StepResult` verdicts, steps spent, and call stack. |
 | **Preflight** | Execution-readiness gate run before the first step side effect: validates workflow `inputs` against JSON Schema (always when enabled) and step operation resolution when `OperationResolverInterface`s are registered. |
 | **OperationExecutorRegistry** | Concrete singleton registry (`Alama\Arazzo\Runner\Registries\OperationExecutorRegistry`) holding globally registered `OperationExecutorPluginInterface` plugins ordered by `OperationProtocol`, overridden per-instance via `withExecutor()`. |
@@ -82,6 +83,8 @@ same pull request.
 | **Canonical URI** | Historically in `php-arazzo`, `$canonicalUri` held the normalized Retrieval URI. Under Arazzo 1.1.0, the true canonical URI is the Identity URI (`$self`). The property `SourceDocument::$canonicalUri` is retained for backward compatibility and is equivalent to the Retrieval URI. |
 | **SourceIdentity** | Immutable value object (`Alama\Arazzo\Contracts\Spec\SourceIdentity`) binding a document's `retrievalUri`, optional `selfUri`, and resolved `SourceDocument`. |
 | **SourceIdentityCollection** | Immutable collection of `SourceIdentity` entries providing O(1) identity-first then retrieval-location-second lookup, enforcing idempotency and rejecting duplicate `$self` claims from different retrieval locations. |
+| **AsyncApiSourceNormalizer** | Format normalizer (`Alama\Arazzo\Sources\Plugins\SourceNormalizer\AsyncApiSourceNormalizer`) implementing `SourceNormalizerInterface` with `#[AsSourceNormalizerPlugin(SourceType::Asyncapi)]`, indexing AsyncAPI 2.x and 3.x channels and operations into `ResolvedOperation` records. |
+| **Channel address resolution** | Dereferencing a step's `channelPath` reference against an AsyncAPI source to determine the concrete transport URL by combining the synthesized server base URL with the channel path/address and interpolating `{param}` path variables. |
 
 ## 6. Packages
 
@@ -115,6 +118,8 @@ same pull request.
 | ADR-012 | Validator policy, `contracts` placement & collector severity interception | #346 |
 | ADR-013 | Outbound request schema validation default (`true`) & RequestValidatorInterface seam | #333 |
 | ADR-014 | Gating beyond-spec extensions via ValidatorPolicy & dual x-* naming | #171 |
+| ADR-015 | Validation source reachability data carrier and dedicated integrity rules | #331 |
+| ADR-016 | AsyncAPI channelPath resolution and source normalization | #169 |
 
 ## 8. How to update this file
 

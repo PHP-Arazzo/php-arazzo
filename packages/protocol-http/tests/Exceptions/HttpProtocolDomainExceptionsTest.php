@@ -20,6 +20,7 @@ use Alama\Arazzo\Engine\Exceptions\EngineException;
 use Alama\Arazzo\Engine\Exceptions\ExecutionException;
 use Alama\Arazzo\Evaluation\EvaluationEngine;
 use Alama\Arazzo\Expression\ExpressionEngine;
+use Alama\Arazzo\Protocol\Http\Exceptions\AsyncApiResolutionException;
 use Alama\Arazzo\Protocol\Http\Exceptions\AsyncApiStepException;
 use Alama\Arazzo\Protocol\Http\Exceptions\OpenApiResolutionException;
 use Alama\Arazzo\Protocol\Http\Plugins\OperationExecutor\AsyncApiStepExecutor;
@@ -41,7 +42,11 @@ test('protocol-http domain exception factories construct typed exceptions', func
         ->and(AsyncApiStepException::missingCorrelationId('s1')->getMessage())->toContain('correlationId')
         ->and(AsyncApiStepException::missingReceiveChannelPath('s1')->getMessage())->toContain('channelPath')
         ->and(AsyncApiStepException::missingSendChannelPath('s1')->getMessage())->toContain('channelPath')
-        ->and(AsyncApiStepException::unencodablePayload('s1', $cause)->getPrevious())->toBe($cause);
+        ->and(AsyncApiStepException::unencodablePayload('s1', $cause)->getPrevious())->toBe($cause)
+        ->and(AsyncApiResolutionException::channelNotFound('orders', 'broker'))->toBeInstanceOf(EngineException::class)
+        ->and(AsyncApiResolutionException::sourceNotFound('broker', 's1')->getMessage())->toContain('broker')
+        ->and(AsyncApiResolutionException::documentLoadFailed('broker', $cause)->getPrevious())->toBe($cause)
+        ->and(AsyncApiResolutionException::unresolvableChannelTarget('s1', 'orders')->getMessage())->toContain('orders');
 });
 
 test('AsyncApiStepExecutor guards metadata, factories, channel paths, actions, and payload encoding', function (): void {

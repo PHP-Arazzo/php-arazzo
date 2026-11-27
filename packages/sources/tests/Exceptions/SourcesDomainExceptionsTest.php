@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Alama\Arazzo\Sources\Exceptions\InvalidAsyncApiSourceException;
 use Alama\Arazzo\Sources\Exceptions\InvalidFetchPolicyException;
 use Alama\Arazzo\Sources\Exceptions\InvalidOpenApiSourceException;
 use Alama\Arazzo\Sources\Exceptions\InvalidSourceReferenceException;
@@ -28,6 +29,10 @@ test('sources domain exception factories construct typed exceptions', function (
         ->and(InvalidSourceReferenceException::invalidOperationPath('s1')->getMessage())->toContain('operationPath')
         ->and(InvalidSourceReferenceException::invalidOperationId('s1')->getMessage())->toContain('operationId')
         ->and(InvalidSourceReferenceException::ambiguousPlainOperationId('getPet', 's1')->getMessage())->toContain('getPet')
+        ->and(InvalidAsyncApiSourceException::invalidJson())->toBeInstanceOf(SourceResolutionException::class)
+        ->and(InvalidAsyncApiSourceException::channelNotFound('/events')->getMessage())->toContain('/events')
+        ->and(InvalidAsyncApiSourceException::missingChannels()->getMessage())->toContain('channels')
+        ->and(InvalidAsyncApiSourceException::invalidFormat('bad format')->getMessage())->toContain('bad format')
         ->and(InvalidOpenApiSourceException::invalidJson())->toBeInstanceOf(InvalidArgumentException::class)
         ->and(InvalidOpenApiSourceException::unsupportedVersion()->getMessage())->toContain('version')
         ->and(InvalidOpenApiSourceException::pathNotFound('/pets')->getMessage())->toContain('/pets')
