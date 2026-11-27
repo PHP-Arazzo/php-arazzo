@@ -31,7 +31,7 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 | removed method | `DocumentInterface` | `preflightInputs` | `public function preflightInputs(ArazzoDocument $document, string $workflowId, array $inputs): ValidationResult` |
 | removed method | `DocumentInterface` | `resolveOperation` | `public function resolveOperation(Step $step, ArazzoDocument $document): ResolvedOperation` |
 
-**Additions (non-breaking):** 137
+**Additions (non-breaking):** 177
 
 | Kind | Class | Member |
 |---|---|---|
@@ -40,51 +40,68 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 | added enum case | `DocumentInterface` | `Run` |
 | added enum case | `DocumentInterface` | `Standard` |
 | added enum case | `DocumentInterface` | `Target` |
-| added method | `DocumentInterface` | `__isset` |
 | added method | `DocumentInterface` | `all` |
+| added method | `DocumentInterface` | `allowsHost` |
+| added method | `DocumentInterface` | `allowsIp` |
+| added method | `DocumentInterface` | `allowsScheme` |
 | added method | `DocumentInterface` | `ambiguousActionTarget` |
 | added method | `DocumentInterface` | `arazzoSourceNotAddressable` |
 | added method | `DocumentInterface` | `buildFromArray` |
-| added method | `DocumentInterface` | `burst` |
 | added method | `DocumentInterface` | `calculateDelay` |
+| added method | `DocumentInterface` | `classify` |
 | added method | `DocumentInterface` | `consumeCorrelation` |
 | added method | `DocumentInterface` | `create` |
 | added method | `DocumentInterface` | `default` |
 | added method | `DocumentInterface` | `deleteState` |
+| added method | `DocumentInterface` | `deniedHost` |
 | added method | `DocumentInterface` | `dependencyFailed` |
 | added method | `DocumentInterface` | `dependencyStepResults` |
 | added method | `DocumentInterface` | `detected` |
 | added method | `DocumentInterface` | `dispatch` |
 | added method | `DocumentInterface` | `dottedKeyReserved` |
+| added method | `DocumentInterface` | `downgradeRefused` |
 | added method | `DocumentInterface` | `duplicateSourceUrl` |
+| added method | `DocumentInterface` | `emptyAllowedSchemes` |
+| added method | `DocumentInterface` | `emptyHeaderName` |
+| added method | `DocumentInterface` | `emptySourceName` |
+| added method | `DocumentInterface` | `enabled` |
 | added method | `DocumentInterface` | `errorMessage` |
 | added method | `DocumentInterface` | `exceeded` |
+| added method | `DocumentInterface` | `exceedsLimit` |
+| added method | `DocumentInterface` | `exceedsResponseCap` |
 | added method | `DocumentInterface` | `executedStepIds` |
+| added method | `DocumentInterface` | `executionTimeout` |
 | added method | `DocumentInterface` | `executor` |
 | added method | `DocumentInterface` | `extractContext` |
-| added method | `DocumentInterface` | `failFast` |
 | added method | `DocumentInterface` | `failedStep` |
 | added method | `DocumentInterface` | `find` |
 | added method | `DocumentInterface` | `findCorrelation` |
 | added method | `DocumentInterface` | `for` |
 | added method | `DocumentInterface` | `forId` |
+| added method | `DocumentInterface` | `forSource` |
 | added method | `DocumentInterface` | `forVersion` |
 | added method | `DocumentInterface` | `fromResult` |
 | added method | `DocumentInterface` | `get` |
+| added method | `DocumentInterface` | `getErrorCode` |
 | added method | `DocumentInterface` | `handleStep` |
 | added method | `DocumentInterface` | `has` |
 | added method | `DocumentInterface` | `hasError` |
 | added method | `DocumentInterface` | `hasOutput` |
 | added method | `DocumentInterface` | `hasPendingCorrelations` |
 | added method | `DocumentInterface` | `hasSequentialFallbacks` |
+| added method | `DocumentInterface` | `hasSourceOverride` |
 | added method | `DocumentInterface` | `hasStepResult` |
 | added method | `DocumentInterface` | `injectContext` |
 | added method | `DocumentInterface` | `invalidBackoffMultiplier` |
+| added method | `DocumentInterface` | `invalidExecutionTimeout` |
 | added method | `DocumentInterface` | `isCancelled` |
+| added method | `DocumentInterface` | `isCrossOrigin` |
 | added method | `DocumentInterface` | `isDependency` |
+| added method | `DocumentInterface` | `isDowngrade` |
 | added method | `DocumentInterface` | `isExhausted` |
 | added method | `DocumentInterface` | `isFailed` |
 | added method | `DocumentInterface` | `isGuardFailed` |
+| added method | `DocumentInterface` | `isRateLimited` |
 | added method | `DocumentInterface` | `isTarget` |
 | added method | `DocumentInterface` | `isTimedOut` |
 | added method | `DocumentInterface` | `loadFromJson` |
@@ -92,19 +109,24 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 | added method | `DocumentInterface` | `loadState` |
 | added method | `DocumentInterface` | `markCompleted` |
 | added method | `DocumentInterface` | `markStarted` |
-| added method | `DocumentInterface` | `maxConcurrent` |
 | added method | `DocumentInterface` | `maxSteps` |
 | added method | `DocumentInterface` | `maxWorkflowDepth` |
 | added method | `DocumentInterface` | `missingDependencyOutput` |
+| added method | `DocumentInterface` | `negativeMaxRedirects` |
+| added method | `DocumentInterface` | `nestedSourceOverrides` |
 | added method | `DocumentInterface` | `noSupportingExecutor` |
+| added method | `DocumentInterface` | `nonPositiveLimit` |
 | added method | `DocumentInterface` | `nonPositiveMaxAttempts` |
+| added method | `DocumentInterface` | `nonPositiveRequestsPerSecond` |
 | added method | `DocumentInterface` | `output` |
 | added method | `DocumentInterface` | `outputExtractor` |
 | added method | `DocumentInterface` | `parseSeverityLevel` |
+| added method | `DocumentInterface` | `redirectLimitExceeded` |
+| added method | `DocumentInterface` | `refusesDowngrade` |
 | added method | `DocumentInterface` | `register` |
-| added method | `DocumentInterface` | `requestsPerSecond` |
 | added method | `DocumentInterface` | `reset` |
 | added method | `DocumentInterface` | `resolver` |
+| added method | `DocumentInterface` | `responseTooLarge` |
 | added method | `DocumentInterface` | `resume` |
 | added method | `DocumentInterface` | `resumeCorrelation` |
 | added method | `DocumentInterface` | `run` |
@@ -112,7 +134,7 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 | added method | `DocumentInterface` | `save` |
 | added method | `DocumentInterface` | `saveCorrelation` |
 | added method | `DocumentInterface` | `saveState` |
-| added method | `DocumentInterface` | `scope` |
+| added method | `DocumentInterface` | `schemeRefused` |
 | added method | `DocumentInterface` | `snapshot` |
 | added method | `DocumentInterface` | `sourcePolicy` |
 | added method | `DocumentInterface` | `start` |
@@ -123,6 +145,7 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 | added method | `DocumentInterface` | `stepResult` |
 | added method | `DocumentInterface` | `targetStepResult` |
 | added method | `DocumentInterface` | `toArray` |
+| added method | `DocumentInterface` | `toTransportException` |
 | added method | `DocumentInterface` | `unknownSource` |
 | added method | `DocumentInterface` | `unknownStep` |
 | added method | `DocumentInterface` | `unknownWorkflow` |
@@ -130,16 +153,26 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 | added method | `DocumentInterface` | `unsupportedStep` |
 | added method | `DocumentInterface` | `validateInputs` |
 | added method | `DocumentInterface` | `withAllowCustomTags` |
+| added method | `DocumentInterface` | `withAllowDowngrade` |
 | added method | `DocumentInterface` | `withAllowObjectDeserialization` |
+| added method | `DocumentInterface` | `withAllowedHosts` |
+| added method | `DocumentInterface` | `withAllowedSchemes` |
 | added method | `DocumentInterface` | `withBackoffMultiplier` |
+| added method | `DocumentInterface` | `withBlockLinkLocal` |
+| added method | `DocumentInterface` | `withBlockPrivateNetworks` |
 | added method | `DocumentInterface` | `withCalculator` |
 | added method | `DocumentInterface` | `withClock` |
+| added method | `DocumentInterface` | `withConnectTimeout` |
 | added method | `DocumentInterface` | `withDecodePolicy` |
 | added method | `DocumentInterface` | `withDefinitions` |
+| added method | `DocumentInterface` | `withDeniedHosts` |
+| added method | `DocumentInterface` | `withEnabled` |
 | added method | `DocumentInterface` | `withEventDispatcher` |
+| added method | `DocumentInterface` | `withExecutionTimeout` |
 | added method | `DocumentInterface` | `withExecutor` |
 | added method | `DocumentInterface` | `withFailFast` |
-| added method | `DocumentInterface` | `withIdempotencyInjector` |
+| added method | `DocumentInterface` | `withHeaderName` |
+| added method | `DocumentInterface` | `withIdempotency` |
 | added method | `DocumentInterface` | `withLockManager` |
 | added method | `DocumentInterface` | `withLogger` |
 | added method | `DocumentInterface` | `withMaxAliases` |
@@ -148,8 +181,11 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 | added method | `DocumentInterface` | `withMaxConcurrent` |
 | added method | `DocumentInterface` | `withMaxDepth` |
 | added method | `DocumentInterface` | `withMaxNodes` |
+| added method | `DocumentInterface` | `withMaxRedirects` |
+| added method | `DocumentInterface` | `withMaxResponseBytes` |
 | added method | `DocumentInterface` | `withMaxSteps` |
 | added method | `DocumentInterface` | `withMaxWorkflowDepth` |
+| added method | `DocumentInterface` | `withNetwork` |
 | added method | `DocumentInterface` | `withNoDeps` |
 | added method | `DocumentInterface` | `withOperationResolver` |
 | added method | `DocumentInterface` | `withOutputExtractor` |
@@ -158,17 +194,21 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 | added method | `DocumentInterface` | `withQueueDriver` |
 | added method | `DocumentInterface` | `withRateLimit` |
 | added method | `DocumentInterface` | `withRateLimiter` |
-| added method | `DocumentInterface` | `withRespectRetryAfter` |
+| added method | `DocumentInterface` | `withRedirects` |
 | added method | `DocumentInterface` | `withRetryPolicy` |
 | added method | `DocumentInterface` | `withRule` |
+| added method | `DocumentInterface` | `withSafety` |
 | added method | `DocumentInterface` | `withScope` |
+| added method | `DocumentInterface` | `withSourceOverride` |
 | added method | `DocumentInterface` | `withSourcePolicy` |
 | added method | `DocumentInterface` | `withStateTtlSeconds` |
 | added method | `DocumentInterface` | `withStore` |
 | added method | `DocumentInterface` | `withStrictValidation` |
 | added method | `DocumentInterface` | `withTracer` |
+| added method | `DocumentInterface` | `withTransfer` |
 | added method | `DocumentInterface` | `withValidatorPolicy` |
 | added method | `DocumentInterface` | `withYamlPolicy` |
+| added method | `DocumentInterface` | `withoutSourceOverride` |
 | added method | `DocumentInterface` | `workflowEndedInFailure` |
 | added method | `DocumentInterface` | `workflowFailedAtStep` |
 | added method | `DocumentInterface` | `wrongReusableTarget` |

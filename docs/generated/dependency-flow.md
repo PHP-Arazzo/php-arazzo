@@ -27,7 +27,7 @@ cli-Console,document-Parser,2
 cli-Console,document-root,9
 cli-Console,engine-Runtime,2
 cli-Console,evaluation-root,1
-cli-Console,protocol-http-Policy,2
+cli-Console,protocol-http-Policy,3
 cli-Console,protocol-http-root,1
 cli-Console,runner-Data,3
 cli-Console,runner-Exceptions,2
@@ -197,35 +197,36 @@ expression-root,expression-Policy,2
 expression-root,expression-Registries,3
 expression-root,expression-Support,2
 expression-root,expression-Xpath,2
-protocol-http-Exceptions,engine-Exceptions,3
+protocol-http-Exceptions,engine-Exceptions,4
 protocol-http-Execution,contracts-Clock,1
 protocol-http-Execution,contracts-Exceptions,2
 protocol-http-Execution,contracts-Interfaces,3
 protocol-http-Execution,contracts-Observability,5
 protocol-http-Execution,contracts-Policy,5
-protocol-http-Execution,contracts-Spec,18
-protocol-http-Execution,engine-Execution,9
-protocol-http-Execution,evaluation-root,2
+protocol-http-Execution,contracts-Spec,21
+protocol-http-Execution,contracts-State,1
+protocol-http-Execution,engine-Execution,11
+protocol-http-Execution,evaluation-root,3
 protocol-http-Execution,expression-Data,1
 protocol-http-Execution,expression-Enum,1
 protocol-http-Execution,expression-Interfaces,2
 protocol-http-Execution,protocol-http-Enum,1
-protocol-http-Execution,protocol-http-Exceptions,1
-protocol-http-Execution,protocol-http-Policy,3
+protocol-http-Execution,protocol-http-Exceptions,4
+protocol-http-Execution,protocol-http-Policy,11
 protocol-http-Execution,protocol-http-Resolver,9
 protocol-http-Plugins,contracts-Attributes,2
 protocol-http-Plugins,contracts-Interfaces,7
 protocol-http-Plugins,contracts-Spec,11
 protocol-http-Plugins,contracts-State,2
 protocol-http-Plugins,engine-Exceptions,1
-protocol-http-Plugins,engine-Execution,3
+protocol-http-Plugins,engine-Execution,2
 protocol-http-Plugins,evaluation-root,2
 protocol-http-Plugins,expression-Data,1
 protocol-http-Plugins,protocol-http-Exceptions,2
-protocol-http-Plugins,protocol-http-Execution,1
+protocol-http-Plugins,protocol-http-Execution,2
 protocol-http-Plugins,protocol-http-Resolver,2
-protocol-http-Policy,engine-Execution,1
-protocol-http-Policy,protocol-http-Enum,2
+protocol-http-Policy,protocol-http-Enum,1
+protocol-http-Policy,protocol-http-Exceptions,6
 protocol-http-Resolver,contracts-Interfaces,2
 protocol-http-Resolver,contracts-Spec,18
 protocol-http-Resolver,contracts-State,2
@@ -246,7 +247,7 @@ protocol-http-root,engine-Execution,1
 protocol-http-root,evaluation-root,2
 protocol-http-root,expression-Interfaces,1
 protocol-http-root,expression-root,1
-protocol-http-root,protocol-http-Execution,6
+protocol-http-root,protocol-http-Execution,7
 protocol-http-root,protocol-http-Plugins,1
 protocol-http-root,protocol-http-Policy,1
 protocol-http-root,protocol-http-Resolver,1
@@ -334,7 +335,7 @@ runner-Data,contracts-Spec,2
 runner-Data,contracts-State,1
 runner-Exceptions,contracts-Support,1
 runner-Exceptions,contracts-Validation,1
-runner-Exceptions,runner-Policy,1
+runner-Exceptions,runner-Policy,2
 runner-Execution,contracts-Clock,1
 runner-Execution,contracts-Interfaces,8
 runner-Execution,contracts-Observability,3
@@ -390,7 +391,7 @@ runner-Sync,evaluation-root,3
 runner-Sync,expression-Data,1
 runner-Sync,runner-Data,3
 runner-Sync,runner-Events,7
-runner-Sync,runner-Exceptions,12
+runner-Sync,runner-Exceptions,13
 runner-Sync,runner-Execution,7
 runner-Sync,runner-Policy,3
 runner-Sync,runner-Preflight,4
@@ -457,11 +458,14 @@ These references exist in the code but are not drawn: drawing them would close a
 | `expression-Data` | `expression-Interfaces` | 1 |
 | `expression-Internal` | `expression-root` | 2 |
 | `expression-Registries` | `expression-Interfaces` | 1 |
+| `protocol-http-Exceptions` | `protocol-http-Policy` | 1 |
+| `protocol-http-Execution` | `protocol-http-Plugins` | 1 |
 | `protocol-http-Policy` | `protocol-http-Execution` | 1 |
 | `protocol-rpc-Protocol` | `protocol-rpc-Plugins` | 1 |
 | `protocol-soap-Execution` | `protocol-soap-Plugins` | 1 |
 | `runner-Data` | `runner-root` | 1 |
 | `runner-Execution` | `runner-Sync` | 1 |
+| `runner-Policy` | `runner-Exceptions` | 1 |
 | `runner-Sync` | `runner-Plugins` | 1 |
 | `runner-root` | `runner-Async` | 1 |
 | `runner-root` | `runner-Execution` | 3 |

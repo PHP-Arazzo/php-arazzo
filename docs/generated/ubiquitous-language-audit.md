@@ -36,7 +36,7 @@ Evans' first question: does the code speak one language?
 ### fetch vs resolve vs retrieve
 
 - **Fetcher**: `CachedFetcher`, `DefaultFetchers`, `HttpFetcher`, `LocalFetcher` + 2 more (6 types)
-- **Resolver**: `AsyncApiFallbackResolver`, `AsyncApiOperationResolver`, `AsyncApiServerUrlResolver`, `DefaultSourceResolver` + 16 more (20 types)
+- **Resolver**: `AsyncApiFallbackResolver`, `AsyncApiOperationResolver`, `AsyncApiServerUrlResolver`, `DefaultSourceResolver` + 17 more (21 types)
 
 ### state vs status
 

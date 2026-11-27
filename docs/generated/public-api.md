@@ -98,10 +98,13 @@ this file on a commit is a public API change — review it deliberately.
 - `public static function malformedResponse(string $targetUrl, string $details, ?Throwable $previous = null): self`
 
 #### `TransportException` class
-- `public function __construct(string $message, public readonly string $targetUrl = '', public readonly string $requestMethod = '', ?Throwable $previous = null, int $code = 0)`
+- `public function __construct(string $message, public readonly string $targetUrl = '', public readonly string $requestMethod = '', ?Throwable $previous = null, public readonly ?string $errorCode = null)`
+- `public function getErrorCode(): ?string`
 - `public static function connectionRefused(string $targetUrl, string $requestMethod, ?Throwable $previous = null): self`
+- `public static function extractErrorCode(Throwable $exception): ?string`
 - `public static function fromThrowable(Throwable $exception, string $targetUrl = '', string $requestMethod = ''): self`
 - `public static function networkError(string $targetUrl, string $requestMethod, string $details, ?Throwable $previous = null): self`
+- `public static function policyViolation(string $targetUrl, string $requestMethod, string $errorCode, string $details, ?Throwable $previous = null, ): self`
 - `public static function rateLimited(string $targetUrl, string $requestMethod, string $details, ?Throwable $previous = null): self`
 - `public static function timeout(string $targetUrl, string $requestMethod, ?Throwable $previous = null): self`
 
@@ -1218,32 +1221,88 @@ this file on a commit is a public API change — review it deliberately.
 #### `RateLimitScope` enum
 - Cases: `Host`, `Run`
 
+### `Alama\Arazzo\Protocol\Http\Exceptions`
+
+#### `HttpPolicyViolationException` class
+- `public function getErrorCode(): string`
+- `public static function deniedHost(string $url, string $host, string $reason): self`
+- `public static function downgradeRefused(string $fromUrl, string $toUrl): self`
+- `public static function redirectLimitExceeded(string $url, int $maxRedirects): self`
+- `public static function responseTooLarge(string $url, int $maxResponseBytes): self`
+- `public static function schemeRefused(string $url, string $scheme): self`
+
+#### `InvalidHttpPolicyException` class
+- `public static function emptyAllowedSchemes(): self`
+- `public static function emptyHeaderName(): self`
+- `public static function emptySourceName(): self`
+- `public static function negativeMaxRedirects(int $value): self`
+- `public static function nestedSourceOverrides(string $sourceName): self`
+- `public static function nonPositiveLimit(string $field, int|float $value): self`
+- `public static function nonPositiveRequestsPerSecond(float $value): self`
+
 ### `Alama\Arazzo\Protocol\Http\Policy`
 
 #### `HttpPolicy` class
-- `public function __construct(public bool $strictValidation = self::DEFAULT_STRICT_VALIDATION, public ?IdempotencyKeyInjector $idempotencyInjector = null, public OutboundRequestPolicy $rateLimit = new OutboundRequestPolicy(), public bool $respectRetryAfter = self::DEFAULT_RESPECT_RETRY_AFTER, public ?OutboundRateLimiter $rateLimiter = null)`
-- `public function __isset(string $name): bool`
-- `public function burst(): int`
-- `public function failFast(): bool`
-- `public function maxConcurrent(): int`
-- `public function requestsPerSecond(): ?float`
-- `public function scope(): RateLimitScope`
-- `public function withFailFast(bool $failFast = true): self`
-- `public function withIdempotencyInjector(?IdempotencyKeyInjector $injector): self`
-- `public function withMaxConcurrent(int $maxConcurrent): self`
-- `public function withRateLimit(?float $requestsPerSecond, int $burst = self::DEFAULT_BURST): self`
-- `public function withRateLimiter(?OutboundRateLimiter $rateLimiter): self`
-- `public function withRespectRetryAfter(bool $respectRetryAfter = true): self`
-- `public function withScope(RateLimitScope|string $scope): self`
+- `public function __construct(public bool $strictValidation = self::DEFAULT_STRICT_VALIDATION, public IdempotencyPolicy $idempotency = new IdempotencyPolicy(), public RateLimitPolicy $rateLimit = new RateLimitPolicy(), public OutboundSafetyPolicy $safety = new OutboundSafetyPolicy(), array $sourceOverrides = [])`
+- `public function forSource(?string $sourceName): self`
+- `public function hasSourceOverride(string $sourceName): bool`
+- `public function withIdempotency(IdempotencyPolicy $idempotency): self`
+- `public function withRateLimit(RateLimitPolicy $rateLimit): self`
+- `public function withSafety(OutboundSafetyPolicy $safety): self`
+- `public function withSourceOverride(string $sourceName, self $override): self`
 - `public function withStrictValidation(bool $strictValidation = true): self`
+- `public function withoutSourceOverride(string $sourceName): self`
 - `public static function default(): self`
 
-#### `OutboundRequestPolicy` class
+#### `IdempotencyPolicy` class
+- `public function __construct(public bool $enabled = self::DEFAULT_ENABLED, string $headerName = self::DEFAULT_HEADER_NAME)`
+- `public function withEnabled(bool $enabled = true): self`
+- `public function withHeaderName(string $headerName): self`
+- `public static function default(): self`
+- `public static function enabled(string $headerName = self::DEFAULT_HEADER_NAME): self`
+
+#### `NetworkPolicy` class
+- `public function __construct(array $allowedSchemes = self::DEFAULT_ALLOWED_SCHEMES, array $allowedHosts = [], array $deniedHosts = [], public bool $blockLinkLocal = self::DEFAULT_BLOCK_LINK_LOCAL, public bool $blockPrivateNetworks = self::DEFAULT_BLOCK_PRIVATE_NETWORKS)`
+- `public function allowsHost(string $host): bool`
+- `public function allowsIp(string $ip): bool`
+- `public function allowsScheme(string $scheme): bool`
+- `public function withAllowedHosts(array $allowedHosts): self`
+- `public function withAllowedSchemes(array $allowedSchemes): self`
+- `public function withBlockLinkLocal(bool $blockLinkLocal = true): self`
+- `public function withBlockPrivateNetworks(bool $blockPrivateNetworks = true): self`
+- `public function withDeniedHosts(array $deniedHosts): self`
+- `public static function default(): self`
+
+#### `OutboundSafetyPolicy` class
+- `public function __construct(public RedirectPolicy $redirects = new RedirectPolicy(), public NetworkPolicy $network = new NetworkPolicy(), public TransferPolicy $transfer = new TransferPolicy())`
+- `public function withNetwork(NetworkPolicy $network): self`
+- `public function withRedirects(RedirectPolicy $redirects): self`
+- `public function withTransfer(TransferPolicy $transfer): self`
+
+#### `RateLimitPolicy` class
 - `public function __construct(public ?float $requestsPerSecond = null, public int $burst = self::DEFAULT_BURST, public int $maxConcurrent = self::DEFAULT_MAX_CONCURRENT, public RateLimitScope $scope = self::DEFAULT_SCOPE, public bool $failFast = self::DEFAULT_FAIL_FAST)`
+- `public function isRateLimited(): bool`
 - `public function withFailFast(bool $failFast = true): self`
 - `public function withMaxConcurrent(int $maxConcurrent): self`
 - `public function withRateLimit(?float $requestsPerSecond, int $burst = self::DEFAULT_BURST): self`
 - `public function withScope(RateLimitScope|string $scope): self`
+- `public static function default(): self`
+
+#### `RedirectPolicy` class
+- `public function __construct(public int $maxRedirects = self::DEFAULT_MAX_REDIRECTS, public bool $allowDowngrade = self::DEFAULT_ALLOW_DOWNGRADE)`
+- `public function exceedsLimit(int $hopCount): bool`
+- `public function isCrossOrigin(UriInterface $from, UriInterface $to): bool`
+- `public function isDowngrade(UriInterface $from, UriInterface $to): bool`
+- `public function refusesDowngrade(UriInterface $from, UriInterface $to): bool`
+- `public function withAllowDowngrade(bool $allowDowngrade = true): self`
+- `public function withMaxRedirects(int $maxRedirects): self`
+- `public static function default(): self`
+
+#### `TransferPolicy` class
+- `public function __construct(public int $maxResponseBytes = self::DEFAULT_MAX_RESPONSE_BYTES, public float $connectTimeout = self::DEFAULT_CONNECT_TIMEOUT)`
+- `public function exceedsResponseCap(int $byteCount): bool`
+- `public function withConnectTimeout(float $seconds): self`
+- `public function withMaxResponseBytes(int $maxResponseBytes): self`
 - `public static function default(): self`
 
 ### `Alama\Arazzo\Protocol\Http\Resolver`
@@ -1385,11 +1444,16 @@ this file on a commit is a public API change — review it deliberately.
 #### `ExecutionError` class
 - `public static function ambiguousActionTarget(string $actionName): self`
 - `public static function dependencyFailed(string $dependencyId): self`
+- `public static function invalidExecutionTimeout(float $seconds): self`
 - `public static function missingDependencyOutput(string $stepId, string $outputKey, ?string $depStepId = null): self`
 - `public static function stateMissing(string $executionId): self`
 - `public static function stepFailed(string $stepId): self`
 - `public static function workflowEndedInFailure(string $workflowId, string $stepId): self`
 - `public static function workflowFailedAtStep(string $workflowId, string $stepId): self`
+
+#### `ExecutionTimeoutException` class
+- `public function getErrorCode(): string`
+- `public static function exceeded(string $executionId, float $timeoutSeconds, float $elapsedSeconds): self`
 
 #### `GotoTargetNotFoundException` class
 - `public static function unknownStep(string $stepId, string $workflowId): self`
@@ -1432,15 +1496,19 @@ this file on a commit is a public API change — review it deliberately.
 ### `Alama\Arazzo\Runner\Policy`
 
 #### `ExecutionBudgets` class
-- `public function __construct(public int $maxSteps = self::DEFAULT_MAX_STEPS, public int $maxWorkflowDepth = self::DEFAULT_MAX_WORKFLOW_DEPTH)`
+- `public function __construct(public int $maxSteps = self::DEFAULT_MAX_STEPS, public int $maxWorkflowDepth = self::DEFAULT_MAX_WORKFLOW_DEPTH, public ?float $executionTimeout = self::DEFAULT_EXECUTION_TIMEOUT)`
+- `public function withExecutionTimeout(?float $seconds): self`
 - `public function withMaxSteps(int $maxSteps): self`
 - `public function withMaxWorkflowDepth(int $maxWorkflowDepth): self`
+- `public static function default(): self`
 
 #### `ExecutionPolicy` class
 - `public function __construct(public ExecutionBudgets $budgets = new ExecutionBudgets(), public ?RetryPolicy $retryPolicy = null, public bool $preflight = self::DEFAULT_PREFLIGHT, public int $stateTtlSeconds = self::DEFAULT_STATE_TTL_SECONDS, public array $sourcePolicies = [], public bool $noDeps = self::DEFAULT_NO_DEPS)`
+- `public function executionTimeout(): ?float`
 - `public function maxSteps(): int`
 - `public function maxWorkflowDepth(): int`
 - `public function sourcePolicy(string $sourceName): ?SourcePolicy`
+- `public function withExecutionTimeout(?float $seconds): self`
 - `public function withMaxSteps(int $maxSteps): self`
 - `public function withMaxWorkflowDepth(int $maxWorkflowDepth): self`
 - `public function withNoDeps(bool $noDeps = true): self`

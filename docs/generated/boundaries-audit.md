@@ -17,10 +17,10 @@ when a boundary consciously moves.
 | Vendor | core refs | laravel refs | Policy in core |
 |---|---:|---:|---|
 | `Composer` | 1 | 0 | _unclassified_ ⚠ |
-| `GuzzleHttp` | 10 | 0 | **forbidden** ⚠ |
+| `GuzzleHttp` | 14 | 0 | **forbidden** ⚠ |
 | `JsonSchema` | 7 | 0 | _unclassified_ ⚠ |
 | `OpenTelemetry` | 26 | 0 | _unclassified_ ⚠ |
-| `Psr` | 112 | 0 | allowed |
+| `Psr` | 120 | 0 | allowed |
 | `Symfony` | 40 | 0 | **forbidden** ⚠ |
 | `cebe` | 30 | 0 | **forbidden** ⚠ |
 
@@ -43,10 +43,11 @@ when a boundary consciously moves.
 | engine | `engine:Runtime` | `OpenTelemetry` | 26 |
 | engine | `engine:Runtime` | `Psr` | 1 |
 | evaluation | `evaluation:_` | `Psr` | 2 |
-| protocol-http | `protocol-http:Execution` | `GuzzleHttp` | 2 |
-| protocol-http | `protocol-http:Execution` | `Psr` | 17 |
+| protocol-http | `protocol-http:Execution` | `GuzzleHttp` | 6 |
+| protocol-http | `protocol-http:Execution` | `Psr` | 24 |
 | protocol-http | `protocol-http:Execution` | `cebe` | 19 |
 | protocol-http | `protocol-http:Plugins` | `Psr` | 6 |
+| protocol-http | `protocol-http:Policy` | `Psr` | 1 |
 | protocol-http | `protocol-http:Resolver` | `cebe` | 7 |
 | protocol-http | `protocol-http:_` | `GuzzleHttp` | 2 |
 | protocol-http | `protocol-http:_` | `Psr` | 3 |
@@ -77,7 +78,7 @@ when a boundary consciously moves.
 - `document:Validator` imports `JsonSchema\*` (3 refs)
 - `engine:Execution` imports `cebe\*` (4 refs)
 - `engine:Runtime` imports `OpenTelemetry\*` (26 refs)
-- `protocol-http:Execution` imports `GuzzleHttp\*` (2 refs)
+- `protocol-http:Execution` imports `GuzzleHttp\*` (6 refs)
 - `protocol-http:Execution` imports `cebe\*` (19 refs)
 - `protocol-http:Resolver` imports `cebe\*` (7 refs)
 - `protocol-http:_` imports `GuzzleHttp\*` (2 refs)
@@ -140,13 +141,13 @@ Grouped cross-package uses of concrete internals (AST nodes, evaluators, resolve
 | `protocol-http` | `EvaluationContext` | `expression` | 3 | `StepOutputExtractor` |
 | `protocol-http` | `EvaluationEngine` | `evaluation` | 1 | `HttpProtocol` |
 | `protocol-http` | `ExpressionEvaluator` | `expression` | 1 | `AsyncApiPathInterpolator` |
-| `protocol-http` | `IdempotencyKeyInjector` | `engine` | 3 | `HttpStepExecutor` |
+| `protocol-http` | `IdempotencyKeyInjector` | `engine` | 3 | `HttpStepPipeline` |
 | `protocol-http` | `NullTracer` | `contracts` | 2 | `DefaultOpenApiExecutor` |
 | `protocol-http` | `OpenApi30Normalizer` | `sources` | 1 | `OpenApiOperationResolver` |
 | `protocol-http` | `OpenApi31Normalizer` | `sources` | 1 | `OpenApiOperationResolver` |
 | `protocol-http` | `OpenApiVersionDetector` | `sources` | 1 | `OpenApiOperationResolver` |
 | `protocol-http` | `ParameterSerializer` | `engine` | 1 | `DefaultOpenApiExecutor` |
-| `protocol-http` | `RequestCompiler` | `engine` | 1 | `HttpStepExecutor` |
+| `protocol-http` | `RequestCompiler` | `engine` | 1 | `HttpStepPipeline` |
 | `protocol-http` | `ReusableParameterResolver` | `engine` | 2 | `AsyncApiStepExecutor` |
 | `protocol-http` | `SchemaCompositionValidator` | `engine` | 2 | `RequestBodyValidator` |
 | `protocol-http` | `SchemaValidator` | `engine` | 3 | `RequestBodyValidator` |

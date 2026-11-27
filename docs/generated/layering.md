@@ -319,12 +319,14 @@ flowchart TB
     M_expression__ --> M_expression_Support
     M_expression__ --> M_expression_Xpath
     M_protocol_http_Exceptions --> M_engine_Exceptions
+    M_protocol_http_Exceptions --> M_protocol_http_Policy
     M_protocol_http_Execution --> M_contracts_Clock
     M_protocol_http_Execution --> M_contracts_Exceptions
     M_protocol_http_Execution --> M_contracts_Interfaces
     M_protocol_http_Execution --> M_contracts_Observability
     M_protocol_http_Execution --> M_contracts_Policy
     M_protocol_http_Execution --> M_contracts_Spec
+    M_protocol_http_Execution --> M_contracts_State
     M_protocol_http_Execution --> M_engine_Execution
     M_protocol_http_Execution --> M_evaluation__
     M_protocol_http_Execution --> M_expression_Data
@@ -332,6 +334,7 @@ flowchart TB
     M_protocol_http_Execution --> M_expression_Interfaces
     M_protocol_http_Execution --> M_protocol_http_Enum
     M_protocol_http_Execution --> M_protocol_http_Exceptions
+    M_protocol_http_Execution --> M_protocol_http_Plugins
     M_protocol_http_Execution --> M_protocol_http_Policy
     M_protocol_http_Execution --> M_protocol_http_Resolver
     M_protocol_http_Plugins --> M_contracts_Attributes
@@ -345,8 +348,8 @@ flowchart TB
     M_protocol_http_Plugins --> M_protocol_http_Exceptions
     M_protocol_http_Plugins --> M_protocol_http_Execution
     M_protocol_http_Plugins --> M_protocol_http_Resolver
-    M_protocol_http_Policy --> M_engine_Execution
     M_protocol_http_Policy --> M_protocol_http_Enum
+    M_protocol_http_Policy --> M_protocol_http_Exceptions
     M_protocol_http_Policy --> M_protocol_http_Execution
     M_protocol_http_Resolver --> M_contracts_Interfaces
     M_protocol_http_Resolver --> M_contracts_Spec
@@ -489,6 +492,7 @@ flowchart TB
     M_runner_Plugins --> M_runner_Sync
     M_runner_Policy --> M_contracts_Policy
     M_runner_Policy --> M_engine_Runtime
+    M_runner_Policy --> M_runner_Exceptions
     M_runner_Preflight --> M_contracts_Dependency
     M_runner_Preflight --> M_contracts_Spec
     M_runner_Preflight --> M_contracts_Validation
@@ -597,7 +601,7 @@ flowchart TB
 | `cli` | `document` | 11 |
 | `cli` | `engine` | 3 |
 | `cli` | `evaluation` | 1 |
-| `cli` | `protocol-http` | 3 |
+| `cli` | `protocol-http` | 4 |
 | `cli` | `runner` | 19 |
 | `cli` | `sources` | 4 |
 | `document` | `contracts` | 431 |
@@ -607,10 +611,10 @@ flowchart TB
 | `evaluation` | `contracts` | 63 |
 | `evaluation` | `expression` | 20 |
 | `expression` | `contracts` | 137 |
-| `protocol-http` | `contracts` | 81 |
+| `protocol-http` | `contracts` | 85 |
 | `protocol-http` | `document` | 3 |
-| `protocol-http` | `engine` | 19 |
-| `protocol-http` | `evaluation` | 7 |
+| `protocol-http` | `engine` | 20 |
+| `protocol-http` | `evaluation` | 8 |
 | `protocol-http` | `expression` | 9 |
 | `protocol-http` | `sources` | 11 |
 | `protocol-rpc` | `contracts` | 38 |

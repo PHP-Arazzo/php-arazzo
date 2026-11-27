@@ -16,7 +16,7 @@ Regenerated before every commit.
 
 | Exception | Raised by |
 |---|---|
-| **InvalidArgumentException** | `ValidateConfigLoader` <small>cli:Console</small>, `OutboundRequestPolicy` <small>protocol-http:Policy</small> |
+| **InvalidArgumentException** | `ValidateConfigLoader` <small>cli:Console</small> |
 | **UnexpectedValueException** | `ValidateConfigLoader` <small>cli:Console</small> |
 | **AmbiguousStepException** | _(never raised in src)_ |
 | **ArazzoException** | _(never raised in src)_ |
@@ -36,11 +36,14 @@ Regenerated before every commit.
 | **EngineException** | _(never raised in src)_ |
 | **ExecutionError** | _(never raised in src)_ |
 | **ExecutionException** | _(never raised in src)_ |
+| **ExecutionTimeoutException** | _(never raised in src)_ |
 | **ExpressionSyntaxException** | _(never raised in src)_ |
 | **GeneratorApiException** | _(never raised in src)_ |
 | **GotoTargetNotFoundException** | _(never raised in src)_ |
+| **HttpPolicyViolationException** | _(never raised in src)_ |
 | **InvalidAsyncApiSourceException** | _(never raised in src)_ |
 | **InvalidFetchPolicyException** | _(never raised in src)_ |
+| **InvalidHttpPolicyException** | _(never raised in src)_ |
 | **InvalidOpenApiSourceException** | _(never raised in src)_ |
 | **InvalidRetryPolicyException** | _(never raised in src)_ |
 | **InvalidSelectorPluginException** | _(never raised in src)_ |

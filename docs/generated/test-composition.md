@@ -105,15 +105,15 @@ pie showData
 
 ```mermaid
 pie showData
-    title Runner — 58 test files
-    "Module-scoped": 49
+    title Runner — 59 test files
+    "Module-scoped": 50
     "Root": 9
 ```
 
 | Suite | Files | Share |
 |---|---:|---:|
-| Module-scoped | 49 | 84% |
-| Root | 9 | 16% |
+| Module-scoped | 50 | 85% |
+| Root | 9 | 15% |
 
 ## Cli package
 
@@ -133,15 +133,15 @@ pie showData
 
 ```mermaid
 pie showData
-    title Protocol-http — 16 test files
-    "Module-scoped": 14
+    title Protocol-http — 17 test files
+    "Module-scoped": 15
     "Architecture": 1
     "Root": 1
 ```
 
 | Suite | Files | Share |
 |---|---:|---:|
-| Module-scoped | 14 | 88% |
+| Module-scoped | 15 | 88% |
 | Architecture | 1 | 6% |
 | Root | 1 | 6% |
 

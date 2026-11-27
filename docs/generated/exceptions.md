@@ -30,11 +30,14 @@ classDiagram
     class E_DefinitionHydrationException["DefinitionHydrationException<br/><small>engine:Runtime</small>"]:::domain
     class E_EngineException["EngineException<br/><small>engine:Exceptions</small>"]:::domain
     class E_ExecutionException["ExecutionException<br/><small>engine:Exceptions</small>"]:::domain
+    class E_ExecutionTimeoutException["ExecutionTimeoutException<br/><small>runner:Exceptions</small>"]:::domain
     class E_ExpressionSyntaxException["ExpressionSyntaxException<br/><small>expression:Exceptions</small>"]:::domain
     class E_GeneratorApiException["GeneratorApiException<br/><small>cli:Exceptions</small>"]:::domain
     class E_GotoTargetNotFoundException["GotoTargetNotFoundException<br/><small>runner:Exceptions</small>"]:::domain
+    class E_HttpPolicyViolationException["HttpPolicyViolationException<br/><small>protocol-http:Exceptions</small>"]:::domain
     class E_InvalidAsyncApiSourceException["InvalidAsyncApiSourceException<br/><small>sources:Exceptions</small>"]:::domain
     class E_InvalidFetchPolicyException["InvalidFetchPolicyException<br/><small>sources:Exceptions</small>"]:::domain
+    class E_InvalidHttpPolicyException["InvalidHttpPolicyException<br/><small>protocol-http:Exceptions</small>"]:::domain
     class E_InvalidOpenApiSourceException["InvalidOpenApiSourceException<br/><small>sources:Exceptions</small>"]:::domain
     class E_InvalidRetryPolicyException["InvalidRetryPolicyException<br/><small>engine:Exceptions</small>"]:::domain
     class E_InvalidSelectorPluginException["InvalidSelectorPluginException<br/><small>expression:Exceptions</small>"]:::domain
@@ -105,11 +108,14 @@ classDiagram
     E_RuntimeException <|-- E_DefinitionHydrationException
     E_RuntimeException <|-- E_EngineException
     E_EngineException <|-- E_ExecutionException
+    E_RunnerException <|-- E_ExecutionTimeoutException
     E_ArazzoException <|-- E_ExpressionSyntaxException
     E_CliException <|-- E_GeneratorApiException
     E_RunnerException <|-- E_GotoTargetNotFoundException
+    E_EngineException <|-- E_HttpPolicyViolationException
     E_SourceResolutionException <|-- E_InvalidAsyncApiSourceException
     E_InvalidArgumentException <|-- E_InvalidFetchPolicyException
+    E_InvalidArgumentException <|-- E_InvalidHttpPolicyException
     E_InvalidArgumentException <|-- E_InvalidOpenApiSourceException
     E_InvalidArgumentException <|-- E_InvalidRetryPolicyException
     E_InvalidArgumentException <|-- E_InvalidSelectorPluginException
@@ -186,11 +192,14 @@ classDiagram
 | `DefinitionHydrationException` | `RuntimeException` | engine:Runtime |
 | `EngineException` | `RuntimeException` | engine:Exceptions |
 | `ExecutionException` | `EngineException` | engine:Exceptions |
+| `ExecutionTimeoutException` | `RunnerException` | runner:Exceptions |
 | `ExpressionSyntaxException` | `ArazzoException` | expression:Exceptions |
 | `GeneratorApiException` | `CliException` | cli:Exceptions |
 | `GotoTargetNotFoundException` | `RunnerException` | runner:Exceptions |
+| `HttpPolicyViolationException` | `EngineException` | protocol-http:Exceptions |
 | `InvalidAsyncApiSourceException` | `SourceResolutionException` | sources:Exceptions |
 | `InvalidFetchPolicyException` | `InvalidArgumentException` | sources:Exceptions |
+| `InvalidHttpPolicyException` | `InvalidArgumentException` | protocol-http:Exceptions |
 | `InvalidOpenApiSourceException` | `InvalidArgumentException` | sources:Exceptions |
 | `InvalidRetryPolicyException` | `InvalidArgumentException` | engine:Exceptions |
 | `InvalidSelectorPluginException` | `InvalidArgumentException` | expression:Exceptions |

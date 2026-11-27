@@ -34,7 +34,7 @@ quadrantChart
     contracts/Observability: [0, 1]
     contracts/Policy: [0, 1]
     contracts/Spec: [0.035, 1]
-    contracts/State: [0.1, 1]
+    contracts/State: [0.095, 1]
     contracts/Support: [0, 1]
     contracts/Validation: [0.105, 1]
     document/Parser: [0.286, 1]
@@ -44,7 +44,7 @@ quadrantChart
     engine/Data: [0.75, 1]
     engine/Enum: [0, 1]
     engine/Exceptions: [0.091, 1]
-    engine/Execution: [0.375, 1]
+    engine/Execution: [0.4, 1]
     engine/Runtime: [0.6, 1]
     evaluation/Condition: [0.889, 1]
     evaluation/Data: [0.4, 1]
@@ -67,10 +67,10 @@ quadrantChart
     expression/Support: [0.714, 1]
     expression/Xpath: [0.5, 0.667]
     protocol-http/Enum: [0, 1]
-    protocol-http/Exceptions: [0.25, 1]
-    protocol-http/Execution: [0.833, 1]
-    protocol-http/Plugins: [0.917, 1]
-    protocol-http/Policy: [0.5, 1]
+    protocol-http/Exceptions: [0.333, 1]
+    protocol-http/Execution: [0.85, 1]
+    protocol-http/Plugins: [0.846, 1]
+    protocol-http/Policy: [0.429, 0.714]
     protocol-http/Resolver: [0.813, 1]
     protocol-rpc/Exceptions: [0.2, 0.25]
     protocol-rpc/Execution: [0.875, 1]
@@ -87,10 +87,10 @@ quadrantChart
     runner/Async: [0.957, 1]
     runner/Data: [0.429, 1]
     runner/Events: [0, 1]
-    runner/Exceptions: [0.333, 1]
+    runner/Exceptions: [0.3, 1]
     runner/Execution: [0.857, 1]
     runner/Plugins: [0.818, 1]
-    runner/Policy: [0.25, 1]
+    runner/Policy: [0.333, 1]
     runner/Preflight: [0.5, 1]
     runner/Queue: [0.333, 1]
     runner/Registries: [0.6, 1]
@@ -116,12 +116,12 @@ quadrantChart
 | `contracts/Data` | 0.14 | 9 | 6 | 100% |
 | `contracts/Dependency` | 0.29 | 6 | 3 | 100% |
 | `contracts/Discovery` | 0.20 | 4 | 3 | 100% |
-| `contracts/Exceptions` | 0.09 | 11 | 10 | 100% |
-| `contracts/Interfaces` | 0.10 | 55 | 21 | 100% |
-| `contracts/Observability` | 0.00 | 10 | 4 | 100% |
-| `contracts/Policy` | 0.00 | 12 | 5 | 100% |
-| `contracts/Spec` | 0.04 | 326 | 61 | 100% |
-| `contracts/State` | 0.10 | 97 | 4 | 100% |
+| `contracts/Exceptions` | 0.09 | 12 | 10 | 100% |
+| `contracts/Interfaces` | 0.10 | 56 | 21 | 100% |
+| `contracts/Observability` | 0.00 | 11 | 4 | 100% |
+| `contracts/Policy` | 0.00 | 13 | 5 | 100% |
+| `contracts/Spec` | 0.04 | 328 | 61 | 100% |
+| `contracts/State` | 0.10 | 98 | 4 | 100% |
 | `contracts/Support` | 0.00 | 13 | 5 | 100% |
 | `contracts/Validation` | 0.10 | 104 | 10 | 100% |
 | `document/Parser` | 0.29 | 65 | 31 | 100% |
@@ -131,7 +131,7 @@ quadrantChart
 | `engine/Data` | 0.75 | 5 | 2 | 100% |
 | `engine/Enum` | 0.00 | 1 | 1 | 100% |
 | `engine/Exceptions` | 0.09 | 13 | 8 | 100% |
-| `engine/Execution` | 0.38 | 17 | 11 | 100% |
+| `engine/Execution` | 0.40 | 16 | 11 | 100% |
 | `engine/Runtime` | 0.60 | 24 | 21 | 100% |
 | `evaluation/Condition` | 0.89 | 84 | 18 | 100% |
 | `evaluation/Data` | 0.40 | 14 | 2 | 100% |
@@ -154,11 +154,11 @@ quadrantChart
 | `expression/Support` | 0.71 | 5 | 3 | 100% |
 | `expression/Xpath` | 0.50 | 2 | 3 | 67% |
 | `protocol-http/Enum` | 0.00 | 3 | 1 | 100% |
-| `protocol-http/Exceptions` | 0.25 | 5 | 4 | 100% |
-| `protocol-http/Execution` | 0.83 | 29 | 11 | 100% |
-| `protocol-http/Plugins` | 0.92 | 20 | 2 | 100% |
-| `protocol-http/Policy` | 0.50 | 4 | 2 | 100% |
-| `protocol-http/Resolver` | 0.81 | 24 | 6 | 100% |
+| `protocol-http/Exceptions` | 0.33 | 7 | 6 | 100% |
+| `protocol-http/Execution` | 0.85 | 31 | 16 | 100% |
+| `protocol-http/Plugins` | 0.85 | 21 | 2 | 100% |
+| `protocol-http/Policy` | 0.43 | 5 | 7 | 71% |
+| `protocol-http/Resolver` | 0.81 | 25 | 6 | 100% |
 | `protocol-rpc/Exceptions` | 0.20 | 1 | 4 | 25% |
 | `protocol-rpc/Execution` | 0.88 | 3 | 2 | 100% |
 | `protocol-rpc/Normalizer` | 0.50 | 2 | 7 | 29% |
@@ -173,11 +173,11 @@ quadrantChart
 | `protocol-soap/Validation` | 1.00 | 1 | 1 | 100% |
 | `runner/Async` | 0.96 | 17 | 6 | 100% |
 | `runner/Data` | 0.43 | 18 | 4 | 100% |
-| `runner/Events` | 0.00 | 19 | 9 | 100% |
-| `runner/Exceptions` | 0.33 | 14 | 13 | 100% |
+| `runner/Events` | 0.00 | 20 | 9 | 100% |
+| `runner/Exceptions` | 0.30 | 15 | 14 | 100% |
 | `runner/Execution` | 0.86 | 27 | 12 | 100% |
 | `runner/Plugins` | 0.82 | 6 | 1 | 100% |
-| `runner/Policy` | 0.25 | 7 | 2 | 100% |
+| `runner/Policy` | 0.33 | 8 | 2 | 100% |
 | `runner/Preflight` | 0.50 | 7 | 3 | 100% |
 | `runner/Queue` | 0.33 | 13 | 1 | 100% |
 | `runner/Registries` | 0.60 | 23 | 1 | 100% |
