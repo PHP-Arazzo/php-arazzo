@@ -6,6 +6,7 @@ namespace Alama\Arazzo\Tests\Protocol\Http\Protocol;
 
 use Alama\Arazzo\Contracts\Exceptions\SchemaValidationException;
 use Alama\Arazzo\Contracts\Interfaces\OutputExtractorInterface;
+use Alama\Arazzo\Contracts\Interfaces\RequestValidatorInterface;
 use Alama\Arazzo\Contracts\Interfaces\ResponseValidatorInterface;
 use Alama\Arazzo\Contracts\Policy\SourcePolicy;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
@@ -400,4 +401,71 @@ it('forwards active SourcePolicy timeout and strictValidation override to execut
     $injectedExecutor->execute($stepWithTimeout, $context, httpStepExecutorDocument(), 'exec_1');
 
     expect($capturedTimeout)->toBe(2.5);
+});
+
+it('validates outbound request schema and fails fast without calling transport when strict', function (): void {
+    $requestValidator = Mockery::mock(RequestValidatorInterface::class);
+    $requestValidator->shouldReceive('validateRequest')->once()->andThrow(
+        SchemaValidationException::forRequestStep('req-fail-step', [['path' => '/body/name', 'message' => "expected type 'string', got int"]]),
+    );
+
+    $openApiExecutor = Mockery::mock(OpenApiExecutorInterface::class);
+    $openApiExecutor->shouldReceive('execute')->never(); // Zero transport calls!
+
+    $responseValidator = Mockery::mock(ResponseValidatorInterface::class);
+    $responseValidator->shouldReceive('validateResponseSchema')->never();
+
+    $outputExtractor = Mockery::mock(OutputExtractorInterface::class);
+    $outputExtractor->shouldReceive('extractOutputs')->never();
+
+    $executor = new HttpStepExecutor(
+        $openApiExecutor,
+        createMockDocumentResolver(),
+        new HttpStepExecutorMockEngine(),
+        $outputExtractor,
+        $responseValidator,
+        strictDefault: true,
+        requestValidator: $requestValidator,
+    );
+
+    $step = StepFactory::http('req-fail-step', null, new StepFlow(strictValidation: true), new StepIo(), operationId: 'op');
+
+    try {
+        $executor->execute($step, new WorkflowContext('wf_1'), httpStepExecutorDocument(), 'exec_1');
+        $this->fail('Expected SchemaValidationException');
+    } catch (SchemaValidationException $e) {
+        expect($e->stepId)->toBe('req-fail-step')
+            ->and($e->getMessage())->toContain("Request schema validation failed for step 'req-fail-step'")
+            ->and($e->violations[0]['path'])->toBe('/body/name');
+    }
+});
+
+it('skips outbound request validation when strictValidation is false (lenient mode)', function (): void {
+    $requestValidator = Mockery::mock(RequestValidatorInterface::class);
+    $requestValidator->shouldReceive('validateRequest')->never();
+
+    $openApiExecutor = Mockery::mock(OpenApiExecutorInterface::class);
+    $openApiExecutor->shouldReceive('execute')->once()->andReturn(new Response(200, [], '{}'));
+
+    $responseValidator = Mockery::mock(ResponseValidatorInterface::class);
+    $responseValidator->shouldReceive('validateResponseSchema')->never();
+
+    $outputExtractor = Mockery::mock(OutputExtractorInterface::class);
+    $outputExtractor->shouldReceive('extractOutputs')->andReturn([]);
+
+    $executor = new HttpStepExecutor(
+        $openApiExecutor,
+        createMockDocumentResolver(),
+        new HttpStepExecutorMockEngine(),
+        $outputExtractor,
+        $responseValidator,
+        strictDefault: true,
+        requestValidator: $requestValidator,
+    );
+
+    $step = StepFactory::http('lenient-step', null, new StepFlow(strictValidation: false), new StepIo(), operationId: 'op');
+
+    $outcome = $executor->execute($step, new WorkflowContext('wf_1'), httpStepExecutorDocument(), 'exec_1');
+
+    expect($outcome->statusCode)->toBe(200);
 });

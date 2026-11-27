@@ -51,3 +51,20 @@ These standards apply to every package in the `php-arazzo` monorepo and are bind
    - Mark internal collaborators `@internal` so they stay out of the public API surface.
    - Maintain 100% PCOV line coverage on newly added or refactored classes before committing.
    - Follow [`docs/adr/ADR-010-monorepo-observability-and-policy-standards.md`](adr/ADR-010-monorepo-observability-and-policy-standards.md) for observability tiers and `*Policy` value objects.
+
+
+## 4. Design Metrics & Single-Concern Decomposition
+
+To prevent architectural degradation and avoid CI quality gate rejections, every class in the monorepo must strictly adhere to PHPMD design and codesize thresholds:
+
+1. **Design Metric Ceilings:**
+   - **`CouplingBetweenObjects` (CBO) ≤ 13:** A class must not couple with more than 13 unique external classes (excluding primitive scalar types).
+   - **`ExcessiveClassComplexity` (WMC) ≤ 50:** Weighted Methods per Class cyclomatic complexity must not exceed 50.
+   - **`TooManyPublicMethods` ≤ 10:** Public methods must not exceed 10 (excluding standard getters and withers).
+
+2. **Single-Concern Collaborator Decomposition Guidance:**
+   - When a class approaches or exceeds metric ceilings (`ExcessiveClassComplexity` > 50 or `CouplingBetweenObjects` > 13), do not silence the rule or add baseline entries.
+   - Decompose the class into cohesive, single-concern collaborators marked `@internal` to keep implementation details off the public API surface.
+   - Separate orchestration/coordination from evaluation, schema validation, and transport execution.
+   - Group related parameter sets and domain concepts into rich Value Objects or DTOs to collapse parameter counts and coupling footprints.
+   - Maintain entry points as thin facades that delegate to internal collaborators.
