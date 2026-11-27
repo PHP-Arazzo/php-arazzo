@@ -174,10 +174,11 @@ Grouped cross-package uses of concrete internals (AST nodes, evaluators, resolve
 | `protocol-soap` | `SymbolTable` | `contracts` | 1 | `WsdlStepRule` |
 | `runner` | `AsOperationExecutorPlugin` | `contracts` | 2 | `SubWorkflowStepExecutor` |
 | `runner` | `DependencyAnalyzer` | `contracts` | 1 | `StepOutcomeHandler` |
-| `runner` | `DependencyGraph` | `contracts` | 2 | `StepOutcomeHandler` |
+| `runner` | `DependencyGraph` | `contracts` | 3 | `StepOutcomeHandler` |
 | `runner` | `EvaluationContext` | `expression` | 6 | `StepExecutionWorker` |
 | `runner` | `EvaluationEngine` | `evaluation` | 2 | `AsyncRunner` |
 | `runner` | `ExecutionContext` | `engine` | 2 | `Transition` |
+| `runner` | `ImplicitDependencies` | `contracts` | 2 | `StepPreflightValidator` |
 | `runner` | `NullTracer` | `contracts` | 1 | `ObservabilityContext` |
 | `runner` | `RetryPolicy` | `engine` | 2 | `ExecutionPolicy` |
 | `runner` | `ReusableParameterResolver` | `engine` | 1 | `SubWorkflowStepExecutor` |
@@ -185,6 +186,7 @@ Grouped cross-package uses of concrete internals (AST nodes, evaluators, resolve
 | `runner` | `StepParameterMerger` | `engine` | 2 | `StepExecutionWorker` |
 | `runner` | `SystemClock` | `contracts` | 2 | `ObservabilityContext` |
 | `runner` | `ValidationResult` | `contracts` | 6 | `AsyncExecutionGraphAssembler` |
+| `runner` | `Warning` | `contracts` | 1 | `Runner` |
 | `sources` | `AsSourceNormalizerPlugin` | `contracts` | 3 | `AsyncApiSourceNormalizer` |
 | `sources` | `DecodePolicy` | `document` | 2 | `DefaultSourceResolver` |
 | `sources` | `Decoders` | `document` | 1 | `DefaultSourceResolver` |

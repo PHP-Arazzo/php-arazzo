@@ -15,3 +15,7 @@ arch('spec dtos are strictly typed and readonly')
     ->classes()
     ->toBeReadonly()
     ->toUseStrictTypes();
+
+arch('spec enums live in the Enum namespace')
+    ->expect('Alama\Arazzo\Contracts\Spec\Enum')
+    ->toBeEnums();

@@ -65,7 +65,20 @@ PHP);
     exec('php '.escapeshellarg("{$scripts}/detect-fake-tests.php").' --all 2>&1', $oAll, $ecAll);
     expect($ecAll)->toBeIn([0, 1]);
 
-    exec('rm -rf '.escapeshellarg($tmp));
+    $cleanDir = static function (string $dir) use (&$cleanDir): void {
+        if (!is_dir($dir)) {
+            return;
+        }
+        foreach (scandir($dir) ?: [] as $item) {
+            if ($item === '.' || $item === '..') {
+                continue;
+            }
+            $p = $dir.'/'.$item;
+            is_dir($p) ? $cleanDir($p) : @unlink($p);
+        }
+        @rmdir($dir);
+    };
+    $cleanDir($tmp);
 });
 
 it('audit-boundaries emits workflow engine checklist', function () use ($scripts): void {
@@ -102,7 +115,7 @@ it('scaffold generates pint-clean strict file', function () use ($scripts): void
     file_put_contents($tmp, str_replace("\r\n", "\n", rtrim((string) file_get_contents($tmp)))."\n");
 
     $ecPint = 0;
-    $pintBin = PHP_OS_FAMILY === 'Windows' ? 'vendor\\bin\\pint.bat' : 'vendor/bin/pint';
+    $pintBin = DIRECTORY_SEPARATOR === '\\' && file_exists('vendor/bin/pint.bat') ? 'vendor\\bin\\pint.bat' : 'vendor/bin/pint';
     exec($pintBin.' '.escapeshellarg($tmp).' --test 2>&1', $oPint, $ecPint);
     expect($ecPint)->toBe(0, implode("\n", $oPint));
 

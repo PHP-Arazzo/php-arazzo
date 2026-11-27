@@ -45,6 +45,9 @@ $isAbs = static fn (string $path): bool => str_starts_with($path, '/') || str_st
 
 $files = [];
 foreach ($paths as $p) {
+    if (DIRECTORY_SEPARATOR === '\\' && preg_match('#^/([a-zA-Z])/(.*)$#', $p, $m)) {
+        $p = "{$m[1]}:/{$m[2]}";
+    }
     $abs = $p;
     if (!$isAbs($p) && !file_exists($p)) {
         $abs = "{$root}/{$p}";
@@ -77,7 +80,9 @@ foreach ($files as $file) {
     if ($content === false) {
         continue;
     }
-    $rel = str_starts_with($file, $root.'/') ? substr($file, strlen($root) + 1) : $file;
+    $normRoot = rtrim(str_replace('\\', '/', $root), '/');
+    $normFile = str_replace('\\', '/', $file);
+    $rel = str_starts_with($normFile, $normRoot.'/') ? substr($normFile, strlen($normRoot) + 1) : $file;
 
     // Count test definitions
     preg_match_all('/\b(it|test)\s*\(/', $content, $m);
