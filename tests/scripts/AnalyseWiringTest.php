@@ -182,3 +182,21 @@ it('leaves no renamed config backup behind', function () {
 
     expect($backups)->toBe([]);
 });
+
+it('test_phpunit_coverage_includes', function () {
+    $repo = dirname(__DIR__, 2);
+    $phpunitFile = $repo.'/phpunit.xml.dist';
+
+    expect(file_exists($phpunitFile))->toBeTrue();
+
+    $xml = new SimpleXMLElement((string) file_get_contents($phpunitFile));
+    $directories = [];
+    foreach ($xml->source->include->directory as $dir) {
+        $directories[] = (string) $dir;
+    }
+
+    expect($directories)
+        ->toContain('packages/protocol-http/src')
+        ->toContain('packages/protocol-rpc/src')
+        ->toContain('packages/protocol-soap/src');
+});

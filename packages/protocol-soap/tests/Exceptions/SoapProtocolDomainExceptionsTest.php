@@ -67,15 +67,15 @@ test('SoapRequestBuilder throws typed SoapExecutionException on missing metadata
     $step = new Step('s1', null, StepTarget::wsdl('Add'), new StepFlow(), new StepIo());
     $ctx = new WorkflowContext('def', [], [], [], 'wf', 'exec-1');
 
-    $noBody = new ResolvedOperation($source, new NormalizedOpenApiOperation('Add', 'POST', 'https://calc.test', [], [], [], [], [], []));
+    $noBody = new ResolvedOperation($source, new NormalizedOpenApiOperation(path: 'Add', method: 'POST', resolvedServerUrl: 'https://calc.test'));
     expect(fn () => $builder->build($step, $ctx, $doc, $noBody, 'exec-1'))
         ->toThrow(SoapExecutionException::class, 'application/xml');
 
-    $noNs = new ResolvedOperation($source, new NormalizedOpenApiOperation('Add', 'POST', 'https://calc.test', [], [], [], [], ['application/xml' => ['soapVersion' => '1.1']], []));
+    $noNs = new ResolvedOperation($source, new NormalizedOpenApiOperation(path: 'Add', method: 'POST', resolvedServerUrl: 'https://calc.test', requestBodies: ['application/xml' => ['soapVersion' => '1.1']]));
     expect(fn () => $builder->build($step, $ctx, $doc, $noNs, 'exec-1'))
         ->toThrow(SoapExecutionException::class, 'targetNamespace');
 
-    $noEndpoint = new ResolvedOperation($source, new NormalizedOpenApiOperation('Add', 'POST', null, [], [], [], [], ['application/xml' => ['namespace' => 'urn:calc']], []));
+    $noEndpoint = new ResolvedOperation($source, new NormalizedOpenApiOperation(path: 'Add', method: 'POST', requestBodies: ['application/xml' => ['namespace' => 'urn:calc']]));
     expect(fn () => $builder->build($step, $ctx, $doc, $noEndpoint, 'exec-1'))
         ->toThrow(SoapExecutionException::class, 'endpoint');
 });

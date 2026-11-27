@@ -19,12 +19,6 @@ function makeResolvedOperation(?RpcProtocol $rpcProtocol = null, ?string $operat
         path: '/pets',
         method: 'get',
         resolvedServerUrl: 'https://example.test',
-        pathParameters: [],
-        queryParameters: [],
-        headerParameters: [],
-        cookieParameters: [],
-        requestBodies: [],
-        responses: [],
     );
 
     return new ResolvedOperation(
@@ -42,7 +36,7 @@ it('keeps constructing with 2-arity for runner BC', function (): void {
     $source = new SourceDescription('api', '/u', SourceType::Openapi);
     $op = new ResolvedOperation(
         $source,
-        new NormalizedOpenApiOperation('/', 'get', 'https://example.test', [], [], [], [], [], []),
+        new NormalizedOpenApiOperation(path: '/', method: 'get', resolvedServerUrl: 'https://example.test'),
     );
 
     expect($op->sourceType())->toBe(SourceType::Openapi);

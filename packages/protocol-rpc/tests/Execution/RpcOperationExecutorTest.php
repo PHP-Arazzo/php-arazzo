@@ -198,15 +198,10 @@ function rpcExecutorResolvedOperation(
             path: 'CalculatorService/Add',
             method: 'POST',
             resolvedServerUrl: $url,
-            pathParameters: [],
-            queryParameters: [],
-            headerParameters: [],
-            cookieParameters: [],
             requestBodies: ['application/protobuf' => [
                 'requestFields' => rpcExecutorAddFields(),
                 'responseFields' => $withResultFields ? rpcExecutorResultFields() : [],
             ]],
-            responses: [],
         ),
         rpcProtocol: $protocol,
     );
@@ -417,12 +412,7 @@ it('throws ExecutionException when RPC resolution fails or rpcProtocol is missin
             path: '/calculator.CalculatorService/Add',
             method: 'post',
             resolvedServerUrl: 'http://localhost:9090',
-            pathParameters: [],
-            queryParameters: [],
-            headerParameters: [],
-            cookieParameters: [],
             requestBodies: ['application/protobuf' => ['requestFields' => [], 'responseFields' => []]],
-            responses: [],
         ),
         rpcProtocol: null,
     );

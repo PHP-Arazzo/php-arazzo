@@ -71,7 +71,7 @@ function confExecutor(array $workflows, array $responses = []): array
     $resolver->shouldReceive('resolve')->andReturn(new OpenApiOperationHandle(
         new ResolvedOperation(
             source: new SourceDescription('api', 'https://api.test/openapi.json', SourceType::Openapi),
-            normalized: new NormalizedOpenApiOperation('/x', 'get', null, [], [], [], [], [], []),
+            normalized: new NormalizedOpenApiOperation(path: '/x', method: 'get'),
             rpcProtocol: null,
             operationName: null,
             rpcMethod: null,

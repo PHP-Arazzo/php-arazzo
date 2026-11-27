@@ -172,13 +172,10 @@ function soapExecutorResolvedOperation(string $soapVersion = '1.1'): ResolvedOpe
             path: 'Add',
             method: 'POST',
             resolvedServerUrl: 'http://localhost:8080/soap/calculator',
-            pathParameters: [],
-            queryParameters: [],
             headerParameters: [
                 'Content-Type' => ['value' => 'text/xml; charset=utf-8'],
                 'SOAPAction' => ['value' => 'urn:calculator:Add'],
             ],
-            cookieParameters: [],
             requestBodies: ['application/xml' => [
                 'xsdElement' => 'tns:Add',
                 'schema' => null,

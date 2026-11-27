@@ -42,6 +42,18 @@
         <testsuite name="Arazzo Core Test Suite">
             <directory>packages/core/tests</directory>
         </testsuite>
+        <testsuite name="Arazzo Sources Test Suite">
+            <directory>packages/sources/tests</directory>
+        </testsuite>
+        <testsuite name="Arazzo Protocol Http Test Suite">
+            <directory>packages/protocol-http/tests</directory>
+        </testsuite>
+        <testsuite name="Arazzo Protocol Soap Test Suite">
+            <directory>packages/protocol-soap/tests</directory>
+        </testsuite>
+        <testsuite name="Arazzo Protocol Rpc Test Suite">
+            <directory>packages/protocol-rpc/tests</directory>
+        </testsuite>
         <testsuite name="Arazzo Scripts Test Suite">
             <directory>tests/scripts</directory>
         </testsuite>
@@ -57,6 +69,9 @@
             <directory suffix=".php">packages/runner/src</directory>
             <directory suffix=".php">packages/cli/src</directory>
             <directory suffix=".php">packages/core/src</directory>
+            <directory suffix=".php">packages/protocol-http/src</directory>
+            <directory suffix=".php">packages/protocol-soap/src</directory>
+            <directory suffix=".php">packages/protocol-rpc/src</directory>
             <directory suffix=".php">tools/issue-intake/src</directory>
         </include>
     </source>

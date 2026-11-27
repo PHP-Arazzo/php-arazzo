@@ -30,6 +30,24 @@ function agentsDocContents(string $repo): string
     return (string) file_get_contents($path);
 }
 
+function gitattributesContents(string $repo): string
+{
+    $path = $repo.'/.gitattributes';
+
+    expect(file_exists($path))->toBeTrue('.gitattributes must exist at repository root');
+
+    return (string) file_get_contents($path);
+}
+
+function coverageInsightsDocContents(string $repo): string
+{
+    $path = $repo.'/.agents/skills/coverage-insights/SKILL.md';
+
+    expect(file_exists($path))->toBeTrue('.agents/skills/coverage-insights/SKILL.md must exist');
+
+    return (string) file_get_contents($path);
+}
+
 it('test_coding_standards_metrics_documented', function () {
     $repo = dirname(__DIR__, 2);
     $contents = codingStandardsContents($repo);
@@ -43,6 +61,15 @@ it('test_coding_standards_metrics_documented', function () {
         ->toContain('@internal');
 });
 
+it('test_coding_standards_named_arguments_documented', function () {
+    $repo = dirname(__DIR__, 2);
+    $contents = codingStandardsContents($repo);
+
+    expect($contents)
+        ->toContain('named arguments')
+        ->toContain('NormalizedOpenApiOperation');
+});
+
 it('test_agents_doc_windows_guidance', function () {
     $repo = dirname(__DIR__, 2);
     $contents = agentsDocContents($repo);
@@ -52,4 +79,23 @@ it('test_agents_doc_windows_guidance', function () {
         ->toContain('Windows')
         ->toContain('PATH')
         ->toContain('reactive');
+});
+
+it('test_gitattributes_lf_rules', function () {
+    $repo = dirname(__DIR__, 2);
+    $contents = gitattributesContents($repo);
+
+    expect($contents)
+        ->toContain('* text=auto eol=lf');
+});
+
+it('test_coverage_insights_driver_notes', function () {
+    $repo = dirname(__DIR__, 2);
+    $contents = coverageInsightsDocContents($repo);
+
+    expect($contents)
+        ->toContain('Xdebug')
+        ->toContain('PCOV')
+        ->toContain('ArchTest')
+        ->toContain('PHPUnit 11');
 });
