@@ -4,13 +4,9 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Cli\Console\Command;
 
+use Alama\Arazzo\Cli\Console\Run\RunExecutor;
 use Alama\Arazzo\Cli\Console\RunnerFactory;
-use Alama\Arazzo\Contracts\Exceptions\SchemaValidationException;
 use Alama\Arazzo\Document\DocumentInterface;
-use Alama\Arazzo\Document\Parser\Exceptions\LoaderException;
-use Alama\Arazzo\Document\Parser\Exceptions\ParserException;
-use Alama\Arazzo\Protocol\Http\Policy\HttpPolicy;
-use Alama\Arazzo\Runner\Data\WorkflowExecutionResult;
 use Alama\Arazzo\Runner\RunnerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -22,15 +18,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 #[AsCommand(name: 'run', description: 'Execute a workflow from an Arazzo document')]
 final class RunCommand extends Command
 {
-    /** @var (callable(?DocumentInterface, ?HttpPolicy): RunnerInterface)|null */
-    private readonly mixed $runnerFactory;
-
     public function __construct(
         private readonly ?RunnerInterface $runner = null,
         private readonly ?DocumentInterface $document = null,
-        ?callable $runnerFactory = null,
+        private readonly RunnerFactory $runnerFactory = new RunnerFactory(),
+        private readonly RunExecutor $executor = new RunExecutor(),
     ) {
-        $this->runnerFactory = $runnerFactory;
         parent::__construct();
     }
 
@@ -39,6 +32,9 @@ final class RunCommand extends Command
         $this
             ->addArgument('file', InputArgument::REQUIRED, 'Path to an Arazzo YAML/JSON document')
             ->addOption('workflow', 'w', InputOption::VALUE_REQUIRED, 'workflowId to run (defaults to the first workflow)')
+            ->addOption('step', 's', InputOption::VALUE_REQUIRED, 'Target stepId to execute (with transitive dependencies)')
+            ->addOption('no-deps', null, InputOption::VALUE_NONE, 'Execute only the target step, skipping upstream dependencies')
+            ->addOption('parallel', null, InputOption::VALUE_NONE, 'Execute independent steps in parallel')
             ->addOption('input', 'i', InputOption::VALUE_REQUIRED, 'Workflow inputs as inline JSON or @file.json')
             ->addOption('rate-limit', null, InputOption::VALUE_REQUIRED, 'Outbound requests per second limit (e.g. 10)')
             ->addOption('rate-burst', null, InputOption::VALUE_REQUIRED, 'Outbound rate limit burst capacity (default: 1)')
@@ -49,199 +45,12 @@ final class RunCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        /** @var string $file */
-        $file = $input->getArgument('file');
-
-        $documentFacade = $this->document ?? RunnerFactory::defaultDocument();
-
-        try {
-            $document = $documentFacade->load($file);
-        } catch (LoaderException|ParserException $e) {
-            $output->writeln('<error>PARSE ERROR</error> '.$e->getMessage());
-
-            return Command::FAILURE;
-        }
-
-        // Resolve relative sourceDescription URLs against the document's
-        // directory, not the CWD (the conformance suite runs from the suite
-        // root, while case files live in subdirectories). OpenApiOperationResolver
-        // uses getcwd() as the base path for relative source URLs.
-        chdir(dirname($file));
-
-        /** @var string|null $workflowId */
-        $workflowId = $input->getOption('workflow');
-        $workflow = $workflowId !== null
-            ? $document->findWorkflow($workflowId)
-            : $document->firstWorkflow();
-
-        if ($workflow === null) {
-            $output->writeln('<error>'.sprintf("unknown workflow '%s'", (string) $workflowId).'</error>');
-
-            return Command::FAILURE;
-        }
-
-        /** @var string|null $rawInput */
-        $rawInput = $input->getOption('input');
-        $inputs = $this->parseInputs($rawInput, $output);
-        if ($inputs === null) {
-            return Command::FAILURE;
-        }
-
-        // Preflight input-schema validation before any side effect.
-        $preflightResult = $documentFacade->validateInputs($document, (string) $workflow->workflowId, $inputs);
-        if (!$preflightResult->isValid()) {
-            foreach ($preflightResult->errors as $error) {
-                $output->writeln('<error>'.$error->message.'</error>');
-            }
-
-            return Command::FAILURE;
-        }
-
-        // Use the validated, default-populated input map (defaults applied).
-        $inputs = $preflightResult->inputs;
-
-        $httpPolicy = $this->buildHttpPolicy($input);
-        $runner = $this->resolveRunner($documentFacade, $httpPolicy);
-
-        /** @var array<string, mixed> $inputs */
-        try {
-            $result = $runner->run($document, (string) $workflow->workflowId, $inputs);
-        } catch (SchemaValidationException $exception) {
-            $this->renderSchemaViolation($output, $exception);
-
-            return Command::FAILURE;
-        }
-
-        $this->renderOutput($output, $result);
-
-        return $result->isSucceeded() ? Command::SUCCESS : Command::FAILURE;
-    }
-
-    /** @return array<string, mixed>|null */
-    private function parseInputs(?string $rawInput, OutputInterface $output): ?array
-    {
-        if (!is_string($rawInput) || $rawInput === '') {
-            return [];
-        }
-
-        $json = str_starts_with($rawInput, '@') ? (string) file_get_contents(substr($rawInput, 1)) : $rawInput;
-        /** @var array<string, mixed>|null $decoded */
-        $decoded = json_decode($json, true);
-
-        if (!is_array($decoded)) {
-            $output->writeln('<error>--input must be a JSON object or @file containing one</error>');
-
-            return null;
-        }
-
-        return $decoded;
-    }
-
-    private function renderSchemaViolation(OutputInterface $output, SchemaValidationException $exception): void
-    {
-        $output->writeln('<error>'.$exception->getMessage().'</error>');
-
-        foreach ($exception->violations as $violation) {
-            $output->writeln(sprintf('  <error>%s</error>: %s', $violation['path'], $violation['message']));
-        }
-    }
-
-    private function renderOutput(OutputInterface $output, WorkflowExecutionResult $result): void
-    {
-        $output->writeln(sprintf('workflow <info>%s</info>: <comment>%s</comment>', $result->workflowId, $result->status->value));
-
-        foreach ($result->stepResults as $stepResult) {
-            $status = $stepResult->success ? '<info>✔</info>' : '<error>✘</error>';
-            $output->writeln(sprintf('  %s %s', $status, $stepResult->stepId));
-        }
-
-        if ($result->outputs !== []) {
-            $output->writeln('outputs:');
-            foreach ($result->outputs as $name => $value) {
-                $output->writeln(sprintf('  %s = %s', $name, json_encode($value)));
-            }
-        }
-    }
-
-    private function resolveRunner(DocumentInterface $document, ?HttpPolicy $httpPolicy): RunnerInterface
-    {
-        if ($this->runner !== null) {
-            return $this->runner;
-        }
-
-        if ($this->runnerFactory !== null) {
-            /** @var RunnerInterface $resolved */
-            $resolved = ($this->runnerFactory)($document, $httpPolicy);
-
-            return $resolved;
-        }
-
-        return RunnerFactory::create(document: $document, httpPolicy: $httpPolicy);
-    }
-
-    private function buildHttpPolicy(InputInterface $input): ?HttpPolicy
-    {
-        /** @var string|null $rateLimit */
-        $rateLimit = $input->getOption('rate-limit');
-        /** @var string|null $rateBurst */
-        $rateBurst = $input->getOption('rate-burst');
-        /** @var string|null $maxConcurrency */
-        $maxConcurrency = $input->getOption('max-concurrency');
-        /** @var string|null $scope */
-        $scope = $input->getOption('rate-limit-scope');
-        $failFast = (bool) $input->getOption('rate-limit-fail-fast');
-
-        if ($this->isDefaultRateLimitOptions($rateLimit, $rateBurst, $maxConcurrency, $scope, $failFast)) {
-            return null;
-        }
-
-        return $this->assembleHttpPolicy($rateLimit, $rateBurst, $maxConcurrency, $scope, $failFast);
-    }
-
-    private function isDefaultRateLimitOptions(
-        ?string $rateLimit,
-        ?string $rateBurst,
-        ?string $maxConcurrency,
-        ?string $scope,
-        bool $failFast,
-    ): bool {
-        if ($rateLimit !== null || $failFast) {
-            return false;
-        }
-
-        $burstDefault = $rateBurst === null || (int) $rateBurst === 1;
-        $concurrencyDefault = $maxConcurrency === null || (int) $maxConcurrency === 4;
-        $scopeDefault = $scope === null || $scope === 'host';
-
-        return $burstDefault && $concurrencyDefault && $scopeDefault;
-    }
-
-    private function assembleHttpPolicy(
-        ?string $rateLimit,
-        ?string $rateBurst,
-        ?string $maxConcurrency,
-        ?string $scope,
-        bool $failFast,
-    ): HttpPolicy {
-        $policy = HttpPolicy::default();
-
-        if ($maxConcurrency !== null) {
-            $policy = $policy->withMaxConcurrent((int) $maxConcurrency);
-        }
-
-        if ($scope !== null) {
-            $policy = $policy->withScope($scope);
-        }
-
-        if ($failFast) {
-            $policy = $policy->withFailFast(true);
-        }
-
-        if ($rateLimit !== null) {
-            $burst = $rateBurst !== null ? (int) $rateBurst : 1;
-            $policy = $policy->withRateLimit((float) $rateLimit, $burst);
-        }
-
-        return $policy;
+        return $this->executor->execute(
+            $input,
+            $output,
+            $this->runner,
+            $this->document,
+            $this->runnerFactory,
+        );
     }
 }

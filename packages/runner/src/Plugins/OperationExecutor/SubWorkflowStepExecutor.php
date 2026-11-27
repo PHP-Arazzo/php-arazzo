@@ -69,11 +69,20 @@ final class SubWorkflowStepExecutor implements OperationExecutorPluginInterface
 
         $child = WorkflowContext::forChildInvocation($context, $target, $bound);
         $result = $this->executor->execute($target, $document, $bound, $child);
+        $succeeded = $result->isSucceeded();
 
-        // A completed sub-workflow has no HTTP semantics; 200 marks success.
-        return StepExecutionOutcome::resolved(200, $result->outputs, [], $bound, [
-            'method' => 'WORKFLOW',
-            'url' => '#workflows/'.$target->workflowId,
-        ]);
+        // A completed sub-workflow has no HTTP semantics; 200 marks child success
+        // and 500 with failureCategory 'subworkflow' propagates child failure.
+        return StepExecutionOutcome::resolved(
+            statusCode: $succeeded ? 200 : 500,
+            outputs: $result->outputs,
+            responseBody: [],
+            inputs: $bound,
+            request: [
+                'method' => 'WORKFLOW',
+                'url' => '#workflows/'.$target->workflowId,
+            ],
+            failureCategory: $succeeded ? null : 'subworkflow',
+        );
     }
 }

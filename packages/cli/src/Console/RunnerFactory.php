@@ -20,8 +20,27 @@ use Psr\Http\Message\RequestFactoryInterface;
  *
  * @internal stays out of the advertised contract; not part of the public API surface
  */
-final readonly class RunnerFactory
+readonly class RunnerFactory
 {
+    public function __construct(
+        private ?ClientInterface $httpClient = null,
+        private ?RequestFactoryInterface $httpFactory = null,
+        private ?SourcesInterface $sources = null,
+    ) {}
+
+    public function createRunner(
+        ?DocumentInterface $document = null,
+        ?HttpPolicy $httpPolicy = null,
+    ): RunnerInterface {
+        return self::create(
+            httpClient: $this->httpClient,
+            httpFactory: $this->httpFactory,
+            sources: $this->sources,
+            document: $document,
+            httpPolicy: $httpPolicy,
+        );
+    }
+
     public static function defaultDocument(): DocumentInterface
     {
         return Document::create();

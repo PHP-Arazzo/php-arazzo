@@ -78,6 +78,12 @@ class CriteriaEvaluator implements CriteriaEvaluatorInterface
             return self::isSuccessStatusCode(is_array($response) ? ($response['statusCode'] ?? null) : null);
         }
 
+        // A sub-workflow step without explicit criteria succeeds only when the
+        // referenced child workflow completes successfully (Arazzo spec / OAI #648).
+        if ($step->isSubWorkflow() && $step->io->successCriteria === []) {
+            return self::hasSubWorkflowSucceeded($context, $step->stepId);
+        }
+
         // A receive step succeeds by default only when a message actually
         // arrived. The resumer records that explicitly; a missing record or a
         // timeout record must not pass silently.
@@ -232,6 +238,21 @@ class CriteriaEvaluator implements CriteriaEvaluatorInterface
         $response = is_array($stepData) ? ($stepData['response'] ?? null) : null;
 
         return is_array($response) ? ($response['body'] ?? []) : [];
+    }
+
+    private static function hasSubWorkflowSucceeded(WorkflowContextInterface $context, string $stepId): bool
+    {
+        $record = $context->getSteps()[$stepId] ?? null;
+        if (!is_array($record)) {
+            return true;
+        }
+
+        $response = is_array($record['response'] ?? null) ? $record['response'] : [];
+        if (($record['failureCategory'] ?? $response['failureCategory'] ?? null) !== null) {
+            return false;
+        }
+
+        return self::isSuccessStatusCode($response['statusCode'] ?? $record['statusCode'] ?? null);
     }
 
     private static function hasReceivedMessage(WorkflowContextInterface $context, string $stepId): bool

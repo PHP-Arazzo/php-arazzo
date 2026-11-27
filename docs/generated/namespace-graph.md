@@ -416,12 +416,15 @@ flowchart LR
     cli_Console --> contracts_Dependency
     cli_Console --> document__
     cli_Console --> cli_Renderer
-    cli_Console --> contracts_Exceptions
-    cli_Console --> document_Parser
-    cli_Console --> protocol_http_Policy
     cli_Console --> contracts_Validation
     cli_Console --> sources_Policy
     cli_Console --> sources__
+    cli_Console --> contracts_Exceptions
+    cli_Console --> protocol_http_Policy
+    cli_Console --> runner_Policy
+    cli_Console --> document_Parser
+    cli_Console --> runner_Exceptions
+    cli_Console --> runner_Preflight
     cli_Console --> protocol_http__
     cli_Exceptions --> engine_Exceptions
     cli_Generator --> contracts_Interfaces

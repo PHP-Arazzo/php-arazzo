@@ -11,7 +11,7 @@ targets. Regenerated before every commit.
 
 | Module | Files | LOC | Fan-in | Fan-out | Instability | Flag |
 |---|---:|---:|---:|---:|---:|---|
-| `cli:Console` | 11 | 1163 | 0 | 21 | 1.00 |  |
+| `cli:Console` | 14 | 1364 | 0 | 24 | 1.00 |  |
 | `cli:Exceptions` | 3 | 48 | 2 | 1 | 0.33 |  |
 | `cli:Generator` | 2 | 139 | 0 | 2 | 1.00 |  |
 | `cli:Renderer` | 3 | 314 | 1 | 1 | 0.50 |  |
@@ -29,7 +29,7 @@ targets. Regenerated before every commit.
 | `contracts:Support` | 5 | 180 | 10 | 0 | 0.00 |  |
 | `contracts:Validation` | 10 | 494 | 17 | 2 | 0.11 |  |
 | `document:Parser` | 31 | 2451 | 5 | 2 | 0.29 |  |
-| `document:Plugins` | 54 | 3350 | 1 | 7 | 0.88 |  |
+| `document:Plugins` | 55 | 3399 | 1 | 7 | 0.88 |  |
 | `document:Registries` | 1 | 96 | 1 | 4 | 0.80 |  |
 | `document:Validator` | 6 | 784 | 2 | 6 | 0.75 |  |
 | `(document root)` | 5 | 255 | 12 | 6 | 0.33 |  |
@@ -47,7 +47,7 @@ targets. Regenerated before every commit.
 | `evaluation:Interfaces` | 2 | 42 | 2 | 3 | 0.60 |  |
 | `evaluation:Plugins` | 2 | 123 | 0 | 4 | 1.00 |  |
 | `evaluation:Registries` | 2 | 188 | 1 | 6 | 0.86 |  |
-| `(evaluation root)` | 6 | 822 | 13 | 14 | 0.52 |  |
+| `(evaluation root)` | 6 | 843 | 13 | 14 | 0.52 |  |
 | `expression:Ast` | 15 | 340 | 4 | 2 | 0.33 |  |
 | `expression:Data` | 6 | 384 | 16 | 5 | 0.24 |  |
 | `expression:Enum` | 3 | 76 | 7 | 0 | 0.00 |  |
@@ -83,11 +83,11 @@ targets. Regenerated before every commit.
 | `runner:Async` | 6 | 1451 | 1 | 22 | 0.96 |  |
 | `runner:Data` | 4 | 276 | 4 | 3 | 0.43 |  |
 | `runner:Events` | 9 | 178 | 2 | 0 | 0.00 |  |
-| `runner:Exceptions` | 13 | 322 | 5 | 3 | 0.38 |  |
+| `runner:Exceptions` | 13 | 322 | 6 | 3 | 0.33 |  |
 | `runner:Execution` | 12 | 711 | 3 | 18 | 0.86 | ⚠ unstable hub |
-| `runner:Plugins` | 1 | 79 | 2 | 9 | 0.82 |  |
-| `runner:Policy` | 2 | 130 | 5 | 2 | 0.29 |  |
-| `runner:Preflight` | 3 | 301 | 4 | 5 | 0.56 |  |
+| `runner:Plugins` | 1 | 88 | 2 | 9 | 0.82 |  |
+| `runner:Policy` | 2 | 130 | 6 | 2 | 0.25 |  |
+| `runner:Preflight` | 3 | 301 | 5 | 5 | 0.50 |  |
 | `runner:Queue` | 1 | 24 | 2 | 1 | 0.33 |  |
 | `runner:Registries` | 1 | 150 | 2 | 3 | 0.60 |  |
 | `runner:Store` | 2 | 136 | 2 | 3 | 0.60 |  |
@@ -102,17 +102,17 @@ targets. Regenerated before every commit.
 | `sources:Resolver` | 15 | 884 | 5 | 6 | 0.55 |  |
 | `(sources root)` | 2 | 333 | 5 | 11 | 0.69 |  |
 
-Total cross-module edges: **1891**
+Total cross-module edges: **1909**
 
 ## Most entangled module pairs
 
 | From → To | References |
 |---|---:|
-| `document:Plugins` → `contracts:Validation` | 110 |
-| `document:Plugins` → `contracts:Spec` | 105 |
+| `document:Plugins` → `contracts:Validation` | 113 |
+| `document:Plugins` → `contracts:Spec` | 106 |
 | `document:Parser` → `contracts:Spec` | 58 |
-| `document:Plugins` → `contracts:Attributes` | 54 |
-| `document:Plugins` → `contracts:Interfaces` | 54 |
+| `document:Plugins` → `contracts:Attributes` | 55 |
+| `document:Plugins` → `contracts:Interfaces` | 55 |
 | `expression:Plugins` → `contracts:Validation` | 34 |
 | `runner:Sync` → `contracts:Spec` | 33 |
 | `expression:Plugins` → `contracts:Spec` | 30 |

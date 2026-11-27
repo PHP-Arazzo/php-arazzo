@@ -14,15 +14,15 @@ xychart-beta
     title "Edit churn per module (git touches)"
     x-axis ["document:Validator", "cli:Console", "runner:Execution", "contracts:Spec", "runner:Async", "runner:Sync", "sources:Normalizer", "document:Parser", "expression:Interfaces", "contracts:Interfaces", "sources:Resolver", "expression:Data"]
     y-axis "Touches" 0 --> 70
-    bar [57, 53, 33, 29, 26, 25, 25, 21, 19, 17, 17, 15]
+    bar [57, 54, 33, 29, 26, 25, 25, 21, 19, 17, 17, 15]
 ```
 
-Analyzed 663 total file-touches across 83 modules.
+Analyzed 666 total file-touches across 83 modules.
 
 | Module | Touches | Share | LOC | Touches/KLOC |
 |---|---:|---:|---:|---:|
 | `document:Validator` | 57 | 9% | 790 | 72.2 |
-| `cli:Console` | 53 | 8% | 1,174 | 45.1 |
+| `cli:Console` | 54 | 8% | 1,378 | 39.2 |
 | `runner:Execution` | 33 | 5% | 723 | 45.6 |
 | `contracts:Spec` | 29 | 4% | 2,916 | 9.9 |
 | `runner:Async` | 26 | 4% | 1,457 | 17.8 |
@@ -41,9 +41,9 @@ Analyzed 663 total file-touches across 83 modules.
 | `evaluation:Registries` | 10 | 2% | 190 | 52.6 |
 | `protocol-http:Plugins` | 10 | 2% | 388 | 25.8 |
 | `protocol-soap:Execution` | 10 | 2% | 444 | 22.5 |
+| `document:Plugins` | 9 | 1% | 3,454 | 2.6 |
 | `evaluation:Condition` | 9 | 1% | 1,149 | 7.8 |
 | `contracts:State` | 8 | 1% | 1,242 | 6.4 |
-| `document:Plugins` | 8 | 1% | 3,404 | 2.4 |
 | `expression:Internal` | 8 | 1% | 885 | 9 |
 | `contracts:Validation` | 7 | 1% | 504 | 13.9 |
 | `engine:Runtime` | 7 | 1% | 1,870 | 3.7 |
@@ -72,6 +72,7 @@ Analyzed 663 total file-touches across 83 modules.
 | `protocol-rpc:Plugins` | 4 | 1% | 393 | 10.2 |
 | `protocol-rpc:Protocol` | 4 | 1% | 501 | 8 |
 | `runner:Data` | 4 | 1% | 280 | 14.3 |
+| `runner:Plugins` | 4 | 1% | 89 | 44.9 |
 | `contracts:Discovery` | 3 | 0% | 416 | 7.2 |
 | `contracts:Support` | 3 | 0% | 185 | 16.2 |
 | `document:Registries` | 3 | 0% | 97 | 30.9 |
@@ -79,7 +80,6 @@ Analyzed 663 total file-touches across 83 modules.
 | `evaluation:Interfaces` | 3 | 0% | 44 | 68.2 |
 | `protocol-http:Exceptions` | 3 | 0% | 188 | 16 |
 | `protocol-soap:Validation` | 3 | 0% | 139 | 21.6 |
-| `runner:Plugins` | 3 | 0% | 80 | 37.5 |
 | `sources:Registries` | 3 | 0% | 81 | 37 |
 | `contracts:Data` | 2 | 0% | 361 | 5.5 |
 | `engine:Enum` | 2 | 0% | 17 | 117.6 |

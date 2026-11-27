@@ -11,7 +11,7 @@ same pull request.
 |------|---------|
 | **php-arazzo** | PHP implementation of the [Arazzo 1.0.1 / 1.1.0](https://www.asyncapi.com/specs/arazzo) spec for describing workflows of API calls. |
 | **Monorepo** | Single git repository containing multiple Composer packages under `packages/`, plus `scripts/` and tooling at the root. |
-| **`arazzo run`** | CLI command that resolves and executes an Arazzo workflow document: sends HTTP requests, extracts step outputs, evaluates criteria, applies retry/goto/failure semantics, and reports a true result. |
+| **`arazzo run`** | CLI command that resolves and executes an Arazzo workflow document: sends HTTP requests, extracts step outputs, evaluates criteria, applies retry/goto/failure semantics, supports single-step targeted execution (`--step` / `-s`) with optional isolated dependency skipping (`--no-deps`), concurrency (`--parallel`), and reports a true result. |
 | **`arazzo validate`** | CLI command that lint-checks an Arazzo document: structure, references, expression grammar, parameter/action rules, dependsOn validity, source qualification. |
 
 ## 2. Conformance

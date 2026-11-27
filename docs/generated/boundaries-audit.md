@@ -21,7 +21,7 @@ when a boundary consciously moves.
 | `JsonSchema` | 7 | 0 | _unclassified_ ⚠ |
 | `OpenTelemetry` | 26 | 0 | _unclassified_ ⚠ |
 | `Psr` | 112 | 0 | allowed |
-| `Symfony` | 34 | 0 | **forbidden** ⚠ |
+| `Symfony` | 40 | 0 | **forbidden** ⚠ |
 | `cebe` | 30 | 0 | **forbidden** ⚠ |
 
 ## Module detail
@@ -29,7 +29,7 @@ when a boundary consciously moves.
 | Package | Module | Vendor | References |
 |---|---|---|---:|
 | cli | `cli:Console` | `Psr` | 3 |
-| cli | `cli:Console` | `Symfony` | 31 |
+| cli | `cli:Console` | `Symfony` | 37 |
 | cli | `cli:Generator` | `Psr` | 3 |
 | contracts | `contracts:Clock` | `Psr` | 1 |
 | contracts | `contracts:Discovery` | `Composer` | 1 |
@@ -70,7 +70,7 @@ when a boundary consciously moves.
 | sources | `sources:_` | `Psr` | 6 |
 
 **14 library boundary violation(s):**
-- `cli:Console` imports `Symfony\*` (31 refs)
+- `cli:Console` imports `Symfony\*` (37 refs)
 - `contracts:Discovery` imports `Composer\*` (1 refs)
 - `document:Parser` imports `Symfony\*` (2 refs)
 - `document:Plugins` imports `JsonSchema\*` (4 refs)
@@ -111,15 +111,15 @@ Grouped cross-package uses of concrete internals (AST nodes, evaluators, resolve
 
 | From package | Target | In package | Refs | Example site |
 |---|---|---|---:|---|
-| `document` | `AsValidationRulePlugin` | `contracts` | 55 | `ActionDuplicateRule` |
-| `document` | `ErrorCollector` | `contracts` | 57 | `ActionDuplicateRule` |
+| `document` | `AsValidationRulePlugin` | `contracts` | 56 | `ActionDuplicateRule` |
+| `document` | `ErrorCollector` | `contracts` | 58 | `ActionDuplicateRule` |
 | `document` | `ImplicitDependencies` | `contracts` | 1 | `StepDependsOnNoCycleRule` |
 | `document` | `KnownOperations` | `contracts` | 3 | `Validator` |
 | `document` | `PluginDiscovery` | `contracts` | 1 | `ValidationRuleRegistry` |
 | `document` | `SourceResolutionCollection` | `contracts` | 3 | `Validator` |
-| `document` | `SymbolTable` | `contracts` | 57 | `ActionDuplicateRule` |
+| `document` | `SymbolTable` | `contracts` | 58 | `ActionDuplicateRule` |
 | `document` | `ValidationResult` | `contracts` | 3 | `Validator` |
-| `document` | `ValidatorPolicy` | `contracts` | 2 | `RuleSet` |
+| `document` | `ValidatorPolicy` | `contracts` | 3 | `HttpStepSuccessCriteriaRule` |
 | `document` | `WorkflowSymbols` | `contracts` | 1 | `ActionGotoTargetResolvesRule` |
 | `engine` | `SystemClock` | `contracts` | 1 | `RetryPolicy` |
 | `evaluation` | `AsCriterionPlugin` | `contracts` | 2 | `JsonPathCriterionPlugin` |

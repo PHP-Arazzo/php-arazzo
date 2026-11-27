@@ -16,9 +16,9 @@ Evans' first question: does the code speak one language?
 ### run vs execute vs invoke
 
 - **Execute**: `ExecuteStepJob`, `StepExecutedEvent` (2 types)
-- **Executor**: `AsOperationExecutorPlugin`, `AsyncApiStepExecutor`, `DefaultOpenApiExecutor`, `HttpStepExecutor` + 8 more (12 types)
+- **Executor**: `AsOperationExecutorPlugin`, `AsyncApiStepExecutor`, `DefaultOpenApiExecutor`, `HttpStepExecutor` + 9 more (13 types)
 - **Invoke**: `SubWorkflowInvokeTargetResolvesRule`, `SubWorkflowInvoker` (2 types)
-- **Run**: `AsyncRunner`, `AsyncRunnerInterface`, `CliRunResult`, `CliRunner` + 14 more (18 types)
+- **Run**: `AsyncRunner`, `AsyncRunnerInterface`, `CliRunResult`, `CliRunner` + 17 more (21 types)
 - **Runner**: `AsyncRunner`, `AsyncRunnerInterface`, `CliRunner`, `Runner` + 5 more (9 types)
 
 ### parse vs load vs decode
@@ -57,7 +57,7 @@ Evans' first question: does the code speak one language?
 ### render vs generate
 
 - **Generator**: `ArazzoGenerator`, `GeneratorApiException` (2 types)
-- **Render**: `MarkdownRenderer`, `MermaidRenderer`, `RenderCommand`, `Renderer` (4 types)
+- **Render**: `MarkdownRenderer`, `MermaidRenderer`, `RenderCommand`, `Renderer` + 1 more (5 types)
 
 ## Homonyms (same name, multiple homes)
 

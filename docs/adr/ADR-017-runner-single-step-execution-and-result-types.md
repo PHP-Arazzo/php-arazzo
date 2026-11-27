@@ -1,7 +1,7 @@
 # ADR-017: Runner Single-Step Execution Mode and Execution Result Domain Types
 
 - **Status**: accepted
-- **Issue**: #370
+- **Issue**: #370, #371
 
 ## Context and Problem Statement
 
@@ -26,6 +26,14 @@
    - Rename `ExecutionResult` to `WorkflowExecutionResult` and `StepResult` to `StepExecutionResult` across the repository to represent workflow outcomes and step verdicts with explicit domain symmetry.
    - Introduce `Alama\Arazzo\Runner\Data\Enum\StepRole` (`Standard`, `Dependency`, `Target`) on `StepExecutionResult` with query methods `isTarget()` and `isDependency()`.
    - Add `$sequentialFallbacks` to `WorkflowExecutionResult` to record reasons when concurrency flags (such as `--parallel`) fall back to sequential execution.
+
+4. **CLI Port & Execution Flags (Issue #371)**:
+   - Expose targeted execution via `arazzo run <file> --step <step-id>` (with `-s` shortcut) and isolated step execution via `--no-deps`.
+   - `--no-deps` without `--step` fails fast immediately before source retrieval with an explicit validation error.
+   - When `--step` is provided without `--workflow`, target workflow resolution delegates to `StepPreflightValidator::resolveTargetWorkflow()`, gracefully handling multi-workflow documents and failing before network dispatch on `UnknownStepException` or `AmbiguousStepException`.
+   - Preflight validation verifies missing dependency outputs in `--no-deps` mode, failing fast with actionable advice prior to dispatch.
+   - CLI output renders `(dependency)` or `(target)` tags next to step verdicts to distinguish execution roles.
+   - Concurrency flag `--parallel` combined with `--step` falls back to sequential execution and displays an explicit notice.
 
 ## Considered Options
 

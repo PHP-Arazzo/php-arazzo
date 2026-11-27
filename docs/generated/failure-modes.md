@@ -95,6 +95,7 @@ Regenerated before every commit.
 
 | Caught type | Handled by | Flag |
 |---|---|---|
+| `AmbiguousStepException` | `RunPreflight` |  |
 | `AsyncApiResolutionException` | `AsyncApiStepExecutor` |  |
 | `ClientExceptionInterface` | `RpcOperationExecutor` |  |
 | `ClientExceptionInterface` | `SoapOperationExecutor` |  |
@@ -108,12 +109,12 @@ Regenerated before every commit.
 | `InvalidArgumentException` | `StepOutputExtractor` |  |
 | `JsonException` | `NativeJsonDecoder` |  |
 | `JsonException` | `AsyncApiStepExecutor` |  |
-| `LoaderException` | `RunCommand` |  |
+| `LoaderException` | `RunPreflight` |  |
 | `ParseException` | `SymfonyYamlDecoder` |  |
-| `ParserException` | `RunCommand` |  |
+| `ParserException` | `RunPreflight` |  |
 | `RuntimeException` | `RpcOperationExecutor` |  |
 | `RuntimeException` | `SoapOperationExecutor` |  |
-| `SchemaValidationException` | `RunCommand` |  |
+| `SchemaValidationException` | `RunExecutor` |  |
 | `SelectorEvaluationException` | `SelectorEvaluator` |  |
 | `SourceParseException` | `SourceInspector` |  |
 | `Throwable` | `ValidateCommand` |  |
@@ -129,6 +130,7 @@ Regenerated before every commit.
 | `Throwable` | `SourceOperationsNormalizer` |  |
 | `Throwable` | `DefaultSourceResolver` |  |
 | `Throwable` | `Sources` |  |
+| `UnknownStepException` | `RunPreflight` |  |
 
 ## Safety interlocks
 

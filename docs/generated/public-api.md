@@ -1461,7 +1461,7 @@ this file on a commit is a public API change — review it deliberately.
 ### `Alama\Arazzo\Cli\Console\Command`
 
 #### `RunCommand` class
-- `public function __construct(private readonly ?RunnerInterface $runner = null, private readonly ?DocumentInterface $document = null, ?callable $runnerFactory = null)`
+- `public function __construct(private readonly ?RunnerInterface $runner = null, private readonly ?DocumentInterface $document = null, private readonly RunnerFactory $runnerFactory = new RunnerFactory(), private readonly RunExecutor $executor = new RunExecutor())`
 
 #### `ValidateCommand` class
 - `public function __construct(private readonly ValidateConfigLoader $configLoader = new ValidateConfigLoader())`

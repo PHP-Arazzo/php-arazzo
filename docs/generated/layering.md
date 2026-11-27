@@ -146,6 +146,9 @@ flowchart TB
     M_cli_Console --> M_protocol_http_Policy
     M_cli_Console --> M_protocol_http__
     M_cli_Console --> M_runner_Data
+    M_cli_Console --> M_runner_Exceptions
+    M_cli_Console --> M_runner_Policy
+    M_cli_Console --> M_runner_Preflight
     M_cli_Console --> M_runner_Queue
     M_cli_Console --> M_runner_Store
     M_cli_Console --> M_runner__
@@ -589,14 +592,14 @@ flowchart TB
 
 | From package | To package | Refs |
 |---|---|---:|
-| `cli` | `contracts` | 29 |
-| `cli` | `document` | 9 |
+| `cli` | `contracts` | 33 |
+| `cli` | `document` | 11 |
 | `cli` | `engine` | 3 |
 | `cli` | `evaluation` | 1 |
 | `cli` | `protocol-http` | 3 |
-| `cli` | `runner` | 13 |
+| `cli` | `runner` | 19 |
 | `cli` | `sources` | 4 |
-| `document` | `contracts` | 425 |
+| `document` | `contracts` | 431 |
 | `engine` | `contracts` | 51 |
 | `engine` | `document` | 1 |
 | `engine` | `evaluation` | 1 |

@@ -37,6 +37,7 @@ _No catalog found (LedgerAppendingListener not found)._
 | `DocumentSourceDescriptionsPresentRule` <small>core</small> | `error` | 1 |
 | `ExtensionsXPrefixRule` <small>core</small> | `warning` | 1 |
 | `GraphQlStepRule` <small>core</small> | `error` | 3 |
+| `HttpStepSuccessCriteriaRule` <small>core</small> | `warning` | 1 |
 | `InteractionStepRule` <small>core</small> | `error` | 4 |
 | `OfficialSchemaRule` <small>core</small> | `error` | 3 |
 | `ParameterQuerystringOperationShapeRule` <small>core</small> | `warning` | 1 |
@@ -109,7 +110,7 @@ _No catalog found (LedgerAppendingListener not found)._
 | `HttpFetcher` <small>core</small> | `debug` · `warning` | 4 |
 | `Sources` <small>core</small> | `warning` | 1 |
 
-156 logging calls total. PSR-14 events are dispatched independently (see events.md).
+157 logging calls total. PSR-14 events are dispatched independently (see events.md).
 
 ## Persistence adapters
 

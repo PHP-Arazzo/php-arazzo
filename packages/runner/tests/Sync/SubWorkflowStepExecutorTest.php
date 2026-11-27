@@ -109,3 +109,22 @@ it('throws a typed error when the target workflow does not exist', function (): 
 
     $executor->execute($orphan, new WorkflowContext('def_1'), $document, 'exec_1');
 })->throws(ExecutionException::class, "Sub-workflow 'missing-wf' not found");
+
+it('propagates child workflow failure on the step outcome', function (): void {
+    $childExecutor = Mockery::mock(WorkflowExecutor::class);
+    $childExecutor->shouldReceive('execute')
+        ->once()
+        ->andReturn(new WorkflowExecutionResult('fetch-user', ExecutionStatus::Failed, [], []));
+
+    $executor = new SubWorkflowStepExecutor($childExecutor, new EvaluationEngine(expression: new ExpressionEngine()));
+
+    $document = nestedExecutorDocument();
+    $step = $document->firstWorkflow()->firstStep();
+    $context = new WorkflowContext('def_1', ['uid' => 42], [], [], 'wf_1', 'exec_1');
+
+    $outcome = $executor->execute($step, $context, $document, 'exec_1');
+
+    expect($outcome->suspended)->toBeFalse()
+        ->and($outcome->statusCode)->toBe(500)
+        ->and($outcome->failureCategory)->toBe('subworkflow');
+});
