@@ -71,13 +71,29 @@ Execute a workflow from an Arazzo document
 |---|---|---|---|---|
 | `--workflow` | `-w` | value | — | workflowId to run (defaults to the first workflow) |
 | `--input` | `-i` | value | — | Workflow inputs as inline JSON or @file.json |
+| `--rate-limit` | `` | value | — | Outbound requests per second limit (e.g. 10) |
+| `--rate-burst` | `` | value | — | Outbound rate limit burst capacity (default: 1) |
+| `--max-concurrency` | `` | value | — | Max concurrent in-flight requests (default: 4) |
+| `--rate-limit-scope` | `` | value | — | Rate limit scope: host or run (default: host) |
+| `--rate-limit-fail-fast` | `` | flag | false | Fail fast with transport.rate_limited instead of waiting when rate limited |
 
 ## `arazzo validate`
 Parse and validate an Arazzo document
 
-`$ arazzo validate <file>`
+`$ arazzo validate <file> [options]`
 
 | Argument | Required | Default | Description |
 |---|---|---|---|
 | `file` | yes | — | Path to an Arazzo YAML/JSON document |
+
+| Option | Shortcut | Value | Default | Description |
+|---|---|---|---|---|
+| `--severity` | `-s` | value[] | [] | Override rule severity in format <code>:<warn\|warning\|error\|err> |
+| `--disable-rule` | `` | value[] | [] | Disable one or more validator rules by code |
+| `--enable-rule` | `` | value[] | [] | Enable one or more validator rules by code (overrides config) |
+| `--strict` | `` | flag | false | Enable strict validation mode |
+| `--no-strict` | `` | flag | false | Disable strict validation mode |
+| `--conformance` | `` | flag | false | Enforce strict Arazzo specification conformance (reject beyond-spec extensions) |
+| `--config` | `-c` | value | — | Path to validator configuration file (arazzo.validate.php or arazzo.json) |
+| `--resolve-sources` | `` | flag | false | Fetch and validate reachability, parseability and declared type of all source descriptions |
 

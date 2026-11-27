@@ -100,7 +100,7 @@ function subWorkflowGraph(OperationExecutorRegistry $registry): WorkflowExecutor
     $resolver->shouldReceive('resolve')->andReturn(new OpenApiOperationHandle(
         new ResolvedOperation(
             source: new SourceDescription('orders', 'https://api.test/openapi.json', SourceType::Openapi),
-            normalized: new NormalizedOpenApiOperation('/orders', 'get', null, [], [], [], [], [], []),
+            normalized: new NormalizedOpenApiOperation(path: '/orders', method: 'get'),
             rpcProtocol: null,
             operationName: null,
             rpcMethod: null,

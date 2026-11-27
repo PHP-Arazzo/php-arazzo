@@ -41,6 +41,7 @@ stateDiagram-v2
 | Enum | Cases |
 |---|---|
 | `ExecutionStatus` | Running · Succeeded · Failed |
+| `SourceResolutionStatus` | Ok · Unreadable · Unparseable · TypeMismatch · TypeInferenceFailed |
 | `StepStatus` | Pending · Succeeded · Failed · Retrying · Suspended |
 | `TransitionType` | Next · Retry · Goto · End · Suspend · Invoke |
 

@@ -9,10 +9,9 @@ use Alama\Arazzo\Contracts\Spec\Expression;
 use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
 use Alama\Arazzo\Engine\Execution\ReusableParameterResolver;
-use Alama\Arazzo\Evaluation\EvaluationEngine;
 use Alama\Arazzo\Evaluation\EvaluationEngineInterface;
 use Alama\Arazzo\Expression\Data\EvaluationContext;
-use Alama\Arazzo\Expression\ExpressionEngine;
+use Alama\Arazzo\Expression\ExpressionEvaluator;
 use Stringable;
 
 /**
@@ -37,14 +36,19 @@ final class AsyncApiPathInterpolator
             return $path;
         }
 
-        $evaluator = $this->evaluationEngine ?? new EvaluationEngine(expression: new ExpressionEngine());
         $evalContext = $context !== null ? new EvaluationContext($context, $step->stepId, $document) : null;
+        $fallbackEvaluator = null;
 
         $replacements = [];
         foreach ($parameters as $parameter) {
             $val = $parameter->value;
             if ($val instanceof Expression && $evalContext !== null) {
-                $val = $evaluator->evaluate($val, $evalContext);
+                if ($this->evaluationEngine !== null) {
+                    $val = $this->evaluationEngine->evaluate($val, $evalContext);
+                } else {
+                    $fallbackEvaluator ??= new ExpressionEvaluator();
+                    $val = $fallbackEvaluator->evaluate($val, $evalContext);
+                }
             }
 
             $stringVal = is_scalar($val) || $val instanceof Stringable ? (string) $val : '';

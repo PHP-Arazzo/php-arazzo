@@ -21,7 +21,7 @@ function applicatorHandle(array $openApiSpec, string $path = '/items', string $m
     return new OpenApiOperationHandle(
         new ResolvedOperation(
             source: new SourceDescription('api', 'api.json', SourceType::Openapi),
-            normalized: new NormalizedOpenApiOperation($path, $method, null, [], [], [], [], [], []),
+            normalized: new NormalizedOpenApiOperation(path: $path, method: $method),
             rpcProtocol: null,
             operationName: null,
             rpcMethod: null,

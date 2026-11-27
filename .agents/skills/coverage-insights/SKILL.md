@@ -1,6 +1,6 @@
 ---
 name: coverage-insights
-description: Query Pest PHPUnit coverage (HTML) for human + agent consumption. Use when you need to know "what is covered?", "where are the gaps?", "is this file tested?", or to guide test writing. Parses packages/*/coverage-report/index.html + dashboard.html + per-file HTML. Supports --overview, --file, --hotspots, --uncovered, --dashboard with --json for agents. Generate fresh reports via phpdbg when pcov/xdebug not available.
+description: Query Pest PHPUnit coverage (HTML) for human + agent consumption. Use when you need to know "what is covered?", "where are the gaps?", "is this file tested?", or to guide test writing. Parses packages/*/coverage-report/index.html + dashboard.html + per-file HTML. Supports --overview, --file, --hotspots, --uncovered, --dashboard with --json for agents. Generate fresh reports via Xdebug or PCOV.
 ---
 > **Merged** — this skill is now part of `falsification-testing` comprehensive skill. Use `make coverage-query` or `php .agents/skills/falsification-testing/scripts/query-coverage.php`.
 
@@ -25,17 +25,20 @@ packages/core/coverage-report/<path>.php.html  — per-file line coverage (popin
 packages/laravel/coverage-report/...           — same for laravel
 ```
 
-Generate with (no pcov/xdebug needed — uses phpdbg):
+### Drivers & Generation Requirements (PHPUnit 11+)
 
+PHPUnit 11+ requires modern coverage drivers — either **Xdebug** or **PCOV** (legacy phpdbg is not supported for line coverage on modern PHPUnit).
+
+When profiling line coverage, scope the run away from architecture test suites by excluding `ArchTest` (`--exclude-group arch`), as architectural reflection tests add significant overhead and can fail during line instrumentation.
+
+Generate with Xdebug:
 ```bash
-make coverage              # both packages, html + clover
-make coverage-core         # core only
-make coverage-laravel      # laravel only
+XDEBUG_MODE=coverage vendor/bin/pest --coverage --exclude-group arch --coverage-html=coverage-report --coverage-clover=coverage.xml
 ```
 
-Or directly:
+Generate with PCOV:
 ```bash
-phpdbg -qrr vendor/bin/pest --coverage --coverage-html=coverage-report --coverage-clover=coverage.xml
+php -d pcov.enabled=1 vendor/bin/pest --coverage --exclude-group arch --coverage-html=coverage-report --coverage-clover=coverage.xml
 ```
 
 ## Scripts
@@ -43,7 +46,7 @@ phpdbg -qrr vendor/bin/pest --coverage --coverage-html=coverage-report --coverag
 | Script | Purpose | Human | Agent |
 |--------|---------|-------|-------|
 | `query-coverage.php` | Main query — overview/file/hotspots/uncovered/dashboard | `php query-coverage.php --overview` / `--file X` / `--hotspots` | `... --json` |
-| `generate-coverage.sh` | Regenerate reports (phpdbg) | `bash generate-coverage.sh --core` | same, + `--json` summary |
+| `generate-coverage.sh` | Regenerate reports (Xdebug/PCOV) | `bash generate-coverage.sh --core` | same, + `--json` summary |
 
 ## Quick start
 

@@ -16,7 +16,10 @@ Regenerated before every commit.
 
 | Exception | Raised by |
 |---|---|
+| **InvalidArgumentException** | `ValidateConfigLoader` <small>cli:Console</small>, `OutboundRequestPolicy` <small>protocol-http:Policy</small> |
+| **UnexpectedValueException** | `ValidateConfigLoader` <small>cli:Console</small> |
 | **ArazzoException** | _(never raised in src)_ |
+| **AsyncApiResolutionException** | _(never raised in src)_ |
 | **AsyncApiStepException** | _(never raised in src)_ |
 | **CliException** | _(never raised in src)_ |
 | **CliExecutionException** | _(never raised in src)_ |
@@ -33,6 +36,7 @@ Regenerated before every commit.
 | **ExpressionSyntaxException** | _(never raised in src)_ |
 | **GeneratorApiException** | _(never raised in src)_ |
 | **GotoTargetNotFoundException** | _(never raised in src)_ |
+| **InvalidAsyncApiSourceException** | _(never raised in src)_ |
 | **InvalidFetchPolicyException** | _(never raised in src)_ |
 | **InvalidOpenApiSourceException** | _(never raised in src)_ |
 | **InvalidRetryPolicyException** | _(never raised in src)_ |
@@ -59,6 +63,7 @@ Regenerated before every commit.
 | **PreflightFailureException** | _(never raised in src)_ |
 | **ProtoSyntaxException** | _(never raised in src)_ |
 | **ProtobufResolutionException** | _(never raised in src)_ |
+| **RateLimitExceededException** | _(never raised in src)_ |
 | **RegistryInitializationException** | _(never raised in src)_ |
 | **RpcCodecException** | _(never raised in src)_ |
 | **RpcExecutionException** | _(never raised in src)_ |
@@ -88,34 +93,38 @@ Regenerated before every commit.
 
 | Caught type | Handled by | Flag |
 |---|---|---|
+| `AsyncApiResolutionException` | `AsyncApiStepExecutor` |  |
 | `ClientExceptionInterface` | `RpcOperationExecutor` |  |
 | `ClientExceptionInterface` | `SoapOperationExecutor` |  |
 | `ClientExceptionInterface` | `HttpFetcher` |  |
 | `ConditionSyntaxException` | `CriteriaEvaluator` |  |
 | `DecodeException` | `Loader` |  |
 | `Exception` | `DefaultOpenApiExecutor` |  |
+| `Exception` | `ParameterRouter` |  |
 | `ExpressionSyntaxException` | `EmbeddedExpressionSplitter` |  |
 | `ExpressionSyntaxException` | `Parser` |  |
 | `InvalidArgumentException` | `StepOutputExtractor` |  |
 | `JsonException` | `NativeJsonDecoder` |  |
 | `JsonException` | `AsyncApiStepExecutor` |  |
 | `LoaderException` | `RunCommand` |  |
-| `LoaderException` | `ValidateCommand` |  |
 | `ParseException` | `SymfonyYamlDecoder` |  |
 | `ParserException` | `RunCommand` |  |
-| `ParserException` | `ValidateCommand` |  |
 | `RuntimeException` | `RpcOperationExecutor` |  |
 | `RuntimeException` | `SoapOperationExecutor` |  |
 | `SchemaValidationException` | `RunCommand` |  |
 | `SelectorEvaluationException` | `SelectorEvaluator` |  |
+| `SourceParseException` | `SourceInspector` |  |
 | `Throwable` | `ValidateCommand` |  |
 | `Throwable` | `CriteriaEvaluator` |  |
 | `Throwable` | `DefaultOpenApiExecutor` |  |
 | `Throwable` | `HttpStepExecutor` |  |
+| `Throwable` | `AsyncApiOperationResolver` |  |
 | `Throwable` | `CorrelationResumer` |  |
 | `Throwable` | `StepExecutionWorker` |  |
 | `Throwable` | `Preflight` |  |
 | `Throwable` | `WorkflowExecutor` |  |
+| `Throwable` | `SourceInspector` |  |
+| `Throwable` | `SourceOperationsNormalizer` |  |
 | `Throwable` | `DefaultSourceResolver` |  |
 | `Throwable` | `Sources` |  |
 

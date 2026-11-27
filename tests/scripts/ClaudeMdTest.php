@@ -84,3 +84,12 @@ it('stays under 80 lines to protect always-loaded context budget', function () {
 
     expect($lineCount)->toBeLessThan(80);
 });
+
+it('test_claude_md_runtime_guidance', function () {
+    $repo = dirname(__DIR__, 2);
+    $contents = claudeMdContents($repo);
+
+    expect($contents)
+        ->toContain('C:\ProgramData\envkit\services\php\8.4.27')
+        ->toContain('$env:PATH');
+});

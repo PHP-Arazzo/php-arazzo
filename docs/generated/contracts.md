@@ -10,6 +10,7 @@ from both packages. Core defines contracts; Laravel implements them.
 flowchart LR
     I_Accessor["Accessor<br/><small>evaluation:Condition</small>"]:::contract
     I_AiClientInterface["AiClientInterface<br/><small>contracts:Interfaces</small>"]:::contract
+    I_AsyncApiNormalizerInterface["AsyncApiNormalizerInterface<br/><small>sources:Normalizer</small>"]:::contract
     I_AsyncRunnerInterface["AsyncRunnerInterface<br/><small>(runner root)</small>"]:::contract
     I_BackoffCalculatorInterface["BackoffCalculatorInterface<br/><small>contracts:Interfaces</small>"]:::contract
     I_ConditionNode["ConditionNode<br/><small>evaluation:Interfaces</small>"]:::contract
@@ -38,6 +39,7 @@ flowchart LR
     I_PluginInterface["PluginInterface<br/><small>contracts:Interfaces</small>"]:::contract
     I_QueueDriverInterface["QueueDriverInterface<br/><small>contracts:Interfaces</small>"]:::contract
     I_ReplacementTargetResolverInterface["ReplacementTargetResolverInterface<br/><small>contracts:Interfaces</small>"]:::contract
+    I_RequestValidatorInterface["RequestValidatorInterface<br/><small>contracts:Interfaces</small>"]:::contract
     I_ResponseTransferInterface["ResponseTransferInterface<br/><small>contracts:Interfaces</small>"]:::contract
     I_ResponseValidatorInterface["ResponseValidatorInterface<br/><small>contracts:Interfaces</small>"]:::contract
     I_RunnerInterface["RunnerInterface<br/><small>(runner root)</small>"]:::contract
@@ -164,10 +166,16 @@ flowchart LR
     C_document_document_Plugins_ReceiveStepSuccessCriteriaRule -.->|implements| I_ValidationRuleInterface
     C_document_document_Plugins_SelfUriSyntaxRule["SelfUriSyntaxRule<br/><small>document:Plugins</small>"]:::implCore
     C_document_document_Plugins_SelfUriSyntaxRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_SourceTypeInferenceFailedRule["SourceTypeInferenceFailedRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_SourceTypeInferenceFailedRule -.->|implements| I_ValidationRuleInterface
     C_document_document_Plugins_SourceTypeMatchesRule["SourceTypeMatchesRule<br/><small>document:Plugins</small>"]:::implCore
     C_document_document_Plugins_SourceTypeMatchesRule -.->|implements| I_ValidationRuleInterface
     C_document_document_Plugins_SourceUniqueNameRule["SourceUniqueNameRule<br/><small>document:Plugins</small>"]:::implCore
     C_document_document_Plugins_SourceUniqueNameRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_SourceUnparseableRule["SourceUnparseableRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_SourceUnparseableRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_SourceUnreadableRule["SourceUnreadableRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_SourceUnreadableRule -.->|implements| I_ValidationRuleInterface
     C_document_document_Plugins_SourceUrlSyntaxRule["SourceUrlSyntaxRule<br/><small>document:Plugins</small>"]:::implCore
     C_document_document_Plugins_SourceUrlSyntaxRule -.->|implements| I_ValidationRuleInterface
     C_document_document_Plugins_StepAtLeastOneRule["StepAtLeastOneRule<br/><small>document:Plugins</small>"]:::implCore
@@ -256,8 +264,14 @@ flowchart LR
     C_evaluation_evaluation_Plugins_JsonPathCriterionPlugin -.->|implements| I_CriterionEvaluatorPluginInterface
     C_evaluation_evaluation_Plugins_JsonPathExpressionPlugin["JsonPathExpressionPlugin<br/><small>evaluation:Plugins</small>"]:::implCore
     C_evaluation_evaluation_Plugins_JsonPathExpressionPlugin -.->|implements| I_ExpressionEvaluatorPluginInterface
+    C_sources_sources_Normalizer_AsyncApi20Normalizer["AsyncApi20Normalizer<br/><small>sources:Normalizer</small>"]:::implCore
+    C_sources_sources_Normalizer_AsyncApi20Normalizer -.->|implements| I_AsyncApiNormalizerInterface
+    C_sources_sources_Normalizer_AsyncApi30Normalizer["AsyncApi30Normalizer<br/><small>sources:Normalizer</small>"]:::implCore
+    C_sources_sources_Normalizer_AsyncApi30Normalizer -.->|implements| I_AsyncApiNormalizerInterface
     C_sources_sources_Normalizer_OpenApi30Normalizer["OpenApi30Normalizer<br/><small>sources:Normalizer</small>"]:::implCore
     C_sources_sources_Normalizer_OpenApi30Normalizer -.->|implements| I_OpenApiNormalizerInterface
+    C_sources_sources_Plugins_AsyncApiSourceNormalizer["AsyncApiSourceNormalizer<br/><small>sources:Plugins</small>"]:::implCore
+    C_sources_sources_Plugins_AsyncApiSourceNormalizer -.->|implements| I_SourceNormalizerInterface
     C_sources_sources_Plugins_OpenApiSourceNormalizer["OpenApiSourceNormalizer<br/><small>sources:Plugins</small>"]:::implCore
     C_sources_sources_Plugins_OpenApiSourceNormalizer -.->|implements| I_SourceNormalizerInterface
     C_protocol_rpc_protocol_rpc_Plugins_ProtoSourceNormalizer["ProtoSourceNormalizer<br/><small>protocol-rpc:Plugins</small>"]:::implCore
@@ -296,6 +310,8 @@ flowchart LR
     C_engine_engine_Runtime_StoredWorkflowStateRepository -.->|implements| I_WorkflowStateRepositoryInterface
     C_protocol_http_protocol_http_Execution_DefaultOpenApiExecutor["DefaultOpenApiExecutor<br/><small>protocol-http:Execution</small>"]:::implCore
     C_protocol_http_protocol_http_Execution_DefaultOpenApiExecutor -.->|implements| I_OpenApiExecutorInterface
+    C_protocol_http_protocol_http_Execution_RequestSchemaValidator["RequestSchemaValidator<br/><small>protocol-http:Execution</small>"]:::implCore
+    C_protocol_http_protocol_http_Execution_RequestSchemaValidator -.->|implements| I_RequestValidatorInterface
     C_protocol_http_protocol_http_Execution_ResponseSchemaValidator["ResponseSchemaValidator<br/><small>protocol-http:Execution</small>"]:::implCore
     C_protocol_http_protocol_http_Execution_ResponseSchemaValidator -.->|implements| I_ResponseValidatorInterface
     C_protocol_soap_protocol_soap_Validation_XsdResponseValidator["XsdResponseValidator<br/><small>protocol-soap:Validation</small>"]:::implCore
@@ -314,6 +330,8 @@ flowchart LR
     C_protocol_soap_protocol_soap_Plugins_SoapOperationExecutor -.->|implements| I_OperationExecutorPluginInterface
     C_runner_runner_Plugins_SubWorkflowStepExecutor["SubWorkflowStepExecutor<br/><small>runner:Plugins</small>"]:::implCore
     C_runner_runner_Plugins_SubWorkflowStepExecutor -.->|implements| I_OperationExecutorPluginInterface
+    C_protocol_http_protocol_http_Resolver_AsyncApiOperationResolver["AsyncApiOperationResolver<br/><small>protocol-http:Resolver</small>"]:::implCore
+    C_protocol_http_protocol_http_Resolver_AsyncApiOperationResolver -.->|implements| I_OperationResolverInterface
     C_protocol_http_protocol_http_Resolver_OpenApiOperationResolver["OpenApiOperationResolver<br/><small>protocol-http:Resolver</small>"]:::implCore
     C_protocol_http_protocol_http_Resolver_OpenApiOperationResolver -.->|implements| I_OperationResolverInterface
     C_protocol_rpc_protocol_rpc_Protocol_ProtobufOperationResolver["ProtobufOperationResolver<br/><small>protocol-rpc:Protocol</small>"]:::implCore

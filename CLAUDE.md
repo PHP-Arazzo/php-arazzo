@@ -11,6 +11,11 @@ git worktree add .worktrees/<branch> -b <branch>
 cd .worktrees/<branch> && composer install
 ```
 
+On Windows PowerShell, configure PHP 8.4 CLI binary resolution:
+```powershell
+$env:PATH = "C:\ProgramData\envkit\services\php\8.4.27;$env:PATH"
+```
+
 ## Verification & Quality Gates
 
 ```bash

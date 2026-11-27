@@ -41,6 +41,20 @@ These standards apply to every package in the `php-arazzo` monorepo and are bind
      ```
 2. **Keep DTO methods pure and bounded.**
    - DTO methods MUST stay pure (zero I/O, zero service dependencies, zero side effects) and stay within PHPMD limits (`TooManyPublicMethods` ≤ 10 non-getter/wither methods, `ExcessiveClassComplexity` WMC ≤ 50, `CouplingBetweenObjects` ≤ 13).
+3. **Use named arguments when instantiating multi-parameter DTOs.**
+   - For domain DTOs with multiple parameters or optional collections (such as `NormalizedOpenApiOperation` and `ResolvedOperation`), always instantiate using PHP named arguments.
+   - Named arguments eliminate positional ambiguity, document parameter roles at call sites, and allow test fixtures and consumers to cleanly omit default empty collections:
+     ```php
+     // Good
+     $operation = new NormalizedOpenApiOperation(
+         path: '/pets',
+         method: 'get',
+         resolvedServerUrl: 'https://api.example.com',
+     );
+
+     // Bad
+     $operation = new NormalizedOpenApiOperation('/pets', 'get', 'https://api.example.com', [], [], [], [], [], []);
+     ```
 
 ## 3. Symmetric Decomposition & Quality Gates
 

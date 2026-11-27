@@ -290,7 +290,7 @@ it('tests rich methods on Action, Parameter, Criterion, Step, and Collection DTO
         ->and($remoteSrc->isLocal())->toBeFalse()
         ->and($remoteSrc->isRemote())->toBeTrue();
 
-    $resOp = new ResolvedOperation($remoteSrc, new NormalizedOpenApiOperation('/test', 'get', null, [], [], [], [], [], []));
+    $resOp = new ResolvedOperation($remoteSrc, new NormalizedOpenApiOperation(path: '/test', method: 'get'));
     expect($resOp->isHttp())->toBeTrue()
         ->and($resOp->isRpc())->toBeFalse()
         ->and($resOp->isSoap())->toBeFalse()

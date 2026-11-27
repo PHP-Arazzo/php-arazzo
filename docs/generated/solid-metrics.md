@@ -29,26 +29,26 @@ quadrantChart
     cli/Renderer: [0.5, 0]
     contracts/Attributes: [0.133, 0]
     contracts/Clock: [0, 0]
-    contracts/Data: [0.167, 0]
+    contracts/Data: [0.143, 0]
     contracts/Dependency: [0.333, 0]
     contracts/Discovery: [0.2, 0]
     contracts/Exceptions: [0.1, 0]
     contracts/Interfaces: [0.103, 1]
     contracts/Observability: [0, 0.5]
     contracts/Policy: [0, 0]
-    contracts/Spec: [0.036, 0.016]
-    contracts/State: [0.105, 0]
+    contracts/Spec: [0.035, 0.016]
+    contracts/State: [0.1, 0]
     contracts/Support: [0, 0.2]
-    contracts/Validation: [0.111, 0]
+    contracts/Validation: [0.105, 0]
     document/Parser: [0.286, 0.065]
-    document/Plugins: [1, 0]
+    document/Plugins: [0.875, 0]
     document/Registries: [0.8, 0]
-    document/Validator: [0.714, 0]
+    document/Validator: [0.75, 0]
     document/_: [0.333, 0.4]
     engine/Data: [0.75, 0]
     engine/Enum: [0, 0]
     engine/Exceptions: [0.091, 0.125]
-    engine/Execution: [0.357, 0]
+    engine/Execution: [0.333, 0]
     engine/Runtime: [0.6, 0.19]
     engine/_: [1, 0.5]
     evaluation/Condition: [0.889, 0.111]
@@ -59,9 +59,9 @@ quadrantChart
     evaluation/Interfaces: [0.6, 1]
     evaluation/Plugins: [1, 0]
     evaluation/Registries: [0.857, 0]
-    evaluation/_: [0.538, 0.167]
+    evaluation/_: [0.519, 0.167]
     expression/Ast: [0.333, 0]
-    expression/Data: [0.25, 0]
+    expression/Data: [0.238, 0]
     expression/Enum: [0, 0]
     expression/Exceptions: [0.083, 0]
     expression/Interfaces: [0.333, 1]
@@ -73,11 +73,12 @@ quadrantChart
     expression/Support: [0.714, 0]
     expression/Xpath: [0.5, 0.333]
     expression/_: [0.667, 0]
-    protocol-http/Exceptions: [0.333, 0]
-    protocol-http/Execution: [0.857, 0.167]
+    protocol-http/Enum: [0, 0]
+    protocol-http/Exceptions: [0.25, 0]
+    protocol-http/Execution: [0.833, 0.091]
     protocol-http/Plugins: [0.917, 0]
-    protocol-http/Policy: [0.333, 0]
-    protocol-http/Resolver: [0.7, 0]
+    protocol-http/Policy: [0.5, 0]
+    protocol-http/Resolver: [0.813, 0]
     protocol-http/_: [0.923, 0]
     protocol-rpc/Exceptions: [0.2, 0]
     protocol-rpc/Execution: [0.875, 0]
@@ -105,12 +106,13 @@ quadrantChart
     runner/Sync: [0.84, 0]
     runner/_: [0.75, 0.667]
     sources/Exceptions: [0, 0]
-    sources/Normalizer: [0.5, 0.167]
-    sources/Plugins: [1, 0]
-    sources/Policy: [0.333, 0]
+    sources/Inspection: [0.833, 0]
+    sources/Normalizer: [0.667, 0.167]
+    sources/Plugins: [0.857, 0]
+    sources/Policy: [0.2, 0]
     sources/Registries: [0.8, 0]
-    sources/Resolver: [0.667, 0.2]
-    sources/_: [0.75, 0.5]
+    sources/Resolver: [0.545, 0.2]
+    sources/_: [0.688, 0.5]
 ```
 
 ## God classes (SRP)
@@ -125,9 +127,8 @@ Concrete types over 300 LOC:
 | `WorkflowExecutor` | `runner:Sync` | 397 |
 | `StepExecutionWorker` | `runner:Async` | 387 |
 | `StepOutcomeHandler` | `runner:Async` | 366 |
-| `Sources` | `sources:_` | 331 |
+| `DefaultOpenApiExecutor` | `protocol-http:Execution` | 323 |
 | `WorkflowEngine` | `runner:Sync` | 309 |
-| `DefaultOpenApiExecutor` | `protocol-http:Execution` | 306 |
 
 ## Fat interfaces (ISP)
 
@@ -139,7 +140,7 @@ Contracts declaring more than 7 methods:
 | `AsyncRunnerInterface` <small>runner</small> | 16 |
 | `ExpressionEngineInterface` <small>expression</small> | 14 |
 | `EvaluationInputInterface` <small>expression</small> | 12 |
-| `SourcesInterface` <small>sources</small> | 10 |
+| `SourcesInterface` <small>sources</small> | 11 |
 | `ExecutionStoreInterface` <small>runner</small> | 9 |
 | `RunnerInterface` <small>runner</small> | 9 |
 | `EvaluationEngineInterface` <small>evaluation</small> | 8 |

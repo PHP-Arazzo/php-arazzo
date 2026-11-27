@@ -314,7 +314,7 @@ it('handles literal outputs, missing documents, non-body expressions, schema tra
         // Operation with null responses and operation with unresolved status response + Reference schema
         $mockResolver = Mockery::mock(OpenApiOperationResolver::class);
         $source = new SourceDescription('api', $file, SourceType::Openapi);
-        $norm = new NormalizedOpenApiOperation('/x', 'get', null, [], [], [], [], [], []);
+        $norm = new NormalizedOpenApiOperation(path: '/x', method: 'get');
 
         $noRespOp = new Operation([]);
         $noRespOp->responses = null;
