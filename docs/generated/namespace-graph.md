@@ -283,6 +283,7 @@ flowchart LR
     engine_Data --> engine_Enum
     engine_Data --> contracts_State
     engine_Exceptions --> contracts_Support
+    engine_Execution --> contracts_Exceptions
     engine_Execution --> contracts_Spec
     engine_Execution --> contracts_State
     engine_Execution --> document_Parser
@@ -379,11 +380,11 @@ flowchart LR
     runner_Sync --> runner_Policy
     runner_Sync --> contracts_Interfaces
     runner_Sync --> engine_Exceptions
+    runner_Sync --> engine_Execution
     runner_Sync --> expression_Data
     runner_Sync --> engine_Runtime
     runner_Sync --> contracts_Exceptions
     runner_Sync --> contracts_Observability
-    runner_Sync --> engine_Execution
     runner_Sync --> runner_Data
     runner_Sync --> runner_Events
     runner_Sync --> contracts_Validation

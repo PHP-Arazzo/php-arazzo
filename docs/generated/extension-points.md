@@ -14,6 +14,11 @@ mindmap
   root((SPI contracts))
     AiClientInterface
       OpenAiClient
+    ArazzoExecutionExceptionInterface
+      AuthoringException
+      CriteriaException
+      ProtocolException
+      TransportException
     AsyncApiNormalizerInterface
       AsyncApi20Normalizer
       AsyncApi30Normalizer
@@ -190,6 +195,7 @@ mindmap
 | Contract | SPI dir | Implementations |
 |---|---|---|
 | `AiClientInterface` | no | `OpenAiClient` <small>core</small> |
+| `ArazzoExecutionExceptionInterface` | no | `AuthoringException` <small>core</small>, `CriteriaException` <small>core</small>, `ProtocolException` <small>core</small>, `TransportException` <small>core</small> |
 | `AsyncApiNormalizerInterface` | no | `AsyncApi20Normalizer` <small>core</small>, `AsyncApi30Normalizer` <small>core</small> |
 | `AsyncRunnerInterface` | no | `AsyncRunner` <small>core</small> |
 | `BackoffCalculatorInterface` | no | `ExponentialBackoffCalculator` <small>core</small> |

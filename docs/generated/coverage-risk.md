@@ -29,7 +29,7 @@ quadrantChart
     contracts/Data: [0.143, 1]
     contracts/Dependency: [0.286, 1]
     contracts/Discovery: [0.2, 1]
-    contracts/Exceptions: [0.1, 1]
+    contracts/Exceptions: [0.091, 1]
     contracts/Interfaces: [0.103, 1]
     contracts/Observability: [0, 1]
     contracts/Policy: [0, 1]
@@ -44,7 +44,7 @@ quadrantChart
     engine/Data: [0.75, 1]
     engine/Enum: [0, 1]
     engine/Exceptions: [0.091, 1]
-    engine/Execution: [0.333, 1]
+    engine/Execution: [0.375, 1]
     engine/Runtime: [0.6, 1]
     evaluation/Condition: [0.889, 1]
     evaluation/Data: [0.4, 1]
@@ -116,12 +116,12 @@ quadrantChart
 | `contracts/Data` | 0.14 | 9 | 6 | 100% |
 | `contracts/Dependency` | 0.29 | 6 | 3 | 100% |
 | `contracts/Discovery` | 0.20 | 4 | 3 | 100% |
-| `contracts/Exceptions` | 0.10 | 8 | 5 | 100% |
-| `contracts/Interfaces` | 0.10 | 54 | 21 | 100% |
+| `contracts/Exceptions` | 0.09 | 11 | 10 | 100% |
+| `contracts/Interfaces` | 0.10 | 55 | 21 | 100% |
 | `contracts/Observability` | 0.00 | 10 | 4 | 100% |
 | `contracts/Policy` | 0.00 | 12 | 5 | 100% |
-| `contracts/Spec` | 0.04 | 324 | 61 | 100% |
-| `contracts/State` | 0.10 | 96 | 4 | 100% |
+| `contracts/Spec` | 0.04 | 326 | 61 | 100% |
+| `contracts/State` | 0.10 | 97 | 4 | 100% |
 | `contracts/Support` | 0.00 | 13 | 5 | 100% |
 | `contracts/Validation` | 0.10 | 104 | 10 | 100% |
 | `document/Parser` | 0.29 | 65 | 31 | 100% |
@@ -131,7 +131,7 @@ quadrantChart
 | `engine/Data` | 0.75 | 5 | 2 | 100% |
 | `engine/Enum` | 0.00 | 1 | 1 | 100% |
 | `engine/Exceptions` | 0.09 | 13 | 8 | 100% |
-| `engine/Execution` | 0.33 | 16 | 10 | 100% |
+| `engine/Execution` | 0.38 | 17 | 11 | 100% |
 | `engine/Runtime` | 0.60 | 24 | 21 | 100% |
 | `evaluation/Condition` | 0.89 | 84 | 18 | 100% |
 | `evaluation/Data` | 0.40 | 14 | 2 | 100% |
@@ -173,7 +173,7 @@ quadrantChart
 | `protocol-soap/Validation` | 1.00 | 1 | 1 | 100% |
 | `runner/Async` | 0.96 | 17 | 6 | 100% |
 | `runner/Data` | 0.43 | 18 | 4 | 100% |
-| `runner/Events` | 0.00 | 18 | 9 | 100% |
+| `runner/Events` | 0.00 | 19 | 9 | 100% |
 | `runner/Exceptions` | 0.33 | 14 | 13 | 100% |
 | `runner/Execution` | 0.86 | 27 | 12 | 100% |
 | `runner/Plugins` | 0.82 | 6 | 1 | 100% |
@@ -182,7 +182,7 @@ quadrantChart
 | `runner/Queue` | 0.33 | 13 | 1 | 100% |
 | `runner/Registries` | 0.60 | 23 | 1 | 100% |
 | `runner/Store` | 0.60 | 18 | 2 | 100% |
-| `runner/Sync` | 0.84 | 39 | 8 | 100% |
+| `runner/Sync` | 0.84 | 40 | 8 | 100% |
 | `sources/Exceptions` | 0.00 | 12 | 9 | 100% |
 | `sources/Inspection` | 0.83 | 0 | 1 | 0% |
 | `sources/Normalizer` | 0.67 | 7 | 12 | 58% |

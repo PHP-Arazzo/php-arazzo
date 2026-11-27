@@ -175,6 +175,7 @@ Grouped cross-package uses of concrete internals (AST nodes, evaluators, resolve
 | `runner` | `AsOperationExecutorPlugin` | `contracts` | 2 | `SubWorkflowStepExecutor` |
 | `runner` | `DependencyAnalyzer` | `contracts` | 1 | `StepOutcomeHandler` |
 | `runner` | `DependencyGraph` | `contracts` | 3 | `StepOutcomeHandler` |
+| `runner` | `ErrorClassifier` | `engine` | 1 | `StepExecutor` |
 | `runner` | `EvaluationContext` | `expression` | 6 | `StepExecutionWorker` |
 | `runner` | `EvaluationEngine` | `evaluation` | 2 | `AsyncRunner` |
 | `runner` | `ExecutionContext` | `engine` | 2 | `Transition` |

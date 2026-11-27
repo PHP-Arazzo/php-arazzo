@@ -75,6 +75,13 @@ this file on a commit is a public API change — review it deliberately.
 
 ### `Alama\Arazzo\Contracts\Exceptions`
 
+#### `AuthoringException` class
+- `public static function preflightFailure(string $details, ?Throwable $previous = null): self`
+
+#### `CriteriaException` class
+- `public function __construct(string $message, public readonly string $stepId, public readonly string $condition = '', ?Throwable $previous = null, int $code = 0)`
+- `public static function unmet(string $stepId, string $condition, string $details = '', ?Throwable $previous = null): self`
+
 #### `InvalidSpecVersionException` class
 - `public static function unsupported(string $raw): self`
 
@@ -84,6 +91,19 @@ this file on a commit is a public API change — review it deliberately.
 #### `PluginInstantiationException` class
 - `public static function missingConstructorArguments(string $class, string $attributeClass): self`
 - `public static function nonPublicConstructor(string $class, string $attributeClass): self`
+
+#### `ProtocolException` class
+- `public function __construct(string $message, public readonly string $targetUrl = '', ?Throwable $previous = null, int $code = 0)`
+- `public static function contentTypeMismatch(string $targetUrl, string $expected, string $actual, ?Throwable $previous = null): self`
+- `public static function malformedResponse(string $targetUrl, string $details, ?Throwable $previous = null): self`
+
+#### `TransportException` class
+- `public function __construct(string $message, public readonly string $targetUrl = '', public readonly string $requestMethod = '', ?Throwable $previous = null, int $code = 0)`
+- `public static function connectionRefused(string $targetUrl, string $requestMethod, ?Throwable $previous = null): self`
+- `public static function fromThrowable(Throwable $exception, string $targetUrl = '', string $requestMethod = ''): self`
+- `public static function networkError(string $targetUrl, string $requestMethod, string $details, ?Throwable $previous = null): self`
+- `public static function rateLimited(string $targetUrl, string $requestMethod, string $details, ?Throwable $previous = null): self`
+- `public static function timeout(string $targetUrl, string $requestMethod, ?Throwable $previous = null): self`
 
 #### `UnresolvableReusableReferenceException` class
 - `public static function forParameter(string $reference): self`
@@ -389,7 +409,12 @@ this file on a commit is a public API change — review it deliberately.
 - `public static function fromArray(array $steps): self`
 
 #### `StepExecutionOutcome` class
-- `public static function resolved(int $statusCode, array $outputs, array $responseBody, array $inputs = [], ?array $request = null, array $responseHeaders = [], ?string $rawBody = null, ?string $contentType = null, ?string $failureCategory = null): self`
+- `public function isFailed(): bool`
+- `public function isResolved(): bool`
+- `public function requestMethod(): string`
+- `public function targetUrl(): string`
+- `public static function failed(Throwable $exception, string $failureCategory = 'transport', ?array $request = null, array $responseHeaders = [], array $meta = [], ): self`
+- `public static function resolved(int $statusCode, array $outputs, array $responseBody, array $inputs = [], ?array $request = null, array $responseHeaders = [], ?string $rawBody = null, ?string $contentType = null, ?string $failureCategory = null, ): self`
 - `public static function suspended(): self`
 
 #### `StepFactory` class
@@ -1149,6 +1174,12 @@ this file on a commit is a public API change — review it deliberately.
 - `public static function invalidBackoffMultiplier(): self`
 - `public static function nonPositiveMaxAttempts(): self`
 
+### `Alama\Arazzo\Engine\Execution`
+
+#### `ErrorClassifier` class
+- `public function classify(StepExecutionOutcome|Throwable $target): string`
+- `public function toTransportException(StepExecutionOutcome|Throwable $target, string $targetUrl = '', string $requestMethod = '', ): ?TransportException`
+
 ### `Alama\Arazzo\Runtime\Policy`
 
 #### `RetryPolicy` class
@@ -1200,7 +1231,7 @@ this file on a commit is a public API change — review it deliberately.
 - `public function withFailFast(bool $failFast = true): self`
 - `public function withIdempotencyInjector(?IdempotencyKeyInjector $injector): self`
 - `public function withMaxConcurrent(int $maxConcurrent): self`
-- `public function withRateLimit(?float $requestsPerSecond, int $burst = OutboundRequestPolicy::DEFAULT_BURST): self`
+- `public function withRateLimit(?float $requestsPerSecond, int $burst = self::DEFAULT_BURST): self`
 - `public function withRateLimiter(?OutboundRateLimiter $rateLimiter): self`
 - `public function withRespectRetryAfter(bool $respectRetryAfter = true): self`
 - `public function withScope(RateLimitScope|string $scope): self`

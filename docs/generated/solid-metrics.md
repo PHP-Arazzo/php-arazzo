@@ -32,7 +32,7 @@ quadrantChart
     contracts/Data: [0.143, 0]
     contracts/Dependency: [0.286, 0]
     contracts/Discovery: [0.2, 0]
-    contracts/Exceptions: [0.1, 0]
+    contracts/Exceptions: [0.091, 0.1]
     contracts/Interfaces: [0.103, 1]
     contracts/Observability: [0, 0.5]
     contracts/Policy: [0, 0]
@@ -48,7 +48,7 @@ quadrantChart
     engine/Data: [0.75, 0]
     engine/Enum: [0, 0]
     engine/Exceptions: [0.091, 0.125]
-    engine/Execution: [0.333, 0]
+    engine/Execution: [0.375, 0]
     engine/Runtime: [0.6, 0.19]
     engine/_: [1, 0.5]
     evaluation/Condition: [0.889, 0.111]
@@ -123,7 +123,7 @@ Concrete types over 300 LOC:
 |---|---|---:|
 | `ExecutionContext` | `engine:Runtime` | 553 |
 | `WorkflowContext` | `contracts:State` | 544 |
-| `WorkflowExecutor` | `runner:Sync` | 519 |
+| `WorkflowExecutor` | `runner:Sync` | 521 |
 | `ExecutionState` | `contracts:State` | 511 |
 | `StepExecutionWorker` | `runner:Async` | 387 |
 | `StepOutcomeHandler` | `runner:Async` | 366 |

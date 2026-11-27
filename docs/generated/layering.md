@@ -204,6 +204,7 @@ flowchart TB
     M_engine_Data --> M_contracts_State
     M_engine_Data --> M_engine_Enum
     M_engine_Exceptions --> M_contracts_Support
+    M_engine_Execution --> M_contracts_Exceptions
     M_engine_Execution --> M_contracts_Spec
     M_engine_Execution --> M_contracts_State
     M_engine_Execution --> M_document_Parser
@@ -600,7 +601,7 @@ flowchart TB
 | `cli` | `runner` | 19 |
 | `cli` | `sources` | 4 |
 | `document` | `contracts` | 431 |
-| `engine` | `contracts` | 51 |
+| `engine` | `contracts` | 57 |
 | `engine` | `document` | 1 |
 | `engine` | `evaluation` | 1 |
 | `evaluation` | `contracts` | 63 |
@@ -621,9 +622,9 @@ flowchart TB
 | `protocol-soap` | `engine` | 4 |
 | `protocol-soap` | `evaluation` | 1 |
 | `protocol-soap` | `expression` | 2 |
-| `runner` | `contracts` | 188 |
+| `runner` | `contracts` | 189 |
 | `runner` | `document` | 14 |
-| `runner` | `engine` | 11 |
+| `runner` | `engine` | 12 |
 | `runner` | `evaluation` | 14 |
 | `runner` | `expression` | 8 |
 | `sources` | `contracts` | 74 |
