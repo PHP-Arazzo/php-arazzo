@@ -18,7 +18,7 @@ targets. Regenerated before every commit.
 | `contracts:Attributes` | 6 | 100 | 13 | 2 | 0.13 |  |
 | `contracts:Clock` | 1 | 19 | 5 | 0 | 0.00 |  |
 | `contracts:Data` | 6 | 355 | 6 | 1 | 0.14 |  |
-| `contracts:Dependency` | 3 | 372 | 4 | 2 | 0.33 |  |
+| `contracts:Dependency` | 3 | 487 | 5 | 2 | 0.29 |  |
 | `contracts:Discovery` | 3 | 413 | 4 | 1 | 0.20 |  |
 | `contracts:Exceptions` | 5 | 127 | 9 | 1 | 0.10 |  |
 | `contracts:Interfaces` | 21 | 395 | 35 | 4 | 0.10 |  |
@@ -81,18 +81,18 @@ targets. Regenerated before every commit.
 | `protocol-soap:Transfer` | 2 | 225 | 2 | 1 | 0.33 |  |
 | `protocol-soap:Validation` | 1 | 138 | 0 | 4 | 1.00 |  |
 | `runner:Async` | 6 | 1451 | 1 | 22 | 0.96 |  |
-| `runner:Data` | 3 | 199 | 4 | 3 | 0.43 |  |
+| `runner:Data` | 4 | 276 | 4 | 3 | 0.43 |  |
 | `runner:Events` | 9 | 178 | 2 | 0 | 0.00 |  |
-| `runner:Exceptions` | 11 | 272 | 5 | 3 | 0.38 |  |
+| `runner:Exceptions` | 13 | 322 | 5 | 3 | 0.38 |  |
 | `runner:Execution` | 12 | 711 | 3 | 18 | 0.86 | ⚠ unstable hub |
 | `runner:Plugins` | 1 | 79 | 2 | 9 | 0.82 |  |
-| `runner:Policy` | 2 | 122 | 5 | 2 | 0.29 |  |
-| `runner:Preflight` | 2 | 154 | 4 | 4 | 0.50 |  |
+| `runner:Policy` | 2 | 130 | 5 | 2 | 0.29 |  |
+| `runner:Preflight` | 3 | 301 | 4 | 5 | 0.56 |  |
 | `runner:Queue` | 1 | 24 | 2 | 1 | 0.33 |  |
 | `runner:Registries` | 1 | 150 | 2 | 3 | 0.60 |  |
 | `runner:Store` | 2 | 136 | 2 | 3 | 0.60 |  |
-| `runner:Sync` | 7 | 1139 | 4 | 21 | 0.84 | ⚠ unstable hub |
-| `(runner root)` | 6 | 561 | 5 | 15 | 0.75 |  |
+| `runner:Sync` | 8 | 1404 | 4 | 21 | 0.84 | ⚠ unstable hub |
+| `(runner root)` | 6 | 649 | 5 | 15 | 0.75 |  |
 | `sources:Exceptions` | 9 | 278 | 6 | 0 | 0.00 |  |
 | `sources:Inspection` | 1 | 102 | 1 | 5 | 0.83 |  |
 | `sources:Normalizer` | 12 | 938 | 3 | 6 | 0.67 |  |
@@ -102,7 +102,7 @@ targets. Regenerated before every commit.
 | `sources:Resolver` | 15 | 884 | 5 | 6 | 0.55 |  |
 | `(sources root)` | 2 | 333 | 5 | 11 | 0.69 |  |
 
-Total cross-module edges: **1868**
+Total cross-module edges: **1891**
 
 ## Most entangled module pairs
 
@@ -114,7 +114,7 @@ Total cross-module edges: **1868**
 | `document:Plugins` → `contracts:Attributes` | 54 |
 | `document:Plugins` → `contracts:Interfaces` | 54 |
 | `expression:Plugins` → `contracts:Validation` | 34 |
-| `runner:Sync` → `contracts:Spec` | 31 |
+| `runner:Sync` → `contracts:Spec` | 33 |
 | `expression:Plugins` → `contracts:Spec` | 30 |
 | `runner:Async` → `contracts:Spec` | 29 |
 | `(evaluation root)` → `contracts:Spec` | 26 |

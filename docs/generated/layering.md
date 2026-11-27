@@ -485,6 +485,7 @@ flowchart TB
     M_runner_Plugins --> M_runner_Sync
     M_runner_Policy --> M_contracts_Policy
     M_runner_Policy --> M_engine_Runtime
+    M_runner_Preflight --> M_contracts_Dependency
     M_runner_Preflight --> M_contracts_Spec
     M_runner_Preflight --> M_contracts_Validation
     M_runner_Preflight --> M_document__
@@ -617,7 +618,7 @@ flowchart TB
 | `protocol-soap` | `engine` | 4 |
 | `protocol-soap` | `evaluation` | 1 |
 | `protocol-soap` | `expression` | 2 |
-| `runner` | `contracts` | 176 |
+| `runner` | `contracts` | 188 |
 | `runner` | `document` | 14 |
 | `runner` | `engine` | 11 |
 | `runner` | `evaluation` | 14 |

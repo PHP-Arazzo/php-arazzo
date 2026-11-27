@@ -18,6 +18,7 @@ Regenerated before every commit.
 |---|---|
 | **InvalidArgumentException** | `ValidateConfigLoader` <small>cli:Console</small>, `OutboundRequestPolicy` <small>protocol-http:Policy</small> |
 | **UnexpectedValueException** | `ValidateConfigLoader` <small>cli:Console</small> |
+| **AmbiguousStepException** | _(never raised in src)_ |
 | **ArazzoException** | _(never raised in src)_ |
 | **AsyncApiResolutionException** | _(never raised in src)_ |
 | **AsyncApiStepException** | _(never raised in src)_ |
@@ -79,6 +80,7 @@ Regenerated before every commit.
 | **StepBudgetExceededException** | _(never raised in src)_ |
 | **TelemetrySetupException** | _(never raised in src)_ |
 | **TypeCastException** | _(never raised in src)_ |
+| **UnknownStepException** | _(never raised in src)_ |
 | **UnknownWorkflowException** | _(never raised in src)_ |
 | **UnresolvableReferenceException** | _(never raised in src)_ |
 | **UnresolvableReusableReferenceException** | _(never raised in src)_ |

@@ -10,9 +10,11 @@ use Alama\Arazzo\Protocol\Rpc\Normalizer\ProtoParser;
 use Alama\Arazzo\Protocol\Rpc\Normalizer\ProtoService;
 use InvalidArgumentException;
 
-function calcProtoContent(): string
-{
-    return file_get_contents(__DIR__.'/../Fixtures/calculator.proto') ?: '';
+if (!\function_exists(__NAMESPACE__.'\\calcProtoContent')) {
+    function calcProtoContent(): string
+    {
+        return file_get_contents(__DIR__.'/../Fixtures/calculator.proto') ?: '';
+    }
 }
 
 it('parses the package, services, methods, and messages of a .proto document', function (): void {

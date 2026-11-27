@@ -5,6 +5,10 @@
 # Exit: 0 = all checks passed, 1 = any check failed
 set -u
 
+if [ -d "/c/ProgramData/envkit/services/php/8.4.27" ]; then
+  export PATH="/c/ProgramData/envkit/services/php/8.4.27:$PATH"
+fi
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(git -C "$SCRIPT_DIR" rev-parse --show-toplevel 2>/dev/null || echo "")"
 if [ -z "$ROOT" ] || [ ! -f "$ROOT/packages/core/composer.json" ]; then

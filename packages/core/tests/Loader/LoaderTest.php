@@ -117,6 +117,9 @@ it('throws unsupported format on loadFromJson when json decoder is missing', fun
 })->throws(LoaderException::class, 'Unsupported');
 
 it('throws not readable when file permissions forbid reading', function (): void {
+    if (PHP_OS_FAMILY === 'Windows') {
+        test()->markTestSkipped('POSIX file permissions (chmod 0000) not supported on Windows NTFS.');
+    }
     $tmp = tempnam(sys_get_temp_dir(), 'arz').'.yaml';
     file_put_contents($tmp, "foo: bar\n");
     chmod($tmp, 0000);
