@@ -22,7 +22,7 @@ use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
 use Alama\Arazzo\Contracts\Support\Events\Dispatcher\SimpleEventDispatcher;
 use Alama\Arazzo\Document\OperationResolverInterface;
-use Alama\Arazzo\Runner\Data\ExecutionResult;
+use Alama\Arazzo\Runner\Data\WorkflowExecutionResult;
 use Alama\Arazzo\Runner\Events\RunCompletedEvent;
 use Alama\Arazzo\Runner\Events\RunStartedEvent;
 use Alama\Arazzo\Runner\Exceptions\InvalidSourcePolicyException;
@@ -113,7 +113,7 @@ it('runs a workflow via a per-instance executor without mutating the global regi
 
     $result = $configured->run(runnerTestDocument(), 'w');
 
-    expect($result)->toBeInstanceOf(ExecutionResult::class)
+    expect($result)->toBeInstanceOf(WorkflowExecutionResult::class)
         ->and($result->workflowId)->toBe('w')
         ->and($result->status)->toBe(ExecutionStatus::Succeeded)
         ->and($result->isSucceeded())->toBeTrue()

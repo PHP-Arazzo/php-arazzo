@@ -30,7 +30,7 @@ use Alama\Arazzo\Runner\Async\StepExecutionWorker;
 use Alama\Arazzo\Runner\Async\StepOutcomeHandler;
 use Alama\Arazzo\Runner\Async\SubWorkflowInvoker;
 use Alama\Arazzo\Runner\Data\ExecuteStepJob;
-use Alama\Arazzo\Runner\Data\ExecutionResult;
+use Alama\Arazzo\Runner\Data\WorkflowExecutionResult;
 use Alama\Arazzo\Runner\Events\RunFailedEvent;
 use Alama\Arazzo\Runner\Exceptions\PreflightFailureException;
 use Alama\Arazzo\Runner\Execution\Data\AsyncPorts;
@@ -206,7 +206,7 @@ it('covers SubWorkflowInvoker missing definition and selector parameter binding'
     $doc = new ArazzoDocument('1.0.0', new Info('T', null, null, '1'), [], [$childWf], new Components([], [], [], []), []);
     $defId = $definitions->save($doc);
 
-    $executor->shouldReceive('execute')->once()->andReturn(new ExecutionResult('child', ExecutionStatus::Succeeded, [], []));
+    $executor->shouldReceive('execute')->once()->andReturn(new WorkflowExecutionResult('child', ExecutionStatus::Succeeded, [], []));
     $result = $invoker->invoke($action, new WorkflowContext($defId, ['a' => 1]));
 
     expect($result->status)->toBe('succeeded');

@@ -6,8 +6,8 @@ use Alama\Arazzo\Contracts\Interfaces\QueueDriverInterface;
 use Alama\Arazzo\Contracts\Spec\Enum\ExecutionStatus;
 use Alama\Arazzo\Contracts\State\ExecutionState;
 use Alama\Arazzo\Evaluation\EvaluationEngineInterface;
-use Alama\Arazzo\Runner\Data\ExecutionResult;
-use Alama\Arazzo\Runner\Data\StepResult;
+use Alama\Arazzo\Runner\Data\StepExecutionResult;
+use Alama\Arazzo\Runner\Data\WorkflowExecutionResult;
 use Alama\Arazzo\Runner\Execution\Data\ObservabilityContext;
 use Alama\Arazzo\Runner\Execution\Data\RunControlFlow;
 use Alama\Arazzo\Runner\Execution\Data\Transition;
@@ -77,8 +77,8 @@ test('run control flow hosts with* mutators (Tell, Dont Ask)', function (): void
 });
 
 test('step result hosts domain queries (Tell, Dont Ask)', function (): void {
-    $okResult = new StepResult('step_1', true, ['token' => 'abc']);
-    $failResult = new StepResult('step_2', false, [], new RuntimeException('Connection failed'));
+    $okResult = new StepExecutionResult('step_1', true, ['token' => 'abc']);
+    $failResult = new StepExecutionResult('step_2', false, [], new RuntimeException('Connection failed'));
 
     expect($okResult->isSucceeded())->toBeTrue()
         ->and($okResult->isFailed())->toBeFalse()
@@ -93,6 +93,9 @@ test('step result hosts domain queries (Tell, Dont Ask)', function (): void {
             'success' => true,
             'outputs' => ['token' => 'abc'],
             'error' => null,
+            'role' => 'standard',
+            'dependency' => false,
+            'target' => false,
         ]);
 
     expect($failResult->isSucceeded())->toBeFalse()
@@ -103,10 +106,10 @@ test('step result hosts domain queries (Tell, Dont Ask)', function (): void {
 });
 
 test('execution result hosts domain queries (Tell, Dont Ask)', function (): void {
-    $step1 = new StepResult('s1', true, ['userId' => 42]);
-    $step2 = new StepResult('s2', false, [], new RuntimeException('Step 2 exploded'));
+    $step1 = new StepExecutionResult('s1', true, ['userId' => 42]);
+    $step2 = new StepExecutionResult('s2', false, [], new RuntimeException('Step 2 exploded'));
 
-    $exec = new ExecutionResult(
+    $exec = new WorkflowExecutionResult(
         workflowId: 'wf_main',
         status: ExecutionStatus::Failed,
         outputs: ['final' => 'done'],
@@ -128,7 +131,7 @@ test('execution result hosts domain queries (Tell, Dont Ask)', function (): void
         ->and($exec->failedStep())->toBe($step2)
         ->and($exec->executedStepIds())->toBe(['s1', 's2']);
 
-    $okExec = new ExecutionResult('wf_ok', ExecutionStatus::Succeeded, ['x' => 1], ['s1' => $step1]);
+    $okExec = new WorkflowExecutionResult('wf_ok', ExecutionStatus::Succeeded, ['x' => 1], ['s1' => $step1]);
     expect($okExec->isSucceeded())->toBeTrue()
         ->and($okExec->failedStep())->toBeNull();
 });

@@ -39,4 +39,13 @@ final class ExecutionError extends RunnerException
     {
         return new self("Dependency '{$dependencyId}' failed.", '', 'runner.dependency_failed');
     }
+
+    public static function missingDependencyOutput(string $stepId, string $outputKey, ?string $depStepId = null): self
+    {
+        $message = $depStepId !== null
+            ? "Step '{$stepId}' requires output '{$outputKey}' from upstream step '{$depStepId}', but it is missing."
+            : "Step '{$stepId}' requires missing dependency output '{$outputKey}'.";
+
+        return new self($message, '', 'step.missing_dependency_output');
+    }
 }

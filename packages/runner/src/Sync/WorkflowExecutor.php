@@ -14,8 +14,9 @@ use Alama\Arazzo\Contracts\State\ExecutionState;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
 use Alama\Arazzo\Document\DocumentInterface;
 use Alama\Arazzo\Engine\Execution\StepParameterMerger;
-use Alama\Arazzo\Runner\Data\ExecutionResult;
-use Alama\Arazzo\Runner\Data\StepResult;
+use Alama\Arazzo\Runner\Data\Enum\StepRole;
+use Alama\Arazzo\Runner\Data\StepExecutionResult;
+use Alama\Arazzo\Runner\Data\WorkflowExecutionResult;
 use Alama\Arazzo\Runner\Events\RunCompletedEvent;
 use Alama\Arazzo\Runner\Events\RunFailedEvent;
 use Alama\Arazzo\Runner\Events\RunStartedEvent;
@@ -25,10 +26,12 @@ use Alama\Arazzo\Runner\Events\StepRetriedEvent;
 use Alama\Arazzo\Runner\Events\StepStartedEvent;
 use Alama\Arazzo\Runner\Exceptions\ExecutionError;
 use Alama\Arazzo\Runner\Exceptions\PreflightFailureException;
+use Alama\Arazzo\Runner\Exceptions\UnknownStepException;
 use Alama\Arazzo\Runner\Exceptions\UnknownWorkflowException;
 use Alama\Arazzo\Runner\Execution\Data\ObservabilityContext;
 use Alama\Arazzo\Runner\Execution\Data\Transition;
 use Alama\Arazzo\Runner\Execution\Enum\TransitionType;
+use Alama\Arazzo\Runner\Policy\ExecutionPolicy;
 use Alama\Arazzo\Runner\Preflight\Preflight;
 use Psr\Clock\ClockInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -71,7 +74,7 @@ class WorkflowExecutor
     /**
      * @param  array<string, mixed>  $inputs
      */
-    public function execute(Workflow $workflow, ArazzoDocument $document, array $inputs, ?WorkflowContext $context = null): ExecutionResult
+    public function execute(Workflow $workflow, ArazzoDocument $document, array $inputs, ?WorkflowContext $context = null): WorkflowExecutionResult
     {
         // Preflight runs before the first side effect (no events, no state).
         $inputs = $this->preflightRunner->validate($workflow, $document, $inputs);
@@ -89,11 +92,134 @@ class WorkflowExecutor
     }
 
     /**
+     * @param  array<string, mixed>  $inputs
+     */
+    public function executeStep(
+        Workflow $workflow,
+        ArazzoDocument $document,
+        string $stepId,
+        array $inputs = [],
+        ?WorkflowContext $context = null,
+        ?ExecutionPolicy $policy = null,
+    ): WorkflowExecutionResult {
+        $targetStep = $workflow->findStep($stepId)
+            ?? throw UnknownStepException::forId($stepId, $workflow->steps->stepIds(), $workflow->workflowId);
+
+        // Preflight runs before the first side effect (no events, no state).
+        $inputs = $this->preflightRunner->validate($workflow, $document, $inputs);
+
+        $executionId = is_string($inputs['__executionId'] ?? null) ? $inputs['__executionId'] : bin2hex(random_bytes(8));
+        $context ??= new WorkflowContext(
+            definitionId: $workflow->workflowId,
+            inputs: $inputs,
+            workflowId: $workflow->workflowId,
+            executionId: $executionId,
+        );
+        $context = $context->withWorkflowData($workflow->workflowId, ['inputs' => $inputs]);
+
+        [$context, $stepSequence] = (new SingleStepSequenceResolver())->resolve($workflow, $targetStep, $inputs, $context, $policy);
+        $state = $this->initialState($context);
+
+        $runSpan = $this->tracer->startSpan('arazzo.workflow.run', [
+            'execution.id' => $executionId,
+            'workflow.id' => $workflow->workflowId,
+            'step.target' => $stepId,
+        ]);
+
+        $this->logger->info('Workflow single-step execution started.', [
+            'executionId' => $executionId,
+            'workflowId' => $workflow->workflowId,
+            'targetStepId' => $stepId,
+            'noDeps' => $policy !== null && $policy->noDeps,
+        ]);
+        $this->events->dispatch(new RunStartedEvent(
+            $executionId,
+            $workflow->workflowId,
+            $workflow->workflowId,
+            $inputs,
+            $this->clock->now(),
+        ));
+
+        try {
+            $result = $this->executeStepSequence($document, $workflow, $stepId, $stepSequence, $state);
+            $runSpan->setStatus($result->status === ExecutionStatus::Succeeded);
+
+            return $result;
+        } catch (Throwable $t) {
+            $runSpan->recordException($t);
+            $runSpan->setStatus(false, $t->getMessage());
+            $this->handleLoopFailure($executionId, $workflow, $t);
+        } finally {
+            $runSpan->end();
+        }
+    }
+
+    /**
+     * @param  list<string>  $stepSequence
+     */
+    private function executeStepSequence(
+        ArazzoDocument $document,
+        Workflow $workflow,
+        string $stepId,
+        array $stepSequence,
+        ExecutionState $state,
+    ): WorkflowExecutionResult {
+        $results = [];
+        foreach ($stepSequence as $currentStepId) {
+            $role = ($currentStepId === $stepId) ? StepRole::Target : StepRole::Dependency;
+            [$state, $stepResult, $transition] = $this->runStepIteration($document, $workflow, $currentStepId, $state, $role);
+            $results[$currentStepId] = $stepResult;
+
+            if (!$stepResult->isSucceeded()) {
+                if ($role === StepRole::Dependency) {
+                    $this->logger->error('Step dependency failed.', [
+                        'executionId' => $state->executionId,
+                        'workflowId' => $workflow->workflowId,
+                        'dependencyId' => $currentStepId,
+                    ]);
+                    $this->events->dispatch(new RunFailedEvent(
+                        $state->executionId,
+                        $workflow->workflowId,
+                        ExecutionError::dependencyFailed($currentStepId),
+                        $this->clock->now(),
+                        'execution',
+                    ));
+
+                    return new WorkflowExecutionResult(
+                        $workflow->workflowId,
+                        ExecutionStatus::Failed,
+                        [],
+                        $results,
+                        $state->stepsSpent,
+                        $state->workflowCallStack,
+                        sequentialFallbacks: ['--step implies sequential execution'],
+                    );
+                }
+
+                return $this->finishTerminal($workflow, $transition, $state, $results, sequentialFallbacks: ['--step implies sequential execution']);
+            }
+        }
+
+        $outputs = $this->workflowEngine->evaluateWorkflowOutputs($workflow, $state);
+        $this->events->dispatch(new RunCompletedEvent($state->executionId, $workflow->workflowId, $outputs, $this->clock->now()));
+
+        return new WorkflowExecutionResult(
+            $workflow->workflowId,
+            ExecutionStatus::Succeeded,
+            $outputs,
+            $results,
+            $state->stepsSpent,
+            $state->workflowCallStack,
+            sequentialFallbacks: ['--step implies sequential execution'],
+        );
+    }
+
+    /**
      * Runs the transitive `dependsOn` closure once, then the requested workflow.
      *
      * @param  array<string, mixed>  $inputs
      */
-    private function executeWithDependencies(Workflow $workflow, ArazzoDocument $document, array $inputs, ExecutionState $handoff, string $executionId): ExecutionResult
+    private function executeWithDependencies(Workflow $workflow, ArazzoDocument $document, array $inputs, ExecutionState $handoff, string $executionId): WorkflowExecutionResult
     {
         $resolver = new WorkflowDependencyResolver($document->workflows);
         $stepResults = [];
@@ -122,7 +248,7 @@ class WorkflowExecutor
                     'execution',
                 ));
 
-                return new ExecutionResult(
+                return new WorkflowExecutionResult(
                     $workflow->workflowId,
                     ExecutionStatus::Failed,
                     [],
@@ -137,7 +263,7 @@ class WorkflowExecutor
     }
 
     /** @param array<string, mixed> $inputs */
-    private function executeOnce(Workflow $workflow, ArazzoDocument $document, array $inputs, WorkflowContext $context, string $executionId): ExecutionResult
+    private function executeOnce(Workflow $workflow, ArazzoDocument $document, array $inputs, WorkflowContext $context, string $executionId): WorkflowExecutionResult
     {
         $runSpan = $this->tracer->startSpan('arazzo.workflow.run', [
             'execution.id' => $executionId,
@@ -157,7 +283,7 @@ class WorkflowExecutor
         ));
 
         try {
-            $result = $this->executeCanonically($workflow, $document, $inputs, $context, $executionId);
+            $result = $this->executeCanonically($workflow, $document, $context, $executionId);
             $runSpan->setStatus($result->isSucceeded(), $result->isSucceeded() ? null : "Workflow '{$workflow->workflowId}' failed");
 
             return $result;
@@ -170,13 +296,12 @@ class WorkflowExecutor
         }
     }
 
-    /** @param array<string, mixed> $inputs */
-    private function executeCanonically(Workflow $workflow, ArazzoDocument $document, array $inputs, WorkflowContext $context, string $executionId): ExecutionResult
+    private function executeCanonically(Workflow $workflow, ArazzoDocument $document, WorkflowContext $context, string $executionId): WorkflowExecutionResult
     {
-        $state = $this->initialState($workflow, $inputs, $context, $executionId);
+        $state = $this->initialState($context);
         $currentWorkflow = $workflow;
         $stepId = $workflow->firstStep()?->stepId;
-        /** @var array<string, StepResult> $results */
+        /** @var array<string, StepExecutionResult> $results */
         $results = [];
 
         try {
@@ -185,7 +310,7 @@ class WorkflowExecutor
                 $results[$stepId] = $stepResult;
 
                 if ($transition->isTerminal()) {
-                    return $this->finishTerminal($currentWorkflow, $stepId, $transition, $state, $results);
+                    return $this->finishTerminal($currentWorkflow, $transition, $state, $results);
                 }
 
                 if ($transition->workflowId !== null && $transition->workflowId !== $currentWorkflow->workflowId) {
@@ -198,36 +323,30 @@ class WorkflowExecutor
             $this->handleLoopFailure($executionId, $currentWorkflow, $t);
         }
 
-        return new ExecutionResult($currentWorkflow->workflowId, ExecutionStatus::Succeeded, $state->outputs, $results, $state->stepsSpent, $state->workflowCallStack);
+        return new WorkflowExecutionResult($currentWorkflow->workflowId, ExecutionStatus::Succeeded, $state->outputs, $results, $state->stepsSpent, $state->workflowCallStack);
     }
 
-    /** @param array<string, mixed> $inputs */
-    private function initialState(Workflow $workflow, array $inputs, WorkflowContext $context, string $executionId): ExecutionState
+    private function initialState(WorkflowContext $context): ExecutionState
     {
         $policy = $this->stepExecutor->policy();
-        $state = ExecutionState::start(
-            $executionId,
-            $context->getDefinitionId(),
-            $workflow->workflowId,
-            $inputs,
+        $state = ExecutionState::fromContext(
+            $context,
             maxSteps: $policy->maxSteps(),
             maxWorkflowDepth: $policy->maxWorkflowDepth(),
-            components: $context->getComponents(),
-            stepsSpent: $context->getStepsSpent(),
-            workflowCallStack: $context->getWorkflowCallStack() !== [] ? $context->getWorkflowCallStack() : null,
         );
 
         return $this->carryWorkflowData($state, $context);
     }
 
     /**
-     * @return array{0: ExecutionState, 1: StepResult, 2: Transition}
+     * @return array{0: ExecutionState, 1: StepExecutionResult, 2: Transition}
      */
     private function runStepIteration(
         ArazzoDocument $document,
         Workflow $workflow,
         string $stepId,
         ExecutionState $state,
+        StepRole $role = StepRole::Standard,
     ): array {
         $step = $workflow->findStep($stepId);
         assert($step instanceof Step);
@@ -240,11 +359,12 @@ class WorkflowExecutor
         /** @var array<string, mixed> $raw */
         $state = $state->withStepResult($stepId, $raw);
 
-        $result = new StepResult(
+        $result = new StepExecutionResult(
             $stepId,
             $success,
             $stepContext->getStepOutputs($stepId),
             $success ? null : ExecutionError::stepFailed($stepId),
+            role: $role,
         );
 
         $transition = $this->workflowEngine->transition($document, $workflow, $step, $state, $success);
@@ -261,7 +381,7 @@ class WorkflowExecutor
      */
     private function dispatchStepOutcome(
         Workflow $workflow,
-        StepResult $result,
+        StepExecutionResult $result,
         array $raw,
         Transition $transition,
         ExecutionState $state,
@@ -304,15 +424,17 @@ class WorkflowExecutor
     }
 
     /**
-     * @param  array<string, StepResult>  $results
+     * @param  array<string, StepExecutionResult>  $results
+     * @param  list<string>  $sequentialFallbacks
      */
     private function finishTerminal(
         Workflow $workflow,
-        string $stepId,
         Transition $transition,
         ExecutionState $state,
         array $results,
-    ): ExecutionResult {
+        array $sequentialFallbacks = [],
+    ): WorkflowExecutionResult {
+        $stepId = $transition->stepId ?? (string) (array_key_last($results) ?? $state->currentStepId);
         if ($transition->isFailed()) {
             $this->logger->warning('Workflow ended in failure.', [
                 'executionId' => $state->executionId,
@@ -327,13 +449,13 @@ class WorkflowExecutor
                 'criteria',
             ));
 
-            return new ExecutionResult($workflow->workflowId, ExecutionStatus::Failed, [], $results, $state->stepsSpent, $state->workflowCallStack);
+            return new WorkflowExecutionResult($workflow->workflowId, ExecutionStatus::Failed, [], $results, $state->stepsSpent, $state->workflowCallStack, $sequentialFallbacks);
         }
 
         $outputs = $this->workflowEngine->evaluateWorkflowOutputs($workflow, $state);
         $this->events->dispatch(new RunCompletedEvent($state->executionId, $workflow->workflowId, $outputs, $this->clock->now()));
 
-        return new ExecutionResult($workflow->workflowId, ExecutionStatus::Succeeded, $outputs, $results, $state->stepsSpent, $state->workflowCallStack);
+        return new WorkflowExecutionResult($workflow->workflowId, ExecutionStatus::Succeeded, $outputs, $results, $state->stepsSpent, $state->workflowCallStack, $sequentialFallbacks);
     }
 
     private function handleLoopFailure(string $executionId, Workflow $workflow, Throwable $exception): never

@@ -9,7 +9,7 @@ use Alama\Arazzo\Contracts\Exceptions\SchemaValidationException;
 use Alama\Arazzo\Document\DocumentInterface;
 use Alama\Arazzo\Document\Parser\Exceptions\LoaderException;
 use Alama\Arazzo\Document\Parser\Exceptions\ParserException;
-use Alama\Arazzo\Runner\Data\ExecutionResult;
+use Alama\Arazzo\Runner\Data\WorkflowExecutionResult;
 use Alama\Arazzo\Runner\RunnerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -134,7 +134,7 @@ final class RunCommand extends Command
         }
     }
 
-    private function renderOutput(OutputInterface $output, ExecutionResult $result): void
+    private function renderOutput(OutputInterface $output, WorkflowExecutionResult $result): void
     {
         $output->writeln(sprintf('workflow <info>%s</info>: <comment>%s</comment>', $result->workflowId, $result->status->value));
 

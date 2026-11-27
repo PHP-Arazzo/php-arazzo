@@ -40,10 +40,17 @@ same pull request.
 | **ExecutionHistory** | Append-only, monotonically sequenced log of execution facts — the canonical source of truth for audit trails, deterministic replay, and lease fencing (`persist-68`). _Avoid_: `EventLedger`. |
 | **ExecutionSnapshot** | Immutable, content-hashed (`sha256`), sequence-pinned durable freeze of `ExecutionState` written after terminal steps or joins so workers resume crashed or long-parked runs in O(1) without full-history replay (`persist-70`, `persist-120`). _Avoid_: `SuperstepCheckpoint`. |
 | **Runner** | Synchronous, protocol-agnostic, in-process workflow runner facade (`Alama\Arazzo\Runner\Runner`) that executes steps exclusively via `OperationExecutorPluginInterface` plugins. _Avoid_: `RunnerFacade`. |
+| **runStep** | Dedicated `RunnerInterface` method executing a targeted step within a workflow (`RunnerInterface::runStep($doc, $stepId, $inputs, $workflowId, $policy)`), implicitly inferring the parent workflow when unambiguous, resolving and executing its transitive upstream dependencies by default or in isolated no-deps mode via `ExecutionPolicy::withNoDeps()`. |
+| **AmbiguousStepException** | Fatal exception (`Alama\Arazzo\Runner\Exceptions\AmbiguousStepException`) thrown when `runStep` targets a step ID that exists across multiple workflows in the document and no disambiguating `workflowId` was provided. |
+| **UnknownStepException** | Fatal exception (`Alama\Arazzo\Runner\Exceptions\UnknownStepException`) thrown when `runStep` targets a step ID that does not exist in the targeted workflow or document, listing valid step IDs. |
+| **Single-step execution** | Execution mode that bounds a workflow run to a target step and its transitive upstream dependencies from `DependencyGraph`, stopping immediately after the target step finishes. |
+| **StepRole** | Typed verdict classification enum (`Alama\Arazzo\Runner\Data\Enum\StepRole`: `Standard`, `Dependency`, `Target`) on `StepExecutionResult` designating why a step ran and distinguishing dependencies from the target. |
+| **Missing dependency output** | Fatal execution condition (`step.missing_dependency_output`) detected prior to dispatch when a target step in no-deps mode references an upstream step output that was not provided via inputs or initial state. |
 | **AsyncRunner** | Durable, queue-driven workflow runner facade (`Alama\Arazzo\Runner\AsyncRunner`) for hosts executing persisted steps and resuming suspended correlations. _Avoid_: `RunnerGraphBuilder`, `AsyncGraphSeams`. |
 | **AsyncApiOperationResolver** | Protocol resolver (`Alama\Arazzo\Protocol\Http\Resolver\AsyncApiOperationResolver`) implementing `OperationResolverInterface` that dereferences an AsyncAPI step's `channelPath` reference against loaded AsyncAPI sources into a `ResolvedOperation`. |
-| **ExecutionResult** | Immutable typed outcome returned by `Runner::run()`, carrying workflow status (`ExecutionStatus`), outputs, per-step `StepResult` verdicts, steps spent, and call stack. |
-| **Preflight** | Execution-readiness gate run before the first step side effect: validates workflow `inputs` against JSON Schema (always when enabled) and step operation resolution when `OperationResolverInterface`s are registered. |
+| **WorkflowExecutionResult** | Immutable typed outcome returned by `Runner::run()` and `Runner::runStep()`, carrying workflow status (`ExecutionStatus`), outputs, per-step `StepExecutionResult` verdicts, steps spent, call stack, and sequential fallback records. _Avoid_: `ExecutionResult`. |
+| **StepExecutionResult** | Immutable typed verdict for a single executed step (`Alama\Arazzo\Runner\Data\StepExecutionResult`), carrying `stepId`, `success`, `outputs`, `error`, and `role` (`StepRole`). _Avoid_: `StepResult`. |
+| **Preflight** | Execution-readiness gate run before the first step side effect: validates workflow `inputs` against JSON Schema (always when enabled), step existence (`stepId`), and step operation resolution when `OperationResolverInterface`s are registered. |
 | **OperationExecutorRegistry** | Concrete singleton registry (`Alama\Arazzo\Runner\Registries\OperationExecutorRegistry`) holding globally registered `OperationExecutorPluginInterface` plugins ordered by `OperationProtocol`, overridden per-instance via `withExecutor()`. |
 | **ExecutionStore** | Single coarse persistence port (`Alama\Arazzo\Runner\ExecutionStoreInterface`) injected into `AsyncRunner` via `withStore()`, owning in-flight execution state, lifecycle status, and pending correlations for OSS durable runs. |
 | **Policy (`*Policy`)** | Monorepo-wide convention for immutable rule/limit value objects (`final readonly`, `DEFAULT_*` constants, `::default()`, immutable `with*()` methods — e.g. `DecodePolicy`, `YamlPolicy`, `RetryPolicy`, `ExecutionPolicy`). _Avoid_: `*Options`, `*Settings`, `*Config` on public APIs. |
@@ -95,7 +102,7 @@ same pull request.
 | `packages/evaluation` | `EvaluationEngine` — success criteria evaluation (issue #382 R5). |
 | `packages/expression` | Runtime expression parsing & JSONPath (ABNF strictness, issue #386). |
 | `packages/engine` | Transport-agnostic request pipeline helpers (`RequestCompiler`, `StepParameterMerger`, `IdempotencyKeyInjector`) and runtime state/policy/telemetry utilities. |
-| `packages/runner` | Protocol-agnostic execution engine: `Runner` (sync), `AsyncRunner` (durable/queue), `ExecutionResult`, `Preflight`, and workflow lifecycle events. |
+| `packages/runner` | Protocol-agnostic execution engine: `Runner` (sync), `AsyncRunner` (durable/queue), `WorkflowExecutionResult`, `StepExecutionResult`, `Preflight`, and workflow lifecycle events. |
 | `packages/protocol-http` | PSR-18 HTTP/OpenAPI + AsyncAPI protocol slice (`HttpProtocol`, `HttpStepExecutor`, request and response schema validation). |
 | `packages/sources` | Source resolution & reachability (`Sources`, `SourceNormalizerRegistry`). |
 | `packages/cli` | Console terminal edge: ships the `arazzo` executable binary (`bin/arazzo`), providing `run`, `validate`, `list-workflows`, `explain`, and `render` commands. |
@@ -120,6 +127,7 @@ same pull request.
 | ADR-014 | Gating beyond-spec extensions via ValidatorPolicy & dual x-* naming | #171 |
 | ADR-015 | Validation source reachability data carrier and dedicated integrity rules | #331 |
 | ADR-016 | AsyncAPI channelPath resolution and source normalization | #169 |
+| ADR-017 | Runner single-step execution mode and execution result domain types (`WorkflowExecutionResult`, `StepExecutionResult`) | #370 |
 
 ## 8. How to update this file
 

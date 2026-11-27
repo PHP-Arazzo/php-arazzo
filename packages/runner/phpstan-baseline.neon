@@ -19,10 +19,22 @@ parameters:
 			path: src/Async/StepOutcomeHandler.php
 
 		-
+			message: '#^Method __construct has too many parameters \(7\)\. Maximum allowed is 5\.$#'
+			identifier: arazzo.custom.maxParameterCount
+			count: 1
+			path: src/Data/WorkflowExecutionResult.php
+
+		-
 			message: '#^Method __construct has too many parameters \(6\)\. Maximum allowed is 5\.$#'
 			identifier: arazzo.custom.maxParameterCount
 			count: 1
-			path: src/Data/ExecutionResult.php
+			path: src/Policy/ExecutionPolicy.php
+
+		-
+			message: '#^Method executeStep has too many parameters \(6\)\. Maximum allowed is 5\.$#'
+			identifier: arazzo.custom.maxParameterCount
+			count: 1
+			path: src/Sync/WorkflowExecutor.php
 
 		-
 			message: '#^Method __construct has too many parameters \(6\)\. Maximum allowed is 5\.$#'
