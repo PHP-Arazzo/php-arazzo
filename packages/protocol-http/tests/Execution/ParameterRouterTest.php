@@ -17,8 +17,6 @@ it('routes auto parameters into correct buckets based on OpenAPI operation decla
         queryParameters: ['filter' => ['name' => 'filter', 'in' => 'query', 'schema' => ['type' => 'string']]],
         headerParameters: ['X-Custom' => ['name' => 'X-Custom', 'in' => 'header', 'schema' => ['type' => 'string']]],
         cookieParameters: ['sess' => ['name' => 'sess', 'in' => 'cookie', 'schema' => ['type' => 'string']]],
-        requestBodies: [],
-        responses: [],
     );
 
     $payload = new OpenApiPayload(
@@ -45,18 +43,12 @@ it('coerces numeric and boolean strings to declared schema scalar types', functi
     $normalized = new NormalizedOpenApiOperation(
         path: '/test',
         method: 'get',
-        resolvedServerUrl: null,
-        pathParameters: [],
         queryParameters: [
             'count' => ['name' => 'count', 'in' => 'query', 'schema' => ['type' => 'integer']],
             'rate' => ['name' => 'rate', 'in' => 'query', 'schema' => ['type' => 'number']],
             'active' => ['name' => 'active', 'in' => 'query', 'schema' => ['type' => 'boolean']],
             'tags' => ['name' => 'tags', 'in' => 'query', 'schema' => ['type' => 'array']],
         ],
-        headerParameters: [],
-        cookieParameters: [],
-        requestBodies: [],
-        responses: [],
     );
 
     $payload = new OpenApiPayload(
@@ -81,15 +73,9 @@ it('preserves raw value when type casting fails', function (): void {
     $normalized = new NormalizedOpenApiOperation(
         path: '/test',
         method: 'get',
-        resolvedServerUrl: null,
-        pathParameters: [],
         queryParameters: [
             'count' => ['name' => 'count', 'in' => 'query', 'schema' => ['type' => 'integer']],
         ],
-        headerParameters: [],
-        cookieParameters: [],
-        requestBodies: [],
-        responses: [],
     );
 
     $payload = new OpenApiPayload(

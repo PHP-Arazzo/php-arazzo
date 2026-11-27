@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# generate-coverage.sh — regenerate Pest coverage reports via phpdbg (no pcov/xdebug needed)
+# generate-coverage.sh — regenerate Pest coverage reports via Xdebug or PCOV
 # Usage: bash generate-coverage.sh [--core|--laravel|--all] [--json] [--open]
 #   --core      core only (default is --all)
 #   --laravel   laravel only
@@ -33,16 +33,20 @@ run_one() {
   local dir="$ROOT/packages/$pkg"
   local report="$dir/coverage-report"
   local clover="$dir/coverage.xml"
-  echo "=== [$pkg] phpdbg -qrr pest --coverage ==="
+  echo "=== [$pkg] Pest coverage (Xdebug/PCOV, excluding arch) ==="
   echo "  report: $report"
   mkdir -p "$report"
-  # phpdbg is the Herd phpdbg (has coverage without pcov)
-  if ! command -v phpdbg >/dev/null 2>&1; then
-    echo "error: phpdbg not found" >&2; return 2
-  fi
-  # Use phpdbg -qrr to run pest with coverage; --coverage-html and --coverage-clover are phpunit options proxied via pest
   set +e
-  (cd "$dir" && phpdbg -qrr vendor/bin/pest --coverage --coverage-html="$report" --coverage-clover="$clover" 2>&1 | tail -n 50)
+  if [ -n "${XDEBUG_MODE:-}" ] || php -m 2>/dev/null | grep -qi xdebug; then
+    (cd "$dir" && XDEBUG_MODE=coverage vendor/bin/pest --coverage --exclude-group arch --coverage-html="$report" --coverage-clover="$clover" 2>&1 | tail -n 50)
+  elif php -m 2>/dev/null | grep -qi pcov; then
+    (cd "$dir" && php -d pcov.enabled=1 vendor/bin/pest --coverage --exclude-group arch --coverage-html="$report" --coverage-clover="$clover" 2>&1 | tail -n 50)
+  elif command -v phpdbg >/dev/null 2>&1; then
+    (cd "$dir" && phpdbg -qrr vendor/bin/pest --coverage --exclude-group arch --coverage-html="$report" --coverage-clover="$clover" 2>&1 | tail -n 50)
+  else
+    echo "error: No coverage driver found (Xdebug, PCOV, or phpdbg required)" >&2
+    return 2
+  fi
   local ec=$?
   set -e
   if [ -f "$report/index.html" ]; then

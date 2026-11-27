@@ -15,6 +15,7 @@ The monorepo strictly requires PHP 8.4+ (`>= 8.4.1` platform check).
   $env:PATH = "C:\ProgramData\envkit\services\php\8.4.27;$env:PATH"
   ```
 - **Verification:** Run `php -v` and `composer --version` to ensure PHP 8.4 is the active CLI interpreter.
+- **PowerShell Command Chaining:** In Windows PowerShell 5.1, the Bash-style `&&` operator is invalid. Chain dependent commands with `; if ($?) { ... }` or separate independent statements with `;`.
 
 ## 2. Reactive Asynchronous Execution Patterns
 

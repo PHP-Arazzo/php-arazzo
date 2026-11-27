@@ -9,6 +9,7 @@
     stopOnFailure="false"
     executionOrder="random"
     failOnWarning="true"
+    displayDetailsOnTestsThatTriggerWarnings="true"
     displayDetailsOnTestsThatTriggerDeprecations="false"
     failOnDeprecation="false"
     failOnRisky="true"
@@ -42,8 +43,14 @@
         <testsuite name="Arazzo Sources Test Suite">
             <directory>packages/sources/tests</directory>
         </testsuite>
-        <testsuite name="Arazzo Protocol HTTP Test Suite">
+        <testsuite name="Arazzo Protocol Http Test Suite">
             <directory>packages/protocol-http/tests</directory>
+        </testsuite>
+        <testsuite name="Arazzo Protocol Soap Test Suite">
+            <directory>packages/protocol-soap/tests</directory>
+        </testsuite>
+        <testsuite name="Arazzo Protocol Rpc Test Suite">
+            <directory>packages/protocol-rpc/tests</directory>
         </testsuite>
         <testsuite name="Arazzo Core Test Suite">
             <directory>packages/core/tests</directory>
@@ -59,11 +66,13 @@
             <directory suffix=".php">packages/evaluation/src</directory>
             <directory suffix=".php">packages/document/src</directory>
             <directory suffix=".php">packages/sources/src</directory>
-            <directory suffix=".php">packages/protocol-http/src</directory>
             <directory suffix=".php">packages/engine/src</directory>
             <directory suffix=".php">packages/runner/src</directory>
             <directory suffix=".php">packages/cli/src</directory>
             <directory suffix=".php">packages/core/src</directory>
+            <directory suffix=".php">packages/protocol-http/src</directory>
+            <directory suffix=".php">packages/protocol-soap/src</directory>
+            <directory suffix=".php">packages/protocol-rpc/src</directory>
             <directory suffix=".php">tools/issue-intake/src</directory>
         </include>
     </source>

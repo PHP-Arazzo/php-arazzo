@@ -84,10 +84,6 @@ final class ProtoSourceNormalizer implements SourceNormalizerInterface
             path: $reference,
             method: 'POST',
             resolvedServerUrl: $source->url,
-            pathParameters: [],
-            queryParameters: [],
-            headerParameters: [],
-            cookieParameters: [],
             requestBodies: [
                 'application/protobuf' => [
                     'package' => $parsed->package,

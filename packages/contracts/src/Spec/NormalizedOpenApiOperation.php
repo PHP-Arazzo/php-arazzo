@@ -17,12 +17,12 @@ readonly class NormalizedOpenApiOperation
     public function __construct(
         public string $path,
         public string $method,
-        public ?string $resolvedServerUrl,
-        public array $pathParameters,
-        public array $queryParameters,
-        public array $headerParameters,
-        public array $cookieParameters,
-        public array $requestBodies,
-        public array $responses,
+        public ?string $resolvedServerUrl = null,
+        public array $pathParameters = [],
+        public array $queryParameters = [],
+        public array $headerParameters = [],
+        public array $cookieParameters = [],
+        public array $requestBodies = [],
+        public array $responses = [],
     ) {}
 }

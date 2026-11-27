@@ -89,9 +89,6 @@ it('builds and sends an openapi request using the schema to route parameters', f
         headerParameters: [
             'X-Auth' => ['name' => 'X-Auth', 'in' => 'header', 'schema' => ['type' => 'string']],
         ],
-        cookieParameters: [],
-        requestBodies: [],
-        responses: [],
     );
 
     $resolved = new OpenApiOperationHandle(
@@ -159,14 +156,9 @@ it('logs and falls back to the raw value when a parameter cannot be cast to its 
         path: '/search',
         method: 'get',
         resolvedServerUrl: 'https://api.example.com/v1',
-        pathParameters: [],
         queryParameters: [
             'limit' => ['name' => 'limit', 'in' => 'query', 'schema' => ['type' => 'integer']],
         ],
-        headerParameters: [],
-        cookieParameters: [],
-        requestBodies: [],
-        responses: [],
     );
 
     $resolved = new OpenApiOperationHandle(
@@ -232,11 +224,6 @@ it('compiles an indexed expression into the request path', function () {
         pathParameters: [
             'petId' => ['name' => 'petId', 'in' => 'path', 'schema' => ['type' => 'integer']],
         ],
-        queryParameters: [],
-        headerParameters: [],
-        cookieParameters: [],
-        requestBodies: [],
-        responses: [],
     );
 
     $resolved = new OpenApiOperationHandle(
@@ -285,19 +272,15 @@ it('handles cookies, request body, scalar/form body, schema casting types, and G
         path: '/items',
         method: 'post',
         resolvedServerUrl: 'https://api.example.com',
-        pathParameters: [],
         queryParameters: [
             'ratio' => ['name' => 'ratio', 'in' => 'query', 'schema' => ['type' => 'number']],
             'active' => ['name' => 'active', 'in' => 'query', 'schema' => ['type' => 'boolean']],
             'tags' => ['name' => 'tags', 'in' => 'query', 'schema' => ['type' => 'array']],
             'extra' => ['name' => 'extra', 'in' => 'query', 'schema' => ['type' => 'object']],
         ],
-        headerParameters: [],
         cookieParameters: [
             'sid' => ['name' => 'sid', 'in' => 'cookie', 'schema' => ['type' => 'string']],
         ],
-        requestBodies: [],
-        responses: [],
     );
 
     $resolved = new OpenApiOperationHandle(

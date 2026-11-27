@@ -159,10 +159,7 @@ final class WsdlSourceNormalizer implements SourceNormalizerInterface
             path: $operationName,
             method: 'POST',
             resolvedServerUrl: $context['location'],
-            pathParameters: [],
-            queryParameters: [],
             headerParameters: $headerParameters,
-            cookieParameters: [],
             requestBodies: [
                 self::MEDIA_TYPE_XML => [
                     'xsdElement' => $inputElement,

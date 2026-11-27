@@ -36,7 +36,7 @@ it('validates steps using registered operation resolvers', function (): void {
         {
             return new ResolvedOperation(
                 source: new SourceDescription('src', 'http://example.com', SourceType::Openapi),
-                normalized: new NormalizedOpenApiOperation('/test', 'get', null, [], [], [], [], [], []),
+                normalized: new NormalizedOpenApiOperation(path: '/test', method: 'get'),
                 rpcProtocol: null,
                 operationName: null,
                 rpcMethod: null,

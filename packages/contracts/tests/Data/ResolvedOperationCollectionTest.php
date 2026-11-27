@@ -18,24 +18,12 @@ it('manages resolved operations collection immutably', function (): void {
         path: '/pets',
         method: 'get',
         resolvedServerUrl: 'https://api.example.com',
-        pathParameters: [],
-        queryParameters: [],
-        headerParameters: [],
-        cookieParameters: [],
-        requestBodies: [],
-        responses: [],
     );
 
     $normalizedB = new NormalizedOpenApiOperation(
         path: '/orders',
         method: 'post',
         resolvedServerUrl: 'https://api.example.com',
-        pathParameters: [],
-        queryParameters: [],
-        headerParameters: [],
-        cookieParameters: [],
-        requestBodies: [],
-        responses: [],
     );
 
     $opA = new ResolvedOperation(source: $sourceA, normalized: $normalizedA, operationName: 'listPets');

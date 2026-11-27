@@ -141,7 +141,7 @@ function createMockDocumentResolver(): OpenApiOperationResolver
     $mock->shouldReceive('resolve')->andReturn(new OpenApiOperationHandle(
         new ResolvedOperation(
             source: new SourceDescription('test-src', 'http://example.com/openapi.json', SourceType::Openapi),
-            normalized: new NormalizedOpenApiOperation('/rides', 'get', null, [], [], [], [], [], []),
+            normalized: new NormalizedOpenApiOperation(path: '/rides', method: 'get'),
             rpcProtocol: null,
             operationName: null,
             rpcMethod: null,

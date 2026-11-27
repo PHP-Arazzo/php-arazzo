@@ -31,7 +31,7 @@ function requestValidatorFixture(): array
     $source = new SourceDescription('api', 'file:///api.json', SourceType::Openapi);
     $doc = new ArazzoDocument('1.0.1', new Info('T', null, null, '1'), [$source], [], new Components([], [], [], []), []);
     $step = StepFactory::http('createThing', null, new StepFlow(), new StepIo(), operationId: 'op');
-    $norm = new NormalizedOpenApiOperation('/things', 'post', null, [], [], [], [], [], []);
+    $norm = new NormalizedOpenApiOperation(path: '/things', method: 'post');
 
     return [$source, $doc, $step, $norm];
 }
