@@ -59,6 +59,7 @@ flowchart LR
     expression_Support["Alama\Arazzo\Expression\Support"]:::coreNode
     expression_Xpath["Alama\Arazzo\Expression\Xpath"]:::coreNode
     expression__["(expression package root)"]:::coreNode
+    protocol_http_Enum["Alama\Arazzo\Protocol\Http\Enum"]:::coreNode
     protocol_http_Exceptions["Alama\Arazzo\Protocol\Http\Exceptions"]:::coreNode
     protocol_http_Execution["Alama\Arazzo\Protocol\Http\Execution"]:::coreNode
     protocol_http_Plugins["Alama\Arazzo\Protocol\Http\Plugins\OperationExecutor"]:::coreNode
@@ -91,6 +92,7 @@ flowchart LR
     runner_Sync["Alama\Arazzo\Runner\Sync"]:::coreNode
     runner__["(runner package root)"]:::coreNode
     sources_Exceptions["Alama\Arazzo\Sources\Exceptions"]:::coreNode
+    sources_Inspection["Alama\Arazzo\Sources\Inspection"]:::coreNode
     sources_Normalizer["Alama\Arazzo\Sources\Normalizer"]:::coreNode
     sources_Plugins["Alama\Arazzo\Sources\Plugins\SourceNormalizer"]:::coreNode
     sources_Policy["Alama\Arazzo\Sources\Policy"]:::coreNode
@@ -229,6 +231,7 @@ flowchart LR
     document_Validator --> contracts_Interfaces
     document_Validator --> contracts_Spec
     document_Validator --> contracts_Validation
+    document_Validator --> document_Plugins
     document_Validator --> document_Registries
     document_Validator --> contracts_Data
     document__ --> contracts_Data
@@ -237,8 +240,17 @@ flowchart LR
     document__ --> contracts_Validation
     document__ --> document_Parser
     document__ --> document_Validator
+    sources_Inspection --> contracts_Data
+    sources_Inspection --> contracts_Spec
+    sources_Inspection --> sources_Exceptions
+    sources_Inspection --> sources_Resolver
+    sources_Inspection --> sources__
     sources_Normalizer --> contracts_Spec
     sources_Normalizer --> sources_Exceptions
+    sources_Normalizer --> contracts_Data
+    sources_Normalizer --> sources_Policy
+    sources_Normalizer --> sources_Resolver
+    sources_Normalizer --> sources__
     sources_Plugins --> contracts_Attributes
     sources_Plugins --> contracts_Interfaces
     sources_Plugins --> contracts_Spec
@@ -262,6 +274,8 @@ flowchart LR
     sources__ --> contracts_Spec
     sources__ --> document_Parser
     sources__ --> sources_Exceptions
+    sources__ --> sources_Inspection
+    sources__ --> sources_Normalizer
     sources__ --> sources_Policy
     sources__ --> sources_Registries
     sources__ --> sources_Resolver
@@ -403,9 +417,10 @@ flowchart LR
     cli_Console --> cli_Renderer
     cli_Console --> contracts_Exceptions
     cli_Console --> document_Parser
-    cli_Console --> contracts_Data
+    cli_Console --> protocol_http_Policy
+    cli_Console --> contracts_Validation
+    cli_Console --> sources_Policy
     cli_Console --> sources__
-    cli_Console --> expression__
     cli_Console --> protocol_http__
     cli_Exceptions --> engine_Exceptions
     cli_Generator --> contracts_Interfaces
@@ -416,10 +431,13 @@ flowchart LR
     protocol_http_Execution --> contracts_Policy
     protocol_http_Execution --> contracts_Spec
     protocol_http_Execution --> engine_Execution
+    protocol_http_Execution --> protocol_http_Policy
     protocol_http_Execution --> protocol_http_Resolver
     protocol_http_Execution --> evaluation__
     protocol_http_Execution --> expression_Interfaces
-    protocol_http_Execution --> protocol_http_Policy
+    protocol_http_Execution --> contracts_Clock
+    protocol_http_Execution --> protocol_http_Enum
+    protocol_http_Execution --> protocol_http_Exceptions
     protocol_http_Execution --> contracts_Exceptions
     protocol_http_Execution --> contracts_Interfaces
     protocol_http_Execution --> expression_Data
@@ -433,16 +451,24 @@ flowchart LR
     protocol_http_Plugins --> evaluation__
     protocol_http_Plugins --> expression_Data
     protocol_http_Plugins --> protocol_http_Exceptions
-    protocol_http_Plugins --> protocol_http_Execution
     protocol_http_Plugins --> protocol_http_Resolver
+    protocol_http_Plugins --> protocol_http_Execution
     protocol_http_Policy --> engine_Execution
-    protocol_http_Resolver --> contracts_Interfaces
+    protocol_http_Policy --> protocol_http_Enum
+    protocol_http_Policy --> protocol_http_Execution
     protocol_http_Resolver --> contracts_Spec
+    protocol_http_Resolver --> contracts_State
     protocol_http_Resolver --> document__
     protocol_http_Resolver --> protocol_http_Exceptions
+    protocol_http_Resolver --> sources_Plugins
+    protocol_http_Resolver --> sources__
+    protocol_http_Resolver --> engine_Execution
+    protocol_http_Resolver --> evaluation__
+    protocol_http_Resolver --> expression_Data
+    protocol_http_Resolver --> expression__
+    protocol_http_Resolver --> contracts_Interfaces
     protocol_http_Resolver --> sources_Normalizer
     protocol_http_Resolver --> sources_Resolver
-    protocol_http_Resolver --> sources__
     protocol_http__ --> contracts_Interfaces
     protocol_http__ --> contracts_Observability
     protocol_http__ --> document__

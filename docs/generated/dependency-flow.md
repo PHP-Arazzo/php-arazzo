@@ -17,22 +17,23 @@ sankey-beta
 cli-Console,cli-Exceptions,1
 cli-Console,cli-Renderer,1
 cli-Console,contracts-Clock,1
-cli-Console,contracts-Data,1
 cli-Console,contracts-Dependency,1
 cli-Console,contracts-Exceptions,1
 cli-Console,contracts-Interfaces,1
 cli-Console,contracts-Observability,1
 cli-Console,contracts-Spec,4
-cli-Console,document-Parser,4
+cli-Console,contracts-Validation,5
+cli-Console,document-Parser,2
 cli-Console,document-root,7
 cli-Console,engine-Runtime,2
-cli-Console,evaluation-root,2
-cli-Console,expression-root,1
+cli-Console,evaluation-root,1
+cli-Console,protocol-http-Policy,2
 cli-Console,protocol-http-root,1
 cli-Console,runner-Data,2
 cli-Console,runner-Queue,1
 cli-Console,runner-Store,1
 cli-Console,runner-root,9
+cli-Console,sources-Policy,1
 cli-Console,sources-root,3
 cli-Exceptions,engine-Exceptions,1
 cli-Generator,cli-Exceptions,1
@@ -40,42 +41,42 @@ cli-Generator,contracts-Interfaces,2
 cli-Renderer,contracts-Spec,13
 contracts-Attributes,contracts-Spec,5
 contracts-Attributes,contracts-Validation,1
-contracts-Data,contracts-Spec,1
+contracts-Data,contracts-Spec,3
 contracts-Dependency,contracts-Spec,6
 contracts-Dependency,contracts-State,1
 contracts-Discovery,contracts-Exceptions,1
 contracts-Exceptions,contracts-Support,2
-contracts-Interfaces,contracts-Exceptions,1
-contracts-Interfaces,contracts-Spec,21
+contracts-Interfaces,contracts-Exceptions,2
+contracts-Interfaces,contracts-Spec,25
 contracts-Interfaces,contracts-State,1
 contracts-Interfaces,contracts-Validation,2
 contracts-Spec,contracts-Exceptions,3
 contracts-State,contracts-Policy,1
 contracts-State,contracts-Spec,3
-contracts-Validation,contracts-Data,1
+contracts-Validation,contracts-Data,2
 contracts-Validation,contracts-Spec,4
 document-Parser,contracts-Spec,58
 document-Parser,contracts-Support,2
-document-Plugins,contracts-Attributes,51
+document-Plugins,contracts-Attributes,54
 document-Plugins,contracts-Dependency,1
-document-Plugins,contracts-Interfaces,51
-document-Plugins,contracts-Spec,99
+document-Plugins,contracts-Interfaces,54
+document-Plugins,contracts-Spec,105
 document-Plugins,contracts-Support,1
-document-Plugins,contracts-Validation,104
-document-Plugins,document-Validator,3
+document-Plugins,contracts-Validation,110
 document-Registries,contracts-Attributes,1
 document-Registries,contracts-Discovery,1
 document-Registries,contracts-Interfaces,1
 document-Registries,contracts-Validation,1
-document-Validator,contracts-Data,1
+document-Validator,contracts-Data,2
 document-Validator,contracts-Interfaces,2
 document-Validator,contracts-Spec,6
-document-Validator,contracts-Validation,9
+document-Validator,contracts-Validation,10
+document-Validator,document-Plugins,4
 document-Validator,document-Registries,1
-document-root,contracts-Data,2
+document-root,contracts-Data,4
 document-root,contracts-Interfaces,2
 document-root,contracts-Spec,7
-document-root,contracts-Validation,2
+document-root,contracts-Validation,3
 document-root,document-Parser,5
 document-root,document-Validator,2
 engine-Data,contracts-Spec,3
@@ -192,38 +193,48 @@ expression-root,expression-Policy,2
 expression-root,expression-Registries,3
 expression-root,expression-Support,2
 expression-root,expression-Xpath,2
-protocol-http-Exceptions,engine-Exceptions,1
-protocol-http-Execution,contracts-Exceptions,1
-protocol-http-Execution,contracts-Interfaces,2
-protocol-http-Execution,contracts-Observability,4
+protocol-http-Exceptions,engine-Exceptions,3
+protocol-http-Execution,contracts-Clock,1
+protocol-http-Execution,contracts-Exceptions,2
+protocol-http-Execution,contracts-Interfaces,3
+protocol-http-Execution,contracts-Observability,5
 protocol-http-Execution,contracts-Policy,5
-protocol-http-Execution,contracts-Spec,10
-protocol-http-Execution,engine-Execution,4
+protocol-http-Execution,contracts-Spec,18
+protocol-http-Execution,engine-Execution,9
 protocol-http-Execution,evaluation-root,2
 protocol-http-Execution,expression-Data,1
 protocol-http-Execution,expression-Enum,1
 protocol-http-Execution,expression-Interfaces,2
-protocol-http-Execution,protocol-http-Policy,1
-protocol-http-Execution,protocol-http-Resolver,6
+protocol-http-Execution,protocol-http-Enum,1
+protocol-http-Execution,protocol-http-Exceptions,1
+protocol-http-Execution,protocol-http-Policy,3
+protocol-http-Execution,protocol-http-Resolver,9
 protocol-http-Plugins,contracts-Attributes,2
-protocol-http-Plugins,contracts-Interfaces,6
+protocol-http-Plugins,contracts-Interfaces,7
 protocol-http-Plugins,contracts-Spec,11
 protocol-http-Plugins,contracts-State,2
 protocol-http-Plugins,engine-Exceptions,1
 protocol-http-Plugins,engine-Execution,3
 protocol-http-Plugins,evaluation-root,2
 protocol-http-Plugins,expression-Data,1
-protocol-http-Plugins,protocol-http-Exceptions,1
+protocol-http-Plugins,protocol-http-Exceptions,2
 protocol-http-Plugins,protocol-http-Execution,1
-protocol-http-Plugins,protocol-http-Resolver,1
+protocol-http-Plugins,protocol-http-Resolver,2
 protocol-http-Policy,engine-Execution,1
+protocol-http-Policy,protocol-http-Enum,2
 protocol-http-Resolver,contracts-Interfaces,2
-protocol-http-Resolver,contracts-Spec,6
-protocol-http-Resolver,document-root,1
-protocol-http-Resolver,protocol-http-Exceptions,1
+protocol-http-Resolver,contracts-Spec,18
+protocol-http-Resolver,contracts-State,2
+protocol-http-Resolver,document-root,2
+protocol-http-Resolver,engine-Execution,1
+protocol-http-Resolver,evaluation-root,2
+protocol-http-Resolver,expression-Data,1
+protocol-http-Resolver,expression-root,1
+protocol-http-Resolver,protocol-http-Exceptions,3
 protocol-http-Resolver,sources-Normalizer,4
+protocol-http-Resolver,sources-Plugins,1
 protocol-http-Resolver,sources-Resolver,1
-protocol-http-Resolver,sources-root,1
+protocol-http-Resolver,sources-root,3
 protocol-http-root,contracts-Interfaces,2
 protocol-http-root,contracts-Observability,1
 protocol-http-root,document-root,1
@@ -231,7 +242,7 @@ protocol-http-root,engine-Execution,1
 protocol-http-root,evaluation-root,2
 protocol-http-root,expression-Interfaces,1
 protocol-http-root,expression-root,1
-protocol-http-root,protocol-http-Execution,4
+protocol-http-root,protocol-http-Execution,6
 protocol-http-root,protocol-http-Plugins,1
 protocol-http-root,protocol-http-Policy,1
 protocol-http-root,protocol-http-Resolver,1
@@ -391,13 +402,22 @@ runner-root,runner-Data,4
 runner-root,runner-Exceptions,9
 runner-root,runner-Policy,4
 runner-root,runner-Preflight,2
-sources-Normalizer,contracts-Spec,5
-sources-Normalizer,sources-Exceptions,3
-sources-Plugins,contracts-Attributes,1
-sources-Plugins,contracts-Interfaces,1
-sources-Plugins,contracts-Spec,4
-sources-Plugins,sources-Exceptions,1
-sources-Plugins,sources-Normalizer,4
+sources-Inspection,contracts-Data,4
+sources-Inspection,contracts-Spec,3
+sources-Inspection,sources-Exceptions,1
+sources-Inspection,sources-Resolver,1
+sources-Inspection,sources-root,1
+sources-Normalizer,contracts-Data,1
+sources-Normalizer,contracts-Spec,13
+sources-Normalizer,sources-Exceptions,5
+sources-Normalizer,sources-Policy,1
+sources-Normalizer,sources-Resolver,1
+sources-Normalizer,sources-root,1
+sources-Plugins,contracts-Attributes,2
+sources-Plugins,contracts-Interfaces,2
+sources-Plugins,contracts-Spec,9
+sources-Plugins,sources-Exceptions,2
+sources-Plugins,sources-Normalizer,7
 sources-Plugins,sources-Resolver,1
 sources-Policy,sources-Exceptions,1
 sources-Registries,contracts-Attributes,1
@@ -410,12 +430,12 @@ sources-Resolver,contracts-Spec,7
 sources-Resolver,document-Parser,2
 sources-Resolver,sources-Exceptions,9
 sources-Resolver,sources-Policy,1
-sources-root,contracts-Data,4
+sources-root,contracts-Data,6
 sources-root,contracts-Interfaces,6
 sources-root,contracts-Observability,2
-sources-root,contracts-Spec,8
+sources-root,contracts-Spec,7
 sources-root,document-Parser,1
-sources-root,sources-Exceptions,3
+sources-root,sources-Exceptions,2
 sources-root,sources-Policy,2
 sources-root,sources-Registries,1
 sources-root,sources-Resolver,4
@@ -428,9 +448,11 @@ These references exist in the code but are not drawn: drawing them would close a
 | From | To | References |
 |---|---|---:|
 | `contracts-Spec` | `contracts-Interfaces` | 1 |
+| `document-Plugins` | `document-Validator` | 3 |
 | `expression-Data` | `expression-Interfaces` | 1 |
 | `expression-Internal` | `expression-root` | 2 |
 | `expression-Registries` | `expression-Interfaces` | 1 |
+| `protocol-http-Policy` | `protocol-http-Execution` | 1 |
 | `protocol-rpc-Protocol` | `protocol-rpc-Plugins` | 1 |
 | `protocol-soap-Execution` | `protocol-soap-Plugins` | 1 |
 | `runner-Data` | `runner-root` | 1 |
@@ -439,3 +461,5 @@ These references exist in the code but are not drawn: drawing them would close a
 | `runner-root` | `runner-Async` | 1 |
 | `runner-root` | `runner-Execution` | 3 |
 | `runner-root` | `runner-Sync` | 1 |
+| `sources-root` | `sources-Inspection` | 1 |
+| `sources-root` | `sources-Normalizer` | 1 |

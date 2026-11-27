@@ -14,6 +14,7 @@ classDiagram
     class E_InvalidArgumentException["InvalidArgumentException"]:::builtin
     class E_BaseException["BaseException"]:::builtin
     class E_ArazzoException["ArazzoException<br/><small>contracts:Support</small>"]:::domain
+    class E_AsyncApiResolutionException["AsyncApiResolutionException<br/><small>protocol-http:Exceptions</small>"]:::domain
     class E_AsyncApiStepException["AsyncApiStepException<br/><small>protocol-http:Exceptions</small>"]:::domain
     class E_CliException["CliException<br/><small>cli:Exceptions</small>"]:::domain
     class E_CliExecutionException["CliExecutionException<br/><small>cli:Exceptions</small>"]:::domain
@@ -29,6 +30,7 @@ classDiagram
     class E_ExpressionSyntaxException["ExpressionSyntaxException<br/><small>expression:Exceptions</small>"]:::domain
     class E_GeneratorApiException["GeneratorApiException<br/><small>cli:Exceptions</small>"]:::domain
     class E_GotoTargetNotFoundException["GotoTargetNotFoundException<br/><small>runner:Exceptions</small>"]:::domain
+    class E_InvalidAsyncApiSourceException["InvalidAsyncApiSourceException<br/><small>sources:Exceptions</small>"]:::domain
     class E_InvalidFetchPolicyException["InvalidFetchPolicyException<br/><small>sources:Exceptions</small>"]:::domain
     class E_InvalidOpenApiSourceException["InvalidOpenApiSourceException<br/><small>sources:Exceptions</small>"]:::domain
     class E_InvalidRetryPolicyException["InvalidRetryPolicyException<br/><small>engine:Exceptions</small>"]:::domain
@@ -55,6 +57,7 @@ classDiagram
     class E_PreflightFailureException["PreflightFailureException<br/><small>runner:Exceptions</small>"]:::domain
     class E_ProtoSyntaxException["ProtoSyntaxException<br/><small>protocol-rpc:Exceptions</small>"]:::domain
     class E_ProtobufResolutionException["ProtobufResolutionException<br/><small>protocol-rpc:Exceptions</small>"]:::domain
+    class E_RateLimitExceededException["RateLimitExceededException<br/><small>protocol-http:Exceptions</small>"]:::domain
     class E_RegistryInitializationException["RegistryInitializationException<br/><small>evaluation:Exceptions</small>"]:::domain
     class E_RpcCodecException["RpcCodecException<br/><small>protocol-rpc:Exceptions</small>"]:::domain
     class E_RpcExecutionException["RpcExecutionException<br/><small>protocol-rpc:Exceptions</small>"]:::domain
@@ -80,6 +83,7 @@ classDiagram
     class E_WorkflowDepthExceededException["WorkflowDepthExceededException<br/><small>runner:Exceptions</small>"]:::domain
     class E_WsdlResolutionException["WsdlResolutionException<br/><small>protocol-soap:Exceptions</small>"]:::domain
     E_RuntimeException <|-- E_ArazzoException
+    E_EngineException <|-- E_AsyncApiResolutionException
     E_LogicException <|-- E_AsyncApiStepException
     E_RuntimeException <|-- E_CliException
     E_CliException <|-- E_CliExecutionException
@@ -95,6 +99,7 @@ classDiagram
     E_ArazzoException <|-- E_ExpressionSyntaxException
     E_CliException <|-- E_GeneratorApiException
     E_RunnerException <|-- E_GotoTargetNotFoundException
+    E_SourceResolutionException <|-- E_InvalidAsyncApiSourceException
     E_InvalidArgumentException <|-- E_InvalidFetchPolicyException
     E_InvalidArgumentException <|-- E_InvalidOpenApiSourceException
     E_InvalidArgumentException <|-- E_InvalidRetryPolicyException
@@ -121,6 +126,7 @@ classDiagram
     E_RunnerException <|-- E_PreflightFailureException
     E_InvalidArgumentException <|-- E_ProtoSyntaxException
     E_EngineException <|-- E_ProtobufResolutionException
+    E_EngineException <|-- E_RateLimitExceededException
     E_InvalidArgumentException <|-- E_RegistryInitializationException
     E_EngineException <|-- E_RpcCodecException
     E_ExecutionException <|-- E_RpcExecutionException
@@ -152,6 +158,7 @@ classDiagram
 | Exception | Extends | Module |
 |---|---|---|
 | `ArazzoException` | `RuntimeException` | contracts:Support |
+| `AsyncApiResolutionException` | `EngineException` | protocol-http:Exceptions |
 | `AsyncApiStepException` | `LogicException` | protocol-http:Exceptions |
 | `CliException` | `RuntimeException` | cli:Exceptions |
 | `CliExecutionException` | `CliException` | cli:Exceptions |
@@ -167,6 +174,7 @@ classDiagram
 | `ExpressionSyntaxException` | `ArazzoException` | expression:Exceptions |
 | `GeneratorApiException` | `CliException` | cli:Exceptions |
 | `GotoTargetNotFoundException` | `RunnerException` | runner:Exceptions |
+| `InvalidAsyncApiSourceException` | `SourceResolutionException` | sources:Exceptions |
 | `InvalidFetchPolicyException` | `InvalidArgumentException` | sources:Exceptions |
 | `InvalidOpenApiSourceException` | `InvalidArgumentException` | sources:Exceptions |
 | `InvalidRetryPolicyException` | `InvalidArgumentException` | engine:Exceptions |
@@ -193,6 +201,7 @@ classDiagram
 | `PreflightFailureException` | `RunnerException` | runner:Exceptions |
 | `ProtoSyntaxException` | `InvalidArgumentException` | protocol-rpc:Exceptions |
 | `ProtobufResolutionException` | `EngineException` | protocol-rpc:Exceptions |
+| `RateLimitExceededException` | `EngineException` | protocol-http:Exceptions |
 | `RegistryInitializationException` | `InvalidArgumentException` | evaluation:Exceptions |
 | `RpcCodecException` | `EngineException` | protocol-rpc:Exceptions |
 | `RpcExecutionException` | `ExecutionException` | protocol-rpc:Exceptions |

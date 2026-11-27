@@ -39,6 +39,31 @@ this file on a commit is a public API change — review it deliberately.
 - `public function toKnownOperations(): KnownOperations`
 - `public static function fromArray(array $operations): self`
 
+#### `SourceResolution` class
+- `public function __construct(public string $name, public string $url, public SourceResolutionStatus $status, public ?string $errorMessage = null, public ?SourceType $declaredType = null, public ?SourceType $detectedType = null, public ?SourceDocument $document = null)`
+- `public function isOk(): bool`
+- `public function isTypeInferenceFailed(): bool`
+- `public function isTypeMismatch(): bool`
+- `public function isUnparseable(): bool`
+- `public function isUnreadable(): bool`
+- `public function isValid(): bool`
+- `public static function typeInferenceFailed(string $name, string $url, string $errorMessage): self`
+- `public static function typeMismatch(string $name, string $url, ?SourceType $declaredType, ?SourceType $detectedType, ): self`
+- `public static function unparseable(string $name, string $url, string $errorMessage): self`
+- `public static function unreadable(string $name, string $url, string $errorMessage): self`
+
+#### `SourceResolutionCollection` class
+- `public function __construct(private array $resolutions = [], private bool $resolved = false)`
+- `public function all(): array`
+- `public function count(): int`
+- `public function get(string $name): ?SourceResolution`
+- `public function has(string $name): bool`
+- `public function isResolved(): bool`
+- `public static function fromArray(array $resolutions, bool $isResolved = true): self`
+
+#### `SourceResolutionStatus` enum
+- Cases: `Ok`, `TypeInferenceFailed`, `TypeMismatch`, `Unparseable`, `Unreadable`
+
 ### `Alama\Arazzo\Contracts\Discovery`
 
 #### `PluginDiscovery` class
@@ -98,6 +123,9 @@ this file on a commit is a public API change — review it deliberately.
 #### `ReplacementTargetResolverInterface` interface
 - `public function resolve(mixed $container, string $target, mixed $value): mixed;`
 - `public function supports(string $targetType): bool;`
+
+#### `RequestValidatorInterface` interface
+- `public function validateRequest(Step $step, ResolvedOperation $operation, OpenApiPayload $payload, ?ArazzoDocument $document = null, ): void;`
 
 #### `ResponseTransferInterface` interface
 - `public function hasView(string $name): bool;`
@@ -232,6 +260,9 @@ this file on a commit is a public API change — review it deliberately.
 #### `GraphQlOperation` class
 - `public function __construct(public string $schema, public string $operation, /** @param array<string,mixed>|null $extensions */ ?iterable $extensions = null, public ?Selector $extensionsSelector = null)`
 
+#### `OpenApiPayload` class
+- `public function __construct(public array $path = [], public array $query = [], public array $header = [], public array $cookie = [], public array $auto = [], public mixed $body = null, public ?string $bodyMediaType = null)`
+
 #### `OutputMap` class
 - `public function __construct(private array $outputs = [])`
 - `public function all(): array`
@@ -244,13 +275,14 @@ this file on a commit is a public API change — review it deliberately.
 - `public static function fromArray(array $outputs): self`
 
 #### `Parameter` class
-- `public function __construct(public string $name, public ?ParameterIn $in, public mixed $value, public ?ValueMode $valueMode = null)`
+- `public function __construct(public string $name, public ?ParameterIn $in, public mixed $value, public ?ValueMode $valueMode = null, public ?string $rawIn = null)`
 - `public function isBody(): bool`
 - `public function isCookie(): bool`
 - `public function isExpression(): bool`
 - `public function isHeader(): bool`
 - `public function isMetadata(): bool`
 - `public function isPath(): bool`
+- `public function isQuery(): bool`
 - `public function isQuerystring(): bool`
 - `public function isSelector(): bool`
 - `public function isVariable(): bool`
@@ -438,13 +470,14 @@ this file on a commit is a public API change — review it deliberately.
 ### `Alama\Arazzo\Contracts\Spec\Action`
 
 #### `Action` class
-- `public function __construct(public string $name, public ActionKind $kind)`
+- `public function __construct(public string $name, public ActionKind $kind, public ?string $rawType = null)`
+- `public function isEnd(): bool`
 - `public function isGoto(): bool`
 - `public function isInvoke(): bool`
 - `public function isRetry(): bool`
 
 #### `FailureAction` class
-- `public function __construct(string $name, ActionKind $kind, public array $criteria)`
+- `public function __construct(string $name, ActionKind $kind, public array $criteria, ?string $rawType = null)`
 - `public function hasCriteria(): bool`
 
 #### `FailureEndAction` class
@@ -463,13 +496,13 @@ this file on a commit is a public API change — review it deliberately.
 - `public function isWorkflowTarget(): bool`
 
 #### `SubWorkflowFailureAction` class
-- `public function __construct(string $name, public string $workflowId, public array $parameters, array $criteria, public ?string $version = null)`
+- `public function __construct(string $name, public string $workflowId, public array $parameters, array $criteria, public ?string $version = null, ?string $rawType = null)`
 
 #### `SubWorkflowSuccessAction` class
-- `public function __construct(string $name, public string $workflowId, public array $parameters, array $criteria, public ?string $version = null)`
+- `public function __construct(string $name, public string $workflowId, public array $parameters, array $criteria, public ?string $version = null, ?string $rawType = null)`
 
 #### `SuccessAction` class
-- `public function __construct(string $name, ActionKind $kind, public array $criteria)`
+- `public function __construct(string $name, ActionKind $kind, public array $criteria, ?string $rawType = null)`
 - `public function hasCriteria(): bool`
 
 #### `SuccessEndAction` class
@@ -484,6 +517,9 @@ this file on a commit is a public API change — review it deliberately.
 
 #### `ActionKind` enum
 - Cases: `End`, `Goto`, `Invoke`, `Retry`
+- `public function isExtension(): bool`
+- `public function isSpec(): bool`
+- `public static function tryFromRaw(string $value): ?self`
 
 #### `CriterionType` enum
 - Cases: `JsonPath`, `Regex`, `Simple`, `XPath`
@@ -506,6 +542,9 @@ this file on a commit is a public API change — review it deliberately.
 
 #### `ParameterIn` enum
 - Cases: `Body`, `Cookie`, `Header`, `Metadata`, `Path`, `Query`, `Querystring`, `Variable`
+- `public function isExtension(): bool`
+- `public function isSpec(): bool`
+- `public static function tryFromRaw(string $value): ?self`
 
 #### `RpcProtocol` enum
 - Cases: `Connect`, `Grpc`, `GrpcWeb`, `Twirp`
@@ -635,8 +674,8 @@ this file on a commit is a public API change — review it deliberately.
 - `public function __construct(public string $code, public string $message, public string $path, public ?int $line = null, public Severity $severity = Severity::Error)`
 
 #### `ErrorCollector` class
+- `public function __construct(private readonly ?ValidatorPolicy $policy = null)`
 - `public function add(Error|Warning $diagnostic): void`
-- `public function error(string $code, string $message, string $path, ?int $line = null): void`
 - `public function errors(): array`
 - `public function warning(string $code, string $message, string $path, ?int $line = null): void`
 - `public function warnings(): array`
@@ -645,10 +684,10 @@ this file on a commit is a public API change — review it deliberately.
 - Cases: `Error`, `Warning`
 
 #### `SymbolTable` class
-- `public function __construct(public array $workflows, public array $sourceDescriptions, public array $components, KnownOperations|array $knownOperations = new KnownOperations(), array $resolvedOperations = [])`
+- `public function __construct(public array $workflows, public array $sourceDescriptions, public array $components, KnownOperations|array $knownOperations = new KnownOperations(), array $resolvedOperations = [], public bool $conformance = false, ?SourceResolutionCollection $sourceResolutions = null)`
 - `public function hasSource(string $name): bool`
 - `public function hasWorkflow(string $workflowId): bool`
-- `public static function build(ArazzoDocument $doc, KnownOperations|array|null $resolvedOperations = null): self`
+- `public static function build(ArazzoDocument $doc, KnownOperations|array|null $resolvedOperations = null, bool $conformance = false, ?SourceResolutionCollection $sourceResolutions = null, ): self`
 
 #### `ValidationPhase` enum
 - Cases: `Schema`, `Semantic`
@@ -656,6 +695,18 @@ this file on a commit is a public API change — review it deliberately.
 #### `ValidationResult` class
 - `public function __construct(public ArazzoDocument $document, public array $errors, public array $warnings, public array $inputs = [])`
 - `public function isValid(): bool`
+
+#### `ValidatorPolicy` class
+- `public function __construct(public array $severities = [], public array $disabled = [], public bool $strict = self::DEFAULT_STRICT, public bool $conformance = self::DEFAULT_CONFORMANCE)`
+- `public function isConformance(): bool`
+- `public function isDisabled(string $ruleCode): bool`
+- `public function isStrict(): bool`
+- `public function severityFor(string $ruleCode, Severity $default = Severity::Error): Severity`
+- `public function withConformance(bool $conformance = true): self`
+- `public function withDisabled(string ...$ruleCodes): self`
+- `public function withEnabled(string ...$ruleCodes): self`
+- `public function withSeverity(string $ruleCode, Severity|string $severity): self`
+- `public function withStrict(bool $strict = true): self`
 
 #### `Warning` class
 - `public function __construct(public string $code, public string $message, public string $path, public ?int $line = null, public Severity $severity = Severity::Warning)`
@@ -889,6 +940,8 @@ this file on a commit is a public API change — review it deliberately.
 
 #### `Sources` class
 - `public function __construct(?SourceResolverInterface $resolver = null, array $normalizers = [], array $documents = [], ?FetchPolicy $policy = null, ?SourcesRuntimeConfig $runtime = null)`
+- `public function findNormalizer(SourceType $type): ?SourceNormalizerInterface`
+- `public function inspectSources(ArazzoDocument $document, string $basePath = ''): SourceInspectionResult`
 - `public function knownOperations(ArazzoDocument $document, string $basePath = ''): KnownOperations`
 - `public function normalizeSources(ArazzoDocument $document, string $basePath = ''): ResolvedOperationCollection`
 - `public function resolve(SourceDescription $source, string $basePath = ''): SourceDocument`
@@ -902,6 +955,7 @@ this file on a commit is a public API change — review it deliberately.
 - `public static function create(): self`
 
 #### `SourcesInterface` interface
+- `public function inspectSources(ArazzoDocument $document, string $basePath = ''): SourceInspectionResult;`
 - `public function knownOperations(ArazzoDocument $document, string $basePath = ''): KnownOperations;`
 - `public function normalizeSources(ArazzoDocument $document, string $basePath = ''): ResolvedOperationCollection;`
 - `public function resolve(SourceDescription $source, string $basePath = ''): SourceDocument;`
@@ -914,6 +968,12 @@ this file on a commit is a public API change — review it deliberately.
 - `public function withTracer(TracerInterface $tracer): static;`
 
 ### `Alama\Arazzo\Sources\Exceptions`
+
+#### `InvalidAsyncApiSourceException` class
+- `public static function channelNotFound(string $channel): self`
+- `public static function invalidFormat(string $message): self`
+- `public static function invalidJson(): self`
+- `public static function missingChannels(): self`
 
 #### `InvalidFetchPolicyException` class
 - `public static function nonPositiveConnectTimeout(): self`
@@ -957,6 +1017,16 @@ this file on a commit is a public API change — review it deliberately.
 #### `UnsupportedSourceVersionException` class
 - `public static function forVersion(string $version, string $sourceName): self`
 
+### `Alama\Arazzo\Sources\Inspection`
+
+#### `SourceInspector` class
+- `public function __construct(private Sources $sources, private LoggerInterface $logger)`
+
+### `Alama\Arazzo\Sources\Normalizer`
+
+#### `SourceOperationsNormalizer` class
+- `public function __construct(private Sources $sources, private FetchPolicy $policy, private LoggerInterface $logger)`
+
 ### `Alama\Arazzo\Sources\Policy`
 
 #### `FetchPolicy` class
@@ -983,21 +1053,22 @@ this file on a commit is a public API change — review it deliberately.
 - `public function load(string $path): ArazzoDocument;`
 - `public function loadFromJson(string $content, string $virtualPath = 'inline.json'): ArazzoDocument;`
 - `public function loadFromYaml(string $content, string $virtualPath = 'inline.yaml'): ArazzoDocument;`
-- `public function validate(ArazzoDocument $document, ?KnownOperations $operations = null): ValidationResult;`
+- `public function validate(ArazzoDocument $document, ?KnownOperations $operations = null, ?SourceResolutionCollection $sourceResolutions = null, ): ValidationResult;`
 - `public function validateInputs(ArazzoDocument $document, string $workflowId, array $inputs): ValidationResult;`
 - `public function withRule(ValidationRuleInterface $rule): static;`
 
 ### `Alama\Arazzo\Document`
 
 #### `Document` class
-- `public function __construct(?DecodePolicy $decodePolicy = null, ?Loader $loader = null, ?Parser $parser = null, ?Validator $validator = null, array $extraRules = [])`
+- `public function __construct(?Loader $loader = null, ?Parser $parser = null, ?Validator $validator = null, array $extraRules = [], ?ValidatorPolicy $validatorPolicy = null)`
 - `public function load(string $path): ArazzoDocument`
 - `public function loadFromJson(string $content, string $virtualPath = 'inline.json'): ArazzoDocument`
 - `public function loadFromYaml(string $content, string $virtualPath = 'inline.yaml'): ArazzoDocument`
-- `public function validate(ArazzoDocument $document, ?KnownOperations $operations = null): ValidationResult`
+- `public function validate(ArazzoDocument $document, ?KnownOperations $operations = null, ?SourceResolutionCollection $sourceResolutions = null, ): ValidationResult`
 - `public function validateInputs(ArazzoDocument $document, string $workflowId, array $inputs): ValidationResult`
 - `public function withDecodePolicy(DecodePolicy $policy): self`
 - `public function withRule(ValidationRuleInterface $rule): static`
+- `public function withValidatorPolicy(ValidatorPolicy $policy): self`
 - `public static function create(): self`
 
 #### `OperationResolverInterface` interface
@@ -1107,15 +1178,42 @@ this file on a commit is a public API change — review it deliberately.
 - `public function resolver(): OperationResolverInterface`
 - `public function withLogger(LoggerInterface $logger): self`
 - `public function withPolicy(HttpPolicy $policy): self`
+- `public function withRateLimiter(OutboundRateLimiter $rateLimiter): self`
 - `public function withTracer(TracerInterface $tracer): self`
 - `public static function create(?ClientInterface $httpClient = null, ?RequestFactoryInterface $requestFactory = null, ?SourcesInterface $sources = null, ?EvaluationEngineInterface $evaluationEngine = null, ?ExpressionEngineInterface $expressionEngine = null, ): self`
+
+### `Alama\Arazzo\Protocol\Http\Enum`
+
+#### `RateLimitScope` enum
+- Cases: `Host`, `Run`
 
 ### `Alama\Arazzo\Protocol\Http\Policy`
 
 #### `HttpPolicy` class
-- `public function __construct(public bool $strictValidation = self::DEFAULT_STRICT_VALIDATION, public ?IdempotencyKeyInjector $idempotencyInjector = null)`
+- `public function __construct(public bool $strictValidation = self::DEFAULT_STRICT_VALIDATION, public ?IdempotencyKeyInjector $idempotencyInjector = null, public OutboundRequestPolicy $rateLimit = new OutboundRequestPolicy(), public bool $respectRetryAfter = self::DEFAULT_RESPECT_RETRY_AFTER, public ?OutboundRateLimiter $rateLimiter = null)`
+- `public function __isset(string $name): bool`
+- `public function burst(): int`
+- `public function failFast(): bool`
+- `public function maxConcurrent(): int`
+- `public function requestsPerSecond(): ?float`
+- `public function scope(): RateLimitScope`
+- `public function withFailFast(bool $failFast = true): self`
 - `public function withIdempotencyInjector(?IdempotencyKeyInjector $injector): self`
+- `public function withMaxConcurrent(int $maxConcurrent): self`
+- `public function withRateLimit(?float $requestsPerSecond, int $burst = OutboundRequestPolicy::DEFAULT_BURST): self`
+- `public function withRateLimiter(?OutboundRateLimiter $rateLimiter): self`
+- `public function withRespectRetryAfter(bool $respectRetryAfter = true): self`
+- `public function withScope(RateLimitScope|string $scope): self`
 - `public function withStrictValidation(bool $strictValidation = true): self`
+- `public static function default(): self`
+
+#### `OutboundRequestPolicy` class
+- `public function __construct(public ?float $requestsPerSecond = null, public int $burst = self::DEFAULT_BURST, public int $maxConcurrent = self::DEFAULT_MAX_CONCURRENT, public RateLimitScope $scope = self::DEFAULT_SCOPE, public bool $failFast = self::DEFAULT_FAIL_FAST)`
+- `public function withFailFast(bool $failFast = true): self`
+- `public function withMaxConcurrent(int $maxConcurrent): self`
+- `public function withRateLimit(?float $requestsPerSecond, int $burst = self::DEFAULT_BURST): self`
+- `public function withScope(RateLimitScope|string $scope): self`
+- `public static function default(): self`
 
 ### `Alama\Arazzo\Protocol\Http\Resolver`
 
@@ -1343,5 +1441,15 @@ this file on a commit is a public API change — review it deliberately.
 ### `Alama\Arazzo\Cli\Console\Command`
 
 #### `RunCommand` class
-- `public function __construct(private readonly ?RunnerInterface $runner = null, private readonly ?DocumentInterface $document = null)`
+- `public function __construct(private readonly ?RunnerInterface $runner = null, private readonly ?DocumentInterface $document = null, ?callable $runnerFactory = null)`
+
+#### `ValidateCommand` class
+- `public function __construct(private readonly ValidateConfigLoader $configLoader = new ValidateConfigLoader())`
+
+### `Alama\Arazzo\Cli\Console\Config`
+
+#### `ValidateConfigLoader` class
+- `public function buildFromArray(array $data): ValidatorPolicy`
+- `public function load(?string $explicitPath = null, ?string $workingDirectory = null): ValidatorPolicy`
+- `public function parseSeverityLevel(string $level): ?Severity`
 

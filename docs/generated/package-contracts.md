@@ -234,7 +234,7 @@ public contract between packages.
   - `public function loadFromYaml(string $content, string $virtualPath = 'inline.yaml'): ArazzoDocument;`
   - `public function loadFromJson(string $content, string $virtualPath = 'inline.json'): ArazzoDocument;`
   - `public function withRule(ValidationRuleInterface $rule): static;`
-  - `public function validate(ArazzoDocument $document, ?KnownOperations $operations = null): ValidationResult;`
+  - `public function validate(ArazzoDocument $document, ?KnownOperations $operations = null, ?SourceResolutionCollection $sourceResolutions = null, ): ValidationResult;`
   - `public function validateInputs(ArazzoDocument $document, string $workflowId, array $inputs): ValidationResult;`
 
 ### Cross-boundary value types
@@ -333,8 +333,9 @@ _None — the entry surface exchanges plain arrays._
 - `Application` (`class`)
   - `public function __construct()`
 - `RunCommand` (`class`)
-  - `public function __construct(private readonly ?RunnerInterface $runner = null, private readonly ?DocumentInterface $document = null)`
+  - `public function __construct(private readonly ?RunnerInterface $runner = null, private readonly ?DocumentInterface $document = null, ?callable $runnerFactory = null)`
 - `ValidateCommand` (`class`)
+  - `public function __construct(private readonly ValidateConfigLoader $configLoader = new ValidateConfigLoader())`
 - `ListWorkflowsCommand` (`class`)
 - `ExplainCommand` (`class`)
 - `RenderCommand` (`class`)

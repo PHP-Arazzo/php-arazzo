@@ -24,7 +24,7 @@ Evans' first question: does the code speak one language?
 ### parse vs load vs decode
 
 - **Decoder**: `DecoderInterface`, `DecoderRegistry`, `Decoders`, `NativeJsonDecoder` + 1 more (5 types)
-- **Loader**: `Loader`, `LoaderException`, `OpenApiDocumentLoader` (3 types)
+- **Loader**: `Loader`, `LoaderException`, `OpenApiDocumentLoader`, `ValidateConfigLoader` (4 types)
 - **Parser**: `AccessorParser`, `ActionParser`, `CachedParser`, `ComponentsParser` + 15 more (19 types)
 
 ### document vs definition vs spec
@@ -36,12 +36,12 @@ Evans' first question: does the code speak one language?
 ### fetch vs resolve vs retrieve
 
 - **Fetcher**: `CachedFetcher`, `DefaultFetchers`, `HttpFetcher`, `LocalFetcher` + 2 more (6 types)
-- **Resolver**: `DefaultSourceResolver`, `InputSchemaResolver`, `OpenApiOperationResolver`, `OperationResolverInterface` + 12 more (16 types)
+- **Resolver**: `AsyncApiFallbackResolver`, `AsyncApiOperationResolver`, `AsyncApiServerUrlResolver`, `DefaultSourceResolver` + 15 more (19 types)
 
 ### state vs status
 
 - **State**: `ExecutionState`, `FileStateStore`, `InMemoryStateStore`, `StateStoreException` + 6 more (10 types)
-- **Status**: `ExecutionStatus`, `StepStatus` (2 types)
+- **Status**: `ExecutionStatus`, `SourceResolutionStatus`, `StepStatus` (3 types)
 
 ### registry vs store vs repository
 

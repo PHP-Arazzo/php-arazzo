@@ -9,7 +9,7 @@ prefixes). Regenerated before every commit.
 
 ```mermaid
 flowchart TD
-    ROOT["Validator rules (68)"]
+    ROOT["Validator rules (71)"]
     G_Actions["Actions — 8"]
     ROOT --> G_Actions
     R_ActionDuplicateRule["ActionDuplicate"]
@@ -96,14 +96,20 @@ flowchart TD
     ROOT --> G_Selectors
     R_SelectorTypeSupportedRule["SelectorTypeSupported"]
     G_Selectors --> R_SelectorTypeSupportedRule
-    G_Sources["Sources — 4"]
+    G_Sources["Sources — 7"]
     ROOT --> G_Sources
     R_SelfUriSyntaxRule["SelfUriSyntax"]
     G_Sources --> R_SelfUriSyntaxRule
+    R_SourceTypeInferenceFailedRule["SourceTypeInferenceFailed"]
+    G_Sources --> R_SourceTypeInferenceFailedRule
     R_SourceTypeMatchesRule["SourceTypeMatches"]
     G_Sources --> R_SourceTypeMatchesRule
     R_SourceUniqueNameRule["SourceUniqueName"]
     G_Sources --> R_SourceUniqueNameRule
+    R_SourceUnparseableRule["SourceUnparseable"]
+    G_Sources --> R_SourceUnparseableRule
+    R_SourceUnreadableRule["SourceUnreadable"]
+    G_Sources --> R_SourceUnreadableRule
     R_SourceUrlSyntaxRule["SourceUrlSyntax"]
     G_Sources --> R_SourceUrlSyntaxRule
     G_Specification_extensions["Specification extensions — 1"]
@@ -188,7 +194,7 @@ flowchart TD
 | **RPC** | `RpcStepRule` <small>protocol-rpc</small> |
 | **SOAP / WSDL** | `WsdlStepRule` <small>protocol-soap</small> |
 | **Selectors** | `SelectorTypeSupportedRule` <small>expression</small> |
-| **Sources** | `SelfUriSyntaxRule` <small>document</small>, `SourceTypeMatchesRule` <small>document</small>, `SourceUniqueNameRule` <small>document</small>, `SourceUrlSyntaxRule` <small>document</small> |
+| **Sources** | `SelfUriSyntaxRule` <small>document</small>, `SourceTypeInferenceFailedRule` <small>document</small>, `SourceTypeMatchesRule` <small>document</small>, `SourceUniqueNameRule` <small>document</small>, `SourceUnparseableRule` <small>document</small>, `SourceUnreadableRule` <small>document</small>, `SourceUrlSyntaxRule` <small>document</small> |
 | **Specification extensions** | `ExtensionsXPrefixRule` <small>document</small> |
 | **Step-level** | `InteractionStepRule` <small>document</small>, `StepAtLeastOneRule` <small>document</small>, `StepCriteriaTypeContextRule` <small>document</small>, `StepDependsOnNoCycleRule` <small>document</small>, `StepIdPatternRule` <small>document</small>, `StepNestedWorkflowExistsRule` <small>document</small>, `StepNestedWorkflowNoCycleRule` <small>document</small>, `StepOperationIdResolvesRule` <small>document</small>, `StepOperationIdSourceScopedRule` <small>document</small>, `StepOperationPathResolvesRule` <small>expression</small>, `StepOperationPathSyntaxRule` <small>expression</small>, `StepOperationTargetPresentRule` <small>document</small>, `StepOutputsUniqueRule` <small>document</small>, `StepParameterDuplicateRule` <small>document</small>, `StepParameterInValidRule` <small>document</small>, `StepParameterRequiresInRule` <small>document</small>, `StepParametersHaveNameRule` <small>document</small>, `StepRequestBodyReplacementsDuplicateRule` <small>document</small>, `StepRequestBodyReplacementsTargetRule` <small>document</small>, `StepRequestBodyWorkflowRule` <small>document</small>, `StepSuccessCriteriaConditionRule` <small>document</small>, `StepTimeoutRequires11Rule` <small>document</small>, `StepUniqueIdRule` <small>document</small>, `SuccessCriteriaVersionSupportedRule` <small>expression</small> |
 | **Workflow-level** | `WorkflowAtLeastOneRule` <small>document</small>, `WorkflowDependsOnExistsRule` <small>document</small>, `WorkflowDependsOnNoCycleRule` <small>document</small>, `WorkflowIdPatternRule` <small>document</small>, `WorkflowInputsValidSchemaRule` <small>document</small>, `WorkflowUniqueIdRule` <small>document</small> |

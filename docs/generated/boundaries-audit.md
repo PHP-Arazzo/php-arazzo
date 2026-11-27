@@ -17,20 +17,19 @@ when a boundary consciously moves.
 | Vendor | core refs | laravel refs | Policy in core |
 |---|---:|---:|---|
 | `Composer` | 1 | 0 | _unclassified_ ⚠ |
-| `GuzzleHttp` | 12 | 0 | **forbidden** ⚠ |
+| `GuzzleHttp` | 10 | 0 | **forbidden** ⚠ |
 | `JsonSchema` | 7 | 0 | _unclassified_ ⚠ |
 | `OpenTelemetry` | 26 | 0 | _unclassified_ ⚠ |
-| `Psr` | 105 | 0 | allowed |
-| `Symfony` | 32 | 0 | **forbidden** ⚠ |
-| `cebe` | 22 | 0 | **forbidden** ⚠ |
+| `Psr` | 112 | 0 | allowed |
+| `Symfony` | 34 | 0 | **forbidden** ⚠ |
+| `cebe` | 30 | 0 | **forbidden** ⚠ |
 
 ## Module detail
 
 | Package | Module | Vendor | References |
 |---|---|---|---:|
-| cli | `cli:Console` | `GuzzleHttp` | 2 |
 | cli | `cli:Console` | `Psr` | 3 |
-| cli | `cli:Console` | `Symfony` | 30 |
+| cli | `cli:Console` | `Symfony` | 31 |
 | cli | `cli:Generator` | `Psr` | 3 |
 | contracts | `contracts:Clock` | `Psr` | 1 |
 | contracts | `contracts:Discovery` | `Composer` | 1 |
@@ -45,8 +44,8 @@ when a boundary consciously moves.
 | engine | `engine:Runtime` | `Psr` | 1 |
 | evaluation | `evaluation:_` | `Psr` | 2 |
 | protocol-http | `protocol-http:Execution` | `GuzzleHttp` | 2 |
-| protocol-http | `protocol-http:Execution` | `Psr` | 12 |
-| protocol-http | `protocol-http:Execution` | `cebe` | 11 |
+| protocol-http | `protocol-http:Execution` | `Psr` | 17 |
+| protocol-http | `protocol-http:Execution` | `cebe` | 19 |
 | protocol-http | `protocol-http:Plugins` | `Psr` | 6 |
 | protocol-http | `protocol-http:Resolver` | `cebe` | 7 |
 | protocol-http | `protocol-http:_` | `GuzzleHttp` | 2 |
@@ -62,14 +61,16 @@ when a boundary consciously moves.
 | runner | `runner:Store` | `Psr` | 1 |
 | runner | `runner:Sync` | `Psr` | 3 |
 | runner | `runner:_` | `Psr` | 12 |
+| sources | `sources:Inspection` | `Psr` | 1 |
+| sources | `sources:Normalizer` | `Psr` | 1 |
+| sources | `sources:Plugins` | `Symfony` | 1 |
 | sources | `sources:Resolver` | `GuzzleHttp` | 5 |
 | sources | `sources:Resolver` | `Psr` | 10 |
 | sources | `sources:_` | `GuzzleHttp` | 1 |
 | sources | `sources:_` | `Psr` | 6 |
 
 **14 library boundary violation(s):**
-- `cli:Console` imports `GuzzleHttp\*` (2 refs)
-- `cli:Console` imports `Symfony\*` (30 refs)
+- `cli:Console` imports `Symfony\*` (31 refs)
 - `contracts:Discovery` imports `Composer\*` (1 refs)
 - `document:Parser` imports `Symfony\*` (2 refs)
 - `document:Plugins` imports `JsonSchema\*` (4 refs)
@@ -77,9 +78,10 @@ when a boundary consciously moves.
 - `engine:Execution` imports `cebe\*` (4 refs)
 - `engine:Runtime` imports `OpenTelemetry\*` (26 refs)
 - `protocol-http:Execution` imports `GuzzleHttp\*` (2 refs)
-- `protocol-http:Execution` imports `cebe\*` (11 refs)
+- `protocol-http:Execution` imports `cebe\*` (19 refs)
 - `protocol-http:Resolver` imports `cebe\*` (7 refs)
 - `protocol-http:_` imports `GuzzleHttp\*` (2 refs)
+- `sources:Plugins` imports `Symfony\*` (1 refs)
 - `sources:Resolver` imports `GuzzleHttp\*` (5 refs)
 - `sources:_` imports `GuzzleHttp\*` (1 refs)
 
@@ -91,7 +93,11 @@ when a boundary consciously moves.
 
 Cross-package references from library code must target `*Interface` facades, value types, or throwables. `laravel`/`cli` wiring is exempt by design.
 
-**Clean** — no library package references another package's concrete entry-point facade (`ExpressionEngine`, `Document`, `SourceGraph`, `Runner`, `AsyncRunner`, `HttpProtocol`) from non-facade code; facade-to-facade transitions are allowed by the seam policy.
+**1 facade-seam violation(s):**
+
+| From package | To package | From | References concrete facade |
+|---|---|---|---|
+| `protocol-http` | `expression` | `AsyncApiPathInterpolator` | `ExpressionEngine` |
 
 ### Facade-to-facade transitions (allowed by seam policy)
 
@@ -109,13 +115,15 @@ Grouped cross-package uses of concrete internals (AST nodes, evaluators, resolve
 
 | From package | Target | In package | Refs | Example site |
 |---|---|---|---:|---|
-| `document` | `AsValidationRulePlugin` | `contracts` | 52 | `ActionDuplicateRule` |
-| `document` | `ErrorCollector` | `contracts` | 54 | `ActionDuplicateRule` |
+| `document` | `AsValidationRulePlugin` | `contracts` | 55 | `ActionDuplicateRule` |
+| `document` | `ErrorCollector` | `contracts` | 57 | `ActionDuplicateRule` |
 | `document` | `ImplicitDependencies` | `contracts` | 1 | `StepDependsOnNoCycleRule` |
 | `document` | `KnownOperations` | `contracts` | 3 | `Validator` |
 | `document` | `PluginDiscovery` | `contracts` | 1 | `ValidationRuleRegistry` |
-| `document` | `SymbolTable` | `contracts` | 54 | `ActionDuplicateRule` |
+| `document` | `SourceResolutionCollection` | `contracts` | 3 | `Validator` |
+| `document` | `SymbolTable` | `contracts` | 57 | `ActionDuplicateRule` |
 | `document` | `ValidationResult` | `contracts` | 3 | `Validator` |
+| `document` | `ValidatorPolicy` | `contracts` | 2 | `RuleSet` |
 | `document` | `WorkflowSymbols` | `contracts` | 1 | `ActionGotoTargetResolvesRule` |
 | `engine` | `SystemClock` | `contracts` | 1 | `RetryPolicy` |
 | `evaluation` | `AsCriterionPlugin` | `contracts` | 2 | `JsonPathCriterionPlugin` |
@@ -131,9 +139,10 @@ Grouped cross-package uses of concrete internals (AST nodes, evaluators, resolve
 | `expression` | `SymbolTable` | `contracts` | 16 | `ActionOutputTargetExclusivityRule` |
 | `expression` | `WorkflowSymbols` | `contracts` | 5 | `ExpressionSite` |
 | `protocol-http` | `AsOperationExecutorPlugin` | `contracts` | 2 | `AsyncApiStepExecutor` |
+| `protocol-http` | `AsyncApiSourceNormalizer` | `sources` | 1 | `AsyncApiOperationResolver` |
 | `protocol-http` | `Credential` | `contracts` | 1 | `SourcePolicyApplicator` |
-| `protocol-http` | `EvaluationContext` | `expression` | 2 | `StepOutputExtractor` |
-| `protocol-http` | `EvaluationEngine` | `evaluation` | 1 | `HttpProtocol` |
+| `protocol-http` | `EvaluationContext` | `expression` | 3 | `StepOutputExtractor` |
+| `protocol-http` | `EvaluationEngine` | `evaluation` | 2 | `AsyncApiPathInterpolator` |
 | `protocol-http` | `IdempotencyKeyInjector` | `engine` | 3 | `HttpStepExecutor` |
 | `protocol-http` | `NullTracer` | `contracts` | 2 | `DefaultOpenApiExecutor` |
 | `protocol-http` | `OpenApi30Normalizer` | `sources` | 1 | `OpenApiOperationResolver` |
@@ -141,12 +150,14 @@ Grouped cross-package uses of concrete internals (AST nodes, evaluators, resolve
 | `protocol-http` | `OpenApiVersionDetector` | `sources` | 1 | `OpenApiOperationResolver` |
 | `protocol-http` | `ParameterSerializer` | `engine` | 1 | `DefaultOpenApiExecutor` |
 | `protocol-http` | `RequestCompiler` | `engine` | 1 | `HttpStepExecutor` |
-| `protocol-http` | `ReusableParameterResolver` | `engine` | 1 | `AsyncApiStepExecutor` |
-| `protocol-http` | `SchemaValidator` | `engine` | 1 | `ResponseSchemaValidator` |
+| `protocol-http` | `ReusableParameterResolver` | `engine` | 2 | `AsyncApiStepExecutor` |
+| `protocol-http` | `SchemaCompositionValidator` | `engine` | 2 | `RequestBodyValidator` |
+| `protocol-http` | `SchemaValidator` | `engine` | 3 | `RequestBodyValidator` |
 | `protocol-http` | `SourcePolicy` | `contracts` | 3 | `DefaultOpenApiExecutor` |
 | `protocol-http` | `SourceReferenceParser` | `sources` | 1 | `OpenApiOperationResolver` |
-| `protocol-http` | `Sources` | `sources` | 2 | `OpenApiOperationResolver` |
-| `protocol-http` | `TypeCaster` | `engine` | 2 | `DefaultOpenApiExecutor` |
+| `protocol-http` | `Sources` | `sources` | 3 | `AsyncApiOperationResolver` |
+| `protocol-http` | `SystemClock` | `contracts` | 1 | `OutboundRateLimiter` |
+| `protocol-http` | `TypeCaster` | `engine` | 3 | `DefaultOpenApiExecutor` |
 | `protocol-rpc` | `AsOperationExecutorPlugin` | `contracts` | 1 | `RpcOperationExecutor` |
 | `protocol-rpc` | `AsSourceNormalizerPlugin` | `contracts` | 1 | `ProtoSourceNormalizer` |
 | `protocol-rpc` | `AsValidationRulePlugin` | `contracts` | 1 | `RpcStepRule` |
@@ -177,10 +188,13 @@ Grouped cross-package uses of concrete internals (AST nodes, evaluators, resolve
 | `runner` | `StepParameterMerger` | `engine` | 2 | `StepExecutionWorker` |
 | `runner` | `SystemClock` | `contracts` | 2 | `ObservabilityContext` |
 | `runner` | `ValidationResult` | `contracts` | 6 | `AsyncExecutionGraphAssembler` |
-| `sources` | `AsSourceNormalizerPlugin` | `contracts` | 2 | `OpenApiSourceNormalizer` |
+| `sources` | `AsSourceNormalizerPlugin` | `contracts` | 3 | `AsyncApiSourceNormalizer` |
 | `sources` | `DecodePolicy` | `document` | 2 | `DefaultSourceResolver` |
 | `sources` | `Decoders` | `document` | 1 | `DefaultSourceResolver` |
 | `sources` | `KnownOperations` | `contracts` | 2 | `Sources` |
 | `sources` | `NullTracer` | `contracts` | 2 | `HttpFetcher` |
 | `sources` | `PluginDiscovery` | `contracts` | 1 | `SourceNormalizerRegistry` |
-| `sources` | `ResolvedOperationCollection` | `contracts` | 2 | `Sources` |
+| `sources` | `ResolvedOperationCollection` | `contracts` | 4 | `SourceInspector` |
+| `sources` | `SourceInspectionResult` | `contracts` | 3 | `SourceInspector` |
+| `sources` | `SourceResolution` | `contracts` | 1 | `SourceInspector` |
+| `sources` | `SourceResolutionCollection` | `contracts` | 1 | `SourceInspector` |

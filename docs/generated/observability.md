@@ -28,6 +28,7 @@ _No catalog found (LedgerAppendingListener not found)._
 | `ActionRetryLimitsRule` <small>core</small> | `error` | 2 |
 | `ActionReusableRefResolvesRule` <small>core</small> | `error` | 2 |
 | `ActionTargetExclusivityRule` <small>core</small> | `error` | 1 |
+| `ActionTypeValidRule` <small>core</small> | `error` | 1 |
 | `AsyncApiFieldsRequire11Rule` <small>core</small> | `error` | 1 |
 | `ComponentsUniqueNamesRule` <small>core</small> | `error` | 1 |
 | `DocUnknownFieldRule` <small>core</small> | `error` · `warning` | 2 |
@@ -42,7 +43,11 @@ _No catalog found (LedgerAppendingListener not found)._
 | `ParameterReusableRefResolvesRule` <small>core</small> | `error` | 2 |
 | `ReceiveStepSuccessCriteriaRule` <small>core</small> | `error` · `warning` | 2 |
 | `SelfUriSyntaxRule` <small>core</small> | `error` | 3 |
+| `SourceTypeInferenceFailedRule` <small>core</small> | `error` | 1 |
+| `SourceTypeMatchesRule` <small>core</small> | `error` | 1 |
 | `SourceUniqueNameRule` <small>core</small> | `error` | 1 |
+| `SourceUnparseableRule` <small>core</small> | `error` | 1 |
+| `SourceUnreadableRule` <small>core</small> | `error` | 1 |
 | `SourceUrlSyntaxRule` <small>core</small> | `error` | 2 |
 | `StepAtLeastOneRule` <small>core</small> | `error` | 1 |
 | `StepCriteriaTypeContextRule` <small>core</small> | `error` | 1 |
@@ -55,7 +60,7 @@ _No catalog found (LedgerAppendingListener not found)._
 | `StepOperationTargetPresentRule` <small>core</small> | `error` | 1 |
 | `StepOutputsUniqueRule` <small>core</small> | `error` | 2 |
 | `StepParameterDuplicateRule` <small>core</small> | `error` | 1 |
-| `StepParameterInValidRule` <small>core</small> | `error` | 1 |
+| `StepParameterInValidRule` <small>core</small> | `error` | 2 |
 | `StepParameterRequiresInRule` <small>core</small> | `error` | 1 |
 | `StepParametersHaveNameRule` <small>core</small> | `error` | 1 |
 | `StepRequestBodyReplacementsDuplicateRule` <small>core</small> | `error` | 1 |
@@ -88,6 +93,8 @@ _No catalog found (LedgerAppendingListener not found)._
 | `StepOperationPathSyntaxRule` <small>core</small> | `error` | 4 |
 | `SuccessCriteriaVersionSupportedRule` <small>core</small> | `error` | 2 |
 | `DefaultOpenApiExecutor` <small>core</small> | `debug` · `warning` | 3 |
+| `OutboundRateLimiter` <small>core</small> | `warning` | 1 |
+| `ParameterRouter` <small>core</small> | `warning` | 1 |
 | `StepOutputExtractor` <small>core</small> | `warning` | 1 |
 | `RpcOperationExecutor` <small>core</small> | `debug` · `warning` | 3 |
 | `RpcStepRule` <small>core</small> | `error` | 4 |
@@ -97,10 +104,12 @@ _No catalog found (LedgerAppendingListener not found)._
 | `StepExecutionWorker` <small>core</small> | `info` · `error` | 5 |
 | `StepOutcomeHandler` <small>core</small> | `warning` · `info` | 2 |
 | `WorkflowExecutor` <small>core</small> | `warning` · `info` · `error` | 4 |
+| `SourceInspector` <small>core</small> | `warning` | 1 |
+| `SourceOperationsNormalizer` <small>core</small> | `warning` | 2 |
 | `HttpFetcher` <small>core</small> | `debug` · `warning` | 4 |
-| `Sources` <small>core</small> | `warning` | 3 |
+| `Sources` <small>core</small> | `warning` | 1 |
 
-145 logging calls total. PSR-14 events are dispatched independently (see events.md).
+154 logging calls total. PSR-14 events are dispatched independently (see events.md).
 
 ## Persistence adapters
 

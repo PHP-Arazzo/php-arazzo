@@ -76,6 +76,7 @@ flowchart TB
     end
     subgraph PKG_M_sources["sources"]
         M_sources_Exceptions["sources:Exceptions"]:::node
+        M_sources_Inspection["sources:Inspection"]:::node
         M_sources_Normalizer["sources:Normalizer"]:::node
         M_sources_Plugins["sources:Plugins"]:::node
         M_sources_Policy["sources:Policy"]:::node
@@ -99,6 +100,7 @@ flowchart TB
         M_runner__["(runner package root)"]:::node
     end
     subgraph PKG_M_protocol_http["protocol-http"]
+        M_protocol_http_Enum["protocol-http:Enum"]:::node
         M_protocol_http_Exceptions["protocol-http:Exceptions"]:::node
         M_protocol_http_Execution["protocol-http:Execution"]:::node
         M_protocol_http_Plugins["protocol-http:Plugins"]:::node
@@ -131,22 +133,23 @@ flowchart TB
     M_cli_Console --> M_cli_Exceptions
     M_cli_Console --> M_cli_Renderer
     M_cli_Console --> M_contracts_Clock
-    M_cli_Console --> M_contracts_Data
     M_cli_Console --> M_contracts_Dependency
     M_cli_Console --> M_contracts_Exceptions
     M_cli_Console --> M_contracts_Interfaces
     M_cli_Console --> M_contracts_Observability
     M_cli_Console --> M_contracts_Spec
+    M_cli_Console --> M_contracts_Validation
     M_cli_Console --> M_document_Parser
     M_cli_Console --> M_document__
     M_cli_Console --> M_engine_Runtime
     M_cli_Console --> M_evaluation__
-    M_cli_Console --> M_expression__
+    M_cli_Console --> M_protocol_http_Policy
     M_cli_Console --> M_protocol_http__
     M_cli_Console --> M_runner_Data
     M_cli_Console --> M_runner_Queue
     M_cli_Console --> M_runner_Store
     M_cli_Console --> M_runner__
+    M_cli_Console --> M_sources_Policy
     M_cli_Console --> M_sources__
     M_cli_Exceptions --> M_engine_Exceptions
     M_cli_Generator --> M_cli_Exceptions
@@ -186,6 +189,7 @@ flowchart TB
     M_document_Validator --> M_contracts_Interfaces
     M_document_Validator --> M_contracts_Spec
     M_document_Validator --> M_contracts_Validation
+    M_document_Validator --> M_document_Plugins
     M_document_Validator --> M_document_Registries
     M_document__ --> M_contracts_Data
     M_document__ --> M_contracts_Interfaces
@@ -311,6 +315,7 @@ flowchart TB
     M_expression__ --> M_expression_Support
     M_expression__ --> M_expression_Xpath
     M_protocol_http_Exceptions --> M_engine_Exceptions
+    M_protocol_http_Execution --> M_contracts_Clock
     M_protocol_http_Execution --> M_contracts_Exceptions
     M_protocol_http_Execution --> M_contracts_Interfaces
     M_protocol_http_Execution --> M_contracts_Observability
@@ -321,6 +326,8 @@ flowchart TB
     M_protocol_http_Execution --> M_expression_Data
     M_protocol_http_Execution --> M_expression_Enum
     M_protocol_http_Execution --> M_expression_Interfaces
+    M_protocol_http_Execution --> M_protocol_http_Enum
+    M_protocol_http_Execution --> M_protocol_http_Exceptions
     M_protocol_http_Execution --> M_protocol_http_Policy
     M_protocol_http_Execution --> M_protocol_http_Resolver
     M_protocol_http_Plugins --> M_contracts_Attributes
@@ -335,11 +342,19 @@ flowchart TB
     M_protocol_http_Plugins --> M_protocol_http_Execution
     M_protocol_http_Plugins --> M_protocol_http_Resolver
     M_protocol_http_Policy --> M_engine_Execution
+    M_protocol_http_Policy --> M_protocol_http_Enum
+    M_protocol_http_Policy --> M_protocol_http_Execution
     M_protocol_http_Resolver --> M_contracts_Interfaces
     M_protocol_http_Resolver --> M_contracts_Spec
+    M_protocol_http_Resolver --> M_contracts_State
     M_protocol_http_Resolver --> M_document__
+    M_protocol_http_Resolver --> M_engine_Execution
+    M_protocol_http_Resolver --> M_evaluation__
+    M_protocol_http_Resolver --> M_expression_Data
+    M_protocol_http_Resolver --> M_expression__
     M_protocol_http_Resolver --> M_protocol_http_Exceptions
     M_protocol_http_Resolver --> M_sources_Normalizer
+    M_protocol_http_Resolver --> M_sources_Plugins
     M_protocol_http_Resolver --> M_sources_Resolver
     M_protocol_http_Resolver --> M_sources__
     M_protocol_http__ --> M_contracts_Interfaces
@@ -517,8 +532,17 @@ flowchart TB
     M_runner__ --> M_runner_Policy
     M_runner__ --> M_runner_Preflight
     M_runner__ --> M_runner_Sync
+    M_sources_Inspection --> M_contracts_Data
+    M_sources_Inspection --> M_contracts_Spec
+    M_sources_Inspection --> M_sources_Exceptions
+    M_sources_Inspection --> M_sources_Resolver
+    M_sources_Inspection --> M_sources__
+    M_sources_Normalizer --> M_contracts_Data
     M_sources_Normalizer --> M_contracts_Spec
     M_sources_Normalizer --> M_sources_Exceptions
+    M_sources_Normalizer --> M_sources_Policy
+    M_sources_Normalizer --> M_sources_Resolver
+    M_sources_Normalizer --> M_sources__
     M_sources_Plugins --> M_contracts_Attributes
     M_sources_Plugins --> M_contracts_Interfaces
     M_sources_Plugins --> M_contracts_Spec
@@ -542,6 +566,8 @@ flowchart TB
     M_sources__ --> M_contracts_Spec
     M_sources__ --> M_document_Parser
     M_sources__ --> M_sources_Exceptions
+    M_sources__ --> M_sources_Inspection
+    M_sources__ --> M_sources_Normalizer
     M_sources__ --> M_sources_Policy
     M_sources__ --> M_sources_Registries
     M_sources__ --> M_sources_Resolver
@@ -562,27 +588,26 @@ flowchart TB
 
 | From package | To package | Refs |
 |---|---|---:|
-| `cli` | `contracts` | 25 |
-| `cli` | `document` | 11 |
+| `cli` | `contracts` | 29 |
+| `cli` | `document` | 9 |
 | `cli` | `engine` | 3 |
-| `cli` | `evaluation` | 2 |
-| `cli` | `expression` | 1 |
-| `cli` | `protocol-http` | 1 |
+| `cli` | `evaluation` | 1 |
+| `cli` | `protocol-http` | 3 |
 | `cli` | `runner` | 13 |
-| `cli` | `sources` | 3 |
-| `document` | `contracts` | 402 |
+| `cli` | `sources` | 4 |
+| `document` | `contracts` | 425 |
 | `engine` | `contracts` | 51 |
 | `engine` | `document` | 1 |
 | `engine` | `evaluation` | 1 |
 | `evaluation` | `contracts` | 63 |
 | `evaluation` | `expression` | 20 |
 | `expression` | `contracts` | 137 |
-| `protocol-http` | `contracts` | 54 |
-| `protocol-http` | `document` | 2 |
-| `protocol-http` | `engine` | 11 |
-| `protocol-http` | `evaluation` | 6 |
-| `protocol-http` | `expression` | 7 |
-| `protocol-http` | `sources` | 8 |
+| `protocol-http` | `contracts` | 81 |
+| `protocol-http` | `document` | 3 |
+| `protocol-http` | `engine` | 19 |
+| `protocol-http` | `evaluation` | 8 |
+| `protocol-http` | `expression` | 9 |
+| `protocol-http` | `sources` | 11 |
 | `protocol-rpc` | `contracts` | 38 |
 | `protocol-rpc` | `document` | 2 |
 | `protocol-rpc` | `engine` | 5 |
@@ -597,7 +622,7 @@ flowchart TB
 | `runner` | `engine` | 11 |
 | `runner` | `evaluation` | 14 |
 | `runner` | `expression` | 8 |
-| `sources` | `contracts` | 50 |
+| `sources` | `contracts` | 74 |
 | `sources` | `document` | 3 |
 
 ## Module-level detail
