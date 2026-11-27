@@ -200,3 +200,33 @@ it('test_phpunit_coverage_includes', function () {
         ->toContain('packages/protocol-rpc/src')
         ->toContain('packages/protocol-soap/src');
 });
+
+it('test_phpunit_has_no_duplicate_suites_or_directories', function () {
+    $repo = dirname(__DIR__, 2);
+    $phpunitFile = $repo.'/phpunit.xml.dist';
+
+    expect(file_exists($phpunitFile))->toBeTrue();
+
+    $xml = new SimpleXMLElement((string) file_get_contents($phpunitFile));
+
+    $suiteNames = [];
+    $suiteDirs = [];
+    foreach ($xml->testsuites->testsuite as $suite) {
+        $name = (string) $suite['name'];
+        expect($suiteNames)->not->toContain($name, "Duplicate testsuite name: {$name}");
+        $suiteNames[] = $name;
+
+        foreach ($suite->directory as $dir) {
+            $dirPath = (string) $dir;
+            expect($suiteDirs)->not->toContain($dirPath, "Duplicate testsuite directory: {$dirPath}");
+            $suiteDirs[] = $dirPath;
+        }
+    }
+
+    $coverageDirs = [];
+    foreach ($xml->source->include->directory as $dir) {
+        $dirPath = (string) $dir;
+        expect($coverageDirs)->not->toContain($dirPath, "Duplicate source coverage directory: {$dirPath}");
+        $coverageDirs[] = $dirPath;
+    }
+});
