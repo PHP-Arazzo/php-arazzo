@@ -2,6 +2,11 @@ asyncapi: 3.0.0
 info:
   title: Dummy AsyncAPI
   version: 1.0.0
+servers:
+  production:
+    host: broker.example.com
+    pathname: /v1
+    protocol: https
 channels:
   userEvents:
     address: 'user/events'

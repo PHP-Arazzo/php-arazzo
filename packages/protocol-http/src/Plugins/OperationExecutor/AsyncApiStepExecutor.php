@@ -16,11 +16,14 @@ use Alama\Arazzo\Contracts\Spec\PayloadReplacement;
 use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Contracts\Spec\StepExecutionOutcome;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
+use Alama\Arazzo\Document\OperationResolverInterface;
 use Alama\Arazzo\Engine\Exceptions\ExecutionException;
 use Alama\Arazzo\Engine\Execution\ReusableParameterResolver;
 use Alama\Arazzo\Evaluation\EvaluationEngineInterface;
 use Alama\Arazzo\Expression\Data\EvaluationContext;
+use Alama\Arazzo\Protocol\Http\Exceptions\AsyncApiResolutionException;
 use Alama\Arazzo\Protocol\Http\Exceptions\AsyncApiStepException;
+use Alama\Arazzo\Protocol\Http\Resolver\AsyncApiOperationResolver;
 use JsonException;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
@@ -48,6 +51,7 @@ final class AsyncApiStepExecutor implements OperationExecutorPluginInterface
         private ?RequestFactoryInterface $requestFactory = null,
         private ?StreamFactoryInterface $streamFactory = null,
         private ?UriFactoryInterface $uriFactory = null,
+        private ?OperationResolverInterface $operationResolver = null,
     ) {}
 
     public function name(): string
@@ -91,7 +95,9 @@ final class AsyncApiStepExecutor implements OperationExecutorPluginInterface
 
         $correlationId = self::stringify($this->evaluationEngine->evaluate($step->target->correlationId, new EvaluationContext($context, $step->stepId, $document)));
 
-        $this->pendingCorrelations->create($correlationId, $executionId, $step->stepId, $step->target->channelPath, $step->flow->timeout);
+        $resolvedChannel = $this->resolveReceiveChannelTarget($step, $context, $document);
+
+        $this->pendingCorrelations->create($correlationId, $executionId, $step->stepId, $resolvedChannel, $step->flow->timeout);
 
         return StepExecutionOutcome::suspended();
     }
@@ -111,7 +117,7 @@ final class AsyncApiStepExecutor implements OperationExecutorPluginInterface
 
         // resolveChannelUri() already raises messageFactoryMissing when the
         // URI factory is absent, so there is nothing to pre-check here.
-        $uri = $this->resolveChannelUri($step);
+        $uri = $this->resolveChannelUri($step, $context, $document);
 
         $evaluationContext = new EvaluationContext($context, $step->stepId, $document);
 
@@ -157,17 +163,47 @@ final class AsyncApiStepExecutor implements OperationExecutorPluginInterface
         return $request->withBody($streams->createStream($encoded));
     }
 
-    private function resolveChannelUri(Step $step): UriInterface
+    private function resolveChannelUri(Step $step, WorkflowContext $context, ArazzoDocument $document): UriInterface
     {
         $channelPath = $step->target->channelPath
             ?? throw AsyncApiStepException::missingSendChannelPath($step->stepId);
 
-        if (preg_match('#^https?://#i', $channelPath) !== 1) {
+        $uriFactory = $this->uriFactory ?? throw ExecutionException::messageFactoryMissing($step->stepId);
+
+        $resolver = $this->operationResolver ??= AsyncApiOperationResolver::create();
+
+        try {
+            $targetUrl = $resolver->resolveTargetUrl($step, $context, $document);
+        } catch (AsyncApiResolutionException $e) {
+            throw $e;
+        } catch (\Throwable) {
+            if (preg_match('#^https?://#i', $channelPath) === 1) {
+                return $uriFactory->createUri($channelPath);
+            }
+
             throw ExecutionException::unresolvableChannelTarget($step->stepId, $channelPath);
         }
 
-        return ($this->uriFactory ?? throw ExecutionException::messageFactoryMissing($step->stepId))
-            ->createUri($channelPath);
+        if (preg_match('#^https?://#i', $targetUrl) !== 1) {
+            throw ExecutionException::unresolvableChannelTarget($step->stepId, $targetUrl);
+        }
+
+        return $uriFactory->createUri($targetUrl);
+    }
+
+    private function resolveReceiveChannelTarget(Step $step, WorkflowContext $context, ArazzoDocument $document): string
+    {
+        $channelPath = (string) $step->target->channelPath;
+
+        $resolver = $this->operationResolver ??= AsyncApiOperationResolver::create();
+
+        try {
+            return $resolver->resolveTargetUrl($step, $context, $document);
+        } catch (AsyncApiResolutionException $e) {
+            throw $e;
+        } catch (\Throwable) {
+            return $channelPath;
+        }
     }
 
     /**

@@ -24,6 +24,7 @@ This directory contains test fixtures for the Arazzo specification parser and va
 ### Valid v1.1.0
 
 *   `valid/v1.1.0/asyncapi-source.arazzo.yaml` - AsyncAPI sourceDescription.
+*   `valid/v1.1.0/asyncapi-channelpath.arazzo.yaml` - AsyncAPI step channelPath resolution.
 *   `valid/v1.1.0/selector-object.arazzo.yaml` - New Selector Object usage.
 
 ### Valid v1.2.0 (WSDL/SOAP — OAI spec PR #533)

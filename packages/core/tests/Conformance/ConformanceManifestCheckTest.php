@@ -12,7 +12,7 @@ const MANIFEST = __DIR__.'/../../../../docs/conformance/manifest.json';
 function runChecker(): array
 {
     $output = [];
-    exec('php '.escapeshellarg(SCRIPT).' 2>&1', $output, $exitCode);
+    exec(escapeshellarg(PHP_BINARY).' '.escapeshellarg(SCRIPT).' 2>&1', $output, $exitCode);
 
     return ['exit' => (int) $exitCode, 'output' => implode("\n", $output)];
 }
@@ -50,5 +50,6 @@ test('checker rebuilds the same model the generator serializes', function () {
         ConformanceManifestBuilder::build($documents),
     );
 
-    expect(file_get_contents(MANIFEST))->toBe($expected);
+    expect(str_replace("\r\n", "\n", file_get_contents(MANIFEST)))
+        ->toBe(str_replace("\r\n", "\n", $expected));
 });

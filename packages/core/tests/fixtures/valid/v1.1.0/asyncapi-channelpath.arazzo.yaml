@@ -1,0 +1,18 @@
+arazzo: "1.1.0"
+info:
+  title: AsyncAPI ChannelPath
+  version: "1.0.0"
+sourceDescriptions:
+  - name: ecom-asyncapi
+    url: ./asyncapi.yaml
+    type: asyncapi
+workflows:
+  - workflowId: async-channel-workflow
+    steps:
+      - stepId: send-order-event
+        action: send
+        channelPath: '{$sourceDescriptions.ecom-asyncapi.url}#/channels/userEvents'
+      - stepId: receive-order-confirmation
+        action: receive
+        channelPath: '{$sourceDescriptions.ecom-asyncapi.url}#/channels/userEvents'
+        correlationId: '$inputs.orderId'

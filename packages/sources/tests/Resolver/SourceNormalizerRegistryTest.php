@@ -9,6 +9,7 @@ use Alama\Arazzo\Contracts\Interfaces\SourceNormalizerInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
+use Alama\Arazzo\Sources\Plugins\SourceNormalizer\AsyncApiSourceNormalizer;
 use Alama\Arazzo\Sources\Plugins\SourceNormalizer\OpenApiSourceNormalizer;
 use Alama\Arazzo\Sources\Registries\SourceNormalizerRegistry;
 
@@ -91,7 +92,8 @@ it('returns null when no normalizer supports the requested source type', functio
     $registry = SourceNormalizerRegistry::create();
 
     expect($registry->get(SourceType::Openapi))->toBeInstanceOf(OpenApiSourceNormalizer::class);
-    expect($registry->get(SourceType::Asyncapi))->toBeNull();
+    expect($registry->get(SourceType::Asyncapi))->toBeInstanceOf(AsyncApiSourceNormalizer::class);
+    expect($registry->get(SourceType::Graphql))->toBeNull();
 });
 
 it('returns the registered normalizer that supports the requested type', function (): void {
