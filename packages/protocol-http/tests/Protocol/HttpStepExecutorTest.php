@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Tests\Protocol\Http\Protocol;
 
 use Alama\Arazzo\Contracts\Exceptions\SchemaValidationException;
+use Alama\Arazzo\Contracts\Exceptions\TransportException;
 use Alama\Arazzo\Contracts\Interfaces\OutputExtractorInterface;
 use Alama\Arazzo\Contracts\Interfaces\RequestValidatorInterface;
 use Alama\Arazzo\Contracts\Interfaces\ResponseValidatorInterface;
@@ -471,7 +472,7 @@ it('skips outbound request validation when strictValidation is false (lenient mo
     expect($outcome->statusCode)->toBe(200);
 });
 
-it('returns a 429 transport.rate_limited outcome when OpenApiExecutor throws RateLimitExceededException', function (): void {
+it('returns a typed failed outcome with null statusCode when OpenApiExecutor throws RateLimitExceededException', function (): void {
     $throwingExecutor = new class() implements OpenApiExecutorInterface
     {
         public function execute(
@@ -499,7 +500,47 @@ it('returns a 429 transport.rate_limited outcome when OpenApiExecutor throws Rat
 
     $outcome = $executor->execute($step, $context, httpStepExecutorDocument(), 'exec_1');
 
-    expect($outcome->statusCode)->toBe(429)
+    expect($outcome->statusCode)->toBeNull()
+        ->and($outcome->isFailed())->toBeTrue()
         ->and($outcome->failureCategory)->toBe('transport')
-        ->and($outcome->responseBody)->toMatchArray(['error' => 'transport.rate_limited']);
+        ->and($outcome->exception)->toBeInstanceOf(TransportException::class)
+        ->and($outcome->responseBody['error'])->toContain('rate-limited (10 req/s exceeded)');
+});
+
+it('returns a typed failed outcome with null statusCode on network or connection errors', function (): void {
+    $failingExecutor = new class() implements OpenApiExecutorInterface
+    {
+        public function execute(
+            OpenApiOperationHandle $operation,
+            OpenApiPayload $payload,
+            ?callable $requestInterceptor = null,
+            ?float $timeoutSeconds = null,
+            ?SourcePolicy $sourcePolicy = null,
+        ): ResponseInterface {
+            if ($requestInterceptor !== null) {
+                $requestInterceptor(new Request('GET', 'https://api.example.com/status'));
+            }
+            throw new \RuntimeException('Failed to connect to api.example.com port 443: Connection refused');
+        }
+    };
+
+    $executor = new HttpStepExecutor(
+        $failingExecutor,
+        createMockDocumentResolver(),
+        new HttpStepExecutorMockEngine(),
+        Mockery::mock(OutputExtractorInterface::class),
+        Mockery::mock(ResponseValidatorInterface::class),
+        strictDefault: false,
+    );
+
+    $step = new Step('s1', null, new StepTarget(), new StepFlow(), new StepIo());
+    $context = new WorkflowContext('def_1', [], [], [], 'wf_1', 'exec_1');
+
+    $outcome = $executor->execute($step, $context, httpStepExecutorDocument(), 'exec_1');
+
+    expect($outcome->statusCode)->toBeNull()
+        ->and($outcome->isFailed())->toBeTrue()
+        ->and($outcome->failureCategory)->toBe('transport')
+        ->and($outcome->exception)->toBeInstanceOf(TransportException::class)
+        ->and($outcome->request['url'] ?? null)->toBe('https://api.example.com/status');
 });

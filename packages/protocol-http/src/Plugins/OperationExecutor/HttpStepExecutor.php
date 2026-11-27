@@ -14,6 +14,7 @@ use Alama\Arazzo\Contracts\Spec\Enum\OperationProtocol;
 use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Contracts\Spec\StepExecutionOutcome;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
+use Alama\Arazzo\Engine\Execution\ErrorClassifier;
 use Alama\Arazzo\Engine\Execution\IdempotencyKeyInjector;
 use Alama\Arazzo\Engine\Execution\RequestCompiler;
 use Alama\Arazzo\Evaluation\EvaluationEngineInterface;
@@ -33,16 +34,25 @@ final class HttpStepExecutor implements OperationExecutorPluginInterface
      */
     public const PLUGIN_PRIORITY = 100;
 
+    private RequestCompiler $compiler;
+
+    /**
+     * @param  EvaluationEngineInterface|RequestCompiler  $evaluationEngine
+     */
     public function __construct(
         private OpenApiExecutorInterface $openApiExecutor,
         private OpenApiOperationResolver $operationResolver,
-        private EvaluationEngineInterface $evaluationEngine,
+        $evaluationEngine,
         private OutputExtractorInterface $outputExtractor,
         private ResponseValidatorInterface $schemaValidator,
         private bool $strictDefault = true,
         private ?IdempotencyKeyInjector $injector = null,
         private ?RequestValidatorInterface $requestValidator = null,
-    ) {}
+    ) {
+        $this->compiler = $evaluationEngine instanceof RequestCompiler
+            ? $evaluationEngine
+            : new RequestCompiler($evaluationEngine);
+    }
 
     public function name(): string
     {
@@ -61,7 +71,7 @@ final class HttpStepExecutor implements OperationExecutorPluginInterface
 
     public function execute(Step $step, WorkflowContext $context, ArazzoDocument $document, string $executionId): StepExecutionOutcome
     {
-        $compiler = new RequestCompiler($this->evaluationEngine);
+        $compiler = $this->compiler;
         ['payload' => $payload, 'resolvedInputs' => $resolvedInputs] = $compiler->compile($step, $document, $context);
 
         $resolved = $this->operationResolver->resolve($step, $document);
@@ -92,19 +102,21 @@ final class HttpStepExecutor implements OperationExecutorPluginInterface
                 $sourcePolicy,
             );
         } catch (\Throwable $e) {
-            if (method_exists($e, 'getErrorCode') && $e->getErrorCode() === 'transport.rate_limited') {
-                return StepExecutionOutcome::resolved(
-                    429,
-                    [],
-                    ['error' => 'transport.rate_limited', 'message' => $e->getMessage()],
-                    failureCategory: 'transport',
-                );
-            }
+            $classifier = new ErrorClassifier();
+            $category = $classifier->classify($e);
+            $targetUrl = $capturedRequest !== null ? (string) $capturedRequest->getUri() : '';
+            $method = $capturedRequest !== null ? $capturedRequest->getMethod() : '';
+            $typedException = $classifier->toTransportException($e, $targetUrl, $method);
 
-            // Transport-level failures become a synthetic 500 response so
-            // failureActions (e.g. retry) apply identically to the sync
-            // adapter's StepExecutor policy.
-            return StepExecutionOutcome::resolved(500, [], ['error' => $e->getMessage()], failureCategory: 'transport');
+            return StepExecutionOutcome::failed(
+                exception: $typedException,
+                failureCategory: $category,
+                request: $capturedRequest !== null ? [
+                    'method' => $capturedRequest->getMethod(),
+                    'url' => (string) $capturedRequest->getUri(),
+                    'headers' => $capturedRequest->getHeaders(),
+                ] : null,
+            );
         }
 
         $decoded = $compiler->decodeResponse($response);

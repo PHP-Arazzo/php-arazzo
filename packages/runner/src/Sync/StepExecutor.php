@@ -73,6 +73,28 @@ class StepExecutor
         // Keep source credentials strictly scoped to the single plugin call.
         $context = $context->withActiveSourcePolicy(null);
         $context = $context->withStepRequest($step->stepId, $outcome->request ?? []);
+
+        if ($outcome->isFailed()) {
+            $responseRecord = array_filter([
+                'statusCode' => null,
+                'headers' => $outcome->responseHeaders,
+                'body' => $outcome->responseBody,
+                'rawBody' => $outcome->rawBody,
+                'contentType' => $outcome->contentType,
+                'failureCategory' => $outcome->failureCategory,
+                'exception' => $outcome->exception,
+            ], static fn (mixed $value, string $key): bool => $value !== null || $key === 'statusCode', ARRAY_FILTER_USE_BOTH);
+
+            $context = $context->withStepResponse($step->stepId, $responseRecord);
+            /** @var array<string, mixed> $record */
+            $record = $context->getStepRecord($step->stepId) ?? [];
+            $record['failureCategory'] = $outcome->failureCategory;
+            $record['exception'] = $outcome->exception;
+            $context = $context->withStepResult($step->stepId, $record);
+
+            return [$context, false];
+        }
+
         $context = $context->withStepResponse($step->stepId, array_filter([
             'statusCode' => $outcome->statusCode,
             'headers' => $outcome->responseHeaders,
