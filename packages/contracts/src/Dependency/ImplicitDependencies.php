@@ -19,6 +19,8 @@ final class ImplicitDependencies
 {
     private const string OUTPUT_REF_PATTERN = '/\$steps\.([^.\s}\$]+)\.outputs\b/';
 
+    private const string DETAILED_OUTPUT_REF_PATTERN = '/\$steps\.([^.\s}\$,\)]+)\.outputs(?:\.([^.\s}\$,\)]+))?/';
+
     /**
      * @return list<string> referenced stepIds (deduplicated, self excluded)
      */
@@ -35,6 +37,30 @@ final class ImplicitDependencies
 
         /** @var list<string> */
         return array_keys($ids);
+    }
+
+    /**
+     * Extracts referenced step outputs: list of array{stepId: string, outputKey: ?string}.
+     *
+     * @return list<array{stepId: string, outputKey: ?string}>
+     */
+    public static function outputReferencesFromStep(Step $step): array
+    {
+        $refs = [];
+        $seen = [];
+        foreach (self::collectFragments($step) as $fragment) {
+            foreach (self::extractDetailedRefs($fragment) as $ref) {
+                if ($ref['stepId'] !== $step->stepId) {
+                    $key = $ref['stepId'].':'.($ref['outputKey'] ?? '');
+                    if (!isset($seen[$key])) {
+                        $seen[$key] = true;
+                        $refs[] = $ref;
+                    }
+                }
+            }
+        }
+
+        return $refs;
     }
 
     /**
@@ -139,5 +165,60 @@ final class ImplicitDependencies
         }
 
         return $m[1];
+    }
+
+    /**
+     * @return list<array{stepId: string, outputKey: ?string}>
+     */
+    private static function extractDetailedRefs(mixed $node): array
+    {
+        if ($node instanceof Expression) {
+            return self::matchDetailedRefs($node->raw);
+        }
+
+        if ($node instanceof Selector) {
+            return self::matchDetailedRefs($node->context ?? '');
+        }
+
+        if (is_string($node)) {
+            return self::matchDetailedRefs($node);
+        }
+
+        if (is_array($node)) {
+            $refs = [];
+            foreach ($node as $value) {
+                foreach (self::extractDetailedRefs($value) as $ref) {
+                    $refs[] = $ref;
+                }
+            }
+
+            return $refs;
+        }
+
+        return [];
+    }
+
+    /**
+     * @return list<array{stepId: string, outputKey: ?string}>
+     */
+    private static function matchDetailedRefs(string $text): array
+    {
+        if ($text === '' || !str_contains($text, '$steps.')) {
+            return [];
+        }
+
+        if (preg_match_all(self::DETAILED_OUTPUT_REF_PATTERN, $text, $m, PREG_SET_ORDER) === 0) {
+            return [];
+        }
+
+        $refs = [];
+        foreach ($m as $match) {
+            $refs[] = [
+                'stepId' => $match[1],
+                'outputKey' => $match[2] ?? null,
+            ];
+        }
+
+        return $refs;
     }
 }

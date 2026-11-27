@@ -126,7 +126,8 @@ it('throws not readable when file permissions forbid reading', function (): void
         chmod($tmp, 0644);
         @unlink($tmp);
     }
-})->throws(LoaderException::class, 'not readable');
+})->throws(LoaderException::class, 'not readable')
+    ->skip(PHP_OS_FAMILY === 'Windows', 'chmod 0 does not forbid reading on Windows');
 
 it('throws read failed when file_get_contents fails', function (): void {
     if (!in_array('failstream', stream_get_wrappers(), true)) {

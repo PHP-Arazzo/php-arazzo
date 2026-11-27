@@ -365,9 +365,10 @@ final class SuppressionPolicy
  */
 function check_baselines_relative(string $root, string $file): string
 {
-    $prefix = rtrim($root, '/').'/';
+    $prefix = rtrim(str_replace('\\', '/', $root), '/').'/';
+    $normalizedFile = str_replace('\\', '/', $file);
 
-    return str_starts_with($file, $prefix) ? substr($file, strlen($prefix)) : $file;
+    return str_starts_with($normalizedFile, $prefix) ? substr($normalizedFile, strlen($prefix)) : $normalizedFile;
 }
 
 /**

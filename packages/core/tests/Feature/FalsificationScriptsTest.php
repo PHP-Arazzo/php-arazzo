@@ -99,10 +99,11 @@ it('scaffold generates pint-clean strict file', function () use ($scripts): void
 
     // Normalize EOF newline ourselves so the scaffold must be fully
     // pint-clean regardless of which fixers/Pint version runs.
-    file_put_contents($tmp, rtrim((string) file_get_contents($tmp))."\n");
+    file_put_contents($tmp, str_replace("\r\n", "\n", rtrim((string) file_get_contents($tmp)))."\n");
 
     $ecPint = 0;
-    exec('vendor/bin/pint '.escapeshellarg($tmp).' --test 2>&1', $oPint, $ecPint);
+    $pintBin = PHP_OS_FAMILY === 'Windows' ? 'vendor\\bin\\pint.bat' : 'vendor/bin/pint';
+    exec($pintBin.' '.escapeshellarg($tmp).' --test 2>&1', $oPint, $ecPint);
     expect($ecPint)->toBe(0, implode("\n", $oPint));
 
     unlink($tmp);

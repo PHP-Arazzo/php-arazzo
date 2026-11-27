@@ -33,7 +33,9 @@ function productionSourceFiles(string $repo): array
                 continue;
             }
 
-            $paths[] = str_replace($repo.'/', '', $file->getPathname());
+            $prefix = rtrim(str_replace('\\', '/', $repo), '/').'/';
+            $normalized = str_replace('\\', '/', $file->getPathname());
+            $paths[] = str_starts_with($normalized, $prefix) ? substr($normalized, strlen($prefix)) : $normalized;
         }
     }
 

@@ -66,7 +66,10 @@ if ($relPath === null) {
     // Default: flat under packages/{pkg}/tests/
     $relPath = "packages/{$pkg}/tests/{$base}.php";
 }
-if (!str_starts_with($relPath, '/')) {
+$isAbs = static fn (string $path): bool => str_starts_with($path, '/') || str_starts_with($path, '\\') || (bool) preg_match('/^[A-Za-z]:[\\\\\/]/', $path);
+
+$absPath = $relPath;
+if (!$isAbs($relPath)) {
     $absPath = "{$root}/{$relPath}";
 } else {
     $absPath = $relPath;
@@ -190,6 +193,6 @@ $dir = dirname($absPath);
 if (!is_dir($dir)) {
     mkdir($dir, 0777, true);
 }
-file_put_contents($absPath, $render);
+file_put_contents($absPath, str_replace("\r\n", "\n", rtrim($render))."\n");
 echo "written\n";
 echo "next: vendor/bin/pint {$relPath} && vendor/bin/pest {$relPath} --filter=".escapeshellarg($claimSlug ?: $base)."\n";

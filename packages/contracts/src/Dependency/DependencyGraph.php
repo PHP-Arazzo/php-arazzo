@@ -159,6 +159,40 @@ class DependencyGraph
     }
 
     /**
+     * Transitive upstream dependencies of the given step in topological execution order,
+     * resolving ties using workflow document declaration order.
+     *
+     * @return list<string>
+     */
+    public function getTransitiveDependencies(string $stepId): array
+    {
+        if (!isset($this->stepsById[$stepId])) {
+            return [];
+        }
+
+        $ancestors = [];
+        $queue = $this->effectiveDependencies[$stepId] ?? [];
+        while ($queue !== []) {
+            $current = array_shift($queue);
+            if (!isset($ancestors[$current]) && isset($this->stepsById[$current])) {
+                $ancestors[$current] = true;
+                foreach ($this->effectiveDependencies[$current] ?? [] as $dep) {
+                    $queue[] = $dep;
+                }
+            }
+        }
+
+        $result = [];
+        foreach ($this->topologicalOrder as $id) {
+            if (isset($ancestors[$id])) {
+                $result[] = $id;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
      * @return array<string, Step>
      */
     public function getStepsById(): array
