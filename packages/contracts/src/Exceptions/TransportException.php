@@ -13,14 +13,23 @@ use Throwable;
  */
 final class TransportException extends RuntimeException implements ArazzoExecutionExceptionInterface
 {
+    public const string CODE_PREFIX = 'transport.';
+
+    public const string CODE_RATE_LIMITED = 'transport.rate_limited';
+
     public function __construct(
         string $message,
         public readonly string $targetUrl = '',
         public readonly string $requestMethod = '',
         ?Throwable $previous = null,
-        int $code = 0,
+        public readonly ?string $errorCode = null,
     ) {
-        parent::__construct($message, $code, $previous);
+        parent::__construct($message, 0, $previous);
+    }
+
+    public function getErrorCode(): ?string
+    {
+        return $this->errorCode;
     }
 
     public static function timeout(string $targetUrl, string $requestMethod, ?Throwable $previous = null): self
@@ -60,6 +69,23 @@ final class TransportException extends RuntimeException implements ArazzoExecuti
             $targetUrl,
             $requestMethod,
             $previous,
+            self::CODE_RATE_LIMITED,
+        );
+    }
+
+    public static function policyViolation(
+        string $targetUrl,
+        string $requestMethod,
+        string $errorCode,
+        string $details,
+        ?Throwable $previous = null,
+    ): self {
+        return new self(
+            $details,
+            $targetUrl,
+            $requestMethod,
+            $previous,
+            $errorCode,
         );
     }
 
@@ -67,6 +93,15 @@ final class TransportException extends RuntimeException implements ArazzoExecuti
     {
         if ($exception instanceof self) {
             return $exception;
+        }
+
+        $errorCode = self::extractErrorCode($exception);
+        if ($errorCode === self::CODE_RATE_LIMITED) {
+            return self::rateLimited($targetUrl, $requestMethod, $exception->getMessage(), $exception);
+        }
+
+        if ($errorCode !== null && str_starts_with($errorCode, self::CODE_PREFIX)) {
+            return self::policyViolation($targetUrl, $requestMethod, $errorCode, $exception->getMessage(), $exception);
         }
 
         $message = strtolower($exception->getMessage());
@@ -79,13 +114,21 @@ final class TransportException extends RuntimeException implements ArazzoExecuti
             return self::timeout($targetUrl, $requestMethod, $exception);
         }
 
-        if (
-            (method_exists($exception, 'getErrorCode') && $exception->getErrorCode() === 'transport.rate_limited')
-            || str_contains($message, 'rate limit')
-        ) {
+        if (str_contains($message, 'rate limit')) {
             return self::rateLimited($targetUrl, $requestMethod, $exception->getMessage(), $exception);
         }
 
         return self::networkError($targetUrl, $requestMethod, $exception->getMessage(), $exception);
+    }
+
+    public static function extractErrorCode(Throwable $exception): ?string
+    {
+        if (!method_exists($exception, 'getErrorCode')) {
+            return null;
+        }
+
+        $code = $exception->getErrorCode();
+
+        return is_string($code) && $code !== '' ? $code : null;
     }
 }

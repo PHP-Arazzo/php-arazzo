@@ -8,7 +8,7 @@ use Alama\Arazzo\Contracts\Observability\SpanInterface;
 use Alama\Arazzo\Protocol\Http\Enum\RateLimitScope;
 use Alama\Arazzo\Protocol\Http\Exceptions\RateLimitExceededException;
 use Alama\Arazzo\Protocol\Http\Execution\OutboundRateLimiter;
-use Alama\Arazzo\Protocol\Http\Policy\HttpPolicy;
+use Alama\Arazzo\Protocol\Http\Policy\RateLimitPolicy;
 use DateTimeImmutable;
 use GuzzleHttp\Psr7\Request;
 use Mockery;
@@ -64,7 +64,7 @@ it('enforces requests per second and burst using token bucket (S1 & S4)', functi
     };
 
     $limiter = new OutboundRateLimiter($clock, $sleeper);
-    $policy = HttpPolicy::default()->withRateLimit(10.0, 1); // 10 req/s = 0.1s per token, burst = 1
+    $policy = RateLimitPolicy::default()->withRateLimit(10.0, 1); // 10 req/s = 0.1s per token, burst = 1
 
     $logger = Mockery::mock(LoggerInterface::class);
     $span = Mockery::mock(SpanInterface::class);
@@ -101,7 +101,7 @@ it('caps in-flight requests according to maxConcurrent (S2)', function (): void 
     };
 
     $limiter = new OutboundRateLimiter($clock, $sleeper);
-    $policy = HttpPolicy::default()->withMaxConcurrent(2);
+    $policy = RateLimitPolicy::default()->withMaxConcurrent(2);
 
     // Acquire 2 slots
     $limiter->acquire('api.example.com', $policy);
@@ -129,7 +129,7 @@ it('caps in-flight requests according to maxConcurrent (S2)', function (): void 
 it('produces transport.rate_limited with failFast without sending (S5)', function (): void {
     $clock = new MutableTestClock();
     $limiter = new OutboundRateLimiter($clock);
-    $policy = HttpPolicy::default()
+    $policy = RateLimitPolicy::default()
         ->withRateLimit(1.0, 1) // 1 token capacity
         ->withFailFast(true);
 
@@ -149,7 +149,7 @@ it('produces transport.rate_limited with failFast without sending (S5)', functio
 it('isolates buckets by host in perHost scope and shares in perRun scope', function (): void {
     $clock = new MutableTestClock();
     $limiter = new OutboundRateLimiter($clock);
-    $policy = HttpPolicy::default()
+    $policy = RateLimitPolicy::default()
         ->withRateLimit(1.0, 1)
         ->withFailFast(true);
 

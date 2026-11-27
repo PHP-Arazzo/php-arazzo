@@ -353,6 +353,7 @@ flowchart LR
     runner_Plugins --> evaluation__
     runner_Plugins --> expression_Data
     runner_Plugins --> runner_Sync
+    runner_Policy --> runner_Exceptions
     runner_Policy --> contracts_Policy
     runner_Policy --> engine_Runtime
     runner_Preflight --> contracts_Spec
@@ -432,17 +433,20 @@ flowchart LR
     cli_Generator --> cli_Exceptions
     cli_Renderer --> contracts_Spec
     protocol_http_Exceptions --> engine_Exceptions
+    protocol_http_Exceptions --> protocol_http_Policy
     protocol_http_Execution --> contracts_Observability
     protocol_http_Execution --> contracts_Policy
     protocol_http_Execution --> contracts_Spec
     protocol_http_Execution --> engine_Execution
+    protocol_http_Execution --> protocol_http_Exceptions
     protocol_http_Execution --> protocol_http_Policy
     protocol_http_Execution --> protocol_http_Resolver
     protocol_http_Execution --> evaluation__
     protocol_http_Execution --> expression_Interfaces
+    protocol_http_Execution --> contracts_State
+    protocol_http_Execution --> protocol_http_Plugins
     protocol_http_Execution --> contracts_Clock
     protocol_http_Execution --> protocol_http_Enum
-    protocol_http_Execution --> protocol_http_Exceptions
     protocol_http_Execution --> contracts_Exceptions
     protocol_http_Execution --> contracts_Interfaces
     protocol_http_Execution --> expression_Data
@@ -458,9 +462,9 @@ flowchart LR
     protocol_http_Plugins --> protocol_http_Exceptions
     protocol_http_Plugins --> protocol_http_Resolver
     protocol_http_Plugins --> protocol_http_Execution
-    protocol_http_Policy --> engine_Execution
-    protocol_http_Policy --> protocol_http_Enum
+    protocol_http_Policy --> protocol_http_Exceptions
     protocol_http_Policy --> protocol_http_Execution
+    protocol_http_Policy --> protocol_http_Enum
     protocol_http_Resolver --> contracts_Spec
     protocol_http_Resolver --> contracts_State
     protocol_http_Resolver --> document__

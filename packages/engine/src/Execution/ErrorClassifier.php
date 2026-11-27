@@ -115,7 +115,8 @@ final class ErrorClassifier
 
     private function isTransportFailure(Throwable $exception): bool
     {
-        if (method_exists($exception, 'getErrorCode') && $exception->getErrorCode() === 'transport.rate_limited') {
+        $errorCode = TransportException::extractErrorCode($exception);
+        if ($errorCode !== null && str_starts_with($errorCode, TransportException::CODE_PREFIX)) {
             return true;
         }
 

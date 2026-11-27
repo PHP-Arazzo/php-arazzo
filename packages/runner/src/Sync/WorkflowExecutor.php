@@ -25,6 +25,7 @@ use Alama\Arazzo\Runner\Events\StepFailedEvent;
 use Alama\Arazzo\Runner\Events\StepRetriedEvent;
 use Alama\Arazzo\Runner\Events\StepStartedEvent;
 use Alama\Arazzo\Runner\Exceptions\ExecutionError;
+use Alama\Arazzo\Runner\Exceptions\ExecutionTimeoutException;
 use Alama\Arazzo\Runner\Exceptions\PreflightFailureException;
 use Alama\Arazzo\Runner\Exceptions\UnknownStepException;
 use Alama\Arazzo\Runner\Exceptions\UnknownWorkflowException;
@@ -52,6 +53,8 @@ class WorkflowExecutor
     private ClockInterface $clock;
 
     private WorkflowPreflightRunner $preflightRunner;
+
+    private ?float $runStartedAt = null;
 
     public function __construct(
         private StepExecutor $stepExecutor,
@@ -88,7 +91,9 @@ class WorkflowExecutor
         );
         $context = $context->withWorkflowData($workflow->workflowId, ['inputs' => $inputs]);
 
-        return $this->executeWithDependencies($workflow, $document, $inputs, ExecutionState::fromContext($context), $executionId);
+        return $this->withRunClock(
+            fn (): WorkflowExecutionResult => $this->executeWithDependencies($workflow, $document, $inputs, ExecutionState::fromContext($context), $executionId),
+        );
     }
 
     /**
@@ -140,18 +145,20 @@ class WorkflowExecutor
             $this->clock->now(),
         ));
 
-        try {
-            $result = $this->executeStepSequence($document, $workflow, $stepId, $stepSequence, $state);
-            $runSpan->setStatus($result->status === ExecutionStatus::Succeeded);
+        return $this->withRunClock(function () use ($document, $workflow, $stepId, $stepSequence, $state, $runSpan, $executionId): WorkflowExecutionResult {
+            try {
+                $result = $this->executeStepSequence($document, $workflow, $stepId, $stepSequence, $state);
+                $runSpan->setStatus($result->status === ExecutionStatus::Succeeded);
 
-            return $result;
-        } catch (Throwable $t) {
-            $runSpan->recordException($t);
-            $runSpan->setStatus(false, $t->getMessage());
-            $this->handleLoopFailure($executionId, $workflow, $t);
-        } finally {
-            $runSpan->end();
-        }
+                return $result;
+            } catch (Throwable $t) {
+                $runSpan->recordException($t);
+                $runSpan->setStatus(false, $t->getMessage());
+                $this->handleLoopFailure($executionId, $workflow, $t);
+            } finally {
+                $runSpan->end();
+            }
+        });
     }
 
     /**
@@ -166,8 +173,10 @@ class WorkflowExecutor
     ): WorkflowExecutionResult {
         $results = [];
         foreach ($stepSequence as $currentStepId) {
+            $this->assertWithinExecutionDeadline($state->executionId);
             $role = ($currentStepId === $stepId) ? StepRole::Target : StepRole::Dependency;
             [$state, $stepResult, $transition] = $this->runStepIteration($document, $workflow, $currentStepId, $state, $role);
+            $this->assertWithinExecutionDeadline($state->executionId);
             $results[$currentStepId] = $stepResult;
 
             if (!$stepResult->isSucceeded()) {
@@ -306,7 +315,9 @@ class WorkflowExecutor
 
         try {
             while ($stepId !== null) {
+                $this->assertWithinExecutionDeadline($executionId);
                 [$state, $stepResult, $transition] = $this->runStepIteration($document, $currentWorkflow, $stepId, $state);
+                $this->assertWithinExecutionDeadline($executionId);
                 $results[$stepId] = $stepResult;
 
                 if ($transition->isTerminal()) {
@@ -472,6 +483,7 @@ class WorkflowExecutor
     private function handleLoopFailure(string $executionId, Workflow $workflow, Throwable $exception): never
     {
         $category = match (true) {
+            $exception instanceof ExecutionTimeoutException => 'transport',
             $exception instanceof PreflightFailureException => 'authoring',
             $exception instanceof SchemaValidationException => 'schema',
             default => 'execution',
@@ -486,6 +498,39 @@ class WorkflowExecutor
         $this->events->dispatch(new RunFailedEvent($executionId, $workflow->workflowId, $exception, $this->clock->now(), $category));
 
         throw $exception;
+    }
+
+    private function assertWithinExecutionDeadline(string $executionId): void
+    {
+        $timeoutSeconds = $this->stepExecutor->policy()->executionTimeout();
+        if ($timeoutSeconds === null || $this->runStartedAt === null) {
+            return;
+        }
+
+        $elapsed = $this->currentTimestamp() - $this->runStartedAt;
+        if ($elapsed > $timeoutSeconds) {
+            throw ExecutionTimeoutException::exceeded($executionId, $timeoutSeconds, $elapsed);
+        }
+    }
+
+    /**
+     * @param  callable(): WorkflowExecutionResult  $fn
+     */
+    private function withRunClock(callable $fn): WorkflowExecutionResult
+    {
+        $previousStart = $this->runStartedAt;
+        $this->runStartedAt ??= $this->currentTimestamp();
+
+        try {
+            return $fn();
+        } finally {
+            $this->runStartedAt = $previousStart;
+        }
+    }
+
+    private function currentTimestamp(): float
+    {
+        return (float) $this->clock->now()->format('U.u');
     }
 
     /**

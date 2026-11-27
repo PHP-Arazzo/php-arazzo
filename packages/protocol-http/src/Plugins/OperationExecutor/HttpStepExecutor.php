@@ -15,8 +15,8 @@ use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Contracts\Spec\StepExecutionOutcome;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
 use Alama\Arazzo\Engine\Execution\IdempotencyKeyInjector;
-use Alama\Arazzo\Engine\Execution\RequestCompiler;
 use Alama\Arazzo\Evaluation\EvaluationEngineInterface;
+use Alama\Arazzo\Protocol\Http\Execution\HttpStepPipeline;
 use Alama\Arazzo\Protocol\Http\Execution\Interfaces\OpenApiExecutorInterface;
 use Alama\Arazzo\Protocol\Http\Resolver\OpenApiOperationResolver;
 use Psr\Http\Message\RequestInterface;
@@ -33,6 +33,8 @@ final class HttpStepExecutor implements OperationExecutorPluginInterface
      */
     public const PLUGIN_PRIORITY = 100;
 
+    private HttpStepPipeline $pipeline;
+
     public function __construct(
         private OpenApiExecutorInterface $openApiExecutor,
         private OpenApiOperationResolver $operationResolver,
@@ -42,7 +44,17 @@ final class HttpStepExecutor implements OperationExecutorPluginInterface
         private bool $strictDefault = true,
         private ?IdempotencyKeyInjector $injector = null,
         private ?RequestValidatorInterface $requestValidator = null,
-    ) {}
+    ) {
+        $this->pipeline = new HttpStepPipeline($this->evaluationEngine);
+    }
+
+    public function withPipeline(HttpStepPipeline $pipeline): self
+    {
+        $copy = clone $this;
+        $copy->pipeline = $pipeline;
+
+        return $copy;
+    }
 
     public function name(): string
     {
@@ -61,14 +73,16 @@ final class HttpStepExecutor implements OperationExecutorPluginInterface
 
     public function execute(Step $step, WorkflowContext $context, ArazzoDocument $document, string $executionId): StepExecutionOutcome
     {
-        $compiler = new RequestCompiler($this->evaluationEngine);
-        ['payload' => $payload, 'resolvedInputs' => $resolvedInputs] = $compiler->compile($step, $document, $context);
+        ['payload' => $payload, 'resolvedInputs' => $resolvedInputs] = $this->pipeline->compile($step, $document, $context);
 
         $resolved = $this->operationResolver->resolve($step, $document);
+        $sourceName = $resolved->source->name;
         $sourcePolicy = $context->getActiveSourcePolicy();
         $timeoutSeconds = $step->flow->timeoutSeconds() ?? $sourcePolicy?->timeoutSeconds();
+        $strict = $this->pipeline->shouldValidateSchema($step, $sourceName, $sourcePolicy?->strictValidation(), $this->strictDefault);
+        $activeInjector = $this->pipeline->resolveIdempotencyInjector($sourceName, $this->injector);
 
-        if ($this->requestValidator !== null && $this->shouldValidateSchema($step, $sourcePolicy?->strictValidation())) {
+        if ($this->requestValidator !== null && $strict) {
             $this->requestValidator->validateRequest($step, $resolved, $payload, $document);
         }
 
@@ -78,12 +92,12 @@ final class HttpStepExecutor implements OperationExecutorPluginInterface
             $response = $this->openApiExecutor->execute(
                 $resolved,
                 $payload,
-                function ($request) use ($context, $step, &$capturedRequest) {
+                function ($request) use ($context, $step, &$capturedRequest, $activeInjector) {
                     /** @var RequestInterface $request */
                     $capturedRequest = $request;
 
-                    if ($this->injector !== null) {
-                        return $this->injector->inject($request, $step, $context)->request;
+                    if ($activeInjector !== null) {
+                        return $activeInjector->inject($request, $step, $context)->request;
                     }
 
                     return $request;
@@ -103,9 +117,9 @@ final class HttpStepExecutor implements OperationExecutorPluginInterface
             );
         }
 
-        $decoded = $compiler->decodeResponse($response);
+        $decoded = $this->pipeline->decodeResponse($response);
 
-        if ($this->shouldValidateSchema($step, $sourcePolicy?->strictValidation())) {
+        if ($strict) {
             $this->schemaValidator->validateResponseSchema(
                 $step,
                 $decoded['statusCode'],
@@ -115,7 +129,7 @@ final class HttpStepExecutor implements OperationExecutorPluginInterface
             );
         }
 
-        $requestRecord = $compiler->requestRecord($capturedRequest, $payload);
+        $requestRecord = $this->pipeline->requestRecord($capturedRequest, $payload);
 
         $contextWithResponse = $context
             ->withStepRequest($step->stepId, $requestRecord)
@@ -137,12 +151,5 @@ final class HttpStepExecutor implements OperationExecutorPluginInterface
             rawBody: $decoded['rawBody'],
             contentType: $decoded['contentType'],
         );
-    }
-
-    private function shouldValidateSchema(Step $step, ?bool $sourceStrict = null): bool
-    {
-        return $step->flow->strictValidation
-            ?? $sourceStrict
-            ?? $this->strictDefault;
     }
 }

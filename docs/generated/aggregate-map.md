@@ -22,10 +22,10 @@ Where mutable state lives, and which of it crosses process boundaries:
 | sources | 8 | 30 | 21% |
 | document | 9 | 86 | 9% |
 | engine | 10 | 29 | 26% |
-| protocol-http | 6 | 19 | 24% |
+| protocol-http | 15 | 22 | 41% |
 | protocol-rpc | 5 | 16 | 24% |
 | protocol-soap | 1 | 17 | 6% |
-| runner | 29 | 33 | 47% |
+| runner | 29 | 34 | 46% |
 | core | 0 | 0 | — |
 | cli | 2 | 20 | 9% |
 

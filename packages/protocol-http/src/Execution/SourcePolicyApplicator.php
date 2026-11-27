@@ -75,32 +75,63 @@ final readonly class SourcePolicyApplicator
         return $this->applySecurity($request, $operation, $policy);
     }
 
+    /**
+     * Returns header names injected via API-key credentials for the active operation
+     * so cross-origin redirects can strip them automatically.
+     *
+     * @return list<string>
+     */
+    public function injectedHeaderNames(OpenApiOperationHandle $operation, ?SourcePolicy $policy): array
+    {
+        if ($policy === null) {
+            return [];
+        }
+
+        $headers = [];
+        foreach ($this->matchOperationSecurity($operation, $policy) as [$scheme, $credential]) {
+            if ($credential->type === CredentialType::ApiKey && strtolower((string) $scheme->in) === 'header') {
+                $name = (string) $scheme->name;
+                if ($name !== '') {
+                    $headers[] = $name;
+                }
+            }
+        }
+
+        return $headers;
+    }
+
     private function applySecurity(
         RequestInterface $request,
         OpenApiOperationHandle $operation,
         SourcePolicy $policy,
     ): RequestInterface {
+        foreach ($this->matchOperationSecurity($operation, $policy) as [$scheme, $credential]) {
+            $request = $this->applyCredential($request, $scheme, $credential);
+        }
+
+        return $request;
+    }
+
+    /**
+     * @return list<array{0: SecurityScheme, 1: Credential}>
+     */
+    private function matchOperationSecurity(OpenApiOperationHandle $operation, SourcePolicy $policy): array
+    {
         $requirements = $this->effectiveSecurityRequirements($operation);
         if ($requirements === []) {
-            return $request;
+            return [];
         }
 
         $schemes = $operation->openApi->components->securitySchemes ?? [];
 
         foreach ($requirements as $requirement) {
             $matched = $this->matchRequirement($requirement, $schemes, $policy);
-            if ($matched === null) {
-                continue;
+            if ($matched !== null) {
+                return $matched;
             }
-
-            foreach ($matched as [$scheme, $credential]) {
-                $request = $this->applyCredential($request, $scheme, $credential);
-            }
-
-            return $request;
         }
 
-        return $request;
+        return [];
     }
 
     /**

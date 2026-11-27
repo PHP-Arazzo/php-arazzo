@@ -11,7 +11,7 @@ targets. Regenerated before every commit.
 
 | Module | Files | LOC | Fan-in | Fan-out | Instability | Flag |
 |---|---:|---:|---:|---:|---:|---|
-| `cli:Console` | 14 | 1364 | 0 | 24 | 1.00 |  |
+| `cli:Console` | 14 | 1365 | 0 | 24 | 1.00 |  |
 | `cli:Exceptions` | 3 | 48 | 2 | 1 | 0.33 |  |
 | `cli:Generator` | 2 | 139 | 0 | 2 | 1.00 |  |
 | `cli:Renderer` | 3 | 314 | 1 | 1 | 0.50 |  |
@@ -20,12 +20,12 @@ targets. Regenerated before every commit.
 | `contracts:Data` | 6 | 355 | 6 | 1 | 0.14 |  |
 | `contracts:Dependency` | 3 | 487 | 5 | 2 | 0.29 |  |
 | `contracts:Discovery` | 3 | 413 | 4 | 1 | 0.20 |  |
-| `contracts:Exceptions` | 10 | 325 | 10 | 1 | 0.09 |  |
+| `contracts:Exceptions` | 10 | 368 | 10 | 1 | 0.09 |  |
 | `contracts:Interfaces` | 21 | 395 | 35 | 4 | 0.10 |  |
 | `contracts:Observability` | 4 | 104 | 12 | 0 | 0.00 |  |
 | `contracts:Policy` | 5 | 263 | 6 | 0 | 0.00 |  |
 | `contracts:Spec` | 61 | 2935 | 55 | 2 | 0.04 |  |
-| `contracts:State` | 4 | 1238 | 18 | 2 | 0.10 |  |
+| `contracts:State` | 4 | 1238 | 19 | 2 | 0.10 |  |
 | `contracts:Support` | 5 | 180 | 10 | 0 | 0.00 |  |
 | `contracts:Validation` | 10 | 494 | 17 | 2 | 0.11 |  |
 | `document:Parser` | 31 | 2451 | 5 | 2 | 0.29 |  |
@@ -36,7 +36,7 @@ targets. Regenerated before every commit.
 | `engine:Data` | 2 | 97 | 1 | 3 | 0.75 |  |
 | `engine:Enum` | 1 | 16 | 1 | 0 | 0.00 |  |
 | `engine:Exceptions` | 8 | 214 | 10 | 1 | 0.09 |  |
-| `engine:Execution` | 11 | 1346 | 10 | 6 | 0.38 |  |
+| `engine:Execution` | 11 | 1347 | 9 | 6 | 0.40 |  |
 | `engine:Runtime` | 21 | 1849 | 4 | 6 | 0.60 |  |
 | `(engine root)` | 2 | 192 | 0 | 3 | 1.00 |  |
 | `evaluation:Condition` | 18 | 1131 | 1 | 8 | 0.89 |  |
@@ -62,12 +62,12 @@ targets. Regenerated before every commit.
 | `expression:Xpath` | 3 | 170 | 2 | 2 | 0.50 |  |
 | `(expression root)` | 9 | 891 | 6 | 12 | 0.67 |  |
 | `protocol-http:Enum` | 1 | 11 | 2 | 0 | 0.00 |  |
-| `protocol-http:Exceptions` | 4 | 184 | 3 | 1 | 0.25 |  |
-| `protocol-http:Execution` | 11 | 1605 | 3 | 15 | 0.83 | ⚠ unstable hub |
-| `protocol-http:Plugins` | 2 | 382 | 1 | 11 | 0.92 |  |
-| `protocol-http:Policy` | 2 | 271 | 3 | 3 | 0.50 |  |
+| `protocol-http:Exceptions` | 6 | 307 | 4 | 2 | 0.33 |  |
+| `protocol-http:Execution` | 16 | 2249 | 3 | 17 | 0.85 | ⚠ unstable hub |
+| `protocol-http:Plugins` | 2 | 389 | 2 | 11 | 0.85 |  |
+| `protocol-http:Policy` | 7 | 672 | 4 | 3 | 0.43 |  |
 | `protocol-http:Resolver` | 6 | 610 | 3 | 13 | 0.81 | ⚠ unstable hub |
-| `(protocol-http root)` | 1 | 142 | 1 | 12 | 0.92 |  |
+| `(protocol-http root)` | 1 | 154 | 1 | 12 | 0.92 |  |
 | `protocol-rpc:Exceptions` | 4 | 183 | 4 | 1 | 0.20 |  |
 | `protocol-rpc:Execution` | 2 | 174 | 1 | 7 | 0.88 |  |
 | `protocol-rpc:Normalizer` | 7 | 597 | 1 | 1 | 0.50 |  |
@@ -83,15 +83,15 @@ targets. Regenerated before every commit.
 | `runner:Async` | 6 | 1451 | 1 | 22 | 0.96 |  |
 | `runner:Data` | 4 | 276 | 4 | 3 | 0.43 |  |
 | `runner:Events` | 9 | 178 | 2 | 0 | 0.00 |  |
-| `runner:Exceptions` | 13 | 322 | 6 | 3 | 0.33 |  |
+| `runner:Exceptions` | 14 | 363 | 7 | 3 | 0.30 |  |
 | `runner:Execution` | 12 | 711 | 3 | 18 | 0.86 | ⚠ unstable hub |
 | `runner:Plugins` | 1 | 88 | 2 | 9 | 0.82 |  |
-| `runner:Policy` | 2 | 130 | 6 | 2 | 0.25 |  |
+| `runner:Policy` | 2 | 175 | 6 | 3 | 0.33 |  |
 | `runner:Preflight` | 3 | 301 | 5 | 5 | 0.50 |  |
 | `runner:Queue` | 1 | 24 | 2 | 1 | 0.33 |  |
 | `runner:Registries` | 1 | 150 | 2 | 3 | 0.60 |  |
 | `runner:Store` | 2 | 136 | 2 | 3 | 0.60 |  |
-| `runner:Sync` | 8 | 1454 | 4 | 21 | 0.84 | ⚠ unstable hub |
+| `runner:Sync` | 8 | 1499 | 4 | 21 | 0.84 | ⚠ unstable hub |
 | `(runner root)` | 6 | 649 | 5 | 15 | 0.75 |  |
 | `sources:Exceptions` | 9 | 278 | 6 | 0 | 0.00 |  |
 | `sources:Inspection` | 1 | 102 | 1 | 5 | 0.83 |  |
@@ -102,7 +102,7 @@ targets. Regenerated before every commit.
 | `sources:Resolver` | 15 | 884 | 5 | 6 | 0.55 |  |
 | `(sources root)` | 2 | 333 | 5 | 11 | 0.69 |  |
 
-Total cross-module edges: **1917**
+Total cross-module edges: **1947**
 
 ## Most entangled module pairs
 

@@ -18,7 +18,7 @@ flowchart LR
         S_contracts_Spec["contracts:Spec<br/><small>2996 LOC</small>"]:::coreDomain
     end
     subgraph S_supporting["Supporting"]
-        S_cli_Console["cli:Console<br/><small>1378 LOC</small>"]:::supportingDomain
+        S_cli_Console["cli:Console<br/><small>1379 LOC</small>"]:::supportingDomain
         S_cli_Generator["cli:Generator<br/><small>141 LOC</small>"]:::supportingDomain
         S_cli_Renderer["cli:Renderer<br/><small>317 LOC</small>"]:::supportingDomain
         S_document_Parser["document:Parser<br/><small>2482 LOC</small>"]:::supportingDomain
@@ -42,7 +42,7 @@ flowchart LR
         S_contracts_Data["contracts:Data<br/><small>361 LOC</small>"]:::unknownDomain
         S_contracts_Dependency["contracts:Dependency<br/><small>490 LOC</small>"]:::unknownDomain
         S_contracts_Discovery["contracts:Discovery<br/><small>416 LOC</small>"]:::unknownDomain
-        S_contracts_Exceptions["contracts:Exceptions<br/><small>335 LOC</small>"]:::unknownDomain
+        S_contracts_Exceptions["contracts:Exceptions<br/><small>378 LOC</small>"]:::unknownDomain
         S_contracts_Interfaces["contracts:Interfaces<br/><small>416 LOC</small>"]:::unknownDomain
         S_contracts_Observability["contracts:Observability<br/><small>108 LOC</small>"]:::unknownDomain
         S_contracts_Policy["contracts:Policy<br/><small>268 LOC</small>"]:::unknownDomain
@@ -52,7 +52,7 @@ flowchart LR
         S_engine_Data["engine:Data<br/><small>99 LOC</small>"]:::unknownDomain
         S_engine_Enum["engine:Enum<br/><small>17 LOC</small>"]:::unknownDomain
         S_engine_Exceptions["engine:Exceptions<br/><small>222 LOC</small>"]:::unknownDomain
-        S_engine_Execution["engine:Execution<br/><small>1357 LOC</small>"]:::unknownDomain
+        S_engine_Execution["engine:Execution<br/><small>1358 LOC</small>"]:::unknownDomain
         S_engine_Runtime["engine:Runtime<br/><small>1870 LOC</small>"]:::unknownDomain
         S_evaluation_Condition["evaluation:Condition<br/><small>1149 LOC</small>"]:::unknownDomain
         S_evaluation_Data["evaluation:Data<br/><small>96 LOC</small>"]:::unknownDomain
@@ -73,10 +73,10 @@ flowchart LR
         S_expression_Registries["expression:Registries<br/><small>113 LOC</small>"]:::unknownDomain
         S_expression_Xpath["expression:Xpath<br/><small>173 LOC</small>"]:::unknownDomain
         S_protocol_http_Enum["protocol-http:Enum<br/><small>12 LOC</small>"]:::unknownDomain
-        S_protocol_http_Exceptions["protocol-http:Exceptions<br/><small>188 LOC</small>"]:::unknownDomain
-        S_protocol_http_Execution["protocol-http:Execution<br/><small>1616 LOC</small>"]:::unknownDomain
-        S_protocol_http_Plugins["protocol-http:Plugins<br/><small>384 LOC</small>"]:::unknownDomain
-        S_protocol_http_Policy["protocol-http:Policy<br/><small>273 LOC</small>"]:::unknownDomain
+        S_protocol_http_Exceptions["protocol-http:Exceptions<br/><small>313 LOC</small>"]:::unknownDomain
+        S_protocol_http_Execution["protocol-http:Execution<br/><small>2265 LOC</small>"]:::unknownDomain
+        S_protocol_http_Plugins["protocol-http:Plugins<br/><small>391 LOC</small>"]:::unknownDomain
+        S_protocol_http_Policy["protocol-http:Policy<br/><small>679 LOC</small>"]:::unknownDomain
         S_protocol_rpc_Exceptions["protocol-rpc:Exceptions<br/><small>187 LOC</small>"]:::unknownDomain
         S_protocol_rpc_Execution["protocol-rpc:Execution<br/><small>176 LOC</small>"]:::unknownDomain
         S_protocol_rpc_Normalizer["protocol-rpc:Normalizer<br/><small>604 LOC</small>"]:::unknownDomain
@@ -90,14 +90,14 @@ flowchart LR
         S_protocol_soap_Validation["protocol-soap:Validation<br/><small>139 LOC</small>"]:::unknownDomain
         S_runner_Async["runner:Async<br/><small>1457 LOC</small>"]:::unknownDomain
         S_runner_Data["runner:Data<br/><small>280 LOC</small>"]:::unknownDomain
-        S_runner_Exceptions["runner:Exceptions<br/><small>335 LOC</small>"]:::unknownDomain
+        S_runner_Exceptions["runner:Exceptions<br/><small>377 LOC</small>"]:::unknownDomain
         S_runner_Execution["runner:Execution<br/><small>723 LOC</small>"]:::unknownDomain
         S_runner_Plugins["runner:Plugins<br/><small>89 LOC</small>"]:::unknownDomain
-        S_runner_Policy["runner:Policy<br/><small>132 LOC</small>"]:::unknownDomain
+        S_runner_Policy["runner:Policy<br/><small>177 LOC</small>"]:::unknownDomain
         S_runner_Preflight["runner:Preflight<br/><small>304 LOC</small>"]:::unknownDomain
         S_runner_Registries["runner:Registries<br/><small>151 LOC</small>"]:::unknownDomain
         S_runner_Store["runner:Store<br/><small>138 LOC</small>"]:::unknownDomain
-        S_runner_Sync["runner:Sync<br/><small>1462 LOC</small>"]:::unknownDomain
+        S_runner_Sync["runner:Sync<br/><small>1507 LOC</small>"]:::unknownDomain
         S_sources_Exceptions["sources:Exceptions<br/><small>287 LOC</small>"]:::unknownDomain
         S_sources_Inspection["sources:Inspection<br/><small>103 LOC</small>"]:::unknownDomain
         S_sources_Normalizer["sources:Normalizer<br/><small>950 LOC</small>"]:::unknownDomain
@@ -114,9 +114,9 @@ flowchart LR
 | Subdomain | Modules | Core pkg LOC | Laravel pkg LOC | Share |
 |---|---:|---:|---:|---:|
 | Core domain | 1 | 2,996 | 0 | 7% |
-| Supporting | 8 | 6,759 | 0 | 16% |
+| Supporting | 8 | 6,760 | 0 | 15% |
 | Generic subdomain | 6 | 2,005 | 0 | 5% |
-| Unclassified | 68 | 30,806 | 0 | 72% |
+| Unclassified | 68 | 32,169 | 0 | 73% |
 
 **Unclassified modules** — classify them in `SUBDOMAINS` or delete them:
 - `cli:Exceptions`

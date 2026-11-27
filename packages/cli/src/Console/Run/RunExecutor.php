@@ -8,6 +8,7 @@ use Alama\Arazzo\Cli\Console\RunnerFactory;
 use Alama\Arazzo\Contracts\Exceptions\SchemaValidationException;
 use Alama\Arazzo\Document\DocumentInterface;
 use Alama\Arazzo\Protocol\Http\Policy\HttpPolicy;
+use Alama\Arazzo\Protocol\Http\Policy\RateLimitPolicy;
 use Alama\Arazzo\Runner\Policy\ExecutionPolicy;
 use Alama\Arazzo\Runner\RunnerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -135,25 +136,25 @@ final class RunExecutor
         ?string $scope,
         bool $failFast,
     ): HttpPolicy {
-        $policy = HttpPolicy::default();
+        $rateLimitPolicy = RateLimitPolicy::default();
 
         if ($maxConcurrency !== null) {
-            $policy = $policy->withMaxConcurrent((int) $maxConcurrency);
+            $rateLimitPolicy = $rateLimitPolicy->withMaxConcurrent((int) $maxConcurrency);
         }
 
         if ($scope !== null) {
-            $policy = $policy->withScope($scope);
+            $rateLimitPolicy = $rateLimitPolicy->withScope($scope);
         }
 
         if ($failFast) {
-            $policy = $policy->withFailFast(true);
+            $rateLimitPolicy = $rateLimitPolicy->withFailFast(true);
         }
 
         if ($rateLimit !== null) {
-            $burst = $rateBurst !== null ? (int) $rateBurst : 1;
-            $policy = $policy->withRateLimit((float) $rateLimit, $burst);
+            $burst = $rateBurst !== null ? (int) $rateBurst : RateLimitPolicy::DEFAULT_BURST;
+            $rateLimitPolicy = $rateLimitPolicy->withRateLimit((float) $rateLimit, $burst);
         }
 
-        return $policy;
+        return HttpPolicy::default()->withRateLimit($rateLimitPolicy);
     }
 }

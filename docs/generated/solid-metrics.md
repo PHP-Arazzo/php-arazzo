@@ -37,7 +37,7 @@ quadrantChart
     contracts/Observability: [0, 0.5]
     contracts/Policy: [0, 0]
     contracts/Spec: [0.035, 0.016]
-    contracts/State: [0.1, 0]
+    contracts/State: [0.095, 0]
     contracts/Support: [0, 0.2]
     contracts/Validation: [0.105, 0]
     document/Parser: [0.286, 0.065]
@@ -48,7 +48,7 @@ quadrantChart
     engine/Data: [0.75, 0]
     engine/Enum: [0, 0]
     engine/Exceptions: [0.091, 0.125]
-    engine/Execution: [0.375, 0]
+    engine/Execution: [0.4, 0]
     engine/Runtime: [0.6, 0.19]
     engine/_: [1, 0.5]
     evaluation/Condition: [0.889, 0.111]
@@ -74,10 +74,10 @@ quadrantChart
     expression/Xpath: [0.5, 0.333]
     expression/_: [0.667, 0]
     protocol-http/Enum: [0, 0]
-    protocol-http/Exceptions: [0.25, 0]
-    protocol-http/Execution: [0.833, 0.091]
-    protocol-http/Plugins: [0.917, 0]
-    protocol-http/Policy: [0.5, 0]
+    protocol-http/Exceptions: [0.333, 0]
+    protocol-http/Execution: [0.85, 0.063]
+    protocol-http/Plugins: [0.846, 0]
+    protocol-http/Policy: [0.429, 0]
     protocol-http/Resolver: [0.813, 0]
     protocol-http/_: [0.923, 0]
     protocol-rpc/Exceptions: [0.2, 0]
@@ -95,10 +95,10 @@ quadrantChart
     runner/Async: [0.957, 0]
     runner/Data: [0.429, 0]
     runner/Events: [0, 0]
-    runner/Exceptions: [0.333, 0.077]
+    runner/Exceptions: [0.3, 0.071]
     runner/Execution: [0.857, 0]
     runner/Plugins: [0.818, 0]
-    runner/Policy: [0.25, 0]
+    runner/Policy: [0.333, 0]
     runner/Preflight: [0.5, 0]
     runner/Queue: [0.333, 0]
     runner/Registries: [0.6, 0]
@@ -121,13 +121,13 @@ Concrete types over 300 LOC:
 
 | Class | Module | LOC |
 |---|---|---:|
+| `WorkflowExecutor` | `runner:Sync` | 566 |
 | `ExecutionContext` | `engine:Runtime` | 553 |
 | `WorkflowContext` | `contracts:State` | 544 |
-| `WorkflowExecutor` | `runner:Sync` | 521 |
 | `ExecutionState` | `contracts:State` | 511 |
 | `StepExecutionWorker` | `runner:Async` | 387 |
 | `StepOutcomeHandler` | `runner:Async` | 366 |
-| `DefaultOpenApiExecutor` | `protocol-http:Execution` | 323 |
+| `DefaultOpenApiExecutor` | `protocol-http:Execution` | 340 |
 | `WorkflowEngine` | `runner:Sync` | 309 |
 
 ## Fat interfaces (ISP)
