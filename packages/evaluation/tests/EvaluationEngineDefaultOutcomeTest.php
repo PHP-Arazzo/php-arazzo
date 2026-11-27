@@ -31,3 +31,16 @@ it('applies the operation 2xx default through the evaluation engine', function (
     expect($engine->evaluateSuccessCriteria($step, $ok))->toBeTrue()
         ->and($engine->evaluateSuccessCriteria($step, $error))->toBeFalse();
 });
+
+it('evaluates sub-workflow steps without criteria from child outcome', function (): void {
+    $engine = new EvaluationEngine(expression: new ExpressionEngine());
+    $step = StepFactory::workflow('call-child', null, new StepFlow(), new StepIo(), workflowId: 'childFlow');
+
+    $succeeded = (new WorkflowContext('def_1'))->withStepResponse('call-child', ['statusCode' => 200, 'headers' => [], 'body' => []]);
+    $failedByCategory = (new WorkflowContext('def_1'))->withStepResponse('call-child', ['statusCode' => 500, 'headers' => [], 'body' => [], 'failureCategory' => 'subworkflow']);
+    $failedAsync = (new WorkflowContext('def_1'))->withStepResult('call-child', ['statusCode' => 500, 'failureCategory' => 'subworkflow']);
+
+    expect($engine->evaluateSuccessCriteria($step, $succeeded))->toBeTrue()
+        ->and($engine->evaluateSuccessCriteria($step, $failedByCategory))->toBeFalse()
+        ->and($engine->evaluateSuccessCriteria($step, $failedAsync))->toBeFalse();
+});
