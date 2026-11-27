@@ -9,6 +9,7 @@ use Alama\Arazzo\Contracts\Exceptions\SchemaValidationException;
 use Alama\Arazzo\Document\DocumentInterface;
 use Alama\Arazzo\Document\Parser\Exceptions\LoaderException;
 use Alama\Arazzo\Document\Parser\Exceptions\ParserException;
+use Alama\Arazzo\Protocol\Http\Policy\HttpPolicy;
 use Alama\Arazzo\Runner\Data\ExecutionResult;
 use Alama\Arazzo\Runner\RunnerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -21,10 +22,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 #[AsCommand(name: 'run', description: 'Execute a workflow from an Arazzo document')]
 final class RunCommand extends Command
 {
+    /** @var (callable(?DocumentInterface, ?HttpPolicy): RunnerInterface)|null */
+    private readonly mixed $runnerFactory;
+
     public function __construct(
         private readonly ?RunnerInterface $runner = null,
         private readonly ?DocumentInterface $document = null,
+        ?callable $runnerFactory = null,
     ) {
+        $this->runnerFactory = $runnerFactory;
         parent::__construct();
     }
 
@@ -33,7 +39,12 @@ final class RunCommand extends Command
         $this
             ->addArgument('file', InputArgument::REQUIRED, 'Path to an Arazzo YAML/JSON document')
             ->addOption('workflow', 'w', InputOption::VALUE_REQUIRED, 'workflowId to run (defaults to the first workflow)')
-            ->addOption('input', 'i', InputOption::VALUE_REQUIRED, 'Workflow inputs as inline JSON or @file.json');
+            ->addOption('input', 'i', InputOption::VALUE_REQUIRED, 'Workflow inputs as inline JSON or @file.json')
+            ->addOption('rate-limit', null, InputOption::VALUE_REQUIRED, 'Outbound requests per second limit (e.g. 10)')
+            ->addOption('rate-burst', null, InputOption::VALUE_REQUIRED, 'Outbound rate limit burst capacity (default: 1)')
+            ->addOption('max-concurrency', null, InputOption::VALUE_REQUIRED, 'Max concurrent in-flight requests (default: 4)')
+            ->addOption('rate-limit-scope', null, InputOption::VALUE_REQUIRED, 'Rate limit scope: host or run (default: host)')
+            ->addOption('rate-limit-fail-fast', null, InputOption::VALUE_NONE, 'Fail fast with transport.rate_limited instead of waiting when rate limited');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -89,7 +100,8 @@ final class RunCommand extends Command
         // Use the validated, default-populated input map (defaults applied).
         $inputs = $preflightResult->inputs;
 
-        $runner = $this->runner ?? RunnerFactory::create(document: $documentFacade);
+        $httpPolicy = $this->buildHttpPolicy($input);
+        $runner = $this->resolveRunner($documentFacade, $httpPolicy);
 
         /** @var array<string, mixed> $inputs */
         try {
@@ -149,5 +161,87 @@ final class RunCommand extends Command
                 $output->writeln(sprintf('  %s = %s', $name, json_encode($value)));
             }
         }
+    }
+
+    private function resolveRunner(DocumentInterface $document, ?HttpPolicy $httpPolicy): RunnerInterface
+    {
+        if ($this->runner !== null) {
+            return $this->runner;
+        }
+
+        if ($this->runnerFactory !== null) {
+            /** @var RunnerInterface $resolved */
+            $resolved = ($this->runnerFactory)($document, $httpPolicy);
+
+            return $resolved;
+        }
+
+        return RunnerFactory::create(document: $document, httpPolicy: $httpPolicy);
+    }
+
+    private function buildHttpPolicy(InputInterface $input): ?HttpPolicy
+    {
+        /** @var string|null $rateLimit */
+        $rateLimit = $input->getOption('rate-limit');
+        /** @var string|null $rateBurst */
+        $rateBurst = $input->getOption('rate-burst');
+        /** @var string|null $maxConcurrency */
+        $maxConcurrency = $input->getOption('max-concurrency');
+        /** @var string|null $scope */
+        $scope = $input->getOption('rate-limit-scope');
+        $failFast = (bool) $input->getOption('rate-limit-fail-fast');
+
+        if ($this->isDefaultRateLimitOptions($rateLimit, $rateBurst, $maxConcurrency, $scope, $failFast)) {
+            return null;
+        }
+
+        return $this->assembleHttpPolicy($rateLimit, $rateBurst, $maxConcurrency, $scope, $failFast);
+    }
+
+    private function isDefaultRateLimitOptions(
+        ?string $rateLimit,
+        ?string $rateBurst,
+        ?string $maxConcurrency,
+        ?string $scope,
+        bool $failFast,
+    ): bool {
+        if ($rateLimit !== null || $failFast) {
+            return false;
+        }
+
+        $burstDefault = $rateBurst === null || (int) $rateBurst === 1;
+        $concurrencyDefault = $maxConcurrency === null || (int) $maxConcurrency === 4;
+        $scopeDefault = $scope === null || $scope === 'host';
+
+        return $burstDefault && $concurrencyDefault && $scopeDefault;
+    }
+
+    private function assembleHttpPolicy(
+        ?string $rateLimit,
+        ?string $rateBurst,
+        ?string $maxConcurrency,
+        ?string $scope,
+        bool $failFast,
+    ): HttpPolicy {
+        $policy = HttpPolicy::default();
+
+        if ($maxConcurrency !== null) {
+            $policy = $policy->withMaxConcurrent((int) $maxConcurrency);
+        }
+
+        if ($scope !== null) {
+            $policy = $policy->withScope($scope);
+        }
+
+        if ($failFast) {
+            $policy = $policy->withFailFast(true);
+        }
+
+        if ($rateLimit !== null) {
+            $burst = $rateBurst !== null ? (int) $rateBurst : 1;
+            $policy = $policy->withRateLimit((float) $rateLimit, $burst);
+        }
+
+        return $policy;
     }
 }

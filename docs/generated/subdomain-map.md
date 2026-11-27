@@ -15,15 +15,15 @@ the declaration honest.
 ```mermaid
 flowchart LR
     subgraph S_core["Core domain"]
-        S_contracts_Spec["contracts:Spec<br/><small>2837 LOC</small>"]:::coreDomain
+        S_contracts_Spec["contracts:Spec<br/><small>2916 LOC</small>"]:::coreDomain
     end
     subgraph S_supporting["Supporting"]
-        S_cli_Console["cli:Console<br/><small>797 LOC</small>"]:::supportingDomain
+        S_cli_Console["cli:Console<br/><small>1174 LOC</small>"]:::supportingDomain
         S_cli_Generator["cli:Generator<br/><small>141 LOC</small>"]:::supportingDomain
         S_cli_Renderer["cli:Renderer<br/><small>317 LOC</small>"]:::supportingDomain
-        S_document_Parser["document:Parser<br/><small>2479 LOC</small>"]:::supportingDomain
-        S_document_Validator["document:Validator<br/><small>659 LOC</small>"]:::supportingDomain
-        S_protocol_http_Resolver["protocol-http:Resolver<br/><small>307 LOC</small>"]:::supportingDomain
+        S_document_Parser["document:Parser<br/><small>2482 LOC</small>"]:::supportingDomain
+        S_document_Validator["document:Validator<br/><small>790 LOC</small>"]:::supportingDomain
+        S_protocol_http_Resolver["protocol-http:Resolver<br/><small>616 LOC</small>"]:::supportingDomain
         S_protocol_soap_Resolver["protocol-soap:Resolver<br/><small>136 LOC</small>"]:::supportingDomain
         S_sources_Resolver["sources:Resolver<br/><small>899 LOC</small>"]:::supportingDomain
     end
@@ -39,20 +39,20 @@ flowchart LR
         S_cli_Exceptions["cli:Exceptions<br/><small>51 LOC</small>"]:::unknownDomain
         S_contracts_Attributes["contracts:Attributes<br/><small>106 LOC</small>"]:::unknownDomain
         S_contracts_Clock["contracts:Clock<br/><small>20 LOC</small>"]:::unknownDomain
-        S_contracts_Data["contracts:Data<br/><small>155 LOC</small>"]:::unknownDomain
+        S_contracts_Data["contracts:Data<br/><small>361 LOC</small>"]:::unknownDomain
         S_contracts_Dependency["contracts:Dependency<br/><small>375 LOC</small>"]:::unknownDomain
         S_contracts_Discovery["contracts:Discovery<br/><small>416 LOC</small>"]:::unknownDomain
-        S_contracts_Exceptions["contracts:Exceptions<br/><small>123 LOC</small>"]:::unknownDomain
-        S_contracts_Interfaces["contracts:Interfaces<br/><small>387 LOC</small>"]:::unknownDomain
+        S_contracts_Exceptions["contracts:Exceptions<br/><small>132 LOC</small>"]:::unknownDomain
+        S_contracts_Interfaces["contracts:Interfaces<br/><small>416 LOC</small>"]:::unknownDomain
         S_contracts_Observability["contracts:Observability<br/><small>108 LOC</small>"]:::unknownDomain
         S_contracts_Policy["contracts:Policy<br/><small>268 LOC</small>"]:::unknownDomain
-        S_contracts_Validation["contracts:Validation<br/><small>373 LOC</small>"]:::unknownDomain
-        S_document_Plugins["document:Plugins<br/><small>3170 LOC</small>"]:::unknownDomain
+        S_contracts_Validation["contracts:Validation<br/><small>504 LOC</small>"]:::unknownDomain
+        S_document_Plugins["document:Plugins<br/><small>3404 LOC</small>"]:::unknownDomain
         S_document_Registries["document:Registries<br/><small>97 LOC</small>"]:::unknownDomain
         S_engine_Data["engine:Data<br/><small>99 LOC</small>"]:::unknownDomain
         S_engine_Enum["engine:Enum<br/><small>17 LOC</small>"]:::unknownDomain
         S_engine_Exceptions["engine:Exceptions<br/><small>222 LOC</small>"]:::unknownDomain
-        S_engine_Execution["engine:Execution<br/><small>1204 LOC</small>"]:::unknownDomain
+        S_engine_Execution["engine:Execution<br/><small>1214 LOC</small>"]:::unknownDomain
         S_engine_Runtime["engine:Runtime<br/><small>1870 LOC</small>"]:::unknownDomain
         S_evaluation_Condition["evaluation:Condition<br/><small>1149 LOC</small>"]:::unknownDomain
         S_evaluation_Data["evaluation:Data<br/><small>96 LOC</small>"]:::unknownDomain
@@ -72,19 +72,20 @@ flowchart LR
         S_expression_Policy["expression:Policy<br/><small>37 LOC</small>"]:::unknownDomain
         S_expression_Registries["expression:Registries<br/><small>113 LOC</small>"]:::unknownDomain
         S_expression_Xpath["expression:Xpath<br/><small>173 LOC</small>"]:::unknownDomain
-        S_protocol_http_Exceptions["protocol-http:Exceptions<br/><small>95 LOC</small>"]:::unknownDomain
-        S_protocol_http_Execution["protocol-http:Execution<br/><small>946 LOC</small>"]:::unknownDomain
-        S_protocol_http_Plugins["protocol-http:Plugins<br/><small>336 LOC</small>"]:::unknownDomain
-        S_protocol_http_Policy["protocol-http:Policy<br/><small>43 LOC</small>"]:::unknownDomain
+        S_protocol_http_Enum["protocol-http:Enum<br/><small>12 LOC</small>"]:::unknownDomain
+        S_protocol_http_Exceptions["protocol-http:Exceptions<br/><small>188 LOC</small>"]:::unknownDomain
+        S_protocol_http_Execution["protocol-http:Execution<br/><small>1616 LOC</small>"]:::unknownDomain
+        S_protocol_http_Plugins["protocol-http:Plugins<br/><small>388 LOC</small>"]:::unknownDomain
+        S_protocol_http_Policy["protocol-http:Policy<br/><small>265 LOC</small>"]:::unknownDomain
         S_protocol_rpc_Exceptions["protocol-rpc:Exceptions<br/><small>187 LOC</small>"]:::unknownDomain
         S_protocol_rpc_Execution["protocol-rpc:Execution<br/><small>176 LOC</small>"]:::unknownDomain
         S_protocol_rpc_Normalizer["protocol-rpc:Normalizer<br/><small>604 LOC</small>"]:::unknownDomain
-        S_protocol_rpc_Plugins["protocol-rpc:Plugins<br/><small>397 LOC</small>"]:::unknownDomain
+        S_protocol_rpc_Plugins["protocol-rpc:Plugins<br/><small>393 LOC</small>"]:::unknownDomain
         S_protocol_rpc_Protocol["protocol-rpc:Protocol<br/><small>501 LOC</small>"]:::unknownDomain
         S_protocol_rpc_Transfer["protocol-rpc:Transfer<br/><small>243 LOC</small>"]:::unknownDomain
         S_protocol_soap_Exceptions["protocol-soap:Exceptions<br/><small>152 LOC</small>"]:::unknownDomain
         S_protocol_soap_Execution["protocol-soap:Execution<br/><small>444 LOC</small>"]:::unknownDomain
-        S_protocol_soap_Plugins["protocol-soap:Plugins<br/><small>867 LOC</small>"]:::unknownDomain
+        S_protocol_soap_Plugins["protocol-soap:Plugins<br/><small>864 LOC</small>"]:::unknownDomain
         S_protocol_soap_Transfer["protocol-soap:Transfer<br/><small>227 LOC</small>"]:::unknownDomain
         S_protocol_soap_Validation["protocol-soap:Validation<br/><small>139 LOC</small>"]:::unknownDomain
         S_runner_Async["runner:Async<br/><small>1457 LOC</small>"]:::unknownDomain
@@ -97,9 +98,10 @@ flowchart LR
         S_runner_Registries["runner:Registries<br/><small>151 LOC</small>"]:::unknownDomain
         S_runner_Store["runner:Store<br/><small>138 LOC</small>"]:::unknownDomain
         S_runner_Sync["runner:Sync<br/><small>1146 LOC</small>"]:::unknownDomain
-        S_sources_Exceptions["sources:Exceptions<br/><small>258 LOC</small>"]:::unknownDomain
-        S_sources_Normalizer["sources:Normalizer<br/><small>498 LOC</small>"]:::unknownDomain
-        S_sources_Plugins["sources:Plugins<br/><small>159 LOC</small>"]:::unknownDomain
+        S_sources_Exceptions["sources:Exceptions<br/><small>287 LOC</small>"]:::unknownDomain
+        S_sources_Inspection["sources:Inspection<br/><small>103 LOC</small>"]:::unknownDomain
+        S_sources_Normalizer["sources:Normalizer<br/><small>950 LOC</small>"]:::unknownDomain
+        S_sources_Plugins["sources:Plugins<br/><small>377 LOC</small>"]:::unknownDomain
         S_sources_Policy["sources:Policy<br/><small>125 LOC</small>"]:::unknownDomain
         S_sources_Registries["sources:Registries<br/><small>81 LOC</small>"]:::unknownDomain
     end
@@ -111,10 +113,10 @@ flowchart LR
 
 | Subdomain | Modules | Core pkg LOC | Laravel pkg LOC | Share |
 |---|---:|---:|---:|---:|
-| Core domain | 1 | 2,837 | 0 | 8% |
-| Supporting | 8 | 5,735 | 0 | 15% |
+| Core domain | 1 | 2,916 | 0 | 7% |
+| Supporting | 8 | 6,555 | 0 | 16% |
 | Generic subdomain | 6 | 2,005 | 0 | 5% |
-| Unclassified | 66 | 27,217 | 0 | 72% |
+| Unclassified | 68 | 29,680 | 0 | 72% |
 
 **Unclassified modules** — classify them in `SUBDOMAINS` or delete them:
 - `cli:Exceptions`
@@ -153,6 +155,7 @@ flowchart LR
 - `expression:Policy`
 - `expression:Registries`
 - `expression:Xpath`
+- `protocol-http:Enum`
 - `protocol-http:Exceptions`
 - `protocol-http:Execution`
 - `protocol-http:Plugins`
@@ -179,6 +182,7 @@ flowchart LR
 - `runner:Store`
 - `runner:Sync`
 - `sources:Exceptions`
+- `sources:Inspection`
 - `sources:Normalizer`
 - `sources:Plugins`
 - `sources:Policy`

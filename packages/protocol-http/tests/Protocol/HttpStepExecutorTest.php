@@ -34,6 +34,7 @@ use Alama\Arazzo\Evaluation\EvaluationEngineInterface;
 use Alama\Arazzo\Expression\Data\EvaluationContext;
 use Alama\Arazzo\Expression\ExpressionEngine;
 use Alama\Arazzo\Expression\Interfaces\EvaluationInputInterface;
+use Alama\Arazzo\Protocol\Http\Exceptions\RateLimitExceededException;
 use Alama\Arazzo\Protocol\Http\Execution\Interfaces\OpenApiExecutorInterface;
 use Alama\Arazzo\Protocol\Http\Plugins\OperationExecutor\HttpStepExecutor;
 use Alama\Arazzo\Protocol\Http\Resolver\OpenApiOperationHandle;
@@ -468,4 +469,37 @@ it('skips outbound request validation when strictValidation is false (lenient mo
     $outcome = $executor->execute($step, new WorkflowContext('wf_1'), httpStepExecutorDocument(), 'exec_1');
 
     expect($outcome->statusCode)->toBe(200);
+});
+
+it('returns a 429 transport.rate_limited outcome when OpenApiExecutor throws RateLimitExceededException', function (): void {
+    $throwingExecutor = new class() implements OpenApiExecutorInterface
+    {
+        public function execute(
+            OpenApiOperationHandle $operation,
+            OpenApiPayload $payload,
+            ?callable $requestInterceptor = null,
+            ?float $timeoutSeconds = null,
+            ?SourcePolicy $sourcePolicy = null,
+        ): ResponseInterface {
+            throw RateLimitExceededException::rateLimited('api.example.com', 10.0);
+        }
+    };
+
+    $executor = new HttpStepExecutor(
+        $throwingExecutor,
+        createMockDocumentResolver(),
+        new HttpStepExecutorMockEngine(),
+        Mockery::mock(OutputExtractorInterface::class),
+        Mockery::mock(ResponseValidatorInterface::class),
+        strictDefault: false,
+    );
+
+    $step = new Step('s1', null, new StepTarget(), new StepFlow(), new StepIo());
+    $context = new WorkflowContext('def_1', [], [], [], 'wf_1', 'exec_1');
+
+    $outcome = $executor->execute($step, $context, httpStepExecutorDocument(), 'exec_1');
+
+    expect($outcome->statusCode)->toBe(429)
+        ->and($outcome->failureCategory)->toBe('transport')
+        ->and($outcome->responseBody)->toMatchArray(['error' => 'transport.rate_limited']);
 });

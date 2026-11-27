@@ -25,9 +25,6 @@ flowchart LR
         A_Alama_Arazzo_Runner_Queue_SyncQueueDriver["SyncQueueDriver"]:::adapter
         A_Alama_Arazzo_Runner_Queue_SyncQueueDriver --- BRIDGE
         A_Alama_Arazzo_Runner_Queue_SyncQueueDriver --- queue
-        A_Alama_Arazzo_Cli_Console_RunnerFactory["RunnerFactory"]:::adapter
-        A_Alama_Arazzo_Cli_Console_RunnerFactory --- CORE
-        A_Alama_Arazzo_Cli_Console_RunnerFactory --- net
         A_Alama_Arazzo_Cli_Generator_Clients_OpenAiClient["OpenAiClient"]:::adapter
         A_Alama_Arazzo_Cli_Generator_Clients_OpenAiClient --- CORE
         A_Alama_Arazzo_Cli_Generator_Clients_OpenAiClient --- openai
