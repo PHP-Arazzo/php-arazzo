@@ -8,8 +8,12 @@ use Alama\Arazzo\Contracts\Spec\Enum\ExecutionStatus;
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
 use Alama\Arazzo\Contracts\Spec\SourceDocument;
 use Alama\Arazzo\Document\Document;
+use Alama\Arazzo\Document\DocumentInterface;
+use Alama\Arazzo\Protocol\Http\Enum\RateLimitScope;
 use Alama\Arazzo\Protocol\Http\HttpProtocol;
+use Alama\Arazzo\Protocol\Http\Policy\HttpPolicy;
 use Alama\Arazzo\Runner\Runner;
+use Alama\Arazzo\Runner\RunnerInterface;
 use Alama\Arazzo\Sources\Sources;
 use Alama\Arazzo\Sources\SourcesInterface;
 use GuzzleHttp\Psr7\HttpFactory;
@@ -674,4 +678,49 @@ it('fails cleanly when --input is not a valid JSON object', function (): void {
 
     expect($tester->getStatusCode())->toBe(1)
         ->and($tester->getDisplay())->toContain('--input must be a JSON object');
+});
+
+it('accepts rate limiting and concurrency CLI flags', function (): void {
+    $client = okClient();
+    $factory = new HttpFactory();
+    $sources = createTestSources($client, $factory);
+
+    $doc = sys_get_temp_dir().'/arazzo-cli-ratelimit-'.uniqid().'.yaml';
+    arazzoDoc($doc);
+
+    /** @var HttpPolicy|null $capturedPolicy */
+    $capturedPolicy = null;
+    $runnerFactory = function (?DocumentInterface $document, ?HttpPolicy $httpPolicy) use ($client, $factory, $sources, &$capturedPolicy): RunnerInterface {
+        $capturedPolicy = $httpPolicy;
+
+        return RunnerFactory::create(
+            httpClient: $client,
+            httpFactory: $factory,
+            sources: $sources,
+            document: $document,
+            httpPolicy: $httpPolicy,
+        );
+    };
+
+    $command = new RunCommand(runnerFactory: $runnerFactory);
+    $tester = new CommandTester($command);
+    $tester->execute([
+        'file' => $doc,
+        '--rate-limit' => '10',
+        '--rate-burst' => '2',
+        '--max-concurrency' => '8',
+        '--rate-limit-scope' => 'run',
+        '--rate-limit-fail-fast' => true,
+    ]);
+
+    unlink($doc);
+
+    expect($tester->getStatusCode())->toBe(0)
+        ->and($tester->getDisplay())->toContain('workflow pingFlow: succeeded')
+        ->and($capturedPolicy)->not->toBeNull()
+        ->and($capturedPolicy?->requestsPerSecond)->toBe(10.0)
+        ->and($capturedPolicy?->burst)->toBe(2)
+        ->and($capturedPolicy?->maxConcurrent)->toBe(8)
+        ->and($capturedPolicy?->scope)->toBe(RateLimitScope::Run)
+        ->and($capturedPolicy?->failFast)->toBeTrue();
 });

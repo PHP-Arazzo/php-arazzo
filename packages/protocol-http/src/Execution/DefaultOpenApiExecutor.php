@@ -12,6 +12,7 @@ use Alama\Arazzo\Contracts\Spec\OpenApiPayload;
 use Alama\Arazzo\Engine\Execution\ParameterSerializer;
 use Alama\Arazzo\Engine\Execution\TypeCaster;
 use Alama\Arazzo\Protocol\Http\Execution\Interfaces\OpenApiExecutorInterface;
+use Alama\Arazzo\Protocol\Http\Policy\HttpPolicy;
 use Alama\Arazzo\Protocol\Http\Resolver\OpenApiOperationHandle;
 use Exception;
 use GuzzleHttp\Exception\GuzzleException;
@@ -40,17 +41,24 @@ class DefaultOpenApiExecutor implements OpenApiExecutorInterface
 
     private readonly TracerInterface $tracer;
 
+    private readonly HttpPolicy $policy;
+
+    private readonly OutboundRateLimiter $rateLimiter;
+
     public function __construct(
         private ClientInterface $httpClient,
         private RequestFactoryInterface $requestFactory,
         ?LoggerInterface $logger = null,
         ?TracerInterface $tracer = null,
+        ?HttpPolicy $policy = null,
     ) {
         $this->parameterSerializer = new ParameterSerializer();
         $this->typeCaster = new TypeCaster();
         $this->policyApplicator = new SourcePolicyApplicator();
         $this->logger = $logger ?? new NullLogger();
         $this->tracer = $tracer ?? new NullTracer();
+        $this->policy = $policy ?? HttpPolicy::default();
+        $this->rateLimiter = $this->policy->rateLimiter ?? new OutboundRateLimiter();
     }
 
     /**
@@ -206,7 +214,13 @@ class DefaultOpenApiExecutor implements OpenApiExecutorInterface
             'url.full' => (string) $request->getUri(),
         ]);
 
+        $targetKey = $this->rateLimiter->resolveTargetKey($request, $this->policy->scope);
+        $acquired = false;
+
         try {
+            $this->rateLimiter->acquire($targetKey, $this->policy, $this->logger, $span);
+            $acquired = true;
+
             $response = $this->sendViaClient($request, $timeoutSeconds);
             $span->setAttribute('http.response.status_code', $response->getStatusCode());
             $span->setStatus(true);
@@ -230,6 +244,9 @@ class DefaultOpenApiExecutor implements OpenApiExecutorInterface
 
             throw $e;
         } finally {
+            if ($acquired) {
+                $this->rateLimiter->release($targetKey);
+            }
             $span->end();
         }
     }

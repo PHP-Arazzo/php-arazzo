@@ -6,15 +6,12 @@ namespace Alama\Arazzo\Cli\Console;
 
 use Alama\Arazzo\Document\Document;
 use Alama\Arazzo\Document\DocumentInterface;
-use Alama\Arazzo\Evaluation\EvaluationEngine;
-use Alama\Arazzo\Expression\ExpressionEngine;
 use Alama\Arazzo\Protocol\Http\HttpProtocol;
+use Alama\Arazzo\Protocol\Http\Policy\HttpPolicy;
 use Alama\Arazzo\Runner\Runner;
 use Alama\Arazzo\Runner\RunnerInterface;
 use Alama\Arazzo\Sources\Sources;
 use Alama\Arazzo\Sources\SourcesInterface;
-use GuzzleHttp\Client;
-use GuzzleHttp\Psr7\HttpFactory;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 
@@ -35,18 +32,17 @@ final readonly class RunnerFactory
         ?RequestFactoryInterface $httpFactory = null,
         ?SourcesInterface $sources = null,
         ?DocumentInterface $document = null,
+        ?HttpPolicy $httpPolicy = null,
     ): RunnerInterface {
-        $client = $httpClient ?? new Client();
-        $factory = $httpFactory ?? new HttpFactory();
-
         $documentFacade = $document ?? Document::create();
-        $expressionEngine = ExpressionEngine::create();
-        $engine = new EvaluationEngine(expression: $expressionEngine);
+        $sourcesResolver = $sources ?? Sources::create();
 
-        $sourcesResolver = $sources ?? Sources::create()->withHttpClient($client, $factory);
-        $http = HttpProtocol::create($client, $factory, $sourcesResolver, $engine, $expressionEngine);
+        $http = HttpProtocol::create($httpClient, $httpFactory, $sourcesResolver);
+        if ($httpPolicy !== null) {
+            $http = $http->withPolicy($httpPolicy);
+        }
 
-        return (new Runner($documentFacade, $engine))
+        return (new Runner($documentFacade))
             ->withExecutor($http->executor())
             ->withOperationResolver($http->resolver());
     }

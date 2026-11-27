@@ -15,6 +15,7 @@ use Alama\Arazzo\Expression\ExpressionEngine;
 use Alama\Arazzo\Expression\Interfaces\ExpressionEngineInterface;
 use Alama\Arazzo\Protocol\Http\Execution\DefaultOpenApiExecutor;
 use Alama\Arazzo\Protocol\Http\Execution\HttpRuntimeContext;
+use Alama\Arazzo\Protocol\Http\Execution\OutboundRateLimiter;
 use Alama\Arazzo\Protocol\Http\Execution\RequestSchemaValidator;
 use Alama\Arazzo\Protocol\Http\Execution\ResponseSchemaValidator;
 use Alama\Arazzo\Protocol\Http\Execution\StepOutputExtractor;
@@ -93,6 +94,16 @@ final readonly class HttpProtocol
         );
     }
 
+    public function withRateLimiter(OutboundRateLimiter $rateLimiter): self
+    {
+        return new self(
+            $this->httpClient,
+            $this->requestFactory,
+            $this->sources,
+            $this->runtime->withRateLimiter($rateLimiter),
+        );
+    }
+
     public function executor(
         ?bool $strictValidation = null,
         ?IdempotencyKeyInjector $idempotencyInjector = null,
@@ -103,6 +114,7 @@ final readonly class HttpProtocol
                 $this->requestFactory,
                 $this->runtime->logger,
                 $this->runtime->tracer,
+                $this->runtime->policy,
             ),
             operationResolver: $this->operationResolver,
             evaluationEngine: $this->runtime->evaluationEngine,
