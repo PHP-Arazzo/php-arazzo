@@ -1,11 +1,11 @@
 ---
 name: add-rule
-description: Scaffold a new Arazzo validator rule (Rule class + Pest test + RuleSet registration) in packages/core. Use when adding a validation rule, error code, or spec-conformance check.
+description: Scaffold a new Arazzo validator rule plugin (`#[AsValidationRulePlugin]` class + Pest test) in packages/document. Use when adding a validation rule, error/warning code, or spec-conformance check.
 ---
 
 # Add Validator Rule
 
-Every rule is three coordinated edits (class, test, registration). The script does all three deterministically; your job is designing the check.
+Validation rules live in `packages/document/src/Plugins/ValidationRule/`, carry `#[AsValidationRulePlugin]`, and are auto-discovered by `ValidationRuleRegistry::create()` — no manual `RuleSet::default()` registration is required.
 
 ## Step 1 — Generate
 
@@ -13,26 +13,25 @@ Every rule is three coordinated edits (class, test, registration). The script do
 php .agents/skills/add-rule/scripts/new-rule.php <Name> <dotted.code>
 ```
 
-- Name: PascalCase or kebab-case; the `Rule` suffix is added automatically.
-- Code: dotted lower_snake segments matching existing codes (`source.unique_name`, `step.outputs_unique`, `workflow.inputs_valid_schema`) — pick a segment prefix that matches what the rule inspects (`source.*`, `step.*`, `workflow.*`, `action.*`, `expression.*`).
-- Add `--dry-run` to preview placement without writing.
-
-The script fails loudly instead of overwriting anything.
+- **Name**: PascalCase or kebab-case; the `Rule` suffix is added automatically.
+- **Code**: dotted `lower_snake` segments matching existing codes (`source.unique_name`, `step.http_missing_success_criteria`, `workflow.inputs_valid_schema`).
+- Pass `--dry-run` to preview without writing. The script refuses to overwrite existing files.
 
 ## Step 2 — Implement
 
-Open the generated `check(ArazzoDocument $doc, SymbolTable $symbols, ErrorCollector $errors)` and implement it:
+Open `packages/document/src/Plugins/ValidationRule/<Class>.php` and implement `check(ArazzoDocument $doc, SymbolTable $symbols, ErrorCollector $errors)`:
 
-- Report via `$errors->error($this->code(), "<message>", "/json/pointer")` — pointers use the raw document shape.
-- Read spec data through the typed DTOs (`$doc->workflows`, `$doc->sourceDescriptions`, …), never the raw array.
-- Extend the generated test with one failing case per error path; keep the generated no-op assertion as the empty-document baseline.
+- Emit hard violations via `$errors->error($this->code(), "<message>", "/json/pointer")` and `SHOULD`-level lints via `$errors->warning(...)` (callers promote or suppress rules via `ValidatorPolicy`).
+- Read spec data through typed DTOs (`$doc->workflows`, `$doc->sourceDescriptions`, …), never raw arrays.
+- Add failing and passing cases to `packages/document/tests/Validator/Rules/<Class>Test.php`, keeping the minimal-document no-op baseline.
 
 ## Step 3 — Verify
 
 ```bash
-vendor/bin/pint packages/core/src/Validator/Rules/<Class>.php packages/core/tests/Validator/Rules/<Class>Test.php
-cd packages/core && vendor/bin/pest tests/Validator/Rules/<Class>Test.php
-cd ../.. && composer run analyse
+vendor/bin/pint packages/document/src/Plugins/ValidationRule/<Class>.php packages/document/tests/Validator/Rules/<Class>Test.php
+vendor/bin/pest packages/document/tests/Validator/Rules/<Class>Test.php
+composer run analyse-document
+composer run phpmd
 ```
 
-Completion criterion: the new test passes with both no-op and failure cases, `composer run analyse` is clean, and `new <Class>()` sits in `RuleSet::default()` so the rule runs on every conformance fixture.
+Completion criterion: new tests pass (no-op, passing, and violation cases), `RuleSet::default()` auto-discovers the rule code, `composer run analyse-document` and `composer run phpmd` pass with zero errors.
