@@ -1,4 +1,4 @@
-# ADR-014: AsyncAPI channelPath Resolution and Source Normalization
+# ADR-016: AsyncAPI channelPath Resolution and Source Normalization
 
 ## Context
 

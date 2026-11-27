@@ -7,6 +7,7 @@ namespace Alama\Arazzo\Protocol\Http\Plugins\OperationExecutor;
 use Alama\Arazzo\Contracts\Attributes\AsOperationExecutorPlugin;
 use Alama\Arazzo\Contracts\Interfaces\OperationExecutorPluginInterface;
 use Alama\Arazzo\Contracts\Interfaces\OutputExtractorInterface;
+use Alama\Arazzo\Contracts\Interfaces\RequestValidatorInterface;
 use Alama\Arazzo\Contracts\Interfaces\ResponseValidatorInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Enum\OperationProtocol;
@@ -18,7 +19,7 @@ use Alama\Arazzo\Engine\Execution\RequestCompiler;
 use Alama\Arazzo\Evaluation\EvaluationEngineInterface;
 use Alama\Arazzo\Protocol\Http\Execution\Interfaces\OpenApiExecutorInterface;
 use Alama\Arazzo\Protocol\Http\Resolver\OpenApiOperationResolver;
-use Psr\Http\Message\RequestInterface as Psr7Request;
+use Psr\Http\Message\RequestInterface;
 
 /**
  * @internal stays out of the advertised contract; not part of the public API surface
@@ -40,6 +41,7 @@ final class HttpStepExecutor implements OperationExecutorPluginInterface
         private ResponseValidatorInterface $schemaValidator,
         private bool $strictDefault = true,
         private ?IdempotencyKeyInjector $injector = null,
+        private ?RequestValidatorInterface $requestValidator = null,
     ) {}
 
     public function name(): string
@@ -66,12 +68,18 @@ final class HttpStepExecutor implements OperationExecutorPluginInterface
         $sourcePolicy = $context->getActiveSourcePolicy();
         $timeoutSeconds = $step->flow->timeoutSeconds() ?? $sourcePolicy?->timeoutSeconds();
 
+        if ($this->requestValidator !== null && $this->shouldValidateSchema($step, $sourcePolicy?->strictValidation())) {
+            $this->requestValidator->validateRequest($step, $resolved, $payload, $document);
+        }
+
+        /** @var RequestInterface|null $capturedRequest */
         $capturedRequest = null;
         try {
             $response = $this->openApiExecutor->execute(
                 $resolved,
                 $payload,
-                function (Psr7Request $request) use ($context, $step, &$capturedRequest) {
+                function ($request) use ($context, $step, &$capturedRequest) {
+                    /** @var RequestInterface $request */
                     $capturedRequest = $request;
 
                     if ($this->injector !== null) {

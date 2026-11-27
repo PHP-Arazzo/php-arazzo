@@ -145,13 +145,21 @@ function phpmdMakeTarget(string $repo, string $target): string
 }
 
 /**
+ * Resolve the platform-appropriate PHPMD binary path.
+ */
+function phpmdBinary(string $repo): string
+{
+    return $repo.'/vendor/bin/phpmd'.(PHP_OS_FAMILY === 'Windows' ? '.bat' : '');
+}
+
+/**
  * Run the gate over the committed tree the way the job means to run it.
  */
 function runPhpmdGate(string $repo): Process
 {
     $process = new Process(
         [
-            $repo.'/vendor/bin/phpmd',
+            phpmdBinary($repo),
             'analyze',
             ...phpmdScannedPackages(),
             '--format',
@@ -162,6 +170,7 @@ function runPhpmdGate(string $repo): Process
             'phpmd.baseline.xml',
         ],
         $repo,
+        ['PATH' => dirname(PHP_BINARY).PATH_SEPARATOR.(getenv('PATH') ?: '')],
     );
     $process->run();
 
@@ -227,8 +236,33 @@ it('runs the same gate from the quality scorecard, not a stale second list', fun
         ->and($script)->not->toContain('--ignore-errors-on-exit');
 });
 
+it('scans from composer phpmd script the same packages it scans from CI', function () {
+    $repo = dirname(__DIR__, 2);
+    $composer = json_decode((string) file_get_contents($repo.'/composer.json'), true, flags: JSON_THROW_ON_ERROR);
+    $script = $composer['scripts']['phpmd'] ?? null;
+
+    expect($script)->not->toBeNull('composer.json must declare a "phpmd" script')
+        ->and($script)->toBeString()
+        ->and($script)->toContain('vendor/bin/phpmd analyze')
+        ->and($script)->toContain('--ruleset phpmd.xml')
+        ->and($script)->toContain('--baseline-file phpmd.baseline.xml')
+        ->and($script)->not->toContain('--ignore-errors-on-exit')
+        ->and($script)->not->toContain('--ignore-violations-on-exit');
+
+    $tokens = preg_split('/\s+/', (string) $script) ?: [];
+    $scanned = array_values(array_filter($tokens, static fn (string $t): bool => str_starts_with($t, 'packages/')));
+
+    expect($scanned)->toBe(phpmdScannedPackages());
+});
+
 it('writes the report it promises, rather than failing behind a swallowed exit code', function () {
     $repo = dirname(__DIR__, 2);
+    $makeCheck = new Process([PHP_OS_FAMILY === 'Windows' ? 'where' : 'which', 'make']);
+    $makeCheck->run();
+    if ($makeCheck->getExitCode() !== 0) {
+        $this->markTestSkipped('make is not available in PATH on this host');
+    }
+
     $report = $repo.'/storage/phpmd-report.xml';
 
     if (is_file($report)) {
@@ -245,6 +279,19 @@ it('writes the report it promises, rather than failing behind a swallowed exit c
     if (is_file($report)) {
         unlink($report);
     }
+});
+
+it('resolves cross-platform binary for PHPMD execution', function () {
+    $repo = dirname(__DIR__, 2);
+    $binary = phpmdBinary($repo);
+
+    if (PHP_OS_FAMILY === 'Windows') {
+        expect($binary)->toEndWith('.bat');
+    } else {
+        expect($binary)->not->toEndWith('.bat');
+    }
+
+    expect(file_exists($binary))->toBeTrue("PHPMD binary {$binary} does not exist");
 });
 
 it('never lets a failed regeneration write the committed baseline', function () {
@@ -268,7 +315,7 @@ it('carries no baseline entry for a violation that no longer exists', function (
 
     $process = new Process(
         [
-            $repo.'/vendor/bin/phpmd',
+            phpmdBinary($repo),
             'analyze',
             ...phpmdScannedPackages(),
             '--ruleset',
@@ -280,6 +327,7 @@ it('carries no baseline entry for a violation that no longer exists', function (
             '1',
         ],
         $repo,
+        ['PATH' => dirname(PHP_BINARY).PATH_SEPARATOR.(getenv('PATH') ?: '')],
     );
     $process->run();
 

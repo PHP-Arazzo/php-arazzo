@@ -7,7 +7,7 @@ parameters:
 			path: src/Plugins/OperationExecutor/AsyncApiStepExecutor.php
 
 		-
-			message: '#^Method __construct has too many parameters \(7\)\. Maximum allowed is 5\.$#'
+			message: '#^Method __construct has too many parameters \(8\)\. Maximum allowed is 5\.$#'
 			identifier: arazzo.custom.maxParameterCount
 			count: 1
 			path: src/Plugins/OperationExecutor/HttpStepExecutor.php

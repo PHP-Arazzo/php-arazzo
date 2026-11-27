@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Contracts\Validation;
 
 use Alama\Arazzo\Contracts\Data\KnownOperations;
+use Alama\Arazzo\Contracts\Data\SourceResolutionCollection;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Parameter;
 use Alama\Arazzo\Contracts\Spec\Workflow;
@@ -12,6 +13,8 @@ use Alama\Arazzo\Contracts\Spec\Workflow;
 final readonly class SymbolTable
 {
     public KnownOperations $knownOperations;
+
+    public SourceResolutionCollection $sourceResolutions;
 
     /**
      * @var array<string,array<string,true>>
@@ -32,6 +35,7 @@ final readonly class SymbolTable
         KnownOperations|array $knownOperations = new KnownOperations(),
         array $resolvedOperations = [],
         public bool $conformance = false,
+        ?SourceResolutionCollection $sourceResolutions = null,
     ) {
         $this->knownOperations = $knownOperations instanceof KnownOperations
             ? $knownOperations
@@ -39,13 +43,18 @@ final readonly class SymbolTable
         $this->resolvedOperations = $resolvedOperations !== []
             ? $resolvedOperations
             : $this->knownOperations->toArray();
+        $this->sourceResolutions = $sourceResolutions ?? SourceResolutionCollection::empty();
     }
 
     /**
      * @param  KnownOperations|array<string,array<string,true>>|null  $resolvedOperations
      */
-    public static function build(ArazzoDocument $doc, KnownOperations|array|null $resolvedOperations = null, bool $conformance = false): self
-    {
+    public static function build(
+        ArazzoDocument $doc,
+        KnownOperations|array|null $resolvedOperations = null,
+        bool $conformance = false,
+        ?SourceResolutionCollection $sourceResolutions = null,
+    ): self {
         $sources = [];
         foreach ($doc->sourceDescriptions as $s) {
             $sources[$s->name] = true;
@@ -69,7 +78,14 @@ final readonly class SymbolTable
             default => KnownOperations::none(),
         };
 
-        return new self($workflows, $sources, $components, $ops, conformance: $conformance);
+        return new self(
+            $workflows,
+            $sources,
+            $components,
+            $ops,
+            conformance: $conformance,
+            sourceResolutions: $sourceResolutions,
+        );
     }
 
     public function hasWorkflow(string $workflowId): bool

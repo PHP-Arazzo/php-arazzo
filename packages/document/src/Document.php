@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Document;
 
 use Alama\Arazzo\Contracts\Data\KnownOperations;
+use Alama\Arazzo\Contracts\Data\SourceResolutionCollection;
 use Alama\Arazzo\Contracts\Interfaces\ValidationRuleInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Validation\ValidationResult;
@@ -109,9 +110,12 @@ final readonly class Document implements DocumentInterface
         return $this->parser->parse($this->loader->loadFromJson($content, $virtualPath));
     }
 
-    public function validate(ArazzoDocument $document, ?KnownOperations $operations = null): ValidationResult
-    {
-        return $this->resolveValidator()->validate($document, $operations);
+    public function validate(
+        ArazzoDocument $document,
+        ?KnownOperations $operations = null,
+        ?SourceResolutionCollection $sourceResolutions = null,
+    ): ValidationResult {
+        return $this->resolveValidator()->validate($document, $operations, $sourceResolutions);
     }
 
     public function validateInputs(ArazzoDocument $document, string $workflowId, array $inputs): ValidationResult

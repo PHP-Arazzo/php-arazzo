@@ -182,6 +182,7 @@
         "ecosystem:poll:dry": "@php scripts/ecosystem/poll.php --dry-run",
         "ecosystem:check-refs": "@php scripts/ecosystem/check-refs.php",
         "format": "vendor/bin/pint",
+        "phpmd": "vendor/bin/phpmd analyze packages/core/src packages/contracts/src packages/document/src packages/engine/src packages/evaluation/src packages/expression/src packages/protocol-http/src packages/protocol-rpc/src packages/protocol-soap/src packages/runner/src packages/sources/src packages/cli/src --ruleset phpmd.xml --baseline-file phpmd.baseline.xml --threads 1",
         "quality-gates": "@php scripts/quality-gates.php",
         "quality-gates:mutations": "@php scripts/quality-gates.php --with-mutations",
         "conformance": "@php scripts/generate-conformance-matrix.php"

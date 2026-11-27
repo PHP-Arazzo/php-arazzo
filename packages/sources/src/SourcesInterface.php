@@ -6,6 +6,7 @@ namespace Alama\Arazzo\Sources;
 
 use Alama\Arazzo\Contracts\Data\KnownOperations;
 use Alama\Arazzo\Contracts\Data\ResolvedOperationCollection;
+use Alama\Arazzo\Contracts\Data\SourceInspectionResult;
 use Alama\Arazzo\Contracts\Interfaces\SourceFetcherInterface;
 use Alama\Arazzo\Contracts\Interfaces\SourceNormalizerInterface;
 use Alama\Arazzo\Contracts\Interfaces\SourceResolverInterface;
@@ -42,6 +43,11 @@ interface SourcesInterface extends SourceResolverInterface
      * @throws SourceResolutionException
      */
     public function knownOperations(ArazzoDocument $document, string $basePath = ''): KnownOperations;
+
+    /**
+     * Inspect all source descriptions for reachability, parseability, and type conformance under resolve mode.
+     */
+    public function inspectSources(ArazzoDocument $document, string $basePath = ''): SourceInspectionResult;
 
     /**
      * Immutably configure the fetch policy (timeouts, byte limits, allowed schemes, strict reachability).
