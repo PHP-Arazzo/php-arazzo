@@ -19,11 +19,13 @@ composer run test             # Run all Pest suites (or composer run test-<pkg>)
 composer run analyse          # Run PHPStan across all 12 packages
 composer run check-baselines  # Enforce docs/BASELINE-POLICY.md (no correctness suppressions)
 composer run format           # Format with Laravel Pint
-make phpmd                    # Run PHPMD against phpmd.xml + phpmd.baseline.xml
+composer run phpmd            # Run PHPMD against phpmd.xml + phpmd.baseline.xml
+make phpmd                    # Run PHPMD via Makefile
 ```
 
 ## Context Pointers
 
+- **Agent & Windows setup:** consult [`AGENTS.md`](AGENTS.md) for Windows PHP 8.4 discovery and reactive async execution.
 - **Writing or refactoring PHP:** follow [`docs/CODING-STANDARDS.md`](docs/CODING-STANDARDS.md) (domain exceptions with static factories, rich DTOs, symmetric decomposition, `@internal` collaborators).
 - **Changing public seams, plugins, or observability:** consult [`docs/adr/`](docs/adr/) — facade seams (`ADR-006`, `ADR-007`, `ADR-009`), `As<Name>Plugin` + `src/Plugins/<Name>/` convention (`ADR-008`), observability tiers & `*Policy` VOs (`ADR-010`).
 - **Moving or splitting classes:** update [`phpmd.baseline.xml`](phpmd.baseline.xml) (`make phpmd-baseline`) and `packages/*/phpstan-baseline.neon` (`make analyse-baseline`), governed by [`docs/BASELINE-POLICY.md`](docs/BASELINE-POLICY.md).
