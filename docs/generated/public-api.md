@@ -1286,8 +1286,9 @@ this file on a commit is a public API change — review it deliberately.
 
 #### `Runner` class
 - `public function __construct(?DocumentInterface $document = null, ?EvaluationEngineInterface $evaluationEngine = null, ?RunnerOptions $options = null)`
-- `public function preflight(ArazzoDocument $document, ?string $workflowId = null, array $inputs = []): ValidationResult`
-- `public function run(ArazzoDocument $document, string $workflowId, array $inputs = [], ?ExecutionPolicy $policy = null, ): ExecutionResult`
+- `public function preflight(ArazzoDocument $document, ?string $workflowId = null, array $inputs = [], ?string $stepId = null, ): ValidationResult`
+- `public function run(ArazzoDocument $document, string $workflowId, array $inputs = [], ?ExecutionPolicy $policy = null, ): WorkflowExecutionResult`
+- `public function runStep(ArazzoDocument $document, string $stepId, array $inputs = [], ?string $workflowId = null, ?ExecutionPolicy $policy = null, ): WorkflowExecutionResult`
 - `public function withClock(ClockInterface $clock): static`
 - `public function withEventDispatcher(EventDispatcherInterface $dispatcher): static`
 - `public function withExecutor(OperationExecutorPluginInterface $executor): static`
@@ -1298,8 +1299,9 @@ this file on a commit is a public API change — review it deliberately.
 - `public static function create(): self`
 
 #### `RunnerInterface` interface
-- `public function preflight(ArazzoDocument $document, ?string $workflowId = null, array $inputs = []): ValidationResult;`
-- `public function run(ArazzoDocument $document, string $workflowId, array $inputs = [], ?ExecutionPolicy $policy = null, ): ExecutionResult;`
+- `public function preflight(ArazzoDocument $document, ?string $workflowId = null, array $inputs = [], ?string $stepId = null, ): ValidationResult;`
+- `public function run(ArazzoDocument $document, string $workflowId, array $inputs = [], ?ExecutionPolicy $policy = null, ): WorkflowExecutionResult;`
+- `public function runStep(ArazzoDocument $document, string $stepId, array $inputs = [], ?string $workflowId = null, ?ExecutionPolicy $policy = null, ): WorkflowExecutionResult;`
 - `public function withClock(ClockInterface $clock): static;`
 - `public function withEventDispatcher(EventDispatcherInterface $dispatcher): static;`
 - `public function withExecutor(OperationExecutorPluginInterface $executor): static;`
@@ -1314,31 +1316,45 @@ this file on a commit is a public API change — review it deliberately.
 - `public function __construct(public Step $step, public WorkflowContext $context)`
 - `public function stepId(): string`
 
-#### `ExecutionResult` class
-- `public function __construct(public string $workflowId, public ExecutionStatus $status, public array $outputs = [], public array $stepResults = [], public int $stepsSpent = 0, public array $workflowCallStack = [])`
-- `public function executedStepIds(): array`
-- `public function failedStep(): ?StepResult`
-- `public function hasOutput(string $name): bool`
-- `public function hasStepResult(string $stepId): bool`
-- `public function isFailed(): bool`
-- `public function output(string $name): mixed`
-- `public function stepResult(string $stepId): ?StepResult`
-- `public function toArray(): array`
-
-#### `StepResult` class
-- `public function __construct(public string $stepId, public bool $success, public array $outputs = [], public ?Throwable $error = null)`
+#### `StepExecutionResult` class
+- `public function __construct(public string $stepId, public bool $success, public array $outputs = [], public ?Throwable $error = null, public StepRole $role = StepRole::Standard)`
 - `public function errorMessage(): ?string`
 - `public function hasError(): bool`
 - `public function hasOutput(string $name): bool`
+- `public function isDependency(): bool`
 - `public function isFailed(): bool`
+- `public function isTarget(): bool`
 - `public function output(string $name): mixed`
 - `public function toArray(): array`
 
+#### `WorkflowExecutionResult` class
+- `public function __construct(public string $workflowId, public ExecutionStatus $status, public array $outputs = [], public array $stepResults = [], public int $stepsSpent = 0, public array $workflowCallStack = [], public array $sequentialFallbacks = [])`
+- `public function dependencyStepResults(): array`
+- `public function executedStepIds(): array`
+- `public function failedStep(): ?StepExecutionResult`
+- `public function hasOutput(string $name): bool`
+- `public function hasSequentialFallbacks(): bool`
+- `public function hasStepResult(string $stepId): bool`
+- `public function isFailed(): bool`
+- `public function output(string $name): mixed`
+- `public function stepResult(string $stepId): ?StepExecutionResult`
+- `public function targetStepResult(): ?StepExecutionResult`
+- `public function toArray(): array`
+
+### `Alama\Arazzo\Runner\Data\Enum`
+
+#### `StepRole` enum
+- Cases: `Dependency`, `Standard`, `Target`
+
 ### `Alama\Arazzo\Runner\Exceptions`
+
+#### `AmbiguousStepException` class
+- `public static function forId(string $stepId, array $matchingWorkflowIds): self`
 
 #### `ExecutionError` class
 - `public static function ambiguousActionTarget(string $actionName): self`
 - `public static function dependencyFailed(string $dependencyId): self`
+- `public static function missingDependencyOutput(string $stepId, string $outputKey, ?string $depStepId = null): self`
 - `public static function stateMissing(string $executionId): self`
 - `public static function stepFailed(string $stepId): self`
 - `public static function workflowEndedInFailure(string $workflowId, string $stepId): self`
@@ -1366,6 +1382,9 @@ this file on a commit is a public API change — review it deliberately.
 #### `StepBudgetExceededException` class
 - `public static function exceeded(string $executionId, int $maxSteps): self`
 
+#### `UnknownStepException` class
+- `public static function forId(string $stepId, array $validStepIds = [], ?string $workflowId = null): self`
+
 #### `UnknownWorkflowException` class
 - `public static function forId(string $workflowId): self`
 
@@ -1387,12 +1406,13 @@ this file on a commit is a public API change — review it deliberately.
 - `public function withMaxWorkflowDepth(int $maxWorkflowDepth): self`
 
 #### `ExecutionPolicy` class
-- `public function __construct(public ExecutionBudgets $budgets = new ExecutionBudgets(), public ?RetryPolicy $retryPolicy = null, public bool $preflight = self::DEFAULT_PREFLIGHT, public int $stateTtlSeconds = self::DEFAULT_STATE_TTL_SECONDS, public array $sourcePolicies = [])`
+- `public function __construct(public ExecutionBudgets $budgets = new ExecutionBudgets(), public ?RetryPolicy $retryPolicy = null, public bool $preflight = self::DEFAULT_PREFLIGHT, public int $stateTtlSeconds = self::DEFAULT_STATE_TTL_SECONDS, public array $sourcePolicies = [], public bool $noDeps = self::DEFAULT_NO_DEPS)`
 - `public function maxSteps(): int`
 - `public function maxWorkflowDepth(): int`
 - `public function sourcePolicy(string $sourceName): ?SourcePolicy`
 - `public function withMaxSteps(int $maxSteps): self`
 - `public function withMaxWorkflowDepth(int $maxWorkflowDepth): self`
+- `public function withNoDeps(bool $noDeps = true): self`
 - `public function withPreflight(bool $enabled = true): self`
 - `public function withRetryPolicy(RetryPolicy $retryPolicy): self`
 - `public function withSourcePolicy(string $sourceName, SourcePolicy $policy): self`
@@ -1441,7 +1461,7 @@ this file on a commit is a public API change — review it deliberately.
 ### `Alama\Arazzo\Cli\Console\Command`
 
 #### `RunCommand` class
-- `public function __construct(private readonly ?RunnerInterface $runner = null, private readonly ?DocumentInterface $document = null, ?callable $runnerFactory = null)`
+- `public function __construct(private readonly ?RunnerInterface $runner = null, private readonly ?DocumentInterface $document = null, private readonly RunnerFactory $runnerFactory = new RunnerFactory(), private readonly RunExecutor $executor = new RunExecutor())`
 
 #### `ValidateCommand` class
 - `public function __construct(private readonly ValidateConfigLoader $configLoader = new ValidateConfigLoader())`

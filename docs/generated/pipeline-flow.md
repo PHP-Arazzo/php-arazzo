@@ -21,8 +21,8 @@ flowchart TD
     end
     subgraph G_Data["Data"]
         Alama_Arazzo_Runner_Data_ExecuteStepJob["ExecuteStepJob"]:::service
-        Alama_Arazzo_Runner_Data_ExecutionResult["ExecutionResult"]:::service
-        Alama_Arazzo_Runner_Data_StepResult["StepResult"]:::service
+        Alama_Arazzo_Runner_Data_StepExecutionResult["StepExecutionResult"]:::service
+        Alama_Arazzo_Runner_Data_WorkflowExecutionResult["WorkflowExecutionResult"]:::service
     end
     subgraph G_Events["Events"]
         Alama_Arazzo_Runner_Events_CorrelationPendingEvent["CorrelationPendingEvent"]:::service
@@ -73,6 +73,7 @@ flowchart TD
     end
     subgraph G_Sync["Sync"]
         Alama_Arazzo_Runner_Sync_ExecutionGraphFactory["ExecutionGraphFactory"]:::entry
+        Alama_Arazzo_Runner_Sync_SingleStepSequenceResolver["SingleStepSequenceResolver"]:::service
         Alama_Arazzo_Runner_Sync_StepExecutor["StepExecutor"]:::service
         Alama_Arazzo_Runner_Sync_WorkflowDependencyResolver["WorkflowDependencyResolver"]:::service
         Alama_Arazzo_Runner_Sync_WorkflowEngine["WorkflowEngine"]:::service
@@ -148,8 +149,8 @@ flowchart TD
     Alama_Arazzo_Runner_Sync_StepExecutor --> Alama_Arazzo_Runner_Policy_ExecutionPolicy
     Alama_Arazzo_Runner_Sync_StepExecutor --> Alama_Arazzo_Runner_Registries_OperationExecutorRegistry
     Alama_Arazzo_Runner_Sync_WorkflowEngine --> Alama_Arazzo_Runner_Sync_WorkflowNavigator
-    Alama_Arazzo_Runner_Sync_WorkflowExecutor --> Alama_Arazzo_Runner_Data_ExecutionResult
-    Alama_Arazzo_Runner_Sync_WorkflowExecutor --> Alama_Arazzo_Runner_Data_StepResult
+    Alama_Arazzo_Runner_Sync_WorkflowExecutor --> Alama_Arazzo_Runner_Data_StepExecutionResult
+    Alama_Arazzo_Runner_Sync_WorkflowExecutor --> Alama_Arazzo_Runner_Data_WorkflowExecutionResult
     Alama_Arazzo_Runner_Sync_WorkflowExecutor --> Alama_Arazzo_Runner_Events_RunCompletedEvent
     Alama_Arazzo_Runner_Sync_WorkflowExecutor --> Alama_Arazzo_Runner_Events_RunFailedEvent
     Alama_Arazzo_Runner_Sync_WorkflowExecutor --> Alama_Arazzo_Runner_Events_RunStartedEvent
@@ -158,6 +159,7 @@ flowchart TD
     Alama_Arazzo_Runner_Sync_WorkflowExecutor --> Alama_Arazzo_Runner_Events_StepRetriedEvent
     Alama_Arazzo_Runner_Sync_WorkflowExecutor --> Alama_Arazzo_Runner_Events_StepStartedEvent
     Alama_Arazzo_Runner_Sync_WorkflowExecutor --> Alama_Arazzo_Runner_Execution_Data_ObservabilityContext
+    Alama_Arazzo_Runner_Sync_WorkflowExecutor --> Alama_Arazzo_Runner_Sync_SingleStepSequenceResolver
     Alama_Arazzo_Runner_Sync_WorkflowExecutor --> Alama_Arazzo_Runner_Sync_StepExecutor
     Alama_Arazzo_Runner_Sync_WorkflowExecutor --> Alama_Arazzo_Runner_Sync_WorkflowDependencyResolver
     Alama_Arazzo_Runner_Sync_WorkflowExecutor --> Alama_Arazzo_Runner_Sync_WorkflowEngine
@@ -177,8 +179,8 @@ flowchart TD
 | **SubWorkflowInvoker** | runner | `SubWorkflowResult`, `WorkflowExecutor` | `AsyncExecutionGraphAssembler`, `StepOutcomeHandler` | — |
 | **WorkerStateSynchronizer** | runner | — | `StepExecutionWorker` | — |
 | **ExecuteStepJob** | runner | — | `AsyncExecutionGraphAssembler`, `StepExecutionWorker`, `StepOutcomeHandler` | — |
-| **ExecutionResult** | runner | — | `WorkflowExecutor` | — |
-| **StepResult** | runner | — | `WorkflowExecutor` | — |
+| **StepExecutionResult** | runner | — | `WorkflowExecutor` | — |
+| **WorkflowExecutionResult** | runner | — | `WorkflowExecutor` | — |
 | **CorrelationPendingEvent** | runner | — | `StepExecutionWorker`, `StepOutcomeHandler` | — |
 | **CorrelationResumedEvent** | runner | — | `CorrelationResumer` | — |
 | **RunCompletedEvent** | runner | — | `StepExecutionWorker`, `StepOutcomeHandler`, `WorkflowExecutor` | — |
@@ -207,9 +209,10 @@ flowchart TD
 | **InMemoryDefinitionStore** | runner | — | `AsyncConfig` | — |
 | **InMemoryExecutionStore** | runner | — | `AsyncConfig` | — |
 | **ExecutionGraphFactory** | runner | `RunnerOptions`, `SubWorkflowStepExecutor`, `OperationResolvers`, `Preflight`, `StepExecutor`, `WorkflowEngine`, `WorkflowExecutor` | — | — |
+| **SingleStepSequenceResolver** | runner | — | `WorkflowExecutor` | — |
 | **StepExecutor** | runner | `EvaluationOutputExtractor`, `SourcePolicyResolver`, `ExecutionPolicy`, `OperationExecutorRegistry` | `AsyncExecutionGraphAssembler`, `ExecutionGraphFactory`, `WorkflowExecutor` | — |
 | **WorkflowDependencyResolver** | runner | — | `WorkflowExecutor` | — |
 | **WorkflowEngine** | runner | `WorkflowNavigator` | `AsyncExecutionGraphAssembler`, `StepExecutionWorker`, `StepOutcomeHandler`, `RunControlFlow`, `ExecutionGraphFactory`, `WorkflowExecutor` | — |
-| **WorkflowExecutor** | runner | `ExecutionResult`, `StepResult`, `RunCompletedEvent`, `RunFailedEvent`, `RunStartedEvent`, `StepExecutedEvent`, `StepFailedEvent`, `StepRetriedEvent`, `StepStartedEvent`, `ObservabilityContext`, `StepExecutor`, `WorkflowDependencyResolver`, `WorkflowEngine`, `WorkflowPreflightRunner` | `AsyncExecutionGraphAssembler`, `SubWorkflowInvoker`, `SubWorkflowStepExecutor`, `ExecutionGraphFactory` | `RunCompletedEvent`, `RunFailedEvent`, `RunStartedEvent`, `StepExecutedEvent`, `StepFailedEvent`, `StepRetriedEvent`, `StepStartedEvent` |
+| **WorkflowExecutor** | runner | `StepExecutionResult`, `WorkflowExecutionResult`, `RunCompletedEvent`, `RunFailedEvent`, `RunStartedEvent`, `StepExecutedEvent`, `StepFailedEvent`, `StepRetriedEvent`, `StepStartedEvent`, `ObservabilityContext`, `SingleStepSequenceResolver`, `StepExecutor`, `WorkflowDependencyResolver`, `WorkflowEngine`, `WorkflowPreflightRunner` | `AsyncExecutionGraphAssembler`, `SubWorkflowInvoker`, `SubWorkflowStepExecutor`, `ExecutionGraphFactory` | `RunCompletedEvent`, `RunFailedEvent`, `RunStartedEvent`, `StepExecutedEvent`, `StepFailedEvent`, `StepRetriedEvent`, `StepStartedEvent` |
 | **WorkflowNavigator** | runner | — | `WorkflowEngine` | — |
 | **WorkflowPreflightRunner** | runner | `Preflight` | `WorkflowExecutor` | — |

@@ -10,9 +10,18 @@ use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Protocol\Rpc\Plugins\SourceNormalizer\ProtoSourceNormalizer;
 use InvalidArgumentException;
 
-function protobufSource(string $name, string $url): SourceDescription
-{
-    return new SourceDescription($name, $url, SourceType::Protobuf);
+if (!\function_exists(__NAMESPACE__.'\\protobufSource')) {
+    function protobufSource(string $name, string $url): SourceDescription
+    {
+        return new SourceDescription($name, $url, SourceType::Protobuf);
+    }
+}
+
+if (!\function_exists(__NAMESPACE__.'\\calcProtoContent')) {
+    function calcProtoContent(): string
+    {
+        return file_get_contents(__DIR__.'/../Fixtures/calculator.proto') ?: '';
+    }
 }
 
 it('supports only protobuf sources and reports a stable name and priority', function (): void {

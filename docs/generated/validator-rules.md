@@ -9,7 +9,7 @@ prefixes). Regenerated before every commit.
 
 ```mermaid
 flowchart TD
-    ROOT["Validator rules (71)"]
+    ROOT["Validator rules (72)"]
     G_Actions["Actions — 8"]
     ROOT --> G_Actions
     R_ActionDuplicateRule["ActionDuplicate"]
@@ -70,10 +70,12 @@ flowchart TD
     G_Expressions --> R_JsonPathCriterionConditionRule
     R_MessageRefRequiresReceiveRule["MessageRefRequiresReceive"]
     G_Expressions --> R_MessageRefRequiresReceiveRule
-    G_General["General — 3"]
+    G_General["General — 4"]
     ROOT --> G_General
     R_GraphQlStepRule["GraphQlStep"]
     G_General --> R_GraphQlStepRule
+    R_HttpStepSuccessCriteriaRule["HttpStepSuccessCriteria"]
+    G_General --> R_HttpStepSuccessCriteriaRule
     R_ReceiveStepSuccessCriteriaRule["ReceiveStepSuccessCriteria"]
     G_General --> R_ReceiveStepSuccessCriteriaRule
     R_SubWorkflowInvokeTargetResolvesRule["SubWorkflowInvokeTargetResolves"]
@@ -189,7 +191,7 @@ flowchart TD
 | **Components** | `ComponentsUniqueNamesRule` <small>document</small> |
 | **Document-level** | `DocUnknownFieldRule` <small>document</small>, `DocumentArazzoVersionRule` <small>document</small>, `DocumentInfoRequiredRule` <small>document</small>, `DocumentSourceDescriptionsPresentRule` <small>document</small>, `OfficialSchemaRule` <small>document</small> |
 | **Expressions** | `ExpressionContextMisuseRule` <small>expression</small>, `ExpressionJsonPointerSyntaxRule` <small>expression</small>, `ExpressionSyntaxRule` <small>expression</small>, `ExpressionUnresolvedComponentRefRule` <small>expression</small>, `ExpressionUnresolvedInputRefRule` <small>expression</small>, `ExpressionUnresolvedSourceRefRule` <small>expression</small>, `ExpressionUnresolvedStepRefRule` <small>expression</small>, `ExpressionUnresolvedWorkflowRefRule` <small>expression</small>, `JsonPathCriterionConditionRule` <small>expression</small>, `MessageRefRequiresReceiveRule` <small>expression</small> |
-| **General** | `GraphQlStepRule` <small>document</small>, `ReceiveStepSuccessCriteriaRule` <small>document</small>, `SubWorkflowInvokeTargetResolvesRule` <small>document</small> |
+| **General** | `GraphQlStepRule` <small>document</small>, `HttpStepSuccessCriteriaRule` <small>document</small>, `ReceiveStepSuccessCriteriaRule` <small>document</small>, `SubWorkflowInvokeTargetResolvesRule` <small>document</small> |
 | **Parameters** | `ParameterQuerystringOperationShapeRule` <small>document</small>, `ParameterReusableRefResolvesRule` <small>document</small> |
 | **RPC** | `RpcStepRule` <small>protocol-rpc</small> |
 | **SOAP / WSDL** | `WsdlStepRule` <small>protocol-soap</small> |

@@ -91,7 +91,7 @@ function subWorkflowDocument(): ArazzoDocument
     );
 }
 
-function subWorkflowGraph(OperationExecutorRegistry $registry): WorkflowExecutor
+function subWorkflowGraph(OperationExecutorRegistry $registry, ?Response $response = null): WorkflowExecutor
 {
     $documents = Mockery::mock(DocumentInterface::class);
 
@@ -113,7 +113,7 @@ function subWorkflowGraph(OperationExecutorRegistry $registry): WorkflowExecutor
 
     $evaluation = new EvaluationEngine(expression: new ExpressionEngine());
     $httpPlugin = new HttpStepExecutor(
-        new FakeOpenApiExecutor(new Response(200, ['Content-Type' => 'application/json'], '{"id":"ord_1"}')),
+        new FakeOpenApiExecutor($response ?? new Response(200, ['Content-Type' => 'application/json'], '{"id":"ord_1"}')),
         $resolver,
         $evaluation,
         new StepOutputExtractor($resolver, $evaluation, new ExpressionEngine()),
@@ -153,4 +153,17 @@ it('runs a parent -> child workflow synchronously', function (): void {
         ->and($result->stepResults['call-child']->outputs)->toBe(['order_id' => 'ord_1'])
         ->and($result->outputs)->toBe(['order_id' => 'ord_1'])
         ->and($result->workflowCallStack)->toBe(['parent']);
+});
+
+it('fails the parent workflow step when a child workflow fails and successCriteria is omitted', function (): void {
+    $document = subWorkflowDocument();
+    OperationExecutorRegistry::reset();
+    $result = subWorkflowGraph(
+        OperationExecutorRegistry::create(),
+        new Response(500, ['Content-Type' => 'application/json'], '{"error":"boom"}'),
+    )->execute($document->firstWorkflow(), $document, []);
+
+    expect($result->status)->toBe(ExecutionStatus::Failed)
+        ->and($result->stepResults)->toHaveKey('call-child')
+        ->and($result->stepResults['call-child']->success)->toBeFalse();
 });

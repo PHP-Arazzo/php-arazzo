@@ -154,6 +154,8 @@ flowchart LR
     C_document_document_Plugins_ExtensionsXPrefixRule -.->|implements| I_ValidationRuleInterface
     C_document_document_Plugins_GraphQlStepRule["GraphQlStepRule<br/><small>document:Plugins</small>"]:::implCore
     C_document_document_Plugins_GraphQlStepRule -.->|implements| I_ValidationRuleInterface
+    C_document_document_Plugins_HttpStepSuccessCriteriaRule["HttpStepSuccessCriteriaRule<br/><small>document:Plugins</small>"]:::implCore
+    C_document_document_Plugins_HttpStepSuccessCriteriaRule -.->|implements| I_ValidationRuleInterface
     C_document_document_Plugins_InteractionStepRule["InteractionStepRule<br/><small>document:Plugins</small>"]:::implCore
     C_document_document_Plugins_InteractionStepRule -.->|implements| I_ValidationRuleInterface
     C_document_document_Plugins_OfficialSchemaRule["OfficialSchemaRule<br/><small>document:Plugins</small>"]:::implCore

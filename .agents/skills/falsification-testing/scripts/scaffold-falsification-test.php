@@ -66,6 +66,9 @@ if ($relPath === null) {
     // Default: flat under packages/{pkg}/tests/
     $relPath = "packages/{$pkg}/tests/{$base}.php";
 }
+if (DIRECTORY_SEPARATOR === '\\' && preg_match('#^/([a-zA-Z])/(.*)$#', $relPath, $m)) {
+    $relPath = "{$m[1]}:/{$m[2]}";
+}
 $isAbs = static fn (string $path): bool => str_starts_with($path, '/') || str_starts_with($path, '\\') || (bool) preg_match('/^[A-Za-z]:[\\\\\/]/', $path);
 
 $absPath = $relPath;
@@ -73,7 +76,9 @@ if (!$isAbs($relPath)) {
     $absPath = "{$root}/{$relPath}";
 } else {
     $absPath = $relPath;
-    $relPath = ltrim(str_replace($root.'/', '', $absPath), '/');
+    $normRoot = rtrim(str_replace('\\', '/', $root), '/');
+    $normAbs = str_replace('\\', '/', $absPath);
+    $relPath = str_starts_with($normAbs, $normRoot.'/') ? substr($normAbs, strlen($normRoot) + 1) : $absPath;
 }
 
 if (file_exists($absPath) && !$dryRun) {

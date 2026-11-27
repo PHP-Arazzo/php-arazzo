@@ -19,7 +19,7 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 |---|---|---|---|
 | changed method | `DocumentInterface` | `__construct` | `public function __construct(public StepState $from, public StepState $to, public string $reason, public StepTransitionType $type = StepTransitionType::Enter, public array $actions = [])` → `public function __construct(private readonly ValidateConfigLoader $configLoader = new ValidateConfigLoader())` |
 | changed method | `DocumentInterface` | `load` | `public function load(string $path): ArazzoDocument;` → `public function load(?string $explicitPath = null, ?string $workingDirectory = null): ValidatorPolicy` |
-| changed method | `DocumentInterface` | `preflight` | `public function preflight(ArazzoDocument $document): ValidationResult` → `public function preflight(ArazzoDocument $document, ?string $workflowId = null, array $inputs = []): ValidationResult;` |
+| changed method | `DocumentInterface` | `preflight` | `public function preflight(ArazzoDocument $document): ValidationResult` → `public function preflight(ArazzoDocument $document, ?string $workflowId = null, array $inputs = [], ?string $stepId = null, ): ValidationResult;` |
 | changed method | `DocumentInterface` | `resolve` | `public function resolve(Step $step, ArazzoDocument $document): ResolvedOperation;` → `public function resolve(Step $step, ArazzoDocument $document, array $overrides = []): ?OperationExecutorPluginInterface` |
 | changed method | `DocumentInterface` | `validate` | `public function validate(ArazzoDocument $document): ValidationResult` → `public function validate(ArazzoDocument $document, ?KnownOperations $operations = null, ?SourceResolutionCollection $sourceResolutions = null, ): ValidationResult` |
 | removed class | `RunnerFacade` | — | was class |
@@ -31,12 +31,15 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 | removed method | `DocumentInterface` | `preflightInputs` | `public function preflightInputs(ArazzoDocument $document, string $workflowId, array $inputs): ValidationResult` |
 | removed method | `DocumentInterface` | `resolveOperation` | `public function resolveOperation(Step $step, ArazzoDocument $document): ResolvedOperation` |
 
-**Additions (non-breaking):** 126
+**Additions (non-breaking):** 137
 
 | Kind | Class | Member |
 |---|---|---|
+| added enum case | `DocumentInterface` | `Dependency` |
 | added enum case | `DocumentInterface` | `Host` |
 | added enum case | `DocumentInterface` | `Run` |
+| added enum case | `DocumentInterface` | `Standard` |
+| added enum case | `DocumentInterface` | `Target` |
 | added method | `DocumentInterface` | `__isset` |
 | added method | `DocumentInterface` | `all` |
 | added method | `DocumentInterface` | `ambiguousActionTarget` |
@@ -49,6 +52,7 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 | added method | `DocumentInterface` | `default` |
 | added method | `DocumentInterface` | `deleteState` |
 | added method | `DocumentInterface` | `dependencyFailed` |
+| added method | `DocumentInterface` | `dependencyStepResults` |
 | added method | `DocumentInterface` | `detected` |
 | added method | `DocumentInterface` | `dispatch` |
 | added method | `DocumentInterface` | `dottedKeyReserved` |
@@ -72,13 +76,16 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 | added method | `DocumentInterface` | `hasError` |
 | added method | `DocumentInterface` | `hasOutput` |
 | added method | `DocumentInterface` | `hasPendingCorrelations` |
+| added method | `DocumentInterface` | `hasSequentialFallbacks` |
 | added method | `DocumentInterface` | `hasStepResult` |
 | added method | `DocumentInterface` | `injectContext` |
 | added method | `DocumentInterface` | `invalidBackoffMultiplier` |
 | added method | `DocumentInterface` | `isCancelled` |
+| added method | `DocumentInterface` | `isDependency` |
 | added method | `DocumentInterface` | `isExhausted` |
 | added method | `DocumentInterface` | `isFailed` |
 | added method | `DocumentInterface` | `isGuardFailed` |
+| added method | `DocumentInterface` | `isTarget` |
 | added method | `DocumentInterface` | `isTimedOut` |
 | added method | `DocumentInterface` | `loadFromJson` |
 | added method | `DocumentInterface` | `loadFromYaml` |
@@ -88,6 +95,7 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 | added method | `DocumentInterface` | `maxConcurrent` |
 | added method | `DocumentInterface` | `maxSteps` |
 | added method | `DocumentInterface` | `maxWorkflowDepth` |
+| added method | `DocumentInterface` | `missingDependencyOutput` |
 | added method | `DocumentInterface` | `noSupportingExecutor` |
 | added method | `DocumentInterface` | `nonPositiveMaxAttempts` |
 | added method | `DocumentInterface` | `output` |
@@ -100,6 +108,7 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 | added method | `DocumentInterface` | `resume` |
 | added method | `DocumentInterface` | `resumeCorrelation` |
 | added method | `DocumentInterface` | `run` |
+| added method | `DocumentInterface` | `runStep` |
 | added method | `DocumentInterface` | `save` |
 | added method | `DocumentInterface` | `saveCorrelation` |
 | added method | `DocumentInterface` | `saveState` |
@@ -112,6 +121,7 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 | added method | `DocumentInterface` | `stepFailed` |
 | added method | `DocumentInterface` | `stepId` |
 | added method | `DocumentInterface` | `stepResult` |
+| added method | `DocumentInterface` | `targetStepResult` |
 | added method | `DocumentInterface` | `toArray` |
 | added method | `DocumentInterface` | `unknownSource` |
 | added method | `DocumentInterface` | `unknownStep` |
@@ -140,6 +150,7 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 | added method | `DocumentInterface` | `withMaxNodes` |
 | added method | `DocumentInterface` | `withMaxSteps` |
 | added method | `DocumentInterface` | `withMaxWorkflowDepth` |
+| added method | `DocumentInterface` | `withNoDeps` |
 | added method | `DocumentInterface` | `withOperationResolver` |
 | added method | `DocumentInterface` | `withOutputExtractor` |
 | added method | `DocumentInterface` | `withPolicy` |

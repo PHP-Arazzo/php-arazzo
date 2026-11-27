@@ -688,18 +688,27 @@ it('accepts rate limiting and concurrency CLI flags', function (): void {
     $doc = sys_get_temp_dir().'/arazzo-cli-ratelimit-'.uniqid().'.yaml';
     arazzoDoc($doc);
 
-    /** @var HttpPolicy|null $capturedPolicy */
-    $capturedPolicy = null;
-    $runnerFactory = function (?DocumentInterface $document, ?HttpPolicy $httpPolicy) use ($client, $factory, $sources, &$capturedPolicy): RunnerInterface {
-        $capturedPolicy = $httpPolicy;
+    $spy = new class()
+    {
+        public ?HttpPolicy $policy = null;
+    };
+    $runnerFactory = new readonly class($client, $factory, $sources, $spy) extends RunnerFactory
+    {
+        public function __construct(
+            ClientInterface $client,
+            RequestFactoryInterface $factory,
+            SourcesInterface $sources,
+            private object $spy,
+        ) {
+            parent::__construct($client, $factory, $sources);
+        }
 
-        return RunnerFactory::create(
-            httpClient: $client,
-            httpFactory: $factory,
-            sources: $sources,
-            document: $document,
-            httpPolicy: $httpPolicy,
-        );
+        public function createRunner(?DocumentInterface $document = null, ?HttpPolicy $httpPolicy = null): RunnerInterface
+        {
+            $this->spy->policy = $httpPolicy;
+
+            return parent::createRunner($document, $httpPolicy);
+        }
     };
 
     $command = new RunCommand(runnerFactory: $runnerFactory);
@@ -717,10 +726,394 @@ it('accepts rate limiting and concurrency CLI flags', function (): void {
 
     expect($tester->getStatusCode())->toBe(0)
         ->and($tester->getDisplay())->toContain('workflow pingFlow: succeeded')
-        ->and($capturedPolicy)->not->toBeNull()
-        ->and($capturedPolicy?->requestsPerSecond)->toBe(10.0)
-        ->and($capturedPolicy?->burst)->toBe(2)
-        ->and($capturedPolicy?->maxConcurrent)->toBe(8)
-        ->and($capturedPolicy?->scope)->toBe(RateLimitScope::Run)
-        ->and($capturedPolicy?->failFast)->toBeTrue();
+        ->and($spy->policy)->not->toBeNull()
+        ->and($spy->policy?->requestsPerSecond)->toBe(10.0)
+        ->and($spy->policy?->burst)->toBe(2)
+        ->and($spy->policy?->maxConcurrent)->toBe(8)
+        ->and($spy->policy?->scope)->toBe(RateLimitScope::Run)
+        ->and($spy->policy?->failFast)->toBeTrue();
+});
+
+function multiWorkflowDoc(string $tmp): void
+{
+    file_put_contents($tmp, <<<'YAML'
+        arazzo: "1.0.0"
+        info:
+          title: Multi Workflow CLI
+          version: "1"
+        sourceDescriptions:
+          - name: api
+            url: https://mini.test/openapi.json
+            type: openapi
+        workflows:
+          - workflowId: flowA
+            steps:
+              - stepId: sharedStep
+                operationPath: "{$sourceDescriptions.api.url}#/paths/~1ping/get"
+                successCriteria:
+                  - condition: "${response.statusCode} == 200"
+          - workflowId: flowB
+            steps:
+              - stepId: sharedStep
+                operationPath: "{$sourceDescriptions.api.url}#/paths/~1ping/get"
+                successCriteria:
+                  - condition: "${response.statusCode} == 200"
+        YAML);
+}
+
+function singleStepOutputDoc(string $tmp): void
+{
+    file_put_contents($tmp, <<<'YAML'
+        arazzo: "1.0.0"
+        info:
+          title: Single Step Output
+          version: "1"
+        sourceDescriptions:
+          - name: api
+            url: https://mini.test/openapi.json
+            type: openapi
+        workflows:
+          - workflowId: authFlow
+            steps:
+              - stepId: login
+                operationPath: "{$sourceDescriptions.api.url}#/paths/~1ping/get"
+                outputs:
+                  token: "$response.body.token"
+                successCriteria:
+                  - condition: "${response.statusCode} == 200"
+              - stepId: getProfile
+                parameters:
+                  - name: Authorization
+                    in: header
+                    value: "$steps.login.outputs.token"
+                operationPath: "{$sourceDescriptions.api.url}#/paths/~1ping/get"
+                successCriteria:
+                  - condition: "${response.statusCode} == 200"
+        YAML);
+}
+
+function singleStepDoc(string $tmp): void
+{
+    file_put_contents($tmp, <<<'YAML'
+        arazzo: "1.0.0"
+        info:
+          title: Single Step CLI
+          version: "1"
+        sourceDescriptions:
+          - name: api
+            url: https://mini.test/openapi.json
+            type: openapi
+        workflows:
+          - workflowId: checkout
+            steps:
+              - stepId: login
+                operationPath: "{$sourceDescriptions.api.url}#/paths/~1ping/get"
+                successCriteria:
+                  - condition: "${response.statusCode} == 200"
+              - stepId: fetch-config
+                dependsOn:
+                  - login
+                operationPath: "{$sourceDescriptions.api.url}#/paths/~1ping/get"
+                successCriteria:
+                  - condition: "${response.statusCode} == 200"
+              - stepId: create-order
+                dependsOn:
+                  - fetch-config
+                operationPath: "{$sourceDescriptions.api.url}#/paths/~1ping/get"
+                successCriteria:
+                  - condition: "${response.statusCode} == 200"
+              - stepId: create-shipment
+                dependsOn:
+                  - create-order
+                operationPath: "{$sourceDescriptions.api.url}#/paths/~1ping/get"
+                successCriteria:
+                  - condition: "${response.statusCode} == 200"
+              - stepId: cleanup
+                operationPath: "{$sourceDescriptions.api.url}#/paths/~1ping/get"
+                successCriteria:
+                  - condition: "${response.statusCode} == 200"
+        YAML);
+}
+
+it('fails fast when --no-deps is passed without --step', function (): void {
+    $client = okClient();
+    $factory = new HttpFactory();
+    $sources = createTestSources($client, $factory);
+
+    $command = new RunCommand(RunnerFactory::create(httpClient: $client, httpFactory: $factory, sources: $sources));
+    $tester = new CommandTester($command);
+
+    $doc = sys_get_temp_dir().'/arazzo-cli-no-deps-guard-'.uniqid().'.yaml';
+    arazzoDoc($doc);
+
+    $tester->execute(['file' => $doc, '--no-deps' => true]);
+
+    unlink($doc);
+
+    expect($tester->getStatusCode())->toBe(1)
+        ->and($tester->getDisplay())->toContain('The "--no-deps" option requires "--step" to be specified.');
+});
+
+it('executes target step and upstream dependencies and marks roles (S1, S7)', function (): void {
+    $client = okClient();
+    $factory = new HttpFactory();
+    $sources = createTestSources($client, $factory);
+
+    $command = new RunCommand(RunnerFactory::create(httpClient: $client, httpFactory: $factory, sources: $sources));
+    $tester = new CommandTester($command);
+
+    $doc = sys_get_temp_dir().'/arazzo-cli-step-deps-'.uniqid().'.yaml';
+    singleStepDoc($doc);
+
+    $tester->execute(['file' => $doc, '--step' => 'create-order']);
+
+    unlink($doc);
+
+    expect($tester->getStatusCode())->toBe(0)
+        ->and($tester->getDisplay())->toContain('workflow checkout: succeeded')
+        ->and($tester->getDisplay())->toContain('✔ login (dependency)')
+        ->and($tester->getDisplay())->toContain('✔ fetch-config (dependency)')
+        ->and($tester->getDisplay())->toContain('✔ create-order (target)')
+        ->and($tester->getDisplay())->not->toContain('create-shipment')
+        ->and($tester->getDisplay())->not->toContain('cleanup');
+});
+
+it('executes only up to target step (S2)', function (): void {
+    $client = okClient();
+    $factory = new HttpFactory();
+    $sources = createTestSources($client, $factory);
+
+    $command = new RunCommand(RunnerFactory::create(httpClient: $client, httpFactory: $factory, sources: $sources));
+    $tester = new CommandTester($command);
+
+    $doc = sys_get_temp_dir().'/arazzo-cli-upto-target-'.uniqid().'.yaml';
+    singleStepDoc($doc);
+
+    $tester->execute(['file' => $doc, '-s' => 'fetch-config']);
+
+    unlink($doc);
+
+    expect($tester->getStatusCode())->toBe(0)
+        ->and($tester->getDisplay())->toContain('workflow checkout: succeeded')
+        ->and($tester->getDisplay())->toContain('✔ login (dependency)')
+        ->and($tester->getDisplay())->toContain('✔ fetch-config (target)')
+        ->and($tester->getDisplay())->not->toContain('create-order')
+        ->and($tester->getDisplay())->not->toContain('create-shipment');
+});
+
+it('fails before requests when --no-deps has missing upstream output (S4)', function (): void {
+    $requestCount = 0;
+    $client = new class($requestCount) implements ClientInterface
+    {
+        public function __construct(public int &$count) {}
+
+        public function sendRequest(RequestInterface $request): ResponseInterface
+        {
+            $this->count++;
+
+            return new Response(200, ['Content-Type' => 'application/json'], '{"token":"xyz"}');
+        }
+    };
+    $factory = new HttpFactory();
+    $sources = createTestSources($client, $factory);
+
+    $command = new RunCommand(RunnerFactory::create(httpClient: $client, httpFactory: $factory, sources: $sources));
+    $tester = new CommandTester($command);
+
+    $doc = sys_get_temp_dir().'/arazzo-cli-missing-dep-'.uniqid().'.yaml';
+    singleStepOutputDoc($doc);
+
+    $tester->execute(['file' => $doc, '--step' => 'getProfile', '--no-deps' => true]);
+
+    unlink($doc);
+
+    expect($tester->getStatusCode())->toBe(1)
+        ->and($requestCount)->toBe(0)
+        ->and($tester->getDisplay())->toContain("requires output 'token' from upstream step 'login'")
+        ->and($tester->getDisplay())->toContain('Supply the value via --input or remove --no-deps.');
+});
+
+it('executes only target when --no-deps and output supplied via --input (S3)', function (): void {
+    $client = okClient();
+    $factory = new HttpFactory();
+    $sources = createTestSources($client, $factory);
+
+    $command = new RunCommand(RunnerFactory::create(httpClient: $client, httpFactory: $factory, sources: $sources));
+    $tester = new CommandTester($command);
+
+    $doc = sys_get_temp_dir().'/arazzo-cli-nodeps-input-'.uniqid().'.yaml';
+    singleStepOutputDoc($doc);
+
+    $tester->execute([
+        'file' => $doc,
+        '--step' => 'getProfile',
+        '--no-deps' => true,
+        '--input' => '{"token": "my-secret-token"}',
+    ]);
+
+    unlink($doc);
+
+    expect($tester->getStatusCode())->toBe(0)
+        ->and($tester->getDisplay())->toContain('workflow authFlow: succeeded')
+        ->and($tester->getDisplay())->toContain('✔ getProfile (target)')
+        ->and($tester->getDisplay())->not->toContain('login');
+});
+
+it('fails before requests when step id is unknown and lists valid ids (S5)', function (): void {
+    $requestCount = 0;
+    $client = new class($requestCount) implements ClientInterface
+    {
+        public function __construct(public int &$count) {}
+
+        public function sendRequest(RequestInterface $request): ResponseInterface
+        {
+            $this->count++;
+
+            return new Response(200, ['Content-Type' => 'application/json'], '{}');
+        }
+    };
+    $factory = new HttpFactory();
+    $sources = createTestSources($client, $factory);
+
+    $command = new RunCommand(RunnerFactory::create(httpClient: $client, httpFactory: $factory, sources: $sources));
+    $tester = new CommandTester($command);
+
+    $doc = sys_get_temp_dir().'/arazzo-cli-unknown-step-'.uniqid().'.yaml';
+    singleStepDoc($doc);
+
+    $tester->execute(['file' => $doc, '--step' => 'nonexistent']);
+
+    unlink($doc);
+
+    expect($tester->getStatusCode())->toBe(1)
+        ->and($requestCount)->toBe(0)
+        ->and($tester->getDisplay())->toContain("Unknown step 'nonexistent'")
+        ->and($tester->getDisplay())->toContain('login')
+        ->and($tester->getDisplay())->toContain('fetch-config')
+        ->and($tester->getDisplay())->toContain('create-order');
+});
+
+it('fails before requests when step is ambiguous across workflows without --workflow', function (): void {
+    $requestCount = 0;
+    $client = new class($requestCount) implements ClientInterface
+    {
+        public function __construct(public int &$count) {}
+
+        public function sendRequest(RequestInterface $request): ResponseInterface
+        {
+            $this->count++;
+
+            return new Response(200, ['Content-Type' => 'application/json'], '{}');
+        }
+    };
+    $factory = new HttpFactory();
+    $sources = createTestSources($client, $factory);
+
+    $command = new RunCommand(RunnerFactory::create(httpClient: $client, httpFactory: $factory, sources: $sources));
+    $tester = new CommandTester($command);
+
+    $doc = sys_get_temp_dir().'/arazzo-cli-ambiguous-'.uniqid().'.yaml';
+    multiWorkflowDoc($doc);
+
+    $tester->execute(['file' => $doc, '--step' => 'sharedStep']);
+
+    expect($tester->getStatusCode())->toBe(1)
+        ->and($requestCount)->toBe(0)
+        ->and($tester->getDisplay())->toContain("Step 'sharedStep' is ambiguous; it exists in multiple workflows: flowA, flowB");
+
+    // When disambiguated with --workflow, it succeeds
+    $tester->execute(['file' => $doc, '--step' => 'sharedStep', '--workflow' => 'flowB']);
+
+    unlink($doc);
+
+    expect($tester->getStatusCode())->toBe(0)
+        ->and($tester->getDisplay())->toContain('workflow flowB: succeeded')
+        ->and($tester->getDisplay())->toContain('✔ sharedStep (target)');
+});
+
+it('reports sequential fallback notice when --step and --parallel are combined (S6)', function (): void {
+    $client = okClient();
+    $factory = new HttpFactory();
+    $sources = createTestSources($client, $factory);
+
+    $command = new RunCommand(RunnerFactory::create(httpClient: $client, httpFactory: $factory, sources: $sources));
+    $tester = new CommandTester($command);
+
+    $doc = sys_get_temp_dir().'/arazzo-cli-parallel-fallback-'.uniqid().'.yaml';
+    singleStepDoc($doc);
+
+    // With --parallel: notice is rendered
+    $tester->execute(['file' => $doc, '--step' => 'create-order', '--parallel' => true]);
+
+    expect($tester->getStatusCode())->toBe(0)
+        ->and($tester->getDisplay())->toContain('Notice: --step implies sequential execution; running sequentially')
+        ->and($tester->getDisplay())->toContain('✔ create-order (target)');
+
+    // Without --parallel: notice is not rendered
+    $tester->execute(['file' => $doc, '--step' => 'create-order']);
+
+    unlink($doc);
+
+    expect($tester->getStatusCode())->toBe(0)
+        ->and($tester->getDisplay())->not->toContain('Notice:')
+        ->and($tester->getDisplay())->toContain('✔ create-order (target)');
+});
+
+it('halts single-step execution when a sub-workflow dependency without successCriteria fails', function (): void {
+    $calls = 0;
+    $client = new class($calls) implements ClientInterface
+    {
+        public function __construct(public int &$calls) {}
+
+        public function sendRequest(RequestInterface $request): ResponseInterface
+        {
+            $this->calls++;
+
+            return new Response(500, ['Content-Type' => 'application/json'], '{"error":"child failed"}');
+        }
+    };
+    $factory = new HttpFactory();
+    $sources = createTestSources($client, $factory);
+
+    $command = new RunCommand(RunnerFactory::create(httpClient: $client, httpFactory: $factory, sources: $sources));
+    $tester = new CommandTester($command);
+
+    $doc = sys_get_temp_dir().'/arazzo-cli-subwf-dep-fail-'.uniqid().'.yaml';
+    file_put_contents($doc, <<<'YAML'
+        arazzo: "1.0.0"
+        info:
+          title: SubWorkflow Dependency Failure
+          version: "1"
+        sourceDescriptions:
+          - name: api
+            url: https://mini.test/openapi.json
+            type: openapi
+        workflows:
+          - workflowId: authChild
+            steps:
+              - stepId: childLogin
+                operationPath: "{$sourceDescriptions.api.url}#/paths/~1ping/get"
+                successCriteria:
+                  - condition: "${response.statusCode} == 200"
+          - workflowId: mainFlow
+            steps:
+              - stepId: runAuth
+                workflowId: authChild
+              - stepId: createOrder
+                dependsOn:
+                  - runAuth
+                operationPath: "{$sourceDescriptions.api.url}#/paths/~1ping/get"
+                successCriteria:
+                  - condition: "${response.statusCode} == 200"
+        YAML);
+
+    $tester->execute(['file' => $doc, '--workflow' => 'mainFlow', '--step' => 'createOrder']);
+
+    unlink($doc);
+
+    expect($tester->getStatusCode())->toBe(1)
+        ->and($calls)->toBe(1)
+        ->and($tester->getDisplay())->toContain('workflow mainFlow: failed')
+        ->and($tester->getDisplay())->toContain('✘ runAuth (dependency)')
+        ->and($tester->getDisplay())->not->toContain('createOrder');
 });

@@ -16,9 +16,9 @@ Evans' first question: does the code speak one language?
 ### run vs execute vs invoke
 
 - **Execute**: `ExecuteStepJob`, `StepExecutedEvent` (2 types)
-- **Executor**: `AsOperationExecutorPlugin`, `AsyncApiStepExecutor`, `DefaultOpenApiExecutor`, `HttpStepExecutor` + 8 more (12 types)
+- **Executor**: `AsOperationExecutorPlugin`, `AsyncApiStepExecutor`, `DefaultOpenApiExecutor`, `HttpStepExecutor` + 9 more (13 types)
 - **Invoke**: `SubWorkflowInvokeTargetResolvesRule`, `SubWorkflowInvoker` (2 types)
-- **Run**: `AsyncRunner`, `AsyncRunnerInterface`, `CliRunResult`, `CliRunner` + 14 more (18 types)
+- **Run**: `AsyncRunner`, `AsyncRunnerInterface`, `CliRunResult`, `CliRunner` + 17 more (21 types)
 - **Runner**: `AsyncRunner`, `AsyncRunnerInterface`, `CliRunner`, `Runner` + 5 more (9 types)
 
 ### parse vs load vs decode
@@ -36,7 +36,7 @@ Evans' first question: does the code speak one language?
 ### fetch vs resolve vs retrieve
 
 - **Fetcher**: `CachedFetcher`, `DefaultFetchers`, `HttpFetcher`, `LocalFetcher` + 2 more (6 types)
-- **Resolver**: `AsyncApiFallbackResolver`, `AsyncApiOperationResolver`, `AsyncApiServerUrlResolver`, `DefaultSourceResolver` + 15 more (19 types)
+- **Resolver**: `AsyncApiFallbackResolver`, `AsyncApiOperationResolver`, `AsyncApiServerUrlResolver`, `DefaultSourceResolver` + 16 more (20 types)
 
 ### state vs status
 
@@ -52,12 +52,12 @@ Evans' first question: does the code speak one language?
 ### workflow vs process vs flow
 
 - **Flow**: `RunControlFlow`, `StepFlow` (2 types)
-- **Workflow**: `ExpressionUnresolvedWorkflowRefRule`, `ListWorkflowsCommand`, `StepNestedWorkflowExistsRule`, `StepNestedWorkflowNoCycleRule` + 33 more (37 types)
+- **Workflow**: `ExpressionUnresolvedWorkflowRefRule`, `ListWorkflowsCommand`, `StepNestedWorkflowExistsRule`, `StepNestedWorkflowNoCycleRule` + 34 more (38 types)
 
 ### render vs generate
 
 - **Generator**: `ArazzoGenerator`, `GeneratorApiException` (2 types)
-- **Render**: `MarkdownRenderer`, `MermaidRenderer`, `RenderCommand`, `Renderer` (4 types)
+- **Render**: `MarkdownRenderer`, `MermaidRenderer`, `RenderCommand`, `Renderer` + 1 more (5 types)
 
 ## Homonyms (same name, multiple homes)
 
@@ -71,7 +71,6 @@ Evans' first question: does the code speak one language?
 | `SourceFetchException` | `Sources\Exceptions\SourceFetchException`<br/>`Sources\Resolver\Exceptions\SourceFetchException` | sources |
 | `SourceParseException` | `Sources\Exceptions\SourceParseException`<br/>`Sources\Resolver\Exceptions\SourceParseException` | sources |
 | `SourceResolutionException` | `Sources\Exceptions\SourceResolutionException`<br/>`Sources\Resolver\Exceptions\SourceResolutionException` | sources |
-| `StepResult` | `Runtime\State\Data\StepResult`<br/>`Runner\Data\StepResult` | engine, runner |
 | `Token` | `Expression\Data\Token`<br/>`Evaluation\Condition\Token` | expression, evaluation |
 | `TokenKind` | `Expression\Enum\TokenKind`<br/>`Evaluation\Enum\TokenKind` | expression, evaluation |
 | `Transition` | `Engine\Data\Transition`<br/>`Runner\Execution\Data\Transition` | engine, runner |

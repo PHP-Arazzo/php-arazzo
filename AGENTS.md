@@ -32,12 +32,41 @@ composer run phpmd            # Run PHPMD static analysis across all 12 packages
 composer run analyse          # Run PHPStan across all 12 packages
 composer run check-baselines  # Verify baseline policy compliance (no silent suppressions)
 composer run format           # Format codebase with Laravel Pint
+composer run docs             # Regenerate architecture diagrams and public API docs
 ```
+
+### Fast Package-Scoped Verification Loops
+
+For rapid iteration without the overhead of running all 12 packages, use package-scoped test and analysis targets:
+
+| Package | Test Command | Static Analysis Command |
+|---|---|---|
+| `cli` | `composer run test-cli` | `composer run analyse-cli` |
+| `contracts` | `composer run test-contracts` | `composer run analyse-contracts` |
+| `core` | `composer run test-core` | `composer run analyse-core` |
+| `document` | `composer run test-document` | `composer run analyse-document` |
+| `engine` | `composer run test-engine` | `composer run analyse-engine` |
+| `evaluation` | `composer run test-evaluation` | `composer run analyse-evaluation` |
+| `expression` | `composer run test-expression` | `composer run analyse-expression` |
+| `protocol-http` | `composer run test-http` | `composer run analyse-http` |
+| `protocol-rpc` | `composer run test-rpc` | `composer run analyse-rpc` |
+| `protocol-soap` | `composer run test-soap` | `composer run analyse-soap` |
+| `runner` | `composer run test-runner` | `composer run analyse-runner` |
+| `sources` | `composer run test-sources` | `composer run analyse-sources` |
 
 - **Targeted Feedback Loops:** When developing or debugging, run the targeted package or file test suite first (e.g. `vendor/bin/pest packages/runner/tests/Sync/StepExecutorFailureHandlingTest.php`) before invoking full-monorepo test runs.
 - **Identifier Length Limit:** Custom PHPStan rule (`arazzo.custom.identifierLength`) strictly bounds identifier length between 3 and 30 characters.
 
 On hosts with GNU Make available, `make verify` executes the full pre-push gate.
+
+### Git Pre-Commit Hooks Setup
+
+To ensure documentation sync, code styling, and static analysis execute before every commit:
+
+```powershell
+git config core.hooksPath .githooks
+```
+*(On Windows, ensure Git Bash discovers PHP 8.4 in PATH so hook scripts can run `php scripts/generate-docs.php` seamlessly).*
 
 ## 4. Architectural Pointers & Standards
 

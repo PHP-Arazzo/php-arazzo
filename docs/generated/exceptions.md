@@ -13,6 +13,7 @@ classDiagram
     class E_LogicException["LogicException"]:::builtin
     class E_InvalidArgumentException["InvalidArgumentException"]:::builtin
     class E_BaseException["BaseException"]:::builtin
+    class E_AmbiguousStepException["AmbiguousStepException<br/><small>runner:Exceptions</small>"]:::domain
     class E_ArazzoException["ArazzoException<br/><small>contracts:Support</small>"]:::domain
     class E_AsyncApiResolutionException["AsyncApiResolutionException<br/><small>protocol-http:Exceptions</small>"]:::domain
     class E_AsyncApiStepException["AsyncApiStepException<br/><small>protocol-http:Exceptions</small>"]:::domain
@@ -73,6 +74,7 @@ classDiagram
     class E_StepBudgetExceededException["StepBudgetExceededException<br/><small>runner:Exceptions</small>"]:::domain
     class E_TelemetrySetupException["TelemetrySetupException<br/><small>engine:Exceptions</small>"]:::domain
     class E_TypeCastException["TypeCastException<br/><small>engine:Exceptions</small>"]:::domain
+    class E_UnknownStepException["UnknownStepException<br/><small>runner:Exceptions</small>"]:::domain
     class E_UnknownWorkflowException["UnknownWorkflowException<br/><small>runner:Exceptions</small>"]:::domain
     class E_UnresolvableReferenceException["UnresolvableReferenceException<br/><small>sources:Resolver</small>"]:::domain
     class E_UnresolvableReusableReferenceException["UnresolvableReusableReferenceException<br/><small>contracts:Exceptions</small>"]:::domain
@@ -82,6 +84,7 @@ classDiagram
     class E_WorkflowCycleException["WorkflowCycleException<br/><small>runner:Exceptions</small>"]:::domain
     class E_WorkflowDepthExceededException["WorkflowDepthExceededException<br/><small>runner:Exceptions</small>"]:::domain
     class E_WsdlResolutionException["WsdlResolutionException<br/><small>protocol-soap:Exceptions</small>"]:::domain
+    E_RunnerException <|-- E_AmbiguousStepException
     E_RuntimeException <|-- E_ArazzoException
     E_EngineException <|-- E_AsyncApiResolutionException
     E_LogicException <|-- E_AsyncApiStepException
@@ -142,6 +145,7 @@ classDiagram
     E_RunnerException <|-- E_StepBudgetExceededException
     E_EngineException <|-- E_TelemetrySetupException
     E_InvalidArgumentException <|-- E_TypeCastException
+    E_RunnerException <|-- E_UnknownStepException
     E_RunnerException <|-- E_UnknownWorkflowException
     E_BaseException <|-- E_UnresolvableReferenceException
     E_ArazzoException <|-- E_UnresolvableReusableReferenceException
@@ -157,6 +161,7 @@ classDiagram
 
 | Exception | Extends | Module |
 |---|---|---|
+| `AmbiguousStepException` | `RunnerException` | runner:Exceptions |
 | `ArazzoException` | `RuntimeException` | contracts:Support |
 | `AsyncApiResolutionException` | `EngineException` | protocol-http:Exceptions |
 | `AsyncApiStepException` | `LogicException` | protocol-http:Exceptions |
@@ -217,6 +222,7 @@ classDiagram
 | `StepBudgetExceededException` | `RunnerException` | runner:Exceptions |
 | `TelemetrySetupException` | `EngineException` | engine:Exceptions |
 | `TypeCastException` | `InvalidArgumentException` | engine:Exceptions |
+| `UnknownStepException` | `RunnerException` | runner:Exceptions |
 | `UnknownWorkflowException` | `RunnerException` | runner:Exceptions |
 | `UnresolvableReferenceException` | `BaseException` | sources:Resolver |
 | `UnresolvableReusableReferenceException` | `ArazzoException` | contracts:Exceptions |

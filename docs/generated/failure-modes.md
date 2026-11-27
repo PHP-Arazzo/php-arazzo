@@ -18,6 +18,7 @@ Regenerated before every commit.
 |---|---|
 | **InvalidArgumentException** | `ValidateConfigLoader` <small>cli:Console</small>, `OutboundRequestPolicy` <small>protocol-http:Policy</small> |
 | **UnexpectedValueException** | `ValidateConfigLoader` <small>cli:Console</small> |
+| **AmbiguousStepException** | _(never raised in src)_ |
 | **ArazzoException** | _(never raised in src)_ |
 | **AsyncApiResolutionException** | _(never raised in src)_ |
 | **AsyncApiStepException** | _(never raised in src)_ |
@@ -79,6 +80,7 @@ Regenerated before every commit.
 | **StepBudgetExceededException** | _(never raised in src)_ |
 | **TelemetrySetupException** | _(never raised in src)_ |
 | **TypeCastException** | _(never raised in src)_ |
+| **UnknownStepException** | _(never raised in src)_ |
 | **UnknownWorkflowException** | _(never raised in src)_ |
 | **UnresolvableReferenceException** | _(never raised in src)_ |
 | **UnresolvableReusableReferenceException** | _(never raised in src)_ |
@@ -93,6 +95,7 @@ Regenerated before every commit.
 
 | Caught type | Handled by | Flag |
 |---|---|---|
+| `AmbiguousStepException` | `RunPreflight` |  |
 | `AsyncApiResolutionException` | `AsyncApiStepExecutor` |  |
 | `ClientExceptionInterface` | `RpcOperationExecutor` |  |
 | `ClientExceptionInterface` | `SoapOperationExecutor` |  |
@@ -106,12 +109,12 @@ Regenerated before every commit.
 | `InvalidArgumentException` | `StepOutputExtractor` |  |
 | `JsonException` | `NativeJsonDecoder` |  |
 | `JsonException` | `AsyncApiStepExecutor` |  |
-| `LoaderException` | `RunCommand` |  |
+| `LoaderException` | `RunPreflight` |  |
 | `ParseException` | `SymfonyYamlDecoder` |  |
-| `ParserException` | `RunCommand` |  |
+| `ParserException` | `RunPreflight` |  |
 | `RuntimeException` | `RpcOperationExecutor` |  |
 | `RuntimeException` | `SoapOperationExecutor` |  |
-| `SchemaValidationException` | `RunCommand` |  |
+| `SchemaValidationException` | `RunExecutor` |  |
 | `SelectorEvaluationException` | `SelectorEvaluator` |  |
 | `SourceParseException` | `SourceInspector` |  |
 | `Throwable` | `ValidateCommand` |  |
@@ -127,6 +130,7 @@ Regenerated before every commit.
 | `Throwable` | `SourceOperationsNormalizer` |  |
 | `Throwable` | `DefaultSourceResolver` |  |
 | `Throwable` | `Sources` |  |
+| `UnknownStepException` | `RunPreflight` |  |
 
 ## Safety interlocks
 
