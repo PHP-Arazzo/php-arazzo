@@ -14,7 +14,6 @@ use Alama\Arazzo\Contracts\Spec\Enum\OperationProtocol;
 use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Contracts\Spec\StepExecutionOutcome;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
-use Alama\Arazzo\Engine\Execution\ErrorClassifier;
 use Alama\Arazzo\Engine\Execution\IdempotencyKeyInjector;
 use Alama\Arazzo\Engine\Execution\RequestCompiler;
 use Alama\Arazzo\Evaluation\EvaluationEngineInterface;
@@ -34,25 +33,16 @@ final class HttpStepExecutor implements OperationExecutorPluginInterface
      */
     public const PLUGIN_PRIORITY = 100;
 
-    private RequestCompiler $compiler;
-
-    /**
-     * @param  EvaluationEngineInterface|RequestCompiler  $evaluationEngine
-     */
     public function __construct(
         private OpenApiExecutorInterface $openApiExecutor,
         private OpenApiOperationResolver $operationResolver,
-        $evaluationEngine,
+        private EvaluationEngineInterface $evaluationEngine,
         private OutputExtractorInterface $outputExtractor,
         private ResponseValidatorInterface $schemaValidator,
         private bool $strictDefault = true,
         private ?IdempotencyKeyInjector $injector = null,
         private ?RequestValidatorInterface $requestValidator = null,
-    ) {
-        $this->compiler = $evaluationEngine instanceof RequestCompiler
-            ? $evaluationEngine
-            : new RequestCompiler($evaluationEngine);
-    }
+    ) {}
 
     public function name(): string
     {
@@ -71,7 +61,7 @@ final class HttpStepExecutor implements OperationExecutorPluginInterface
 
     public function execute(Step $step, WorkflowContext $context, ArazzoDocument $document, string $executionId): StepExecutionOutcome
     {
-        $compiler = $this->compiler;
+        $compiler = new RequestCompiler($this->evaluationEngine);
         ['payload' => $payload, 'resolvedInputs' => $resolvedInputs] = $compiler->compile($step, $document, $context);
 
         $resolved = $this->operationResolver->resolve($step, $document);
@@ -102,15 +92,9 @@ final class HttpStepExecutor implements OperationExecutorPluginInterface
                 $sourcePolicy,
             );
         } catch (\Throwable $e) {
-            $classifier = new ErrorClassifier();
-            $category = $classifier->classify($e);
-            $targetUrl = $capturedRequest !== null ? (string) $capturedRequest->getUri() : '';
-            $method = $capturedRequest !== null ? $capturedRequest->getMethod() : '';
-            $typedException = $classifier->toTransportException($e, $targetUrl, $method);
-
             return StepExecutionOutcome::failed(
-                exception: $typedException,
-                failureCategory: $category,
+                exception: $e,
+                failureCategory: 'transport',
                 request: $capturedRequest !== null ? [
                     'method' => $capturedRequest->getMethod(),
                     'url' => (string) $capturedRequest->getUri(),

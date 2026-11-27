@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Tests\Protocol\Http\Protocol;
 
 use Alama\Arazzo\Contracts\Exceptions\SchemaValidationException;
-use Alama\Arazzo\Contracts\Exceptions\TransportException;
 use Alama\Arazzo\Contracts\Interfaces\OutputExtractorInterface;
 use Alama\Arazzo\Contracts\Interfaces\RequestValidatorInterface;
 use Alama\Arazzo\Contracts\Interfaces\ResponseValidatorInterface;
@@ -503,7 +502,7 @@ it('returns a typed failed outcome with null statusCode when OpenApiExecutor thr
     expect($outcome->statusCode)->toBeNull()
         ->and($outcome->isFailed())->toBeTrue()
         ->and($outcome->failureCategory)->toBe('transport')
-        ->and($outcome->exception)->toBeInstanceOf(TransportException::class)
+        ->and($outcome->exception)->toBeInstanceOf(RateLimitExceededException::class)
         ->and($outcome->responseBody['error'])->toContain('rate-limited (10 req/s exceeded)');
 });
 
@@ -541,6 +540,6 @@ it('returns a typed failed outcome with null statusCode on network or connection
     expect($outcome->statusCode)->toBeNull()
         ->and($outcome->isFailed())->toBeTrue()
         ->and($outcome->failureCategory)->toBe('transport')
-        ->and($outcome->exception)->toBeInstanceOf(TransportException::class)
+        ->and($outcome->exception)->toBeInstanceOf(\RuntimeException::class)
         ->and($outcome->request['url'] ?? null)->toBe('https://api.example.com/status');
 });

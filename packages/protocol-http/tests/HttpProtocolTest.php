@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use Alama\Arazzo\Contracts\Exceptions\TransportException;
 use Alama\Arazzo\Contracts\Interfaces\OperationExecutorPluginInterface;
 use Alama\Arazzo\Contracts\Interfaces\OutputExtractorInterface;
 use Alama\Arazzo\Contracts\Observability\SpanInterface;
@@ -195,7 +194,7 @@ it('propagates HttpPolicy, SourcePolicy (isolated per source), LoggerInterface, 
         ->and($outcome3->statusCode)->toBeNull()
         ->and($outcome3->isFailed())->toBeTrue()
         ->and($outcome3->failureCategory)->toBe('transport')
-        ->and($outcome3->exception)->toBeInstanceOf(TransportException::class)
+        ->and($outcome3->exception)->toBeInstanceOf(Throwable::class)
         ->and((string) $capturedRequests[0]->getUri())->toBe('https://petstore.staging.test/pets')
         ->and($capturedRequests[0]->getHeaderLine('X-API-Key'))->toBe('petstore-key')
         ->and($capturedRequests[0]->getHeaderLine('X-Env'))->toBe('staging')
