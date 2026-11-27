@@ -70,6 +70,9 @@ Execute a workflow from an Arazzo document
 | Option | Shortcut | Value | Default | Description |
 |---|---|---|---|---|
 | `--workflow` | `-w` | value | — | workflowId to run (defaults to the first workflow) |
+| `--step` | `-s` | value | — | Target stepId to execute (with transitive dependencies) |
+| `--no-deps` | `` | flag | false | Execute only the target step, skipping upstream dependencies |
+| `--parallel` | `` | flag | false | Execute independent steps in parallel |
 | `--input` | `-i` | value | — | Workflow inputs as inline JSON or @file.json |
 | `--rate-limit` | `` | value | — | Outbound requests per second limit (e.g. 10) |
 | `--rate-burst` | `` | value | — | Outbound rate limit burst capacity (default: 1) |

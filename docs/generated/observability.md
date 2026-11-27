@@ -37,6 +37,7 @@ _No catalog found (LedgerAppendingListener not found)._
 | `DocumentSourceDescriptionsPresentRule` <small>core</small> | `error` | 1 |
 | `ExtensionsXPrefixRule` <small>core</small> | `warning` | 1 |
 | `GraphQlStepRule` <small>core</small> | `error` | 3 |
+| `HttpStepSuccessCriteriaRule` <small>core</small> | `warning` | 1 |
 | `InteractionStepRule` <small>core</small> | `error` | 4 |
 | `OfficialSchemaRule` <small>core</small> | `error` | 3 |
 | `ParameterQuerystringOperationShapeRule` <small>core</small> | `warning` | 1 |
@@ -103,13 +104,13 @@ _No catalog found (LedgerAppendingListener not found)._
 | `CorrelationResumer` <small>core</small> | `info` · `warning` | 6 |
 | `StepExecutionWorker` <small>core</small> | `info` · `error` | 5 |
 | `StepOutcomeHandler` <small>core</small> | `warning` · `info` | 2 |
-| `WorkflowExecutor` <small>core</small> | `warning` · `info` · `error` | 4 |
+| `WorkflowExecutor` <small>core</small> | `warning` · `info` · `error` | 6 |
 | `SourceInspector` <small>core</small> | `warning` | 1 |
 | `SourceOperationsNormalizer` <small>core</small> | `warning` | 2 |
 | `HttpFetcher` <small>core</small> | `debug` · `warning` | 4 |
 | `Sources` <small>core</small> | `warning` | 1 |
 
-154 logging calls total. PSR-14 events are dispatched independently (see events.md).
+157 logging calls total. PSR-14 events are dispatched independently (see events.md).
 
 ## Persistence adapters
 

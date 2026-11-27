@@ -18,7 +18,7 @@ flowchart LR
         S_contracts_Spec["contracts:Spec<br/><small>2916 LOC</small>"]:::coreDomain
     end
     subgraph S_supporting["Supporting"]
-        S_cli_Console["cli:Console<br/><small>1174 LOC</small>"]:::supportingDomain
+        S_cli_Console["cli:Console<br/><small>1378 LOC</small>"]:::supportingDomain
         S_cli_Generator["cli:Generator<br/><small>141 LOC</small>"]:::supportingDomain
         S_cli_Renderer["cli:Renderer<br/><small>317 LOC</small>"]:::supportingDomain
         S_document_Parser["document:Parser<br/><small>2482 LOC</small>"]:::supportingDomain
@@ -40,14 +40,14 @@ flowchart LR
         S_contracts_Attributes["contracts:Attributes<br/><small>106 LOC</small>"]:::unknownDomain
         S_contracts_Clock["contracts:Clock<br/><small>20 LOC</small>"]:::unknownDomain
         S_contracts_Data["contracts:Data<br/><small>361 LOC</small>"]:::unknownDomain
-        S_contracts_Dependency["contracts:Dependency<br/><small>375 LOC</small>"]:::unknownDomain
+        S_contracts_Dependency["contracts:Dependency<br/><small>490 LOC</small>"]:::unknownDomain
         S_contracts_Discovery["contracts:Discovery<br/><small>416 LOC</small>"]:::unknownDomain
         S_contracts_Exceptions["contracts:Exceptions<br/><small>132 LOC</small>"]:::unknownDomain
         S_contracts_Interfaces["contracts:Interfaces<br/><small>416 LOC</small>"]:::unknownDomain
         S_contracts_Observability["contracts:Observability<br/><small>108 LOC</small>"]:::unknownDomain
         S_contracts_Policy["contracts:Policy<br/><small>268 LOC</small>"]:::unknownDomain
         S_contracts_Validation["contracts:Validation<br/><small>504 LOC</small>"]:::unknownDomain
-        S_document_Plugins["document:Plugins<br/><small>3404 LOC</small>"]:::unknownDomain
+        S_document_Plugins["document:Plugins<br/><small>3454 LOC</small>"]:::unknownDomain
         S_document_Registries["document:Registries<br/><small>97 LOC</small>"]:::unknownDomain
         S_engine_Data["engine:Data<br/><small>99 LOC</small>"]:::unknownDomain
         S_engine_Enum["engine:Enum<br/><small>17 LOC</small>"]:::unknownDomain
@@ -89,15 +89,15 @@ flowchart LR
         S_protocol_soap_Transfer["protocol-soap:Transfer<br/><small>227 LOC</small>"]:::unknownDomain
         S_protocol_soap_Validation["protocol-soap:Validation<br/><small>139 LOC</small>"]:::unknownDomain
         S_runner_Async["runner:Async<br/><small>1457 LOC</small>"]:::unknownDomain
-        S_runner_Data["runner:Data<br/><small>202 LOC</small>"]:::unknownDomain
-        S_runner_Exceptions["runner:Exceptions<br/><small>283 LOC</small>"]:::unknownDomain
+        S_runner_Data["runner:Data<br/><small>280 LOC</small>"]:::unknownDomain
+        S_runner_Exceptions["runner:Exceptions<br/><small>335 LOC</small>"]:::unknownDomain
         S_runner_Execution["runner:Execution<br/><small>723 LOC</small>"]:::unknownDomain
-        S_runner_Plugins["runner:Plugins<br/><small>80 LOC</small>"]:::unknownDomain
-        S_runner_Policy["runner:Policy<br/><small>124 LOC</small>"]:::unknownDomain
-        S_runner_Preflight["runner:Preflight<br/><small>156 LOC</small>"]:::unknownDomain
+        S_runner_Plugins["runner:Plugins<br/><small>89 LOC</small>"]:::unknownDomain
+        S_runner_Policy["runner:Policy<br/><small>132 LOC</small>"]:::unknownDomain
+        S_runner_Preflight["runner:Preflight<br/><small>304 LOC</small>"]:::unknownDomain
         S_runner_Registries["runner:Registries<br/><small>151 LOC</small>"]:::unknownDomain
         S_runner_Store["runner:Store<br/><small>138 LOC</small>"]:::unknownDomain
-        S_runner_Sync["runner:Sync<br/><small>1146 LOC</small>"]:::unknownDomain
+        S_runner_Sync["runner:Sync<br/><small>1412 LOC</small>"]:::unknownDomain
         S_sources_Exceptions["sources:Exceptions<br/><small>287 LOC</small>"]:::unknownDomain
         S_sources_Inspection["sources:Inspection<br/><small>103 LOC</small>"]:::unknownDomain
         S_sources_Normalizer["sources:Normalizer<br/><small>950 LOC</small>"]:::unknownDomain
@@ -114,9 +114,9 @@ flowchart LR
 | Subdomain | Modules | Core pkg LOC | Laravel pkg LOC | Share |
 |---|---:|---:|---:|---:|
 | Core domain | 1 | 2,916 | 0 | 7% |
-| Supporting | 8 | 6,555 | 0 | 16% |
+| Supporting | 8 | 6,759 | 0 | 16% |
 | Generic subdomain | 6 | 2,005 | 0 | 5% |
-| Unclassified | 68 | 29,680 | 0 | 72% |
+| Unclassified | 68 | 30,406 | 0 | 72% |
 
 **Unclassified modules** — classify them in `SUBDOMAINS` or delete them:
 - `cli:Exceptions`

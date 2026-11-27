@@ -30,7 +30,7 @@ quadrantChart
     contracts/Attributes: [0.133, 0]
     contracts/Clock: [0, 0]
     contracts/Data: [0.143, 0]
-    contracts/Dependency: [0.333, 0]
+    contracts/Dependency: [0.286, 0]
     contracts/Discovery: [0.2, 0]
     contracts/Exceptions: [0.1, 0]
     contracts/Interfaces: [0.103, 1]
@@ -95,10 +95,10 @@ quadrantChart
     runner/Async: [0.957, 0]
     runner/Data: [0.429, 0]
     runner/Events: [0, 0]
-    runner/Exceptions: [0.375, 0.091]
+    runner/Exceptions: [0.333, 0.077]
     runner/Execution: [0.857, 0]
     runner/Plugins: [0.818, 0]
-    runner/Policy: [0.286, 0]
+    runner/Policy: [0.25, 0]
     runner/Preflight: [0.5, 0]
     runner/Queue: [0.333, 0]
     runner/Registries: [0.6, 0]
@@ -123,8 +123,8 @@ Concrete types over 300 LOC:
 |---|---|---:|
 | `ExecutionContext` | `engine:Runtime` | 553 |
 | `WorkflowContext` | `contracts:State` | 544 |
+| `WorkflowExecutor` | `runner:Sync` | 519 |
 | `ExecutionState` | `contracts:State` | 511 |
-| `WorkflowExecutor` | `runner:Sync` | 397 |
 | `StepExecutionWorker` | `runner:Async` | 387 |
 | `StepOutcomeHandler` | `runner:Async` | 366 |
 | `DefaultOpenApiExecutor` | `protocol-http:Execution` | 323 |
@@ -141,8 +141,8 @@ Contracts declaring more than 7 methods:
 | `ExpressionEngineInterface` <small>expression</small> | 14 |
 | `EvaluationInputInterface` <small>expression</small> | 12 |
 | `SourcesInterface` <small>sources</small> | 11 |
+| `RunnerInterface` <small>runner</small> | 10 |
 | `ExecutionStoreInterface` <small>runner</small> | 9 |
-| `RunnerInterface` <small>runner</small> | 9 |
 | `EvaluationEngineInterface` <small>evaluation</small> | 8 |
 
 ## Concrete hubs (DIP)

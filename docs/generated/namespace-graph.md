@@ -358,6 +358,7 @@ flowchart LR
     runner_Preflight --> document__
     runner_Preflight --> runner_Exceptions
     runner_Preflight --> contracts_Validation
+    runner_Preflight --> contracts_Dependency
     runner_Queue --> contracts_Interfaces
     runner_Registries --> contracts_Attributes
     runner_Registries --> contracts_Interfaces
@@ -371,20 +372,20 @@ flowchart LR
     runner_Sync --> runner_Plugins
     runner_Sync --> runner_Preflight
     runner_Sync --> runner_Registries
-    runner_Sync --> contracts_Interfaces
+    runner_Sync --> contracts_Dependency
     runner_Sync --> contracts_Spec
     runner_Sync --> contracts_State
-    runner_Sync --> engine_Exceptions
-    runner_Sync --> runner_Policy
-    runner_Sync --> expression_Data
     runner_Sync --> runner_Exceptions
+    runner_Sync --> runner_Policy
+    runner_Sync --> contracts_Interfaces
+    runner_Sync --> engine_Exceptions
+    runner_Sync --> expression_Data
     runner_Sync --> engine_Runtime
     runner_Sync --> contracts_Exceptions
     runner_Sync --> contracts_Observability
     runner_Sync --> engine_Execution
     runner_Sync --> runner_Data
     runner_Sync --> runner_Events
-    runner_Sync --> contracts_Dependency
     runner_Sync --> contracts_Validation
     runner__ --> contracts_Interfaces
     runner__ --> contracts_Observability
@@ -415,12 +416,15 @@ flowchart LR
     cli_Console --> contracts_Dependency
     cli_Console --> document__
     cli_Console --> cli_Renderer
-    cli_Console --> contracts_Exceptions
-    cli_Console --> document_Parser
-    cli_Console --> protocol_http_Policy
     cli_Console --> contracts_Validation
     cli_Console --> sources_Policy
     cli_Console --> sources__
+    cli_Console --> contracts_Exceptions
+    cli_Console --> protocol_http_Policy
+    cli_Console --> runner_Policy
+    cli_Console --> document_Parser
+    cli_Console --> runner_Exceptions
+    cli_Console --> runner_Preflight
     cli_Console --> protocol_http__
     cli_Exceptions --> engine_Exceptions
     cli_Generator --> contracts_Interfaces
