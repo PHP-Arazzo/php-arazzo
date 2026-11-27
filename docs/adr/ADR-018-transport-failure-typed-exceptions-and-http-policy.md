@@ -47,20 +47,17 @@ A single domain service, `ErrorClassifier`, serves as the source of truth for er
 - Maps PSR-18 exceptions (`ClientExceptionInterface`, `NetworkExceptionInterface`, `RequestExceptionInterface`), Guzzle exceptions, and domain exceptions into canonical categories: `transport`, `protocol`, `criteria`, `schema`, `authoring`.
 
 ### 4. Unified `HttpPolicy` in `packages/protocol-http/src/Policy/HttpPolicy.php`
-Rather than creating fragmented child policy classes (`HttpExecutionPolicy`, `RateLimitPolicy`), the existing `HttpPolicy` value object is enriched to be the single canonical configuration object for `protocol-http`, conforming to ADR-010 (`final readonly`, typed `DEFAULT_*` constants, `::default()`, immutable `with*()` methods):
+Rather than creating fragmented top-level policy classes (`HttpExecutionPolicy`, `HttpExecutionPolicyCollection`), `HttpPolicy` is the pure, immutable aggregate policy root for `protocol-http` (conforming to ADR-010: `final readonly`, typed `DEFAULT_*` constants, `::default()`, immutable `with*()` methods, zero runtime services, zero magic `__get()` forwarding, and named `InvalidHttpPolicyException` invariant checks). It composes cohesive behavioral Value Objects and supports optional single-level per-source `HttpPolicy` overrides (`withSourceOverride()`, `withoutSourceOverride()`, `forSource()`), while per-source credentials remain strictly owned by `SourcePolicy`:
 - **Validation**: `strictValidation` (`DEFAULT_STRICT_VALIDATION = true`).
-- **Idempotency**: `idempotencyInjector`.
-- **Rate-Limiting & Concurrency**:
-  - `burst` (`DEFAULT_BURST = 1`)
-  - `maxConcurrent` (`DEFAULT_MAX_CONCURRENT = 4`)
-  - `respectRetryAfter` (`DEFAULT_RESPECT_RETRY_AFTER = true`)
-  - `rateLimitScope` (`RateLimitScope::Host`)
-  - `failFast` (`DEFAULT_FAIL_FAST = false`)
-- **Safety Bounds (Issue #374)**:
-  - `maxRedirects`
-  - `maxResponseBytes`
-  - `executionTimeoutSeconds`
-  - `allowedSchemes` & `deniedHosts` (SSRF protection)
+- **Idempotency (`IdempotencyPolicy`)**: `enabled` (`false`), `headerName` (`'Idempotency-Key'`) — pure VO replacing `@internal IdempotencyKeyInjector` on the policy surface.
+- **Rate-Limiting & Concurrency (`RateLimitPolicy`)**: `requestsPerSecond` (`null`), `burst` (`1`), `maxConcurrent` (`4`), `scope` (`RateLimitScope::Host`), `failFast` (`false`). Runtime `OutboundRateLimiter` lives strictly on `HttpProtocol` (`HttpProtocol::withRateLimiter()`).
+- **Safety Bounds (`OutboundSafetyPolicy` — Issue #374)**:
+  - `RedirectPolicy`: `maxRedirects` (`10`), `allowDowngrade` (`false`), RFC 9110 hop handling, and cross-origin credential stripping.
+  - `NetworkPolicy`: `allowedSchemes` (`['http', 'https']`), `allowedHosts` (`[]`), `deniedHosts` (`[]`), `blockLinkLocal` (`true` — `169.254.0.0/16`, `fe80::/10`, `0.0.0.0/8`, `::/128`), `blockPrivateNetworks` (`false`), enforced lexically and via injectable `HostResolver` DNS checks (fail-open on DNS lookup miss).
+  - `TransferPolicy`: `maxResponseBytes` (`10 MiB`), `connectTimeout` (`10.0`), enforced via `Content-Length` fast-reject + bounded streaming read.
+  - Refusals throw `HttpPolicyViolationException` (carrying stable `transport.*` error codes preserved through `TransportException::$errorCode`), emit PSR-3 warnings and tracer span events, and fail steps via `StepExecutionOutcome::failed(..., failureCategory: 'transport')`.
+- **Workflow Execution Deadline (`packages/runner`)**:
+  - Because `protocol-http` is strictly isolated from `runner` and executes one step at a time, cumulative workflow `executionTimeout` (`DEFAULT_EXECUTION_TIMEOUT = 300.0`, `null` to disable) lives on `ExecutionBudgets` / `ExecutionPolicy` and is enforced by `WorkflowExecutor` via `ClockInterface`, throwing `ExecutionTimeoutException` (`transport.execution_timeout`).
 
 ### 5. Implementation Sequence for Release Readiness
 To unblock Epic #24 and its downstream release readiness dependencies (#22, #26, #27), implementation follows the strict MVP order:

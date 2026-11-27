@@ -58,3 +58,40 @@ it('normalizes raw throwables into typed TransportException instances', function
     $unchanged = $classifier->toTransportException($alreadyTyped, 'https://api.example.com/users', 'GET');
     expect($unchanged)->toBe($alreadyTyped);
 });
+
+it('classifies and preserves stable transport.* error codes through TransportException normalization', function (): void {
+    $classifier = new ErrorClassifier();
+
+    $policyError = new class('Redirect limit exceeded') extends RuntimeException
+    {
+        public function getErrorCode(): string
+        {
+            return 'transport.redirect_limit';
+        }
+    };
+
+    expect($classifier->classify($policyError))->toBe('transport');
+
+    $normalized = $classifier->toTransportException($policyError, 'https://api.example.com/redirect', 'GET');
+
+    expect($normalized)->toBeInstanceOf(TransportException::class)
+        ->and($normalized->errorCode)->toBe('transport.redirect_limit')
+        ->and($normalized->getErrorCode())->toBe('transport.redirect_limit')
+        ->and($normalized->targetUrl)->toBe('https://api.example.com/redirect')
+        ->and($normalized->requestMethod)->toBe('GET')
+        ->and($normalized->getPrevious())->toBe($policyError);
+
+    $rateLimited = new class('Rate limited') extends RuntimeException
+    {
+        public function getErrorCode(): string
+        {
+            return 'transport.rate_limited';
+        }
+    };
+
+    $normalizedRate = $classifier->toTransportException($rateLimited, 'https://api.example.com/items', 'POST');
+
+    expect($normalizedRate)->toBeInstanceOf(TransportException::class)
+        ->and($normalizedRate->errorCode)->toBe('transport.rate_limited')
+        ->and($normalizedRate->getErrorCode())->toBe('transport.rate_limited');
+});

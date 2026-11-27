@@ -11,11 +11,11 @@ use Alama\Arazzo\Contracts\Spec\NormalizedOpenApiOperation;
 use Alama\Arazzo\Contracts\Spec\OpenApiPayload;
 use Alama\Arazzo\Engine\Execution\ParameterSerializer;
 use Alama\Arazzo\Engine\Execution\TypeCaster;
+use Alama\Arazzo\Protocol\Http\Exceptions\HttpPolicyViolationException;
 use Alama\Arazzo\Protocol\Http\Execution\Interfaces\OpenApiExecutorInterface;
 use Alama\Arazzo\Protocol\Http\Policy\HttpPolicy;
 use Alama\Arazzo\Protocol\Http\Resolver\OpenApiOperationHandle;
 use Exception;
-use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Utils;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
@@ -43,7 +43,9 @@ class DefaultOpenApiExecutor implements OpenApiExecutorInterface
 
     private readonly HttpPolicy $policy;
 
-    private readonly OutboundRateLimiter $rateLimiter;
+    private OutboundRateLimiter $rateLimiter;
+
+    private SafeHttpDispatcher $dispatcher;
 
     public function __construct(
         private ClientInterface $httpClient,
@@ -58,11 +60,30 @@ class DefaultOpenApiExecutor implements OpenApiExecutorInterface
         $this->logger = $logger ?? new NullLogger();
         $this->tracer = $tracer ?? new NullTracer();
         $this->policy = $policy ?? HttpPolicy::default();
-        $this->rateLimiter = $this->policy->rateLimiter ?? new OutboundRateLimiter();
+        $this->rateLimiter = new OutboundRateLimiter();
+        $this->dispatcher = new SafeHttpDispatcher($this->httpClient);
+    }
+
+    public function withRateLimiter(OutboundRateLimiter $rateLimiter): self
+    {
+        $copy = clone $this;
+        $copy->rateLimiter = $rateLimiter;
+
+        return $copy;
+    }
+
+    public function withHostResolver(HostResolver $hostResolver): self
+    {
+        $copy = clone $this;
+        $copy->dispatcher = new SafeHttpDispatcher(
+            $this->httpClient,
+            new OutboundSafetyGuard($hostResolver),
+        );
+
+        return $copy;
     }
 
     /**
-     * @throws GuzzleException
      * @throws ClientExceptionInterface
      * @throws \JsonException
      */
@@ -75,6 +96,7 @@ class DefaultOpenApiExecutor implements OpenApiExecutorInterface
     ): ResponseInterface {
         $request = $this->buildRequest($operation, $payload, $sourcePolicy);
         $request = $this->policyApplicator->applyToRequest($request, $operation, $sourcePolicy);
+        $credentialHeaders = $this->policyApplicator->injectedHeaderNames($operation, $sourcePolicy);
 
         if ($requestInterceptor !== null) {
             $intercepted = $requestInterceptor($request);
@@ -82,8 +104,9 @@ class DefaultOpenApiExecutor implements OpenApiExecutorInterface
         }
 
         $request = $this->injectTraceContext($request);
+        $effectivePolicy = $this->policy->forSource($operation->source->name);
 
-        return $this->dispatchRequest($request, $timeoutSeconds);
+        return $this->dispatchRequest($request, $effectivePolicy, $timeoutSeconds, $credentialHeaders);
     }
 
     private function buildRequest(
@@ -207,21 +230,28 @@ class DefaultOpenApiExecutor implements OpenApiExecutorInterface
         return $request;
     }
 
-    private function dispatchRequest(RequestInterface $request, ?float $timeoutSeconds): ResponseInterface
-    {
+    /**
+     * @param  list<string>  $credentialHeaders
+     */
+    private function dispatchRequest(
+        RequestInterface $request,
+        HttpPolicy $effectivePolicy,
+        ?float $timeoutSeconds,
+        array $credentialHeaders,
+    ): ResponseInterface {
         $span = $this->tracer->startSpan('arazzo.http.request', [
             'http.request.method' => $request->getMethod(),
             'url.full' => (string) $request->getUri(),
         ]);
 
-        $targetKey = $this->rateLimiter->resolveTargetKey($request, $this->policy->scope);
+        $targetKey = $this->rateLimiter->resolveTargetKey($request, $effectivePolicy->rateLimit->scope);
         $acquired = false;
 
         try {
-            $this->rateLimiter->acquire($targetKey, $this->policy, $this->logger, $span);
+            $this->rateLimiter->acquire($targetKey, $effectivePolicy->rateLimit, $this->logger, $span);
             $acquired = true;
 
-            $response = $this->sendViaClient($request, $timeoutSeconds);
+            $response = $this->dispatcher->dispatch($request, $effectivePolicy->safety, $timeoutSeconds, $credentialHeaders);
             $span->setAttribute('http.response.status_code', $response->getStatusCode());
             $span->setStatus(true);
 
@@ -233,6 +263,17 @@ class DefaultOpenApiExecutor implements OpenApiExecutorInterface
 
             return $response;
         } catch (Throwable $e) {
+            if ($e instanceof HttpPolicyViolationException) {
+                $context = [
+                    'code' => $e->getErrorCode(),
+                    'method' => $request->getMethod(),
+                    'url' => (string) $request->getUri(),
+                    'message' => $e->getMessage(),
+                ];
+                $this->logger->warning($e->getErrorCode(), $context);
+                $span->addEvent($e->getErrorCode(), $context);
+            }
+
             $span->recordException($e);
             $span->setStatus(false, $e->getMessage());
 
@@ -249,30 +290,6 @@ class DefaultOpenApiExecutor implements OpenApiExecutorInterface
             }
             $span->end();
         }
-    }
-
-    private function sendViaClient(RequestInterface $request, ?float $timeoutSeconds): ResponseInterface
-    {
-        // PSR-18 cannot express per-request timeouts; delegate to Guzzle when
-        // available so declared step or SourcePolicy timeouts are enforced.
-        if ($timeoutSeconds !== null && $this->httpClient instanceof \GuzzleHttp\ClientInterface) {
-            $headers = array_map(
-                static fn (array $values): array => $values === [] ? [''] : array_values(array_map(strval(...), $values)),
-                $request->getHeaders(),
-            );
-
-            return $this->httpClient->request(
-                $request->getMethod(),
-                (string) $request->getUri(),
-                [
-                    'headers' => $headers,
-                    'body' => (string) $request->getBody(),
-                    'timeout' => $timeoutSeconds,
-                ],
-            );
-        }
-
-        return $this->httpClient->sendRequest($request);
     }
 
     /**

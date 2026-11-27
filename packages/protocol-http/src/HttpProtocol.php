@@ -15,6 +15,7 @@ use Alama\Arazzo\Expression\ExpressionEngine;
 use Alama\Arazzo\Expression\Interfaces\ExpressionEngineInterface;
 use Alama\Arazzo\Protocol\Http\Execution\DefaultOpenApiExecutor;
 use Alama\Arazzo\Protocol\Http\Execution\HttpRuntimeContext;
+use Alama\Arazzo\Protocol\Http\Execution\HttpStepPipeline;
 use Alama\Arazzo\Protocol\Http\Execution\OutboundRateLimiter;
 use Alama\Arazzo\Protocol\Http\Execution\RequestSchemaValidator;
 use Alama\Arazzo\Protocol\Http\Execution\ResponseSchemaValidator;
@@ -43,6 +44,7 @@ final readonly class HttpProtocol
         private RequestFactoryInterface $requestFactory,
         private SourcesInterface $sources,
         private HttpRuntimeContext $runtime,
+        private OutboundRateLimiter $rateLimiter = new OutboundRateLimiter(),
     ) {
         $this->operationResolver = OpenApiOperationResolver::create($this->sources);
     }
@@ -71,6 +73,7 @@ final readonly class HttpProtocol
             $this->requestFactory,
             $this->sources,
             $this->runtime->withPolicy($policy),
+            $this->rateLimiter,
         );
     }
 
@@ -81,6 +84,7 @@ final readonly class HttpProtocol
             $this->requestFactory,
             $this->sources->withLogger($logger),
             $this->runtime->withLogger($logger),
+            $this->rateLimiter,
         );
     }
 
@@ -91,6 +95,7 @@ final readonly class HttpProtocol
             $this->requestFactory,
             $this->sources->withTracer($tracer),
             $this->runtime->withTracer($tracer),
+            $this->rateLimiter,
         );
     }
 
@@ -100,7 +105,8 @@ final readonly class HttpProtocol
             $this->httpClient,
             $this->requestFactory,
             $this->sources,
-            $this->runtime->withRateLimiter($rateLimiter),
+            $this->runtime,
+            $rateLimiter,
         );
     }
 
@@ -108,22 +114,28 @@ final readonly class HttpProtocol
         ?bool $strictValidation = null,
         ?IdempotencyKeyInjector $idempotencyInjector = null,
     ): OperationExecutorPluginInterface {
-        return new HttpStepExecutor(
-            openApiExecutor: new DefaultOpenApiExecutor(
-                $this->httpClient,
-                $this->requestFactory,
-                $this->runtime->logger,
-                $this->runtime->tracer,
-                $this->runtime->policy,
-            ),
+        $policy = $strictValidation !== null
+            ? $this->runtime->policy->withStrictValidation($strictValidation)
+            : $this->runtime->policy;
+
+        $openApiExecutor = (new DefaultOpenApiExecutor(
+            $this->httpClient,
+            $this->requestFactory,
+            $this->runtime->logger,
+            $this->runtime->tracer,
+            $policy,
+        ))->withRateLimiter($this->rateLimiter);
+
+        return (new HttpStepExecutor(
+            openApiExecutor: $openApiExecutor,
             operationResolver: $this->operationResolver,
             evaluationEngine: $this->runtime->evaluationEngine,
             outputExtractor: $this->outputExtractor(),
             schemaValidator: new ResponseSchemaValidator($this->operationResolver),
-            strictDefault: $strictValidation ?? $this->runtime->policy->strictValidation,
-            injector: $idempotencyInjector ?? $this->runtime->policy->idempotencyInjector,
+            strictDefault: $policy->strictValidation,
+            injector: $idempotencyInjector,
             requestValidator: new RequestSchemaValidator($this->operationResolver),
-        );
+        ))->withPipeline(new HttpStepPipeline($this->runtime->evaluationEngine, $policy));
     }
 
     public function resolver(): OperationResolverInterface

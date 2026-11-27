@@ -48,4 +48,13 @@ final class ExecutionError extends RunnerException
 
         return new self($message, '', 'step.missing_dependency_output');
     }
+
+    public static function invalidExecutionTimeout(float $seconds): self
+    {
+        return new self(
+            "ExecutionBudgets executionTimeout must be greater than zero or null, got {$seconds}.",
+            '/workflows',
+            'runner.invalid_execution_timeout',
+        );
+    }
 }

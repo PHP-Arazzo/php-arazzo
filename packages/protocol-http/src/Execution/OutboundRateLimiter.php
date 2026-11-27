@@ -8,7 +8,7 @@ use Alama\Arazzo\Contracts\Clock\SystemClock;
 use Alama\Arazzo\Contracts\Observability\SpanInterface;
 use Alama\Arazzo\Protocol\Http\Enum\RateLimitScope;
 use Alama\Arazzo\Protocol\Http\Exceptions\RateLimitExceededException;
-use Alama\Arazzo\Protocol\Http\Policy\HttpPolicy;
+use Alama\Arazzo\Protocol\Http\Policy\RateLimitPolicy;
 use Psr\Clock\ClockInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
@@ -72,7 +72,7 @@ final class OutboundRateLimiter
      */
     public function acquire(
         string $targetKey,
-        HttpPolicy $policy,
+        RateLimitPolicy $policy,
         ?LoggerInterface $logger = null,
         ?SpanInterface $span = null,
     ): void {
@@ -94,7 +94,7 @@ final class OutboundRateLimiter
 
     private function acquireToken(
         string $targetKey,
-        HttpPolicy $policy,
+        RateLimitPolicy $policy,
         ?LoggerInterface $logger,
         ?SpanInterface $span,
     ): void {
@@ -145,7 +145,7 @@ final class OutboundRateLimiter
         }
     }
 
-    private function acquireConcurrencySlot(string $targetKey, HttpPolicy $policy): void
+    private function acquireConcurrencySlot(string $targetKey, RateLimitPolicy $policy): void
     {
         $current = $this->activeInFlight[$targetKey] ?? 0;
         if ($current < $policy->maxConcurrent) {

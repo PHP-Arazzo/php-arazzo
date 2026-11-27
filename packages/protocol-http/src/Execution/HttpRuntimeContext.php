@@ -25,8 +25,6 @@ final readonly class HttpRuntimeContext
 
     public TracerInterface $tracer;
 
-    public OutboundRateLimiter $rateLimiter;
-
     public function __construct(
         public EvaluationEngineInterface $evaluationEngine,
         public ExpressionEngineInterface $expressionEngine,
@@ -37,7 +35,6 @@ final readonly class HttpRuntimeContext
         $this->policy = $policy ?? HttpPolicy::default();
         $this->logger = $logger ?? new NullLogger();
         $this->tracer = $tracer ?? new NullTracer();
-        $this->rateLimiter = $this->policy->rateLimiter ?? new OutboundRateLimiter();
     }
 
     public function withPolicy(HttpPolicy $policy): self
@@ -71,10 +68,5 @@ final readonly class HttpRuntimeContext
             logger: $this->logger,
             tracer: $tracer,
         );
-    }
-
-    public function withRateLimiter(OutboundRateLimiter $rateLimiter): self
-    {
-        return $this->withPolicy($this->policy->withRateLimiter($rateLimiter));
     }
 }

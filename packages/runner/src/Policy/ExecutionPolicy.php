@@ -17,6 +17,8 @@ final readonly class ExecutionPolicy
 
     public const int DEFAULT_MAX_WORKFLOW_DEPTH = ExecutionBudgets::DEFAULT_MAX_WORKFLOW_DEPTH;
 
+    public const float DEFAULT_EXECUTION_TIMEOUT = ExecutionBudgets::DEFAULT_EXECUTION_TIMEOUT;
+
     public const bool DEFAULT_PREFLIGHT = true;
 
     public const int DEFAULT_STATE_TTL_SECONDS = 86400;
@@ -50,6 +52,11 @@ final readonly class ExecutionPolicy
         return $this->budgets->maxWorkflowDepth;
     }
 
+    public function executionTimeout(): ?float
+    {
+        return $this->budgets->executionTimeout;
+    }
+
     public function withMaxSteps(int $maxSteps): self
     {
         return new self($this->budgets->withMaxSteps($maxSteps), $this->retryPolicy, $this->preflight, $this->stateTtlSeconds, $this->sourcePolicies, $this->noDeps);
@@ -58,6 +65,18 @@ final readonly class ExecutionPolicy
     public function withMaxWorkflowDepth(int $maxWorkflowDepth): self
     {
         return new self($this->budgets->withMaxWorkflowDepth($maxWorkflowDepth), $this->retryPolicy, $this->preflight, $this->stateTtlSeconds, $this->sourcePolicies, $this->noDeps);
+    }
+
+    public function withExecutionTimeout(?float $seconds): self
+    {
+        return new self(
+            budgets: $this->budgets->withExecutionTimeout($seconds),
+            retryPolicy: $this->retryPolicy,
+            preflight: $this->preflight,
+            stateTtlSeconds: $this->stateTtlSeconds,
+            sourcePolicies: $this->sourcePolicies,
+            noDeps: $this->noDeps,
+        );
     }
 
     public function withRetryPolicy(RetryPolicy $retryPolicy): self

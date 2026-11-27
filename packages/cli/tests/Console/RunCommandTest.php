@@ -727,11 +727,11 @@ it('accepts rate limiting and concurrency CLI flags', function (): void {
     expect($tester->getStatusCode())->toBe(0)
         ->and($tester->getDisplay())->toContain('workflow pingFlow: succeeded')
         ->and($spy->policy)->not->toBeNull()
-        ->and($spy->policy?->requestsPerSecond)->toBe(10.0)
-        ->and($spy->policy?->burst)->toBe(2)
-        ->and($spy->policy?->maxConcurrent)->toBe(8)
-        ->and($spy->policy?->scope)->toBe(RateLimitScope::Run)
-        ->and($spy->policy?->failFast)->toBeTrue();
+        ->and($spy->policy?->rateLimit->requestsPerSecond)->toBe(10.0)
+        ->and($spy->policy?->rateLimit->burst)->toBe(2)
+        ->and($spy->policy?->rateLimit->maxConcurrent)->toBe(8)
+        ->and($spy->policy?->rateLimit->scope)->toBe(RateLimitScope::Run)
+        ->and($spy->policy?->rateLimit->failFast)->toBeTrue();
 });
 
 function multiWorkflowDoc(string $tmp): void

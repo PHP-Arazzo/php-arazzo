@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Alama\Arazzo\Contracts\Exceptions\SchemaValidationException;
 use Alama\Arazzo\Contracts\Interfaces\OperationExecutorPluginInterface;
 use Alama\Arazzo\Contracts\Interfaces\OutputExtractorInterface;
 use Alama\Arazzo\Contracts\Observability\SpanInterface;
@@ -19,8 +20,10 @@ use Alama\Arazzo\Contracts\Spec\StepFlow;
 use Alama\Arazzo\Contracts\Spec\StepIo;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
 use Alama\Arazzo\Document\OperationResolverInterface;
+use Alama\Arazzo\Protocol\Http\Execution\OutboundRateLimiter;
 use Alama\Arazzo\Protocol\Http\HttpProtocol;
 use Alama\Arazzo\Protocol\Http\Policy\HttpPolicy;
+use Alama\Arazzo\Protocol\Http\Policy\IdempotencyPolicy;
 use Alama\Arazzo\Sources\Sources;
 use GuzzleHttp\Psr7\HttpFactory;
 use GuzzleHttp\Psr7\Response;
@@ -210,4 +213,139 @@ it('propagates HttpPolicy, SourcePolicy (isolated per source), LoggerInterface, 
         ->and($httpSpans[0]['status'])->toBeTrue()
         ->and($httpSpans[1]['status'])->toBeTrue()
         ->and($httpSpans[2]['status'])->toBeFalse();
+});
+
+it('wires IdempotencyPolicy and OutboundRateLimiter cleanly through HttpProtocol without leaking services into HttpPolicy', function (): void {
+    $captured = [];
+    $client = new class($captured) implements ClientInterface
+    {
+        /** @param list<RequestInterface> $captured */
+        public function __construct(public array &$captured) {}
+
+        public function sendRequest(RequestInterface $request): ResponseInterface
+        {
+            $this->captured[] = $request;
+
+            return new Response(201, ['Content-Type' => 'application/json'], '{"id":1}');
+        }
+    };
+
+    $openApi = [
+        'openapi' => '3.0.3',
+        'info' => ['title' => 'Orders', 'version' => '1.0'],
+        'servers' => [['url' => 'https://orders.test']],
+        'paths' => [
+            '/orders' => ['post' => ['operationId' => 'createOrder', 'responses' => ['201' => ['description' => 'created']]]],
+        ],
+    ];
+
+    $sources = Sources::create()
+        ->withDocument(new SourceDocument('orders', SourceType::Openapi, 'https://orders.test/openapi.json', $openApi));
+
+    $http = HttpProtocol::create($client, new HttpFactory(), $sources)
+        ->withPolicy(
+            HttpPolicy::default()
+                ->withStrictValidation(false)
+                ->withIdempotency(IdempotencyPolicy::enabled('X-Order-Idemp')),
+        )
+        ->withRateLimiter(new OutboundRateLimiter());
+
+    $doc = new ArazzoDocument(
+        arazzo: '1.0.1',
+        info: new Info(title: 'Orders', summary: null, description: null, version: '1.0'),
+        sourceDescriptions: [new SourceDescription(name: 'orders', url: 'https://orders.test/openapi.json', type: SourceType::Openapi)],
+        workflows: [],
+        components: new Components(inputs: [], parameters: [], successActions: [], failureActions: []),
+        specificationExtensions: [],
+    );
+
+    $step = StepFactory::http('create', null, new StepFlow(), new StepIo(), operationId: 'createOrder');
+    $outcome = $http->executor()->execute($step, new WorkflowContext('wf'), $doc, 'exec-1');
+
+    expect($outcome->statusCode)->toBe(201)
+        ->and($captured)->toHaveCount(1)
+        ->and($captured[0]->hasHeader('X-Order-Idemp'))->toBeTrue();
+});
+
+it('applies per-source HttpPolicy overrides for strictValidation and idempotency in HttpStepExecutor', function (): void {
+    $captured = [];
+    $client = new class($captured) implements ClientInterface
+    {
+        /** @param list<RequestInterface> $captured */
+        public function __construct(public array &$captured) {}
+
+        public function sendRequest(RequestInterface $request): ResponseInterface
+        {
+            $this->captured[] = $request;
+
+            // Intentionally violates declared 200 integer schema to prove strictValidation override works
+            return new Response(200, ['Content-Type' => 'application/json'], '{"id":"not-an-integer"}');
+        }
+    };
+
+    $openApi = static fn (string $host, string $opId): array => [
+        'openapi' => '3.0.3',
+        'info' => ['title' => $opId, 'version' => '1.0'],
+        'servers' => [['url' => "https://{$host}"]],
+        'paths' => [
+            '/items' => [
+                'post' => [
+                    'operationId' => $opId,
+                    'responses' => [
+                        '200' => [
+                            'description' => 'ok',
+                            'content' => [
+                                'application/json' => [
+                                    'schema' => [
+                                        'type' => 'object',
+                                        'properties' => ['id' => ['type' => 'integer']],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ],
+    ];
+
+    $sources = Sources::create()
+        ->withDocument(new SourceDocument('lenientApi', SourceType::Openapi, 'https://lenient.test/openapi.json', $openApi('lenient.test', 'createLenient')))
+        ->withDocument(new SourceDocument('strictApi', SourceType::Openapi, 'https://strict.test/openapi.json', $openApi('strict.test', 'createStrict')));
+
+    $policy = HttpPolicy::default()
+        ->withStrictValidation(true)
+        ->withSourceOverride(
+            'lenientApi',
+            HttpPolicy::default()
+                ->withStrictValidation(false)
+                ->withIdempotency(IdempotencyPolicy::enabled('X-Lenient-Idemp')),
+        );
+
+    $executor = HttpProtocol::create($client, new HttpFactory(), $sources)
+        ->withPolicy($policy)
+        ->executor();
+
+    $doc = new ArazzoDocument(
+        arazzo: '1.0.1',
+        info: new Info(title: 'Per-Source', summary: null, description: null, version: '1.0'),
+        sourceDescriptions: [
+            new SourceDescription(name: 'lenientApi', url: 'https://lenient.test/openapi.json', type: SourceType::Openapi),
+            new SourceDescription(name: 'strictApi', url: 'https://strict.test/openapi.json', type: SourceType::Openapi),
+        ],
+        workflows: [],
+        components: new Components(inputs: [], parameters: [], successActions: [], failureActions: []),
+        specificationExtensions: [],
+    );
+
+    $lenientStep = StepFactory::http('s1', null, new StepFlow(), new StepIo(), operationId: '$sourceDescriptions.lenientApi.createLenient');
+    $lenientOutcome = $executor->execute($lenientStep, new WorkflowContext('wf'), $doc, 'exec-1');
+
+    expect($lenientOutcome->statusCode)->toBe(200)
+        ->and($captured[0]->hasHeader('X-Lenient-Idemp'))->toBeTrue();
+
+    $strictStep = StepFactory::http('s2', null, new StepFlow(), new StepIo(), operationId: '$sourceDescriptions.strictApi.createStrict');
+    expect(fn () => $executor->execute($strictStep, new WorkflowContext('wf'), $doc, 'exec-1'))
+        ->toThrow(SchemaValidationException::class)
+        ->and($captured[1]->hasHeader('X-Lenient-Idemp'))->toBeFalse();
 });

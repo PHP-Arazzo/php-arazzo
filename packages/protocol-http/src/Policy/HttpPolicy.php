@@ -4,58 +4,45 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Protocol\Http\Policy;
 
-use Alama\Arazzo\Engine\Execution\IdempotencyKeyInjector;
-use Alama\Arazzo\Protocol\Http\Enum\RateLimitScope;
-use Alama\Arazzo\Protocol\Http\Execution\OutboundRateLimiter;
+use Alama\Arazzo\Protocol\Http\Exceptions\InvalidHttpPolicyException;
 
 /**
- * Immutable policy configuring HTTP step execution behavior:
- * response schema validation strictness, idempotency key injection,
- * outbound rate limiting, and concurrency capping.
- *
- * @property-read ?float $requestsPerSecond
- * @property-read int $burst
- * @property-read int $maxConcurrent
- * @property-read RateLimitScope $scope
- * @property-read bool $failFast
+ * Pure immutable aggregate policy root configuring HTTP step execution behavior:
+ * schema validation strictness, idempotency injection, rate limiting, outbound
+ * safety bounds, and optional single-level per-source overrides.
  */
 final readonly class HttpPolicy
 {
     public const bool DEFAULT_STRICT_VALIDATION = true;
 
-    public const int DEFAULT_BURST = 1;
+    /** @var array<string, self> */
+    public array $sourceOverrides;
 
-    public const int DEFAULT_MAX_CONCURRENT = 4;
-
-    public const bool DEFAULT_RESPECT_RETRY_AFTER = true;
-
-    public const RateLimitScope DEFAULT_SCOPE = RateLimitScope::Host;
-
-    public const bool DEFAULT_FAIL_FAST = false;
-
+    /**
+     * @param  array<string, self>  $sourceOverrides  Keyed by `sourceDescriptions[*].name`
+     */
     public function __construct(
         public bool $strictValidation = self::DEFAULT_STRICT_VALIDATION,
-        public ?IdempotencyKeyInjector $idempotencyInjector = null,
-        public OutboundRequestPolicy $rateLimit = new OutboundRequestPolicy(),
-        public bool $respectRetryAfter = self::DEFAULT_RESPECT_RETRY_AFTER,
-        public ?OutboundRateLimiter $rateLimiter = null,
-    ) {}
+        public IdempotencyPolicy $idempotency = new IdempotencyPolicy(),
+        public RateLimitPolicy $rateLimit = new RateLimitPolicy(),
+        public OutboundSafetyPolicy $safety = new OutboundSafetyPolicy(),
+        array $sourceOverrides = [],
+    ) {
+        $validated = [];
+        foreach ($sourceOverrides as $sourceName => $override) {
+            $trimmed = trim($sourceName);
+            if ($trimmed === '') {
+                throw InvalidHttpPolicyException::emptySourceName();
+            }
 
-    public function __get(string $name): mixed
-    {
-        return match ($name) {
-            'requestsPerSecond' => $this->rateLimit->requestsPerSecond,
-            'burst' => $this->rateLimit->burst,
-            'maxConcurrent' => $this->rateLimit->maxConcurrent,
-            'scope' => $this->rateLimit->scope,
-            'failFast' => $this->rateLimit->failFast,
-            default => null,
-        };
-    }
+            if ($override->sourceOverrides !== []) {
+                throw InvalidHttpPolicyException::nestedSourceOverrides($trimmed);
+            }
 
-    public function __isset(string $name): bool
-    {
-        return in_array($name, ['requestsPerSecond', 'burst', 'maxConcurrent', 'scope', 'failFast'], true);
+            $validated[$trimmed] = $override;
+        }
+
+        $this->sourceOverrides = $validated;
     }
 
     public static function default(): self
@@ -63,116 +50,89 @@ final readonly class HttpPolicy
         return new self();
     }
 
-    public function requestsPerSecond(): ?float
-    {
-        return $this->rateLimit->requestsPerSecond;
-    }
-
-    public function burst(): int
-    {
-        return $this->rateLimit->burst;
-    }
-
-    public function maxConcurrent(): int
-    {
-        return $this->rateLimit->maxConcurrent;
-    }
-
-    public function scope(): RateLimitScope
-    {
-        return $this->rateLimit->scope;
-    }
-
-    public function failFast(): bool
-    {
-        return $this->rateLimit->failFast;
-    }
-
     public function withStrictValidation(bool $strictValidation = true): self
     {
         return new self(
             strictValidation: $strictValidation,
-            idempotencyInjector: $this->idempotencyInjector,
+            idempotency: $this->idempotency,
             rateLimit: $this->rateLimit,
-            respectRetryAfter: $this->respectRetryAfter,
-            rateLimiter: $this->rateLimiter,
+            safety: $this->safety,
+            sourceOverrides: $this->sourceOverrides,
         );
     }
 
-    public function withIdempotencyInjector(?IdempotencyKeyInjector $injector): self
+    public function withIdempotency(IdempotencyPolicy $idempotency): self
     {
         return new self(
             strictValidation: $this->strictValidation,
-            idempotencyInjector: $injector,
+            idempotency: $idempotency,
             rateLimit: $this->rateLimit,
-            respectRetryAfter: $this->respectRetryAfter,
-            rateLimiter: $this->rateLimiter,
+            safety: $this->safety,
+            sourceOverrides: $this->sourceOverrides,
         );
     }
 
-    public function withRateLimit(?float $requestsPerSecond, int $burst = self::DEFAULT_BURST): self
+    public function withRateLimit(RateLimitPolicy $rateLimit): self
     {
         return new self(
             strictValidation: $this->strictValidation,
-            idempotencyInjector: $this->idempotencyInjector,
-            rateLimit: $this->rateLimit->withRateLimit($requestsPerSecond, $burst),
-            respectRetryAfter: $this->respectRetryAfter,
-            rateLimiter: $this->rateLimiter,
+            idempotency: $this->idempotency,
+            rateLimit: $rateLimit,
+            safety: $this->safety,
+            sourceOverrides: $this->sourceOverrides,
         );
     }
 
-    public function withMaxConcurrent(int $maxConcurrent): self
+    public function withSafety(OutboundSafetyPolicy $safety): self
     {
         return new self(
             strictValidation: $this->strictValidation,
-            idempotencyInjector: $this->idempotencyInjector,
-            rateLimit: $this->rateLimit->withMaxConcurrent($maxConcurrent),
-            respectRetryAfter: $this->respectRetryAfter,
-            rateLimiter: $this->rateLimiter,
-        );
-    }
-
-    public function withScope(RateLimitScope|string $scope): self
-    {
-        return new self(
-            strictValidation: $this->strictValidation,
-            idempotencyInjector: $this->idempotencyInjector,
-            rateLimit: $this->rateLimit->withScope($scope),
-            respectRetryAfter: $this->respectRetryAfter,
-            rateLimiter: $this->rateLimiter,
-        );
-    }
-
-    public function withRespectRetryAfter(bool $respectRetryAfter = true): self
-    {
-        return new self(
-            strictValidation: $this->strictValidation,
-            idempotencyInjector: $this->idempotencyInjector,
+            idempotency: $this->idempotency,
             rateLimit: $this->rateLimit,
-            respectRetryAfter: $respectRetryAfter,
-            rateLimiter: $this->rateLimiter,
+            safety: $safety,
+            sourceOverrides: $this->sourceOverrides,
         );
     }
 
-    public function withFailFast(bool $failFast = true): self
+    public function withSourceOverride(string $sourceName, self $override): self
     {
-        return new self(
-            strictValidation: $this->strictValidation,
-            idempotencyInjector: $this->idempotencyInjector,
-            rateLimit: $this->rateLimit->withFailFast($failFast),
-            respectRetryAfter: $this->respectRetryAfter,
-            rateLimiter: $this->rateLimiter,
-        );
-    }
+        $overrides = $this->sourceOverrides;
+        $overrides[$sourceName] = $override;
 
-    public function withRateLimiter(?OutboundRateLimiter $rateLimiter): self
-    {
         return new self(
             strictValidation: $this->strictValidation,
-            idempotencyInjector: $this->idempotencyInjector,
+            idempotency: $this->idempotency,
             rateLimit: $this->rateLimit,
-            respectRetryAfter: $this->respectRetryAfter,
-            rateLimiter: $rateLimiter,
+            safety: $this->safety,
+            sourceOverrides: $overrides,
         );
+    }
+
+    public function withoutSourceOverride(string $sourceName): self
+    {
+        $overrides = $this->sourceOverrides;
+        unset($overrides[trim($sourceName)]);
+
+        return new self(
+            strictValidation: $this->strictValidation,
+            idempotency: $this->idempotency,
+            rateLimit: $this->rateLimit,
+            safety: $this->safety,
+            sourceOverrides: $overrides,
+        );
+    }
+
+    public function hasSourceOverride(string $sourceName): bool
+    {
+        return isset($this->sourceOverrides[trim($sourceName)]);
+    }
+
+    public function forSource(?string $sourceName): self
+    {
+        if ($sourceName === null) {
+            return $this;
+        }
+
+        return $this->sourceOverrides[trim($sourceName)] ?? $this;
     }
 }

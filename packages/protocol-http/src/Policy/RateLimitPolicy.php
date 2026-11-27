@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Protocol\Http\Policy;
 
 use Alama\Arazzo\Protocol\Http\Enum\RateLimitScope;
-use InvalidArgumentException;
+use Alama\Arazzo\Protocol\Http\Exceptions\InvalidHttpPolicyException;
 
 /**
- * Immutable value object governing outbound rate limits and in-flight concurrency caps.
+ * Immutable value object governing outbound HTTP rate limits and in-flight concurrency caps.
  */
-final readonly class OutboundRequestPolicy
+final readonly class RateLimitPolicy
 {
     public const int DEFAULT_BURST = 1;
 
@@ -28,21 +28,26 @@ final readonly class OutboundRequestPolicy
         public bool $failFast = self::DEFAULT_FAIL_FAST,
     ) {
         if ($this->requestsPerSecond !== null && $this->requestsPerSecond <= 0.0) {
-            throw new InvalidArgumentException("requestsPerSecond must be greater than zero, got {$this->requestsPerSecond}.");
+            throw InvalidHttpPolicyException::nonPositiveRequestsPerSecond($this->requestsPerSecond);
         }
 
         if ($this->burst < 1) {
-            throw new InvalidArgumentException("burst must be at least 1, got {$this->burst}.");
+            throw InvalidHttpPolicyException::nonPositiveLimit('burst', $this->burst);
         }
 
         if ($this->maxConcurrent < 1) {
-            throw new InvalidArgumentException("maxConcurrent must be at least 1, got {$this->maxConcurrent}.");
+            throw InvalidHttpPolicyException::nonPositiveLimit('maxConcurrent', $this->maxConcurrent);
         }
     }
 
     public static function default(): self
     {
         return new self();
+    }
+
+    public function isRateLimited(): bool
+    {
+        return $this->requestsPerSecond !== null;
     }
 
     public function withRateLimit(?float $requestsPerSecond, int $burst = self::DEFAULT_BURST): self
