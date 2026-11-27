@@ -87,3 +87,10 @@ it('lets the receive missing-criteria rule be disabled via policy', function ():
 
     expect($codes)->not->toContain('step.receive_missing_success_criteria');
 });
+
+it('registers the http missing-criteria rule by default', function (): void {
+    $codes = array_map(fn (ValidationRuleInterface $r) => $r->code(),
+        RuleSet::default()->activeRules());
+
+    expect($codes)->toContain('step.http_missing_success_criteria');
+});
