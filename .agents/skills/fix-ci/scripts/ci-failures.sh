@@ -27,7 +27,76 @@ while [ $# -gt 0 ]; do
 done
 
 command -v gh >/dev/null || { echo "error: gh CLI not installed" >&2; exit 2; }
-command -v jq >/dev/null  || { echo "error: jq not installed" >&2; exit 2; }
+
+if ! command -v jq >/dev/null; then
+  if command -v php >/dev/null; then
+    # Fallback when jq is not installed: emulate needed filters via PHP
+    jq() {
+      php -r '
+        $args = array_slice($argv, 1);
+        $filter = end($args);
+        $raw = in_array("-r", $args, true);
+        $input = stream_get_contents(STDIN);
+        $data = json_decode((string)$input, true);
+        if (!is_array($data) && $filter !== "length") {
+          echo $raw ? "" : "null";
+          exit(0);
+        }
+        if ($filter === ".number") {
+          echo $raw ? ($data["number"] ?? "") : json_encode($data["number"] ?? null);
+        } elseif ($filter === ".headRefName") {
+          echo $raw ? ($data["headRefName"] ?? "") : json_encode($data["headRefName"] ?? null);
+        } elseif ($filter === ".headRefOid") {
+          echo $raw ? ($data["headRefOid"] ?? "") : json_encode($data["headRefOid"] ?? null);
+        } elseif (str_contains($filter, "IN(\$f[])")) {
+          $failed = array_values(array_filter($data, fn($x) => in_array($x["conclusion"] ?? "", ["failure", "timed_out", "startup_failure"], true)));
+          echo json_encode($failed);
+        } elseif (str_contains($filter, "cancelled")) {
+          $cancelled = array_values(array_filter($data, fn($x) => ($x["conclusion"] ?? "") === "cancelled"));
+          echo json_encode($cancelled);
+        } elseif (str_contains($filter, "status != \"completed\"")) {
+          $pending = array_values(array_filter($data, fn($x) => ($x["status"] ?? "") !== "completed"));
+          echo $raw ? count($pending) : json_encode(count($pending));
+        } elseif ($filter === "length") {
+          echo is_array($data) ? count($data) : 0;
+        } elseif (str_contains($filter, "\(.workflowName) [\(.conclusion)]")) {
+          foreach ($data as $item) {
+            echo "- " . ($item["workflowName"] ?? "") . " [" . ($item["conclusion"] ?? "") . "] " . ($item["displayTitle"] ?? "") . "\n  " . ($item["url"] ?? "") . "\n";
+          }
+        } elseif (str_contains($filter, "\(.workflowName) \(.displayTitle)")) {
+          foreach ($data as $item) {
+            echo "- " . ($item["workflowName"] ?? "") . " " . ($item["displayTitle"] ?? "") . "\n  " . ($item["url"] ?? "") . "\n";
+          }
+        } elseif ($filter === ".[].databaseId") {
+          foreach ($data as $item) {
+            echo ($item["databaseId"] ?? "") . "\n";
+          }
+        } elseif (str_contains($filter, "databaseId ==")) {
+          $id = null;
+          foreach ($args as $idx => $arg) {
+            if ($arg === "--argjson" && ($args[$idx + 1] ?? "") === "id") {
+              $id = $args[$idx + 2] ?? null;
+              break;
+            }
+          }
+          foreach ($data as $item) {
+            if ((string)($item["databaseId"] ?? "") === (string)$id) {
+              echo $item["workflowName"] ?? "";
+              break;
+            }
+          }
+        } elseif ($filter === "[.]") {
+          echo json_encode([$data]);
+        } else {
+          echo $input;
+        }
+      ' -- "$@"
+    }
+  else
+    echo "error: neither jq nor php installed" >&2
+    exit 2
+  fi
+fi
 
 PR_NUM=""
 SHA=""
