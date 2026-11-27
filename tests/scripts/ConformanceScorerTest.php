@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
 
 /**
@@ -230,6 +231,18 @@ YAML);
 }
 
 it('writes conformance/score.json with per-case validation verdicts, versions and suite sha', function () {
+    $finder = new ExecutableFinder();
+    $python = $finder->find('python3') ?? $finder->find('python');
+    $pythonOk = false;
+    if ($python !== null) {
+        $p = new Process([$python, '--version']);
+        $p->run();
+        $pythonOk = $p->isSuccessful();
+    }
+    if (!$pythonOk) {
+        test()->markTestSkipped('python is not available to run the mock petstore');
+    }
+
     $fixture = conformanceFixture();
     $out = sys_get_temp_dir().'/arazzo-score-'.bin2hex(random_bytes(4)).'.json';
 

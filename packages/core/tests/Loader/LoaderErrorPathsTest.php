@@ -23,7 +23,7 @@ it('throws on unreadable file', function (): void {
         chmod($tmp, 0644);
         @unlink($tmp);
     }
-});
+})->skip(PHP_OS_FAMILY === 'Windows', 'chmod 0 does not forbid reading on Windows');
 
 it('throws on unsupported extension', function (): void {
     $tmp = tempnam(sys_get_temp_dir(), 'arazzo').'.txt';

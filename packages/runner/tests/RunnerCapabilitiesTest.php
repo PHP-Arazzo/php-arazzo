@@ -13,7 +13,7 @@ use Alama\Arazzo\Contracts\Spec\StepFlow;
 use Alama\Arazzo\Contracts\Spec\StepIo;
 use Alama\Arazzo\Contracts\Spec\Workflow;
 use Alama\Arazzo\Protocol\Http\HttpProtocol;
-use Alama\Arazzo\Runner\Data\ExecutionResult;
+use Alama\Arazzo\Runner\Data\WorkflowExecutionResult;
 use Alama\Arazzo\Runner\Registries\OperationExecutorRegistry;
 use Alama\Arazzo\Runner\Runner;
 use Alama\Arazzo\Runner\RunnerInterface;
@@ -64,7 +64,7 @@ it('exposes the RunnerInterface entry point', function (): void {
 it('runs a workflow whose operation resolves through HttpProtocol', function (): void {
     $result = runnerWithHttpFake()->run(runnerFixtureDocument(), 'find');
 
-    expect($result)->toBeInstanceOf(ExecutionResult::class)
+    expect($result)->toBeInstanceOf(WorkflowExecutionResult::class)
         ->and($result->status)->toBe(ExecutionStatus::Succeeded)
         ->and($result->isSucceeded())->toBeTrue();
 });
@@ -73,7 +73,7 @@ it('exposes typed per-step verdicts and a serializable array representation', fu
     $result = runnerWithHttpFake()->run(runnerFixtureDocument(), 'find');
     $array = $result->toArray();
 
-    expect(array_keys($array))->toBe(['workflowId', 'status', 'outputs', 'stepsSpent', 'workflowCallStack', 'steps'])
+    expect(array_keys($array))->toBe(['workflowId', 'status', 'outputs', 'stepsSpent', 'workflowCallStack', 'sequentialFallbacks', 'steps'])
         ->and($array['status'])->toBe('succeeded')
         ->and(array_keys($array['steps']))->toBe(['list'])
         ->and($array['steps']['list']['success'])->toBeTrue()

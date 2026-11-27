@@ -9,12 +9,13 @@ use Alama\Arazzo\Contracts\Spec\Enum\ExecutionStatus;
 /**
  * Immutable typed outcome of a synchronous workflow execution.
  */
-final readonly class ExecutionResult
+final readonly class WorkflowExecutionResult
 {
     /**
      * @param  array<string, mixed>  $outputs
-     * @param  array<string, StepResult>  $stepResults
+     * @param  array<string, StepExecutionResult>  $stepResults
      * @param  list<string>  $workflowCallStack
+     * @param  list<string>  $sequentialFallbacks
      */
     public function __construct(
         public string $workflowId,
@@ -23,6 +24,7 @@ final readonly class ExecutionResult
         public array $stepResults = [],
         public int $stepsSpent = 0,
         public array $workflowCallStack = [],
+        public array $sequentialFallbacks = [],
     ) {}
 
     public function isSucceeded(): bool
@@ -35,7 +37,7 @@ final readonly class ExecutionResult
         return $this->status === ExecutionStatus::Failed;
     }
 
-    public function stepResult(string $stepId): ?StepResult
+    public function stepResult(string $stepId): ?StepExecutionResult
     {
         return $this->stepResults[$stepId] ?? null;
     }
@@ -55,7 +57,7 @@ final readonly class ExecutionResult
         return array_key_exists($name, $this->outputs);
     }
 
-    public function failedStep(): ?StepResult
+    public function failedStep(): ?StepExecutionResult
     {
         foreach ($this->stepResults as $result) {
             if ($result->isFailed()) {
@@ -64,6 +66,33 @@ final readonly class ExecutionResult
         }
 
         return null;
+    }
+
+    public function targetStepResult(): ?StepExecutionResult
+    {
+        foreach ($this->stepResults as $stepResult) {
+            if ($stepResult->isTarget()) {
+                return $stepResult;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return array<string, StepExecutionResult>
+     */
+    public function dependencyStepResults(): array
+    {
+        return array_filter(
+            $this->stepResults,
+            static fn (StepExecutionResult $result): bool => $result->isDependency(),
+        );
+    }
+
+    public function hasSequentialFallbacks(): bool
+    {
+        return $this->sequentialFallbacks !== [];
     }
 
     /**
@@ -81,7 +110,16 @@ final readonly class ExecutionResult
      *     outputs: array<string, mixed>,
      *     stepsSpent: int,
      *     workflowCallStack: list<string>,
-     *     steps: array<string, array{stepId: string, success: bool, outputs: array<array-key, mixed>, error: ?string}>
+     *     sequentialFallbacks: list<string>,
+     *     steps: array<string, array{
+     *         stepId: string,
+     *         success: bool,
+     *         outputs: array<array-key, mixed>,
+     *         error: ?string,
+     *         role: string,
+     *         dependency: bool,
+     *         target: bool
+     *     }>
      * }
      */
     public function toArray(): array
@@ -97,6 +135,7 @@ final readonly class ExecutionResult
             'outputs' => $this->outputs,
             'stepsSpent' => $this->stepsSpent,
             'workflowCallStack' => $this->workflowCallStack,
+            'sequentialFallbacks' => $this->sequentialFallbacks,
             'steps' => $steps,
         ];
     }

@@ -107,7 +107,8 @@ final class LockManifestDrift
             // Composer accepts an absolute path repository and records it as
             // written, so a relative-only lookup would call a manifest that is
             // sitting right there gone.
-            $manifestFile = (str_starts_with($url, '/') ? $url : $this->root.'/'.$url).'/composer.json';
+            $isAbsolute = str_starts_with($url, '/') || str_starts_with($url, '\\') || (bool) preg_match('/^[A-Za-z]:[\\\\\/]/', $url);
+            $manifestFile = ($isAbsolute ? $url : $this->root.'/'.$url).'/composer.json';
 
             if (!is_file($manifestFile)) {
                 $drifts[] = new Drift(

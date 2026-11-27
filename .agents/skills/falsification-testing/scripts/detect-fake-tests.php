@@ -41,10 +41,12 @@ if ($all || $paths === []) {
     }
 }
 
+$isAbs = static fn (string $path): bool => str_starts_with($path, '/') || str_starts_with($path, '\\') || (bool) preg_match('/^[A-Za-z]:[\\\\\/]/', $path);
+
 $files = [];
 foreach ($paths as $p) {
     $abs = $p;
-    if (!str_starts_with($p, '/')) {
+    if (!$isAbs($p) && !file_exists($p)) {
         $abs = "{$root}/{$p}";
     }
     if (is_file($abs)) {

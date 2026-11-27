@@ -11,8 +11,8 @@ use Alama\Arazzo\Engine\Execution\StepParameterMerger;
 use Alama\Arazzo\Engine\Execution\TypeCaster;
 use Alama\Arazzo\Runner\AsyncRunner;
 use Alama\Arazzo\Runner\Data\ExecuteStepJob;
-use Alama\Arazzo\Runner\Data\ExecutionResult;
-use Alama\Arazzo\Runner\Data\StepResult;
+use Alama\Arazzo\Runner\Data\StepExecutionResult;
+use Alama\Arazzo\Runner\Data\WorkflowExecutionResult;
 use Alama\Arazzo\Runner\Policy\ExecutionBudgets;
 use Alama\Arazzo\Runner\Policy\ExecutionPolicy;
 use Alama\Arazzo\Runner\Registries\OperationExecutorRegistry;
@@ -25,10 +25,10 @@ arch('runner public facades and DTOs are final and readonly')
     ->and(AsyncRunner::class)
     ->toBeFinal()
     ->toBeReadonly()
-    ->and(ExecutionResult::class)
+    ->and(WorkflowExecutionResult::class)
     ->toBeFinal()
     ->toBeReadonly()
-    ->and(StepResult::class)
+    ->and(StepExecutionResult::class)
     ->toBeFinal()
     ->toBeReadonly()
     ->and(ExecuteStepJob::class)

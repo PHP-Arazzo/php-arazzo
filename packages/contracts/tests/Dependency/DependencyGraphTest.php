@@ -51,3 +51,33 @@ it('detects unresolved references correctly', function (): void {
         ])
         ->and($graph->getTopologicalOrder())->toBe(['A', 'B']);
 });
+
+it('resolves transitive dependencies in topological order preserving document tie-breaking', function (): void {
+    $steps = [
+        new Step('unrelated', null, new StepTarget(), new StepFlow(), new StepIo()),
+        new Step('A', null, new StepTarget(), new StepFlow(), new StepIo()),
+        new Step('B', null, new StepTarget(), new StepFlow(dependsOn: ['A']), new StepIo()),
+        new Step('C', null, new StepTarget(), new StepFlow(dependsOn: ['A']), new StepIo()),
+        new Step('D', null, new StepTarget(), new StepFlow(dependsOn: ['B', 'C']), new StepIo()),
+        new Step('E', null, new StepTarget(), new StepFlow(dependsOn: ['D']), new StepIo()),
+    ];
+
+    $graph = new DependencyGraph($steps);
+
+    expect($graph->getTransitiveDependencies('A'))->toBe([])
+        ->and($graph->getTransitiveDependencies('B'))->toBe(['A'])
+        ->and($graph->getTransitiveDependencies('D'))->toBe(['A', 'B', 'C'])
+        ->and($graph->getTransitiveDependencies('E'))->toBe(['A', 'B', 'C', 'D']);
+});
+
+it('resolves ties between independent dependencies using document order', function (): void {
+    $stepsOrder1 = [
+        new Step('A', null, new StepTarget(), new StepFlow(), new StepIo()),
+        new Step('C', null, new StepTarget(), new StepFlow(dependsOn: ['A']), new StepIo()),
+        new Step('B', null, new StepTarget(), new StepFlow(dependsOn: ['A']), new StepIo()),
+        new Step('D', null, new StepTarget(), new StepFlow(dependsOn: ['B', 'C']), new StepIo()),
+    ];
+
+    $graph1 = new DependencyGraph($stepsOrder1);
+    expect($graph1->getTransitiveDependencies('D'))->toBe(['A', 'C', 'B']);
+});

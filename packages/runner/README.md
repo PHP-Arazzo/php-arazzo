@@ -37,7 +37,7 @@ if ($result->isSucceeded()) {
 }
 ```
 
-`$result` is a typed [`ExecutionResult`](src/Data/ExecutionResult.php) carrying `$status` (`ExecutionStatus`), `$outputs`, per-step [`StepResult`](src/Data/StepResult.php) verdicts, `$stepsSpent`, and `$workflowCallStack`.
+`$result` is a typed [`WorkflowExecutionResult`](src/Data/WorkflowExecutionResult.php) carrying `$status` (`ExecutionStatus`), `$outputs`, per-step [`StepExecutionResult`](src/Data/StepExecutionResult.php) verdicts, `$stepsSpent`, and `$workflowCallStack`.
 
 ## Features & Usage
 
@@ -172,6 +172,6 @@ Enforced by Pest architecture tests ([`tests/ArchTest.php`](tests/ArchTest.php))
 - **Protocol-agnostic**: Zero imports of `Alama\Arazzo\Protocol\*` or `Alama\Arazzo\Sources\*`.
 - **Transport-, vendor-, & framework-free**: Zero imports of `GuzzleHttp`, `Psr\Http`, `cebe\openapi`, `OpenTelemetry`, or `Illuminate`.
 - **Queue-free sync core**: `Sync\` never references `Async\` or `QueueDriverInterface`.
-- **Immutable public surface**: `Runner`, `AsyncRunner`, `ExecutionPolicy`, `ExecutionBudgets`, `ExecutionResult`, `StepResult`, `ExecuteStepJob`, and all event DTOs are `final readonly`.
+- **Immutable public surface**: `Runner`, `AsyncRunner`, `ExecutionPolicy`, `ExecutionBudgets`, `WorkflowExecutionResult`, `StepExecutionResult`, `ExecuteStepJob`, and all event DTOs are `final readonly`.
 
 See [`docs/architecture/07-runner-package-map.md`](../../docs/architecture/07-runner-package-map.md), [`ADR-009`](../../docs/adr/ADR-009-runner-package-public-interface.md), and [`ADR-010`](../../docs/adr/ADR-010-monorepo-observability-and-policy-standards.md).

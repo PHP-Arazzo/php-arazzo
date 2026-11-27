@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Runner\Data;
 
+use Alama\Arazzo\Runner\Data\Enum\StepRole;
 use Throwable;
 
 /**
  * Immutable typed verdict for a single executed step.
  */
-final readonly class StepResult
+final readonly class StepExecutionResult
 {
     /**
      * @param  array<array-key, mixed>  $outputs
@@ -19,6 +20,7 @@ final readonly class StepResult
         public bool $success,
         public array $outputs = [],
         public ?Throwable $error = null,
+        public StepRole $role = StepRole::Standard,
     ) {}
 
     public function isSucceeded(): bool
@@ -51,8 +53,26 @@ final readonly class StepResult
         return array_key_exists($name, $this->outputs);
     }
 
+    public function isTarget(): bool
+    {
+        return $this->role === StepRole::Target;
+    }
+
+    public function isDependency(): bool
+    {
+        return $this->role === StepRole::Dependency;
+    }
+
     /**
-     * @return array{stepId: string, success: bool, outputs: array<array-key, mixed>, error: ?string}
+     * @return array{
+     *     stepId: string,
+     *     success: bool,
+     *     outputs: array<array-key, mixed>,
+     *     error: ?string,
+     *     role: string,
+     *     dependency: bool,
+     *     target: bool
+     * }
      */
     public function toArray(): array
     {
@@ -61,6 +81,9 @@ final readonly class StepResult
             'success' => $this->success,
             'outputs' => $this->outputs,
             'error' => $this->errorMessage(),
+            'role' => $this->role->value,
+            'dependency' => $this->isDependency(),
+            'target' => $this->isTarget(),
         ];
     }
 }

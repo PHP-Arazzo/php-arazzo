@@ -10,10 +10,12 @@ use Alama\Arazzo\Contracts\Observability\TracerInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Validation\ValidationResult;
 use Alama\Arazzo\Document\OperationResolverInterface;
-use Alama\Arazzo\Runner\Data\ExecutionResult;
+use Alama\Arazzo\Runner\Data\WorkflowExecutionResult;
+use Alama\Arazzo\Runner\Exceptions\AmbiguousStepException;
 use Alama\Arazzo\Runner\Exceptions\InvalidSourcePolicyException;
 use Alama\Arazzo\Runner\Exceptions\PreflightFailureException;
 use Alama\Arazzo\Runner\Exceptions\RunnerException;
+use Alama\Arazzo\Runner\Exceptions\UnknownStepException;
 use Alama\Arazzo\Runner\Exceptions\UnknownWorkflowException;
 use Alama\Arazzo\Runner\Policy\ExecutionPolicy;
 use Psr\Clock\ClockInterface;
@@ -41,7 +43,28 @@ interface RunnerInterface
         string $workflowId,
         array $inputs = [],
         ?ExecutionPolicy $policy = null,
-    ): ExecutionResult;
+    ): WorkflowExecutionResult;
+
+    /**
+     * Execute a single targeted step in a workflow against an Arazzo document.
+     *
+     * @param  array<string, mixed>  $inputs
+     *
+     * @throws UnknownWorkflowException
+     * @throws UnknownStepException
+     * @throws AmbiguousStepException
+     * @throws InvalidSourcePolicyException
+     * @throws PreflightFailureException
+     * @throws SchemaValidationException
+     * @throws RunnerException
+     */
+    public function runStep(
+        ArazzoDocument $document,
+        string $stepId,
+        array $inputs = [],
+        ?string $workflowId = null,
+        ?ExecutionPolicy $policy = null,
+    ): WorkflowExecutionResult;
 
     /**
      * Run execution-readiness preflight validation (workflow input schema and
@@ -51,7 +74,12 @@ interface RunnerInterface
      *
      * @throws UnknownWorkflowException
      */
-    public function preflight(ArazzoDocument $document, ?string $workflowId = null, array $inputs = []): ValidationResult;
+    public function preflight(
+        ArazzoDocument $document,
+        ?string $workflowId = null,
+        array $inputs = [],
+        ?string $stepId = null,
+    ): ValidationResult;
 
     /**
      * Immutably configure the default execution policy (budgets, retry, preflight, source policies).

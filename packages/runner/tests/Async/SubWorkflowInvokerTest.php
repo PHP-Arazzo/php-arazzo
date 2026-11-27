@@ -14,7 +14,7 @@ use Alama\Arazzo\Engine\Exceptions\ExecutionException;
 use Alama\Arazzo\Evaluation\EvaluationEngine;
 use Alama\Arazzo\Expression\ExpressionEngine;
 use Alama\Arazzo\Runner\Async\SubWorkflowInvoker;
-use Alama\Arazzo\Runner\Data\ExecutionResult;
+use Alama\Arazzo\Runner\Data\WorkflowExecutionResult;
 use Alama\Arazzo\Runner\Execution\Data\SubWorkflowResult;
 use Alama\Arazzo\Runner\Store\InMemoryDefinitionStore;
 use Alama\Arazzo\Runner\Sync\WorkflowExecutor;
@@ -54,7 +54,7 @@ it('binds parameters, executes child workflow, returns SubWorkflowResult', funct
                 && $childCtx instanceof WorkflowContext
                 && $childCtx->parentRunId !== null;
         })
-        ->andReturn(new ExecutionResult('reconcile', ExecutionStatus::Succeeded, ['some_output' => 'val'], []));
+        ->andReturn(new WorkflowExecutionResult('reconcile', ExecutionStatus::Succeeded, ['some_output' => 'val'], []));
 
     $engine = new EvaluationEngine(expression: new ExpressionEngine());
 

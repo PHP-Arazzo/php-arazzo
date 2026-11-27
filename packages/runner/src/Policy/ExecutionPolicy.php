@@ -21,6 +21,8 @@ final readonly class ExecutionPolicy
 
     public const int DEFAULT_STATE_TTL_SECONDS = 86400;
 
+    public const bool DEFAULT_NO_DEPS = false;
+
     /**
      * @param  array<string, SourcePolicy>  $sourcePolicies  Keyed by `sourceDescriptions[*].name`
      */
@@ -30,6 +32,7 @@ final readonly class ExecutionPolicy
         public bool $preflight = self::DEFAULT_PREFLIGHT,
         public int $stateTtlSeconds = self::DEFAULT_STATE_TTL_SECONDS,
         public array $sourcePolicies = [],
+        public bool $noDeps = self::DEFAULT_NO_DEPS,
     ) {}
 
     public static function default(): self
@@ -49,27 +52,32 @@ final readonly class ExecutionPolicy
 
     public function withMaxSteps(int $maxSteps): self
     {
-        return new self($this->budgets->withMaxSteps($maxSteps), $this->retryPolicy, $this->preflight, $this->stateTtlSeconds, $this->sourcePolicies);
+        return new self($this->budgets->withMaxSteps($maxSteps), $this->retryPolicy, $this->preflight, $this->stateTtlSeconds, $this->sourcePolicies, $this->noDeps);
     }
 
     public function withMaxWorkflowDepth(int $maxWorkflowDepth): self
     {
-        return new self($this->budgets->withMaxWorkflowDepth($maxWorkflowDepth), $this->retryPolicy, $this->preflight, $this->stateTtlSeconds, $this->sourcePolicies);
+        return new self($this->budgets->withMaxWorkflowDepth($maxWorkflowDepth), $this->retryPolicy, $this->preflight, $this->stateTtlSeconds, $this->sourcePolicies, $this->noDeps);
     }
 
     public function withRetryPolicy(RetryPolicy $retryPolicy): self
     {
-        return new self($this->budgets, $retryPolicy, $this->preflight, $this->stateTtlSeconds, $this->sourcePolicies);
+        return new self($this->budgets, $retryPolicy, $this->preflight, $this->stateTtlSeconds, $this->sourcePolicies, $this->noDeps);
     }
 
     public function withPreflight(bool $enabled = true): self
     {
-        return new self($this->budgets, $this->retryPolicy, $enabled, $this->stateTtlSeconds, $this->sourcePolicies);
+        return new self($this->budgets, $this->retryPolicy, $enabled, $this->stateTtlSeconds, $this->sourcePolicies, $this->noDeps);
     }
 
     public function withStateTtlSeconds(int $seconds): self
     {
-        return new self($this->budgets, $this->retryPolicy, $this->preflight, $seconds, $this->sourcePolicies);
+        return new self($this->budgets, $this->retryPolicy, $this->preflight, $seconds, $this->sourcePolicies, $this->noDeps);
+    }
+
+    public function withNoDeps(bool $noDeps = true): self
+    {
+        return new self($this->budgets, $this->retryPolicy, $this->preflight, $this->stateTtlSeconds, $this->sourcePolicies, $noDeps);
     }
 
     public function withSourcePolicy(string $sourceName, SourcePolicy $policy): self
@@ -77,7 +85,7 @@ final readonly class ExecutionPolicy
         $sourcePolicies = $this->sourcePolicies;
         $sourcePolicies[$sourceName] = $policy;
 
-        return new self($this->budgets, $this->retryPolicy, $this->preflight, $this->stateTtlSeconds, $sourcePolicies);
+        return new self($this->budgets, $this->retryPolicy, $this->preflight, $this->stateTtlSeconds, $sourcePolicies, $this->noDeps);
     }
 
     public function sourcePolicy(string $sourceName): ?SourcePolicy

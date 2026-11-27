@@ -14,7 +14,7 @@ use Alama\Arazzo\Contracts\State\WorkflowContext;
 use Alama\Arazzo\Contracts\Validation\Error;
 use Alama\Arazzo\Contracts\Validation\ValidationResult;
 use Alama\Arazzo\Runner\Data\ExecuteStepJob;
-use Alama\Arazzo\Runner\Data\StepResult;
+use Alama\Arazzo\Runner\Data\StepExecutionResult;
 use Alama\Arazzo\Runner\Exceptions\ExecutionError;
 use Alama\Arazzo\Runner\Exceptions\GotoTargetNotFoundException;
 use Alama\Arazzo\Runner\Exceptions\OperationResolutionException;
@@ -45,6 +45,8 @@ test('runner domain exception factories construct typed exceptions', function ()
         ->and(ExecutionError::workflowFailedAtStep('wf1', 's1')->getMessage())->toContain('wf1')
         ->and(ExecutionError::workflowEndedInFailure('wf1', 's1')->getMessage())->toContain('s1')
         ->and(ExecutionError::dependencyFailed('dep')->getMessage())->toContain('dep')
+        ->and(ExecutionError::missingDependencyOutput('s1', 'tok', 'dep')->codeId)->toBe('step.missing_dependency_output')
+        ->and(ExecutionError::missingDependencyOutput('s1', 'tok', 'dep')->getMessage())->toContain('tok')
         ->and(OperationResolutionException::unsupportedStep('s1'))->toBeInstanceOf(RunnerException::class)
         ->and(UnsupportedStepException::noSupportingExecutor('s1'))->toBeInstanceOf(LogicException::class)
         ->and(UnsupportedStepException::unknownWorkflow('wf1')->getMessage())->toContain('wf1');
@@ -66,8 +68,8 @@ test('runner Data objects host domain queries directly (Tell, Dont Ask)', functi
         ->and($failEnd->isFailed())->toBeTrue()
         ->and($gotoOther->targetWorkflowId($wf))->toBe('wf-other')
         ->and($nextLocal->targetWorkflowId($wf))->toBe('wf-main')
-        ->and((new StepResult('s1', true))->isFailed())->toBeFalse()
-        ->and((new StepResult('s1', false))->isFailed())->toBeTrue()
+        ->and((new StepExecutionResult('s1', true))->isFailed())->toBeFalse()
+        ->and((new StepExecutionResult('s1', false))->isFailed())->toBeTrue()
         ->and((new ExecuteStepJob($step, $ctx))->executionId())->toBe('exec-1')
         ->and((new ExecuteStepJob($step, $ctx))->stepId())->toBe('s1')
         ->and((new SubWorkflowResult([], 'succeeded', 'child-1'))->isSucceeded())->toBeTrue()

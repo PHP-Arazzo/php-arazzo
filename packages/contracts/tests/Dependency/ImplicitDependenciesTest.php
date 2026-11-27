@@ -60,6 +60,18 @@ it('excludes self references and deduplicates', function (): void {
     expect(ImplicitDependencies::fromStep($step))->toBe(['b']);
 });
 
+it('extracts detailed output references with output keys', function (): void {
+    $step = Fx::step('checkout', 'op', params: [
+        new Parameter('token', ParameterIn::Header, new Expression('{$steps.login.outputs.token}')),
+        new Parameter('data', ParameterIn::Query, new Expression('{$steps.config.outputs}')),
+    ]);
+
+    expect(ImplicitDependencies::outputReferencesFromStep($step))->toBe([
+        ['stepId' => 'login', 'outputKey' => 'token'],
+        ['stepId' => 'config', 'outputKey' => null],
+    ]);
+});
+
 it('orders steps by implicit output references without dependsOn', function (): void {
     $b = Fx::step('b', 'op', params: [
         new Parameter('id', ParameterIn::Query, new Expression('{$steps.a.outputs.id}')),
