@@ -81,6 +81,7 @@ To prevent architectural degradation and avoid CI quality gate rejections, every
    - **`TooManyPublicMethods` ≤ 10:** Public methods must not exceed 10 (excluding standard getters and withers).
    - **Method Cyclomatic Complexity ≤ 10 (`arazzo.custom.cyclomaticComplexity`):** Individual methods must not exceed cyclomatic complexity 10.
    - **Identifier Length 3–30 chars (`arazzo.custom.identifierLength`):** Method and symbol identifiers must be between 3 and 30 characters.
+   - **Variable, Property & Parameter Length ≤ 20 chars (PHPMD `LongVariable`):** Local variables, properties, and method/constructor parameters must stay under 20 characters (prefer concise names like `$connectTimeout` / `$executionTimeout` over `$*TimeoutSeconds`).
    - **Method & Constructor Parameter Count ≤ 5 (`arazzo.custom.maxParameterCount`):** Methods and constructors must not exceed 5 parameters. Collapse multiple parameters into cohesive Value Objects or DTOs.
 
 2. **Facade Seam Policy:**
