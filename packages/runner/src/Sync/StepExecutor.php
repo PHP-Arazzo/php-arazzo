@@ -8,8 +8,10 @@ use Alama\Arazzo\Contracts\Interfaces\OperationExecutorPluginInterface;
 use Alama\Arazzo\Contracts\Interfaces\OutputExtractorInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Step;
+use Alama\Arazzo\Contracts\Spec\StepExecutionOutcome;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
 use Alama\Arazzo\Engine\Exceptions\ExecutionException;
+use Alama\Arazzo\Engine\Execution\ErrorClassifier;
 use Alama\Arazzo\Evaluation\EvaluationEngineInterface;
 use Alama\Arazzo\Runner\Execution\Defaults\EvaluationOutputExtractor;
 use Alama\Arazzo\Runner\Execution\SourcePolicyResolver;
@@ -73,6 +75,23 @@ class StepExecutor
         // Keep source credentials strictly scoped to the single plugin call.
         $context = $context->withActiveSourcePolicy(null);
         $context = $context->withStepRequest($step->stepId, $outcome->request ?? []);
+
+        if ($outcome->isFailed()) {
+            return $this->handleFailedOutcome($outcome, $step, $context);
+        }
+
+        return $this->handleSuccessfulOutcome($outcome, $step, $context, $document);
+    }
+
+    /**
+     * @return array{0: WorkflowContext, 1: bool}
+     */
+    private function handleSuccessfulOutcome(
+        StepExecutionOutcome $outcome,
+        Step $step,
+        WorkflowContext $context,
+        ArazzoDocument $document,
+    ): array {
         $context = $context->withStepResponse($step->stepId, array_filter([
             'statusCode' => $outcome->statusCode,
             'headers' => $outcome->responseHeaders,
@@ -95,5 +114,34 @@ class StepExecutor
         }
 
         return [$context, $this->evaluationEngine->evaluateSuccessCriteria($step, $context, $document)];
+    }
+
+    /**
+     * @return array{0: WorkflowContext, 1: bool}
+     */
+    private function handleFailedOutcome(StepExecutionOutcome $outcome, Step $step, WorkflowContext $context): array
+    {
+        $classifier = new ErrorClassifier();
+        $category = $classifier->classify($outcome);
+        $typedException = $classifier->toTransportException($outcome);
+
+        $responseRecord = array_filter([
+            'statusCode' => null,
+            'headers' => $outcome->responseHeaders,
+            'body' => $outcome->responseBody,
+            'rawBody' => $outcome->rawBody,
+            'contentType' => $outcome->contentType,
+            'failureCategory' => $category,
+            'exception' => $typedException,
+        ], static fn (mixed $value, string $key): bool => $value !== null || $key === 'statusCode', ARRAY_FILTER_USE_BOTH);
+
+        $context = $context->withStepResponse($step->stepId, $responseRecord);
+        /** @var array<string, mixed> $record */
+        $record = $context->getStepRecord($step->stepId) ?? [];
+        $record['failureCategory'] = $category;
+        $record['exception'] = $typedException;
+        $context = $context->withStepResult($step->stepId, $record);
+
+        return [$context, false];
     }
 }

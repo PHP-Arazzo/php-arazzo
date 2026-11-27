@@ -12,35 +12,35 @@ same corner every week" signal that static structure graphs cannot show.
 ```mermaid
 xychart-beta
     title "Edit churn per module (git touches)"
-    x-axis ["document:Validator", "cli:Console", "runner:Execution", "contracts:Spec", "runner:Async", "runner:Sync", "sources:Normalizer", "document:Parser", "expression:Interfaces", "contracts:Interfaces", "sources:Resolver", "expression:Data"]
+    x-axis ["document:Validator", "cli:Console", "runner:Execution", "contracts:Spec", "runner:Sync", "runner:Async", "sources:Normalizer", "document:Parser", "expression:Interfaces", "contracts:Interfaces", "sources:Resolver", "engine:Execution"]
     y-axis "Touches" 0 --> 70
-    bar [57, 54, 33, 29, 26, 25, 25, 21, 19, 17, 17, 15]
+    bar [57, 54, 33, 31, 27, 26, 25, 21, 19, 17, 17, 15]
 ```
 
-Analyzed 666 total file-touches across 83 modules.
+Analyzed 677 total file-touches across 83 modules.
 
 | Module | Touches | Share | LOC | Touches/KLOC |
 |---|---:|---:|---:|---:|
-| `document:Validator` | 57 | 9% | 790 | 72.2 |
+| `document:Validator` | 57 | 8% | 790 | 72.2 |
 | `cli:Console` | 54 | 8% | 1,378 | 39.2 |
 | `runner:Execution` | 33 | 5% | 723 | 45.6 |
-| `contracts:Spec` | 29 | 4% | 2,916 | 9.9 |
+| `contracts:Spec` | 31 | 5% | 2,996 | 10.3 |
+| `runner:Sync` | 27 | 4% | 1,462 | 18.5 |
 | `runner:Async` | 26 | 4% | 1,457 | 17.8 |
-| `runner:Sync` | 25 | 4% | 1,412 | 17.7 |
 | `sources:Normalizer` | 25 | 4% | 950 | 26.3 |
 | `document:Parser` | 21 | 3% | 2,482 | 8.5 |
 | `expression:Interfaces` | 19 | 3% | 252 | 75.4 |
 | `contracts:Interfaces` | 17 | 3% | 416 | 40.9 |
 | `sources:Resolver` | 17 | 3% | 899 | 18.9 |
+| `engine:Execution` | 15 | 2% | 1,357 | 11.1 |
 | `expression:Data` | 15 | 2% | 390 | 38.5 |
-| `engine:Execution` | 13 | 2% | 1,214 | 10.7 |
 | `expression:Plugins` | 13 | 2% | 1,486 | 8.7 |
+| `protocol-http:Plugins` | 12 | 2% | 384 | 31.3 |
 | `protocol-http:Execution` | 11 | 2% | 1,616 | 6.8 |
-| `cli:Renderer` | 10 | 2% | 317 | 31.5 |
-| `evaluation:Plugins` | 10 | 2% | 125 | 80 |
-| `evaluation:Registries` | 10 | 2% | 190 | 52.6 |
-| `protocol-http:Plugins` | 10 | 2% | 388 | 25.8 |
-| `protocol-soap:Execution` | 10 | 2% | 444 | 22.5 |
+| `cli:Renderer` | 10 | 1% | 317 | 31.5 |
+| `evaluation:Plugins` | 10 | 1% | 125 | 80 |
+| `evaluation:Registries` | 10 | 1% | 190 | 52.6 |
+| `protocol-soap:Execution` | 10 | 1% | 444 | 22.5 |
 | `document:Plugins` | 9 | 1% | 3,454 | 2.6 |
 | `evaluation:Condition` | 9 | 1% | 1,149 | 7.8 |
 | `contracts:State` | 8 | 1% | 1,242 | 6.4 |
@@ -52,6 +52,7 @@ Analyzed 666 total file-touches across 83 modules.
 | `protocol-rpc:Normalizer` | 7 | 1% | 604 | 11.6 |
 | `runner:Preflight` | 7 | 1% | 304 | 23 |
 | `contracts:Dependency` | 6 | 1% | 490 | 12.2 |
+| `contracts:Exceptions` | 6 | 1% | 335 | 17.9 |
 | `expression:Registries` | 6 | 1% | 113 | 53.1 |
 | `protocol-soap:Plugins` | 6 | 1% | 864 | 6.9 |
 | `runner:Events` | 6 | 1% | 187 | 32.1 |
@@ -65,7 +66,6 @@ Analyzed 666 total file-touches across 83 modules.
 | `expression:Xpath` | 5 | 1% | 173 | 28.9 |
 | `runner:Exceptions` | 5 | 1% | 335 | 14.9 |
 | `sources:Exceptions` | 5 | 1% | 287 | 17.4 |
-| `contracts:Exceptions` | 4 | 1% | 132 | 30.3 |
 | `expression:Exceptions` | 4 | 1% | 209 | 19.1 |
 | `expression:JsonPath` | 4 | 1% | 1,470 | 2.7 |
 | `expression:Support` | 4 | 1% | 339 | 11.8 |
@@ -79,6 +79,7 @@ Analyzed 666 total file-touches across 83 modules.
 | `engine:Data` | 3 | 0% | 99 | 30.3 |
 | `evaluation:Interfaces` | 3 | 0% | 44 | 68.2 |
 | `protocol-http:Exceptions` | 3 | 0% | 188 | 16 |
+| `protocol-http:Policy` | 3 | 0% | 273 | 11 |
 | `protocol-soap:Validation` | 3 | 0% | 139 | 21.6 |
 | `sources:Registries` | 3 | 0% | 81 | 37 |
 | `contracts:Data` | 2 | 0% | 361 | 5.5 |
@@ -86,7 +87,6 @@ Analyzed 666 total file-touches across 83 modules.
 | `engine:Exceptions` | 2 | 0% | 222 | 9 |
 | `evaluation:Enum` | 2 | 0% | 123 | 16.3 |
 | `evaluation:Exceptions` | 2 | 0% | 42 | 47.6 |
-| `protocol-http:Policy` | 2 | 0% | 265 | 7.5 |
 | `protocol-rpc:Transfer` | 2 | 0% | 243 | 8.2 |
 | `protocol-soap:Exceptions` | 2 | 0% | 152 | 13.2 |
 | `protocol-soap:Transfer` | 2 | 0% | 227 | 8.8 |

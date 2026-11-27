@@ -86,7 +86,8 @@ engine-Data,contracts-Spec,3
 engine-Data,contracts-State,1
 engine-Data,engine-Enum,1
 engine-Exceptions,contracts-Support,1
-engine-Execution,contracts-Spec,13
+engine-Execution,contracts-Exceptions,5
+engine-Execution,contracts-Spec,14
 engine-Execution,contracts-State,2
 engine-Execution,document-Parser,1
 engine-Execution,engine-Exceptions,2
@@ -378,12 +379,12 @@ runner-Sync,contracts-Dependency,3
 runner-Sync,contracts-Exceptions,1
 runner-Sync,contracts-Interfaces,2
 runner-Sync,contracts-Observability,1
-runner-Sync,contracts-Spec,33
+runner-Sync,contracts-Spec,34
 runner-Sync,contracts-State,6
 runner-Sync,contracts-Validation,1
 runner-Sync,document-root,3
 runner-Sync,engine-Exceptions,1
-runner-Sync,engine-Execution,1
+runner-Sync,engine-Execution,2
 runner-Sync,engine-Runtime,2
 runner-Sync,evaluation-root,3
 runner-Sync,expression-Data,1

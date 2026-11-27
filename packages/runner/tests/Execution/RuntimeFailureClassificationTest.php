@@ -125,9 +125,11 @@ it('preserves raw body, content type, and transport category on synthetic failur
 
     $outcome = $executor->execute($step, $context, $document, 'exec_classification');
 
-    expect($outcome->statusCode)->toBe(500)
+    expect($outcome->statusCode)->toBeNull()
+        ->and($outcome->isFailed())->toBeTrue()
         ->and($outcome->failureCategory)->toBe('transport')
-        ->and($outcome->responseBody['error'] ?? null)->toBe('connection refused');
+        ->and($outcome->exception)->toBeInstanceOf(RuntimeException::class)
+        ->and($outcome->responseBody['error'] ?? null)->toContain('refused');
 
     // 2. Successful response retains the raw payload and content type.
     $ok = json_decode((string) file_get_contents(__DIR__.'/../Conformance/fixtures/goto-on-failure.json'), true);

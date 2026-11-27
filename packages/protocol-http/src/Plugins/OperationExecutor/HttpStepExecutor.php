@@ -92,19 +92,15 @@ final class HttpStepExecutor implements OperationExecutorPluginInterface
                 $sourcePolicy,
             );
         } catch (\Throwable $e) {
-            if (method_exists($e, 'getErrorCode') && $e->getErrorCode() === 'transport.rate_limited') {
-                return StepExecutionOutcome::resolved(
-                    429,
-                    [],
-                    ['error' => 'transport.rate_limited', 'message' => $e->getMessage()],
-                    failureCategory: 'transport',
-                );
-            }
-
-            // Transport-level failures become a synthetic 500 response so
-            // failureActions (e.g. retry) apply identically to the sync
-            // adapter's StepExecutor policy.
-            return StepExecutionOutcome::resolved(500, [], ['error' => $e->getMessage()], failureCategory: 'transport');
+            return StepExecutionOutcome::failed(
+                exception: $e,
+                failureCategory: 'transport',
+                request: $capturedRequest !== null ? [
+                    'method' => $capturedRequest->getMethod(),
+                    'url' => (string) $capturedRequest->getUri(),
+                    'headers' => $capturedRequest->getHeaders(),
+                ] : null,
+            );
         }
 
         $decoded = $compiler->decodeResponse($response);

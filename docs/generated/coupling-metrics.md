@@ -20,11 +20,11 @@ targets. Regenerated before every commit.
 | `contracts:Data` | 6 | 355 | 6 | 1 | 0.14 |  |
 | `contracts:Dependency` | 3 | 487 | 5 | 2 | 0.29 |  |
 | `contracts:Discovery` | 3 | 413 | 4 | 1 | 0.20 |  |
-| `contracts:Exceptions` | 5 | 127 | 9 | 1 | 0.10 |  |
+| `contracts:Exceptions` | 10 | 325 | 10 | 1 | 0.09 |  |
 | `contracts:Interfaces` | 21 | 395 | 35 | 4 | 0.10 |  |
 | `contracts:Observability` | 4 | 104 | 12 | 0 | 0.00 |  |
 | `contracts:Policy` | 5 | 263 | 6 | 0 | 0.00 |  |
-| `contracts:Spec` | 61 | 2855 | 55 | 2 | 0.04 |  |
+| `contracts:Spec` | 61 | 2935 | 55 | 2 | 0.04 |  |
 | `contracts:State` | 4 | 1238 | 18 | 2 | 0.10 |  |
 | `contracts:Support` | 5 | 180 | 10 | 0 | 0.00 |  |
 | `contracts:Validation` | 10 | 494 | 17 | 2 | 0.11 |  |
@@ -36,7 +36,7 @@ targets. Regenerated before every commit.
 | `engine:Data` | 2 | 97 | 1 | 3 | 0.75 |  |
 | `engine:Enum` | 1 | 16 | 1 | 0 | 0.00 |  |
 | `engine:Exceptions` | 8 | 214 | 10 | 1 | 0.09 |  |
-| `engine:Execution` | 10 | 1204 | 10 | 5 | 0.33 |  |
+| `engine:Execution` | 11 | 1346 | 10 | 6 | 0.38 |  |
 | `engine:Runtime` | 21 | 1849 | 4 | 6 | 0.60 |  |
 | `(engine root)` | 2 | 192 | 0 | 3 | 1.00 |  |
 | `evaluation:Condition` | 18 | 1131 | 1 | 8 | 0.89 |  |
@@ -64,8 +64,8 @@ targets. Regenerated before every commit.
 | `protocol-http:Enum` | 1 | 11 | 2 | 0 | 0.00 |  |
 | `protocol-http:Exceptions` | 4 | 184 | 3 | 1 | 0.25 |  |
 | `protocol-http:Execution` | 11 | 1605 | 3 | 15 | 0.83 | ⚠ unstable hub |
-| `protocol-http:Plugins` | 2 | 386 | 1 | 11 | 0.92 |  |
-| `protocol-http:Policy` | 2 | 263 | 3 | 3 | 0.50 |  |
+| `protocol-http:Plugins` | 2 | 382 | 1 | 11 | 0.92 |  |
+| `protocol-http:Policy` | 2 | 271 | 3 | 3 | 0.50 |  |
 | `protocol-http:Resolver` | 6 | 610 | 3 | 13 | 0.81 | ⚠ unstable hub |
 | `(protocol-http root)` | 1 | 142 | 1 | 12 | 0.92 |  |
 | `protocol-rpc:Exceptions` | 4 | 183 | 4 | 1 | 0.20 |  |
@@ -91,7 +91,7 @@ targets. Regenerated before every commit.
 | `runner:Queue` | 1 | 24 | 2 | 1 | 0.33 |  |
 | `runner:Registries` | 1 | 150 | 2 | 3 | 0.60 |  |
 | `runner:Store` | 2 | 136 | 2 | 3 | 0.60 |  |
-| `runner:Sync` | 8 | 1404 | 4 | 21 | 0.84 | ⚠ unstable hub |
+| `runner:Sync` | 8 | 1454 | 4 | 21 | 0.84 | ⚠ unstable hub |
 | `(runner root)` | 6 | 649 | 5 | 15 | 0.75 |  |
 | `sources:Exceptions` | 9 | 278 | 6 | 0 | 0.00 |  |
 | `sources:Inspection` | 1 | 102 | 1 | 5 | 0.83 |  |
@@ -102,7 +102,7 @@ targets. Regenerated before every commit.
 | `sources:Resolver` | 15 | 884 | 5 | 6 | 0.55 |  |
 | `(sources root)` | 2 | 333 | 5 | 11 | 0.69 |  |
 
-Total cross-module edges: **1909**
+Total cross-module edges: **1917**
 
 ## Most entangled module pairs
 
@@ -114,7 +114,7 @@ Total cross-module edges: **1909**
 | `document:Plugins` → `contracts:Attributes` | 55 |
 | `document:Plugins` → `contracts:Interfaces` | 55 |
 | `expression:Plugins` → `contracts:Validation` | 34 |
-| `runner:Sync` → `contracts:Spec` | 33 |
+| `runner:Sync` → `contracts:Spec` | 34 |
 | `expression:Plugins` → `contracts:Spec` | 30 |
 | `runner:Async` → `contracts:Spec` | 29 |
 | `(evaluation root)` → `contracts:Spec` | 26 |

@@ -16,6 +16,7 @@ composer run docs             # Regenerate docs/generated/ architecture diagrams
 - On hosts with GNU Make available, `make verify` runs the full pre-push gate.
 - Enable pre-commit hooks with `git config core.hooksPath .githooks`.
 - Yield immediately after backgrounding long-running commands and wait for reactive completion events.
+- **Targeted Feedback Loops:** When developing or debugging, run the targeted package or file test suite first (e.g. `vendor/bin/pest packages/runner/tests/Sync/StepExecutorFailureHandlingTest.php`) before invoking full-monorepo test runs.
 
 ## 2. Context Pointers
 

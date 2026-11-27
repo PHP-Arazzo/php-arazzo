@@ -185,13 +185,16 @@ it('propagates HttpPolicy, SourcePolicy (isolated per source), LoggerInterface, 
     );
     $outcome2 = $executor->execute($payStep, $payCtx, $doc, 'exec-1');
 
-    // Transport failure records error span and warning log, returns synthetic 500
+    // Transport failure records error span and warning log, returns typed failed outcome with null statusCode
     $failStep = StepFactory::http('s3', null, new StepFlow(), new StepIo(), operationId: '$sourceDescriptions.petstore.failOp');
     $outcome3 = $executor->execute($failStep, $petCtx, $doc, 'exec-1');
 
     expect($outcome1->statusCode)->toBe(200)
         ->and($outcome2->statusCode)->toBe(200)
-        ->and($outcome3->statusCode)->toBe(500)
+        ->and($outcome3->statusCode)->toBeNull()
+        ->and($outcome3->isFailed())->toBeTrue()
+        ->and($outcome3->failureCategory)->toBe('transport')
+        ->and($outcome3->exception)->toBeInstanceOf(Throwable::class)
         ->and((string) $capturedRequests[0]->getUri())->toBe('https://petstore.staging.test/pets')
         ->and($capturedRequests[0]->getHeaderLine('X-API-Key'))->toBe('petstore-key')
         ->and($capturedRequests[0]->getHeaderLine('X-Env'))->toBe('staging')

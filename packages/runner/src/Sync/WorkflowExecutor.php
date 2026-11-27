@@ -329,13 +329,12 @@ class WorkflowExecutor
     private function initialState(WorkflowContext $context): ExecutionState
     {
         $policy = $this->stepExecutor->policy();
-        $state = ExecutionState::fromContext(
+
+        return ExecutionState::fromContext(
             $context,
             maxSteps: $policy->maxSteps(),
             maxWorkflowDepth: $policy->maxWorkflowDepth(),
         );
-
-        return $this->carryWorkflowData($state, $context);
     }
 
     /**
@@ -359,11 +358,17 @@ class WorkflowExecutor
         /** @var array<string, mixed> $raw */
         $state = $state->withStepResult($stepId, $raw);
 
+        $error = $success ? null : (
+            ($raw['exception'] ?? null) instanceof Throwable
+                ? $raw['exception']
+                : ExecutionError::stepFailed($stepId)
+        );
+
         $result = new StepExecutionResult(
             $stepId,
             $success,
             $stepContext->getStepOutputs($stepId),
-            $success ? null : ExecutionError::stepFailed($stepId),
+            $error,
             role: $role,
         );
 
@@ -403,7 +408,7 @@ class WorkflowExecutor
                 $state->executionId,
                 $workflow->workflowId,
                 $result->stepId,
-                ExecutionError::stepFailed($result->stepId),
+                $result->error ?? ExecutionError::stepFailed($result->stepId),
                 $this->clock->now(),
                 $category,
             ));
@@ -441,12 +446,18 @@ class WorkflowExecutor
                 'workflowId' => $workflow->workflowId,
                 'stepId' => $stepId,
             ]);
+            $failedResult = $results[$stepId] ?? null;
+            $rawResult = $state->stepResults[$stepId] ?? null;
+            $category = is_array($rawResult) && is_string($rawResult['failureCategory'] ?? null)
+                ? $rawResult['failureCategory']
+                : 'criteria';
+
             $this->events->dispatch(new RunFailedEvent(
                 $state->executionId,
                 $workflow->workflowId,
-                ExecutionError::workflowFailedAtStep($workflow->workflowId, $stepId),
+                $failedResult->error ?? ExecutionError::workflowFailedAtStep($workflow->workflowId, $stepId),
                 $this->clock->now(),
-                'criteria',
+                $category,
             ));
 
             return new WorkflowExecutionResult($workflow->workflowId, ExecutionStatus::Failed, [], $results, $state->stepsSpent, $state->workflowCallStack, $sequentialFallbacks);
@@ -505,14 +516,5 @@ class WorkflowExecutor
         } finally {
             $span->end();
         }
-    }
-
-    private function carryWorkflowData(ExecutionState $state, WorkflowContext $context): ExecutionState
-    {
-        foreach ($context->getWorkflows() as $workflowId => $data) {
-            $state = $state->withWorkflowData($workflowId, $data);
-        }
-
-        return $state;
     }
 }

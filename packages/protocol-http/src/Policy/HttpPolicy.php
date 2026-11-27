@@ -23,7 +23,15 @@ final readonly class HttpPolicy
 {
     public const bool DEFAULT_STRICT_VALIDATION = true;
 
+    public const int DEFAULT_BURST = 1;
+
+    public const int DEFAULT_MAX_CONCURRENT = 4;
+
     public const bool DEFAULT_RESPECT_RETRY_AFTER = true;
+
+    public const RateLimitScope DEFAULT_SCOPE = RateLimitScope::Host;
+
+    public const bool DEFAULT_FAIL_FAST = false;
 
     public function __construct(
         public bool $strictValidation = self::DEFAULT_STRICT_VALIDATION,
@@ -102,7 +110,7 @@ final readonly class HttpPolicy
         );
     }
 
-    public function withRateLimit(?float $requestsPerSecond, int $burst = OutboundRequestPolicy::DEFAULT_BURST): self
+    public function withRateLimit(?float $requestsPerSecond, int $burst = self::DEFAULT_BURST): self
     {
         return new self(
             strictValidation: $this->strictValidation,

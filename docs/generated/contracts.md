@@ -10,6 +10,7 @@ from both packages. Core defines contracts; Laravel implements them.
 flowchart LR
     I_Accessor["Accessor<br/><small>evaluation:Condition</small>"]:::contract
     I_AiClientInterface["AiClientInterface<br/><small>contracts:Interfaces</small>"]:::contract
+    I_ArazzoExecutionExceptionInterface["ArazzoExecutionExceptionInterface<br/><small>contracts:Exceptions</small>"]:::contract
     I_AsyncApiNormalizerInterface["AsyncApiNormalizerInterface<br/><small>sources:Normalizer</small>"]:::contract
     I_AsyncRunnerInterface["AsyncRunnerInterface<br/><small>(runner root)</small>"]:::contract
     I_BackoffCalculatorInterface["BackoffCalculatorInterface<br/><small>contracts:Interfaces</small>"]:::contract
@@ -60,6 +61,14 @@ flowchart LR
     I_WorkflowStateRepositoryInterface["WorkflowStateRepositoryInterface<br/><small>contracts:Interfaces</small>"]:::contract
     I_WritableDefinitionRegistryInterface["WritableDefinitionRegistryInterface<br/><small>engine:Runtime</small>"]:::contract
     I_XpathEvaluator["XpathEvaluator<br/><small>expression:Xpath</small>"]:::contract
+    C_contracts_contracts_Exceptions_AuthoringException["AuthoringException<br/><small>contracts:Exceptions</small>"]:::implCore
+    C_contracts_contracts_Exceptions_AuthoringException -.->|implements| I_ArazzoExecutionExceptionInterface
+    C_contracts_contracts_Exceptions_CriteriaException["CriteriaException<br/><small>contracts:Exceptions</small>"]:::implCore
+    C_contracts_contracts_Exceptions_CriteriaException -.->|implements| I_ArazzoExecutionExceptionInterface
+    C_contracts_contracts_Exceptions_ProtocolException["ProtocolException<br/><small>contracts:Exceptions</small>"]:::implCore
+    C_contracts_contracts_Exceptions_ProtocolException -.->|implements| I_ArazzoExecutionExceptionInterface
+    C_contracts_contracts_Exceptions_TransportException["TransportException<br/><small>contracts:Exceptions</small>"]:::implCore
+    C_contracts_contracts_Exceptions_TransportException -.->|implements| I_ArazzoExecutionExceptionInterface
     C_contracts_contracts_Observability_NullSpan["NullSpan<br/><small>contracts:Observability</small>"]:::implCore
     C_contracts_contracts_Observability_NullSpan -.->|implements| I_SpanInterface
     C_engine_engine_Runtime_OtelSpan["OtelSpan<br/><small>engine:Runtime</small>"]:::implCore

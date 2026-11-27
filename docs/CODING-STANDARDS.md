@@ -56,6 +56,10 @@ These standards apply to every package in the `php-arazzo` monorepo and are bind
      $operation = new NormalizedOpenApiOperation('/pets', 'get', 'https://api.example.com', [], [], [], [], [], []);
      ```
 
+4. **Encapsulate queries over nested payloads on Outcome and Result DTOs.**
+   - Outcome and result value objects (e.g. `StepExecutionOutcome`, `StepExecutionResult`) must encapsulate queries over their internal request/response records (e.g. `$outcome->targetUrl()`, `$outcome->requestMethod()`, `$outcome->isFailed()`).
+   - Consumers and taxonomy services (e.g. `ErrorClassifier`) must accept the outcome DTO directly rather than forcing caller-side decomposition of raw arrays.
+
 ## 3. Symmetric Decomposition & Quality Gates
 
 1. **Decompose peers symmetrically.**
@@ -101,3 +105,7 @@ To prevent architectural degradation and avoid CI quality gate rejections, every
 6. **Concrete Collaborators Over Speculative Interfaces & Untyped Callables:**
    - Avoid introducing single-implementation `*Interface` contracts purely as test doubles, and avoid untyped `?callable` / `mixed` factory properties on constructors.
    - Prefer concrete injectable collaborators (non-`final` when subclass-spying is needed in tests, or constructor-injected dependencies); reserve `*Interface` contracts for cross-package ports and multi-implementation extension seams.
+
+7. **Preserve Clean Interface Boundaries Under Coupling Constraints:**
+   - Never use duck-typing, union types, or proxy aliasing in constructors to evade CBO ceilings. Keep domain interface contracts clean and separate responsibilities.
+   - High-traffic hub classes (`StepExecutor`, `HttpStepExecutor`, `WorkflowExecutor`) operate near the CBO ceiling (≤ 13); inspect class coupling before introducing new type imports.

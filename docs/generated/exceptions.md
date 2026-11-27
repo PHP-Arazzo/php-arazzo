@@ -17,10 +17,12 @@ classDiagram
     class E_ArazzoException["ArazzoException<br/><small>contracts:Support</small>"]:::domain
     class E_AsyncApiResolutionException["AsyncApiResolutionException<br/><small>protocol-http:Exceptions</small>"]:::domain
     class E_AsyncApiStepException["AsyncApiStepException<br/><small>protocol-http:Exceptions</small>"]:::domain
+    class E_AuthoringException["AuthoringException<br/><small>contracts:Exceptions</small>"]:::domain
     class E_CliException["CliException<br/><small>cli:Exceptions</small>"]:::domain
     class E_CliExecutionException["CliExecutionException<br/><small>cli:Exceptions</small>"]:::domain
     class E_ConditionLexException["ConditionLexException<br/><small>evaluation:Condition</small>"]:::domain
     class E_ConditionSyntaxException["ConditionSyntaxException<br/><small>evaluation:Condition</small>"]:::domain
+    class E_CriteriaException["CriteriaException<br/><small>contracts:Exceptions</small>"]:::domain
     class E_CriterionEvaluationException["CriterionEvaluationException<br/><small>evaluation:Exceptions</small>"]:::domain
     class E_CustomTagsForbiddenException["CustomTagsForbiddenException<br/><small>document:Parser</small>"]:::domain
     class E_DecodeException["DecodeException<br/><small>document:Parser</small>"]:::domain
@@ -58,6 +60,7 @@ classDiagram
     class E_PreflightFailureException["PreflightFailureException<br/><small>runner:Exceptions</small>"]:::domain
     class E_ProtoSyntaxException["ProtoSyntaxException<br/><small>protocol-rpc:Exceptions</small>"]:::domain
     class E_ProtobufResolutionException["ProtobufResolutionException<br/><small>protocol-rpc:Exceptions</small>"]:::domain
+    class E_ProtocolException["ProtocolException<br/><small>contracts:Exceptions</small>"]:::domain
     class E_RateLimitExceededException["RateLimitExceededException<br/><small>protocol-http:Exceptions</small>"]:::domain
     class E_RegistryInitializationException["RegistryInitializationException<br/><small>evaluation:Exceptions</small>"]:::domain
     class E_RpcCodecException["RpcCodecException<br/><small>protocol-rpc:Exceptions</small>"]:::domain
@@ -73,6 +76,7 @@ classDiagram
     class E_StateStoreException["StateStoreException<br/><small>engine:Exceptions</small>"]:::domain
     class E_StepBudgetExceededException["StepBudgetExceededException<br/><small>runner:Exceptions</small>"]:::domain
     class E_TelemetrySetupException["TelemetrySetupException<br/><small>engine:Exceptions</small>"]:::domain
+    class E_TransportException["TransportException<br/><small>contracts:Exceptions</small>"]:::domain
     class E_TypeCastException["TypeCastException<br/><small>engine:Exceptions</small>"]:::domain
     class E_UnknownStepException["UnknownStepException<br/><small>runner:Exceptions</small>"]:::domain
     class E_UnknownWorkflowException["UnknownWorkflowException<br/><small>runner:Exceptions</small>"]:::domain
@@ -88,10 +92,12 @@ classDiagram
     E_RuntimeException <|-- E_ArazzoException
     E_EngineException <|-- E_AsyncApiResolutionException
     E_LogicException <|-- E_AsyncApiStepException
+    E_RuntimeException <|-- E_AuthoringException
     E_RuntimeException <|-- E_CliException
     E_CliException <|-- E_CliExecutionException
     E_ConditionSyntaxException <|-- E_ConditionLexException
     E_ArazzoException <|-- E_ConditionSyntaxException
+    E_RuntimeException <|-- E_CriteriaException
     E_ArazzoException <|-- E_CriterionEvaluationException
     E_DecodeLimitException <|-- E_CustomTagsForbiddenException
     E_RuntimeException <|-- E_DecodeException
@@ -129,6 +135,7 @@ classDiagram
     E_RunnerException <|-- E_PreflightFailureException
     E_InvalidArgumentException <|-- E_ProtoSyntaxException
     E_EngineException <|-- E_ProtobufResolutionException
+    E_RuntimeException <|-- E_ProtocolException
     E_EngineException <|-- E_RateLimitExceededException
     E_InvalidArgumentException <|-- E_RegistryInitializationException
     E_EngineException <|-- E_RpcCodecException
@@ -144,6 +151,7 @@ classDiagram
     E_EngineException <|-- E_StateStoreException
     E_RunnerException <|-- E_StepBudgetExceededException
     E_EngineException <|-- E_TelemetrySetupException
+    E_RuntimeException <|-- E_TransportException
     E_InvalidArgumentException <|-- E_TypeCastException
     E_RunnerException <|-- E_UnknownStepException
     E_RunnerException <|-- E_UnknownWorkflowException
@@ -165,10 +173,12 @@ classDiagram
 | `ArazzoException` | `RuntimeException` | contracts:Support |
 | `AsyncApiResolutionException` | `EngineException` | protocol-http:Exceptions |
 | `AsyncApiStepException` | `LogicException` | protocol-http:Exceptions |
+| `AuthoringException` | `RuntimeException` | contracts:Exceptions |
 | `CliException` | `RuntimeException` | cli:Exceptions |
 | `CliExecutionException` | `CliException` | cli:Exceptions |
 | `ConditionLexException` | `ConditionSyntaxException` | evaluation:Condition |
 | `ConditionSyntaxException` | `ArazzoException` | evaluation:Condition |
+| `CriteriaException` | `RuntimeException` | contracts:Exceptions |
 | `CriterionEvaluationException` | `ArazzoException` | evaluation:Exceptions |
 | `CustomTagsForbiddenException` | `DecodeLimitException` | document:Parser |
 | `DecodeException` | `RuntimeException` | document:Parser |
@@ -206,6 +216,7 @@ classDiagram
 | `PreflightFailureException` | `RunnerException` | runner:Exceptions |
 | `ProtoSyntaxException` | `InvalidArgumentException` | protocol-rpc:Exceptions |
 | `ProtobufResolutionException` | `EngineException` | protocol-rpc:Exceptions |
+| `ProtocolException` | `RuntimeException` | contracts:Exceptions |
 | `RateLimitExceededException` | `EngineException` | protocol-http:Exceptions |
 | `RegistryInitializationException` | `InvalidArgumentException` | evaluation:Exceptions |
 | `RpcCodecException` | `EngineException` | protocol-rpc:Exceptions |
@@ -221,6 +232,7 @@ classDiagram
 | `StateStoreException` | `EngineException` | engine:Exceptions |
 | `StepBudgetExceededException` | `RunnerException` | runner:Exceptions |
 | `TelemetrySetupException` | `EngineException` | engine:Exceptions |
+| `TransportException` | `RuntimeException` | contracts:Exceptions |
 | `TypeCastException` | `InvalidArgumentException` | engine:Exceptions |
 | `UnknownStepException` | `RunnerException` | runner:Exceptions |
 | `UnknownWorkflowException` | `RunnerException` | runner:Exceptions |

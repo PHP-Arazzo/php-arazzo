@@ -16,12 +16,12 @@ Where mutable state lives, and which of it crosses process boundaries:
 
 | Package | Readonly | Mutable | Readonly share |
 |---|---:|---:|---:|
-| contracts | 73 | 19 | 79% |
+| contracts | 73 | 23 | 76% |
 | expression | 28 | 45 | 38% |
 | evaluation | 14 | 16 | 47% |
 | sources | 8 | 30 | 21% |
 | document | 9 | 86 | 9% |
-| engine | 10 | 28 | 26% |
+| engine | 10 | 29 | 26% |
 | protocol-http | 6 | 19 | 24% |
 | protocol-rpc | 5 | 16 | 24% |
 | protocol-soap | 1 | 17 | 6% |
@@ -34,6 +34,7 @@ Where mutable state lives, and which of it crosses process boundaries:
 | Class | Package | Dir | Serialization signals |
 |---|---|---|---|
 | `ImplicitDependencies` | contracts | `Dependency` | `hydrate` |
+| `TransportException` | contracts | `Exceptions` | `hydrate` |
 | `WorkflowContextHydrator` | contracts | `State` | `hydrate` |
 | `WorkflowDataMap` | contracts | `State` | `hydrate` |
 | `DecoderRegistry` | document | `Parser` | `hydrate` |
@@ -49,6 +50,7 @@ Mutable types that serialize themselves or are carried by queue jobs — each ne
 
 - `CliRunResult` <small>cli · `hydrate`</small>
 - `ImplicitDependencies` <small>contracts · `hydrate`</small>
+- `TransportException` <small>contracts · `hydrate`</small>
 - `WorkflowContextHydrator` <small>contracts · `hydrate`</small>
 - `WorkflowDataMap` <small>contracts · `hydrate`</small>
 - `DecoderRegistry` <small>document · `hydrate`</small>

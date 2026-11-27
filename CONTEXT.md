@@ -58,6 +58,12 @@ same pull request.
 | **SourcePolicy** | Strict, immutable per-source policy DTO (`Alama\Arazzo\Contracts\Policy\SourcePolicy`) addressed by `sourceDescriptions[*].name`, carrying server overrides, redacted `Credential`s, headers, transport settings, and protocol extensions so API settings never leak across sources. |
 | **Tracer** | Vendor-agnostic distributed tracing seam (`Alama\Arazzo\Contracts\Observability\TracerInterface`) shared across I/O and orchestration packages (defaulting to `NullTracer`), bridged to OpenTelemetry via an external adapter (`OtelTracer`). |
 | **Clock** | PSR-20 `ClockInterface` time provider injected via `withClock()` (defaulting to `SystemClock`) for deterministic timestamps, retry timing, and replayable execution. |
+| **StepExecutionOutcome** | Typed execution outcome value object (`Alama\Arazzo\Contracts\Spec\StepExecutionOutcome`) returned by `OperationExecutorPluginInterface`. Yields `resolved()` for completed steps, `failed()` with typed exception and failure category (`statusCode: null`, never synthetic 500) for failures, or `suspended()` for async correlation. |
+| **TransportException** | Typed exception (`Alama\Arazzo\Contracts\Exceptions\TransportException`) thrown or recorded for network I/O, DNS resolution, connection timeout, socket reset, or transport client failures. |
+| **ProtocolException** | Typed exception (`Alama\Arazzo\Contracts\Exceptions\ProtocolException`) thrown for protocol-level framing errors, invalid wire payloads, unexpected content-type mismatches, or malformed responses. |
+| **CriteriaException** | Typed exception (`Alama\Arazzo\Contracts\Exceptions\CriteriaException`) thrown or recorded when step or workflow success criteria evaluate to false. |
+| **ErrorClassifier** | Centralized error taxonomy classifier (`Alama\Arazzo\Engine\Execution\ErrorClassifier`) in `packages/engine` serving as single source of truth standardizing errors into canonical categories: `transport`, `protocol`, `criteria`, `schema`, `authoring`. |
+| **HttpPolicy** | Canonical immutable execution policy for `protocol-http` (`Alama\Arazzo\Protocol\Http\Policy\HttpPolicy`), configuring schema validation strictness, idempotency injection, token-bucket rate limiting (`burst`, `maxConcurrent`, `respectRetryAfter`, `scope`, `failFast`), and outbound safety bounds (redirect limits, size caps, SSRF host filtering). |
 
 ## 4. Validation
 
@@ -128,6 +134,7 @@ same pull request.
 | ADR-015 | Validation source reachability data carrier and dedicated integrity rules | #331 |
 | ADR-016 | AsyncAPI channelPath resolution and source normalization | #169 |
 | ADR-017 | Runner single-step execution mode and execution result domain types (`WorkflowExecutionResult`, `StepExecutionResult`) | #370 |
+| ADR-018 | Transport failure typed exceptions, synthetic 500 elimination & unified HttpPolicy | #24 |
 
 ## 8. How to update this file
 
