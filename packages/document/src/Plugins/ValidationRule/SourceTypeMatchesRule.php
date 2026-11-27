@@ -27,6 +27,25 @@ final class SourceTypeMatchesRule implements ValidationRuleInterface
 
     public function check(ArazzoDocument $doc, SymbolTable $symbols, ErrorCollector $errors): void
     {
-        // No-op in v1 — the enum guarantees correctness.
+        if (!$symbols->sourceResolutions->isResolved()) {
+            return;
+        }
+
+        foreach ($doc->sourceDescriptions as $i => $source) {
+            $res = $symbols->sourceResolutions->get($source->name);
+            if ($res !== null && $res->isTypeMismatch()) {
+                $declared = $res->declaredType !== null
+                    ? $res->declaredType->value
+                    : ($source->type !== null ? $source->type->value : 'unknown');
+                $detected = $res->detectedType !== null
+                    ? $res->detectedType->value
+                    : 'unknown';
+                $errors->error(
+                    $this->code(),
+                    "Source '{$source->name}' declares type '{$declared}', but content matches '{$detected}'",
+                    "/sourceDescriptions/{$i}/type",
+                );
+            }
+        }
     }
 }

@@ -6,18 +6,19 @@ namespace Alama\Arazzo\Sources;
 
 use Alama\Arazzo\Contracts\Data\KnownOperations;
 use Alama\Arazzo\Contracts\Data\ResolvedOperationCollection;
+use Alama\Arazzo\Contracts\Data\SourceInspectionResult;
 use Alama\Arazzo\Contracts\Interfaces\SourceFetcherInterface;
 use Alama\Arazzo\Contracts\Interfaces\SourceNormalizerInterface;
 use Alama\Arazzo\Contracts\Interfaces\SourceResolverInterface;
 use Alama\Arazzo\Contracts\Observability\TracerInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Enum\SourceType;
-use Alama\Arazzo\Contracts\Spec\ResolvedOperation;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Spec\SourceDocument;
 use Alama\Arazzo\Document\Parser\DecodePolicy;
 use Alama\Arazzo\Sources\Exceptions\SourceFetchException;
-use Alama\Arazzo\Sources\Exceptions\SourceResolutionException;
+use Alama\Arazzo\Sources\Inspection\SourceInspector;
+use Alama\Arazzo\Sources\Normalizer\SourceOperationsNormalizer;
 use Alama\Arazzo\Sources\Policy\FetchPolicy;
 use Alama\Arazzo\Sources\Registries\SourceNormalizerRegistry;
 use Alama\Arazzo\Sources\Resolver\DefaultSourceResolver;
@@ -103,101 +104,17 @@ final readonly class Sources implements SourcesInterface
 
     public function normalizeSources(ArazzoDocument $document, string $basePath = ''): ResolvedOperationCollection
     {
-        $effectiveBasePath = $basePath;
-        if ($document->self !== null && trim($document->self) !== '') {
-            $effectiveBasePath = UriReferenceResolver::resolve(trim($document->self), $basePath);
-        }
-
-        $operations = [];
-        foreach ($document->sourceDescriptions as $source) {
-            $operations += $this->normalizeSource($source, $document, $effectiveBasePath);
-        }
-
-        return ResolvedOperationCollection::fromArray($operations);
-    }
-
-    /**
-     * @return array<string, ResolvedOperation>
-     */
-    private function normalizeSource(
-        SourceDescription $source,
-        ArazzoDocument $document,
-        string $basePath,
-    ): array {
-        $resolved = null;
-        $type = $source->type;
-
-        if ($type === null) {
-            [$resolved, $type] = $this->inferSourceType($source, $basePath);
-        }
-
-        if ($type === null) {
-            return [];
-        }
-
-        $normalizer = $this->findNormalizer($type);
-        if ($normalizer === null) {
-            return [];
-        }
-
-        $effectiveSource = $source->type === null
-            ? new SourceDescription($source->name, $source->url, $type)
-            : $source;
-
-        try {
-            $resolved ??= $this->resolve($source, $basePath);
-            $rawContent = json_encode($resolved->content, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES);
-            /** @var array<string, ResolvedOperation> $normalized */
-            $normalized = $normalizer->normalize($effectiveSource, $rawContent, $document);
-
-            return $normalized;
-        } catch (Throwable $e) {
-            $this->runtime->logger->warning('Skipping unresolvable source during normalization.', [
-                'source' => $source->name,
-                'url' => $source->url,
-                'error' => $e->getMessage(),
-            ]);
-
-            if ($this->policy->strictReachability) {
-                throw $e instanceof SourceResolutionException
-                    ? $e
-                    : SourceFetchException::resolutionFailed($source->name, $e);
-            }
-
-            return [];
-        }
-    }
-
-    /**
-     * @return array{0: ?SourceDocument, 1: ?SourceType}
-     */
-    private function inferSourceType(SourceDescription $source, string $basePath): array
-    {
-        try {
-            $resolved = $this->resolve($source, $basePath);
-            $type = SourceDescription::inferFromContent($resolved->content);
-
-            return [$resolved, $type];
-        } catch (Throwable $e) {
-            $this->runtime->logger->warning('Skipping unresolvable source during normalization.', [
-                'source' => $source->name,
-                'url' => $source->url,
-                'error' => $e->getMessage(),
-            ]);
-
-            if ($this->policy->strictReachability) {
-                throw $e instanceof SourceResolutionException
-                    ? $e
-                    : SourceFetchException::resolutionFailed($source->name, $e);
-            }
-
-            return [null, null];
-        }
+        return (new SourceOperationsNormalizer($this, $this->policy, $this->runtime->logger))->normalizeSources($document, $basePath);
     }
 
     public function knownOperations(ArazzoDocument $document, string $basePath = ''): KnownOperations
     {
         return $this->normalizeSources($document, $basePath)->toKnownOperations();
+    }
+
+    public function inspectSources(ArazzoDocument $document, string $basePath = ''): SourceInspectionResult
+    {
+        return (new SourceInspector($this, $this->runtime->logger))->inspect($document, $basePath);
     }
 
     public function withPolicy(FetchPolicy $policy): static
@@ -317,7 +234,7 @@ final readonly class Sources implements SourcesInterface
         return $resolver;
     }
 
-    private function findNormalizer(SourceType $type): ?SourceNormalizerInterface
+    public function findNormalizer(SourceType $type): ?SourceNormalizerInterface
     {
         foreach (array_reverse($this->normalizers) as $normalizer) {
             if ($normalizer->supports($type)) {

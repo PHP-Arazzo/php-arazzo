@@ -19,7 +19,13 @@ parameters:
 			path: src/Spec/Action/SubWorkflowSuccessAction.php
 
 		-
-			message: '#^Method __construct has too many parameters \(6\)\. Maximum allowed is 5\.$#'
+			message: '#^Method __construct has too many parameters \(7\)\. Maximum allowed is 5\.$#'
+			identifier: arazzo.custom.maxParameterCount
+			count: 1
+			path: src/Data/SourceResolution.php
+
+		-
+			message: '#^Method __construct has too many parameters \(7\)\. Maximum allowed is 5\.$#'
 			identifier: arazzo.custom.maxParameterCount
 			count: 1
 			path: src/Validation/SymbolTable.php
