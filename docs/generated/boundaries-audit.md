@@ -93,11 +93,7 @@ when a boundary consciously moves.
 
 Cross-package references from library code must target `*Interface` facades, value types, or throwables. `laravel`/`cli` wiring is exempt by design.
 
-**1 facade-seam violation(s):**
-
-| From package | To package | From | References concrete facade |
-|---|---|---|---|
-| `protocol-http` | `expression` | `AsyncApiPathInterpolator` | `ExpressionEngine` |
+**Clean** — no library package references another package's concrete entry-point facade (`ExpressionEngine`, `Document`, `SourceGraph`, `Runner`, `AsyncRunner`, `HttpProtocol`) from non-facade code; facade-to-facade transitions are allowed by the seam policy.
 
 ### Facade-to-facade transitions (allowed by seam policy)
 
@@ -142,7 +138,8 @@ Grouped cross-package uses of concrete internals (AST nodes, evaluators, resolve
 | `protocol-http` | `AsyncApiSourceNormalizer` | `sources` | 1 | `AsyncApiOperationResolver` |
 | `protocol-http` | `Credential` | `contracts` | 1 | `SourcePolicyApplicator` |
 | `protocol-http` | `EvaluationContext` | `expression` | 3 | `StepOutputExtractor` |
-| `protocol-http` | `EvaluationEngine` | `evaluation` | 2 | `AsyncApiPathInterpolator` |
+| `protocol-http` | `EvaluationEngine` | `evaluation` | 1 | `HttpProtocol` |
+| `protocol-http` | `ExpressionEvaluator` | `expression` | 1 | `AsyncApiPathInterpolator` |
 | `protocol-http` | `IdempotencyKeyInjector` | `engine` | 3 | `HttpStepExecutor` |
 | `protocol-http` | `NullTracer` | `contracts` | 2 | `DefaultOpenApiExecutor` |
 | `protocol-http` | `OpenApi30Normalizer` | `sources` | 1 | `OpenApiOperationResolver` |

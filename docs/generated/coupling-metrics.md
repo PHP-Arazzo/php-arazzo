@@ -66,7 +66,7 @@ targets. Regenerated before every commit.
 | `protocol-http:Execution` | 11 | 1605 | 3 | 15 | 0.83 | ⚠ unstable hub |
 | `protocol-http:Plugins` | 2 | 386 | 1 | 11 | 0.92 |  |
 | `protocol-http:Policy` | 2 | 263 | 3 | 3 | 0.50 |  |
-| `protocol-http:Resolver` | 6 | 606 | 3 | 13 | 0.81 | ⚠ unstable hub |
+| `protocol-http:Resolver` | 6 | 610 | 3 | 13 | 0.81 | ⚠ unstable hub |
 | `(protocol-http root)` | 1 | 142 | 1 | 12 | 0.92 |  |
 | `protocol-rpc:Exceptions` | 4 | 183 | 4 | 1 | 0.20 |  |
 | `protocol-rpc:Execution` | 2 | 174 | 1 | 7 | 0.88 |  |
@@ -102,7 +102,7 @@ targets. Regenerated before every commit.
 | `sources:Resolver` | 15 | 884 | 5 | 6 | 0.55 |  |
 | `(sources root)` | 2 | 333 | 5 | 11 | 0.69 |  |
 
-Total cross-module edges: **1869**
+Total cross-module edges: **1868**
 
 ## Most entangled module pairs
 

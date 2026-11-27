@@ -17,11 +17,11 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 
 | Kind | Class | Member | Detail |
 |---|---|---|---|
-| changed method | `DocumentInterface` | `__construct` | `public function __construct(public StepState $from, public StepState $to, public string $reason, public StepTransitionType $type = StepTransitionType::Enter, public array $actions = [])` → `public function __construct(private readonly ?RunnerInterface $runner = null, private readonly ?DocumentInterface $document = null)` |
-| changed method | `DocumentInterface` | `load` | `public function load(string $path): ArazzoDocument;` → `public function load(string $path): ArazzoDocument` |
+| changed method | `DocumentInterface` | `__construct` | `public function __construct(public StepState $from, public StepState $to, public string $reason, public StepTransitionType $type = StepTransitionType::Enter, public array $actions = [])` → `public function __construct(private readonly ValidateConfigLoader $configLoader = new ValidateConfigLoader())` |
+| changed method | `DocumentInterface` | `load` | `public function load(string $path): ArazzoDocument;` → `public function load(?string $explicitPath = null, ?string $workingDirectory = null): ValidatorPolicy` |
 | changed method | `DocumentInterface` | `preflight` | `public function preflight(ArazzoDocument $document): ValidationResult` → `public function preflight(ArazzoDocument $document, ?string $workflowId = null, array $inputs = []): ValidationResult;` |
 | changed method | `DocumentInterface` | `resolve` | `public function resolve(Step $step, ArazzoDocument $document): ResolvedOperation;` → `public function resolve(Step $step, ArazzoDocument $document, array $overrides = []): ?OperationExecutorPluginInterface` |
-| changed method | `DocumentInterface` | `validate` | `public function validate(ArazzoDocument $document): ValidationResult` → `public function validate(ArazzoDocument $document, ?KnownOperations $operations = null): ValidationResult` |
+| changed method | `DocumentInterface` | `validate` | `public function validate(ArazzoDocument $document): ValidationResult` → `public function validate(ArazzoDocument $document, ?KnownOperations $operations = null, ?SourceResolutionCollection $sourceResolutions = null, ): ValidationResult` |
 | removed class | `RunnerFacade` | — | was class |
 | removed class | `RunnerFacadeInterface` | — | was interface |
 | removed class | `SourceGraph` | — | was class |
@@ -31,13 +31,18 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 | removed method | `DocumentInterface` | `preflightInputs` | `public function preflightInputs(ArazzoDocument $document, string $workflowId, array $inputs): ValidationResult` |
 | removed method | `DocumentInterface` | `resolveOperation` | `public function resolveOperation(Step $step, ArazzoDocument $document): ResolvedOperation` |
 
-**Additions (non-breaking):** 109
+**Additions (non-breaking):** 126
 
 | Kind | Class | Member |
 |---|---|---|
+| added enum case | `DocumentInterface` | `Host` |
+| added enum case | `DocumentInterface` | `Run` |
+| added method | `DocumentInterface` | `__isset` |
 | added method | `DocumentInterface` | `all` |
 | added method | `DocumentInterface` | `ambiguousActionTarget` |
 | added method | `DocumentInterface` | `arazzoSourceNotAddressable` |
+| added method | `DocumentInterface` | `buildFromArray` |
+| added method | `DocumentInterface` | `burst` |
 | added method | `DocumentInterface` | `calculateDelay` |
 | added method | `DocumentInterface` | `consumeCorrelation` |
 | added method | `DocumentInterface` | `create` |
@@ -53,6 +58,7 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 | added method | `DocumentInterface` | `executedStepIds` |
 | added method | `DocumentInterface` | `executor` |
 | added method | `DocumentInterface` | `extractContext` |
+| added method | `DocumentInterface` | `failFast` |
 | added method | `DocumentInterface` | `failedStep` |
 | added method | `DocumentInterface` | `find` |
 | added method | `DocumentInterface` | `findCorrelation` |
@@ -79,13 +85,16 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 | added method | `DocumentInterface` | `loadState` |
 | added method | `DocumentInterface` | `markCompleted` |
 | added method | `DocumentInterface` | `markStarted` |
+| added method | `DocumentInterface` | `maxConcurrent` |
 | added method | `DocumentInterface` | `maxSteps` |
 | added method | `DocumentInterface` | `maxWorkflowDepth` |
 | added method | `DocumentInterface` | `noSupportingExecutor` |
 | added method | `DocumentInterface` | `nonPositiveMaxAttempts` |
 | added method | `DocumentInterface` | `output` |
 | added method | `DocumentInterface` | `outputExtractor` |
+| added method | `DocumentInterface` | `parseSeverityLevel` |
 | added method | `DocumentInterface` | `register` |
+| added method | `DocumentInterface` | `requestsPerSecond` |
 | added method | `DocumentInterface` | `reset` |
 | added method | `DocumentInterface` | `resolver` |
 | added method | `DocumentInterface` | `resume` |
@@ -94,6 +103,7 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 | added method | `DocumentInterface` | `save` |
 | added method | `DocumentInterface` | `saveCorrelation` |
 | added method | `DocumentInterface` | `saveState` |
+| added method | `DocumentInterface` | `scope` |
 | added method | `DocumentInterface` | `snapshot` |
 | added method | `DocumentInterface` | `sourcePolicy` |
 | added method | `DocumentInterface` | `start` |
@@ -118,12 +128,14 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 | added method | `DocumentInterface` | `withDefinitions` |
 | added method | `DocumentInterface` | `withEventDispatcher` |
 | added method | `DocumentInterface` | `withExecutor` |
+| added method | `DocumentInterface` | `withFailFast` |
 | added method | `DocumentInterface` | `withIdempotencyInjector` |
 | added method | `DocumentInterface` | `withLockManager` |
 | added method | `DocumentInterface` | `withLogger` |
 | added method | `DocumentInterface` | `withMaxAliases` |
 | added method | `DocumentInterface` | `withMaxAttempts` |
 | added method | `DocumentInterface` | `withMaxBytes` |
+| added method | `DocumentInterface` | `withMaxConcurrent` |
 | added method | `DocumentInterface` | `withMaxDepth` |
 | added method | `DocumentInterface` | `withMaxNodes` |
 | added method | `DocumentInterface` | `withMaxSteps` |
@@ -133,13 +145,18 @@ Comparing `arazzo-core/1.0.0-alpha.1` → working tree.
 | added method | `DocumentInterface` | `withPolicy` |
 | added method | `DocumentInterface` | `withPreflight` |
 | added method | `DocumentInterface` | `withQueueDriver` |
+| added method | `DocumentInterface` | `withRateLimit` |
+| added method | `DocumentInterface` | `withRateLimiter` |
+| added method | `DocumentInterface` | `withRespectRetryAfter` |
 | added method | `DocumentInterface` | `withRetryPolicy` |
 | added method | `DocumentInterface` | `withRule` |
+| added method | `DocumentInterface` | `withScope` |
 | added method | `DocumentInterface` | `withSourcePolicy` |
 | added method | `DocumentInterface` | `withStateTtlSeconds` |
 | added method | `DocumentInterface` | `withStore` |
 | added method | `DocumentInterface` | `withStrictValidation` |
 | added method | `DocumentInterface` | `withTracer` |
+| added method | `DocumentInterface` | `withValidatorPolicy` |
 | added method | `DocumentInterface` | `withYamlPolicy` |
 | added method | `DocumentInterface` | `workflowEndedInFailure` |
 | added method | `DocumentInterface` | `workflowFailedAtStep` |
