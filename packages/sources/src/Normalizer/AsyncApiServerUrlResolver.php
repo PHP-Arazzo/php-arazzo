@@ -46,7 +46,10 @@ final class AsyncApiServerUrlResolver
 
         foreach ($channelData['servers'] as $serverRef) {
             if (is_string($serverRef) && isset($servers[$serverRef]) && is_array($servers[$serverRef])) {
-                return self::formatServerUrl($servers[$serverRef]);
+                /** @var array<string, mixed> $targetServer */
+                $targetServer = $servers[$serverRef];
+
+                return self::formatServerUrl($targetServer);
             }
         }
 
@@ -60,8 +63,10 @@ final class AsyncApiServerUrlResolver
     {
         foreach ($servers as $server) {
             if (is_array($server)) {
-                $protocol = strtolower((string) ($server['protocol'] ?? ''));
+                $rawProtocol = (isset($server['protocol']) && is_string($server['protocol'])) ? $server['protocol'] : '';
+                $protocol = strtolower($rawProtocol);
                 if ($protocol === 'http' || $protocol === 'https') {
+                    /** @var array<string, mixed> $server */
                     return self::formatServerUrl($server);
                 }
             }
@@ -77,6 +82,7 @@ final class AsyncApiServerUrlResolver
     {
         foreach ($servers as $server) {
             if (is_array($server)) {
+                /** @var array<string, mixed> $server */
                 return self::formatServerUrl($server);
             }
         }
@@ -89,22 +95,46 @@ final class AsyncApiServerUrlResolver
      */
     public static function formatServerUrl(array $server): string
     {
-        $rawUrl = (string) ($server['url'] ?? $server['host'] ?? '');
-        $protocol = strtolower((string) ($server['protocol'] ?? 'https'));
-
-        $pathname = (string) ($server['pathname'] ?? '');
-        if ($pathname !== '') {
-            $rawUrl = rtrim($rawUrl, '/').'/'.ltrim($pathname, '/');
-        }
+        $rawUrl = self::extractRawUrl($server);
+        $protocol = (isset($server['protocol']) && is_string($server['protocol']))
+            ? strtolower($server['protocol'])
+            : 'https';
 
         if (isset($server['variables']) && is_array($server['variables'])) {
-            $rawUrl = self::substituteVariables($rawUrl, $server['variables']);
+            /** @var array<string, mixed> $variables */
+            $variables = $server['variables'];
+            $rawUrl = self::substituteVariables($rawUrl, $variables);
         }
 
         if (preg_match('#^https?://#i', $rawUrl) === 1) {
             return rtrim($rawUrl, '/');
         }
 
+        return self::applyProtocolScheme($rawUrl, $protocol);
+    }
+
+    /**
+     * @param  array<string, mixed>  $server
+     */
+    private static function extractRawUrl(array $server): string
+    {
+        $url = (isset($server['url']) && is_string($server['url']))
+            ? $server['url']
+            : ((isset($server['host']) && is_string($server['host'])) ? $server['host'] : '');
+
+        $pathname = (isset($server['pathname']) && is_string($server['pathname']))
+            ? $server['pathname']
+            : '';
+
+        if ($pathname !== '') {
+            $url = rtrim($url, '/').'/'.ltrim($pathname, '/');
+        }
+
+        return $url;
+    }
+
+    private static function applyProtocolScheme(string $rawUrl, string $protocol): string
+    {
         $stripped = (string) preg_replace('#^[a-zA-Z0-9+.-]+://#', '', $rawUrl);
         $scheme = ($protocol === 'http') ? 'http://' : 'https://';
 
@@ -117,7 +147,7 @@ final class AsyncApiServerUrlResolver
     private static function substituteVariables(string $url, array $variables): string
     {
         foreach ($variables as $name => $def) {
-            if (is_array($def) && isset($def['default'])) {
+            if (is_array($def) && isset($def['default']) && is_scalar($def['default'])) {
                 $url = str_replace('{'.$name.'}', (string) $def['default'], $url);
             }
         }

@@ -130,19 +130,32 @@ final class AsyncApiSourceNormalizer implements SourceNormalizerInterface
         /** @var array<string, mixed> $operations */
         $operations = $rawDocument['operations'];
         foreach ($operations as $opKey => $opData) {
-            if (!is_array($opData)) {
-                continue;
+            if (is_array($opData)) {
+                /** @var array<string, mixed> $opData */
+                $this->indexSingleAsyncApi3Operation($index, (string) $opKey, $opData, $source);
             }
+        }
+    }
 
-            $channelRef = $opData['channel']['$ref'] ?? null;
-            if (is_string($channelRef)) {
-                $refKey = basename($channelRef);
-                $targetResolved = $index[$channelRef] ?? $index['#/channels/'.$refKey] ?? $index[$refKey] ?? null;
-                if ($targetResolved !== null) {
-                    $index[(string) $opKey] = $targetResolved;
-                    $index['$sourceDescriptions.'.$source->name.'.'.$opKey] = $targetResolved;
-                }
-            }
+    /**
+     * @param  array<string, ResolvedOperation>  $index
+     * @param  array<string, mixed>  $opData
+     */
+    private function indexSingleAsyncApi3Operation(array &$index, string $opKey, array $opData, SourceDescription $source): void
+    {
+        $channelRef = (isset($opData['channel']) && is_array($opData['channel']) && isset($opData['channel']['$ref']) && is_string($opData['channel']['$ref']))
+            ? $opData['channel']['$ref']
+            : null;
+
+        if ($channelRef === null) {
+            return;
+        }
+
+        $refKey = basename($channelRef);
+        $targetResolved = $index[$channelRef] ?? $index['#/channels/'.$refKey] ?? $index[$refKey] ?? null;
+        if ($targetResolved !== null) {
+            $index[$opKey] = $targetResolved;
+            $index['$sourceDescriptions.'.$source->name.'.'.$opKey] = $targetResolved;
         }
     }
 
@@ -159,15 +172,27 @@ final class AsyncApiSourceNormalizer implements SourceNormalizerInterface
         /** @var array<string, mixed> $rawChannels */
         $rawChannels = $rawDocument['channels'];
         foreach ($rawChannels as $channelKey => $channelData) {
-            if (!is_array($channelData)) {
-                continue;
+            if (is_array($channelData)) {
+                /** @var array<string, mixed> $channelData */
+                $this->indexSingleAsyncApi2Channel($index, (string) $channelKey, $channelData, $source);
             }
+        }
+    }
 
-            $targetResolved = $index[(string) $channelKey];
+    /**
+     * @param  array<string, ResolvedOperation>  $index
+     * @param  array<string, mixed>  $channelData
+     */
+    private function indexSingleAsyncApi2Channel(array &$index, string $channelKey, array $channelData, SourceDescription $source): void
+    {
+        $targetResolved = $index[$channelKey];
 
-            foreach (['publish', 'subscribe'] as $action) {
-                $opId = $channelData[$action]['operationId'] ?? null;
-                if (is_string($opId) && $opId !== '') {
+        foreach (['publish', 'subscribe'] as $action) {
+            if (isset($channelData[$action]) && is_array($channelData[$action])) {
+                /** @var array<string, mixed> $actionData */
+                $actionData = $channelData[$action];
+                $opId = (isset($actionData['operationId']) && is_string($actionData['operationId'])) ? $actionData['operationId'] : null;
+                if ($opId !== null && $opId !== '') {
                     $index[$opId] = $targetResolved;
                     $index['$sourceDescriptions.'.$source->name.'.'.$opId] = $targetResolved;
                 }

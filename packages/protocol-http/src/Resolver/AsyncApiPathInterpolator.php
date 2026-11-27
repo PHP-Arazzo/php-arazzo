@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Protocol\Http\Resolver;
 
-use Alama\Arazzo\Expression\Data\EvaluationContext;
-use Alama\Arazzo\Contracts\Evaluation\EvaluationEngineInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\Expression;
 use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
 use Alama\Arazzo\Engine\Execution\ReusableParameterResolver;
 use Alama\Arazzo\Evaluation\EvaluationEngine;
+use Alama\Arazzo\Evaluation\EvaluationEngineInterface;
+use Alama\Arazzo\Expression\Data\EvaluationContext;
 use Alama\Arazzo\Expression\ExpressionEngine;
 use Stringable;
 

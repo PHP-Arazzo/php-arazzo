@@ -36,6 +36,7 @@ final class AsyncApi20Normalizer implements AsyncApiNormalizerInterface
                 continue;
             }
 
+            /** @var array<string, mixed> $channelData */
             $resolvedServer = AsyncApiServerUrlResolver::resolve($channelData, $servers);
 
             $normalized[(string) $channelPath] = new NormalizedOpenApiOperation(

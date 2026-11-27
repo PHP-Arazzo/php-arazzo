@@ -16,7 +16,6 @@ use Alama\Arazzo\Contracts\Spec\PayloadReplacement;
 use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Contracts\Spec\StepExecutionOutcome;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
-use Alama\Arazzo\Document\OperationResolverInterface;
 use Alama\Arazzo\Engine\Exceptions\ExecutionException;
 use Alama\Arazzo\Engine\Execution\ReusableParameterResolver;
 use Alama\Arazzo\Evaluation\EvaluationEngineInterface;
@@ -51,7 +50,7 @@ final class AsyncApiStepExecutor implements OperationExecutorPluginInterface
         private ?RequestFactoryInterface $requestFactory = null,
         private ?StreamFactoryInterface $streamFactory = null,
         private ?UriFactoryInterface $uriFactory = null,
-        private ?OperationResolverInterface $operationResolver = null,
+        private ?AsyncApiOperationResolver $operationResolver = null,
     ) {}
 
     public function name(): string

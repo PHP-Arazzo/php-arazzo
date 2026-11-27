@@ -36,7 +36,8 @@ final class AsyncApi30Normalizer implements AsyncApiNormalizerInterface
                 continue;
             }
 
-            $address = (string) ($channelData['address'] ?? $channelId);
+            /** @var array<string, mixed> $channelData */
+            $address = (isset($channelData['address']) && is_string($channelData['address'])) ? $channelData['address'] : (string) $channelId;
             $resolvedServer = AsyncApiServerUrlResolver::resolve($channelData, $servers);
 
             $operation = new NormalizedOpenApiOperation(

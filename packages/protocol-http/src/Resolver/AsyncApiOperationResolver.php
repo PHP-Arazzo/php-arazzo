@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Alama\Arazzo\Protocol\Http\Resolver;
 
-use Alama\Arazzo\Document\OperationResolverInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Spec\ResolvedOperation;
 use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Spec\Step;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
+use Alama\Arazzo\Document\OperationResolverInterface;
 use Alama\Arazzo\Protocol\Http\Exceptions\AsyncApiResolutionException;
 use Alama\Arazzo\Protocol\Http\Exceptions\AsyncApiStepException;
 use Alama\Arazzo\Sources\Plugins\SourceNormalizer\AsyncApiSourceNormalizer;
@@ -22,7 +22,7 @@ use Throwable;
  *
  * @internal stays out of the advertised contract; not part of the public API surface
  */
-final class AsyncApiOperationResolver implements OperationResolverInterface
+class AsyncApiOperationResolver implements OperationResolverInterface
 {
     private readonly AsyncApiPathInterpolator $interpolator;
 
@@ -42,8 +42,11 @@ final class AsyncApiOperationResolver implements OperationResolverInterface
 
     public function supportsStep(Step $step, ArazzoDocument $document): bool
     {
-        return ($step->isAsyncAction() || ($step->target->channelPath !== null && $step->target->channelPath !== ''))
-            && $document->sourceDescriptions !== null;
+        if ($step->isAsyncAction() || ($step->target->channelPath !== null && $step->target->channelPath !== '')) {
+            return true;
+        }
+
+        return $document->findSource($step->target->channelPath ?? '') !== null;
     }
 
     public function resolve(Step $step, ArazzoDocument $document): ResolvedOperation
@@ -164,7 +167,7 @@ final class AsyncApiOperationResolver implements OperationResolverInterface
     {
         $asyncSources = array_filter(
             $document->sourceDescriptions,
-            static fn (SourceDescription $s): bool => $s->type->value === 'asyncapi',
+            static fn (SourceDescription $s): bool => $s->type !== null && $s->type->value === 'asyncapi',
         );
 
         return count($asyncSources) === 1 ? reset($asyncSources) : null;

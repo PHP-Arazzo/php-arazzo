@@ -26,7 +26,6 @@ use Alama\Arazzo\Contracts\Spec\StepFlow;
 use Alama\Arazzo\Contracts\Spec\StepIo;
 use Alama\Arazzo\Contracts\Spec\StepTarget;
 use Alama\Arazzo\Contracts\State\WorkflowContext;
-use Alama\Arazzo\Document\OperationResolverInterface;
 use Alama\Arazzo\Engine\Exceptions\ExecutionException;
 use Alama\Arazzo\Evaluation\EvaluationEngine;
 use Alama\Arazzo\Expression\ExpressionEngine;
@@ -388,7 +387,7 @@ it('handles resolver fallback, unresolvable target URLs, and missing channelPath
     $httpFactory = new HttpFactory();
     $pendingCorrelations = new AsyncApiExecutorMockPendingCorrelations();
 
-    $throwingResolver = new class() implements OperationResolverInterface
+    $throwingResolver = new class(Sources::create()) extends AsyncApiOperationResolver
     {
         public function supportsStep(Step $step, ArazzoDocument $document): bool
         {
@@ -437,7 +436,7 @@ it('handles resolver fallback, unresolvable target URLs, and missing channelPath
         ->toThrow(AsyncApiStepException::class);
 
     // 4. Send where resolver returns non-http target URL throws unresolvableChannelTarget
-    $relativeResolver = new class() implements OperationResolverInterface
+    $relativeResolver = new class(Sources::create()) extends AsyncApiOperationResolver
     {
         public function supportsStep(Step $step, ArazzoDocument $document): bool
         {
@@ -493,7 +492,7 @@ it('handles resolver fallback, unresolvable target URLs, and missing channelPath
         ->and($pendingCorrelations->created[count($pendingCorrelations->created) - 1]['channelPath'])->toBe('rawChannelAddress');
 
     // 6. Receive step rethrows AsyncApiResolutionException when resolver throws it
-    $resolutionExceptionResolver = new class() implements OperationResolverInterface
+    $resolutionExceptionResolver = new class(Sources::create()) extends AsyncApiOperationResolver
     {
         public function supportsStep(Step $step, ArazzoDocument $document): bool
         {
