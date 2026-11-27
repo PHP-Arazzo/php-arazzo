@@ -275,3 +275,144 @@ it('passes documents with beyond-spec extensions in default permissive mode but 
         rmdir($tempDir);
     }
 });
+
+function createDocWithSourcesTest(string $dir, string $sourceUrl, ?string $sourceType = 'openapi'): string
+{
+    $typeLine = $sourceType !== null ? "    type: {$sourceType}" : '';
+    $path = $dir.'/doc.arazzo.yaml';
+    $content = <<<YAML
+arazzo: "1.0.0"
+info:
+  title: Source Resolution Test
+  version: "1.0"
+sourceDescriptions:
+  - name: api
+    url: {$sourceUrl}
+{$typeLine}
+workflows:
+  - workflowId: testWf
+    steps:
+      - stepId: step1
+        operationId: api.doSomething
+YAML;
+    file_put_contents($path, $content);
+
+    return $path;
+}
+
+it('fetches and validates every source in resolve mode when --resolve-sources is supplied', function (): void {
+    $tempDir = sys_get_temp_dir().'/arazzo_val_resolve_'.uniqid();
+    mkdir($tempDir);
+    $openapiFile = $tempDir.'/openapi.yaml';
+    file_put_contents($openapiFile, "openapi: 3.0.0\ninfo:\n  title: Petstore\n  version: 1.0.0\npaths:\n  /pets:\n    get:\n      operationId: doSomething\n");
+    $file = createDocWithSourcesTest($tempDir, './openapi.yaml', 'openapi');
+
+    try {
+        $tester = new CommandTester(new ValidateCommand());
+        $status = $tester->execute([
+            'file' => $file,
+            '--resolve-sources' => true,
+        ]);
+
+        expect($status)->toBe(Command::SUCCESS)
+            ->and($tester->getDisplay())->toContain('✔ valid')
+            ->and($tester->getDisplay())->not->toContain('source.');
+    } finally {
+        unlink($openapiFile);
+        unlink($file);
+        rmdir($tempDir);
+    }
+});
+
+it('reports unreadable source with source.unreadable in resolve mode', function (): void {
+    $tempDir = sys_get_temp_dir().'/arazzo_val_resolve_'.uniqid();
+    mkdir($tempDir);
+    $file = createDocWithSourcesTest($tempDir, './missing.yaml', 'openapi');
+
+    try {
+        $tester = new CommandTester(new ValidateCommand());
+        $status = $tester->execute([
+            'file' => $file,
+            '--resolve-sources' => true,
+        ]);
+
+        expect($status)->toBe(Command::FAILURE)
+            ->and($tester->getDisplay())->toContain('✘ invalid')
+            ->and($tester->getDisplay())->toContain('source.unreadable')
+            ->and($tester->getDisplay())->toContain('/sourceDescriptions/0/url');
+    } finally {
+        unlink($file);
+        rmdir($tempDir);
+    }
+});
+
+it('reports unparseable source with source.unparseable in resolve mode', function (): void {
+    $tempDir = sys_get_temp_dir().'/arazzo_val_resolve_'.uniqid();
+    mkdir($tempDir);
+    $badFile = $tempDir.'/bad.yaml';
+    file_put_contents($badFile, "invalid: [unclosed yaml\n");
+    $file = createDocWithSourcesTest($tempDir, './bad.yaml', 'openapi');
+
+    try {
+        $tester = new CommandTester(new ValidateCommand());
+        $status = $tester->execute([
+            'file' => $file,
+            '--resolve-sources' => true,
+        ]);
+
+        expect($status)->toBe(Command::FAILURE)
+            ->and($tester->getDisplay())->toContain('✘ invalid')
+            ->and($tester->getDisplay())->toContain('source.unparseable')
+            ->and($tester->getDisplay())->toContain('/sourceDescriptions/0/url');
+    } finally {
+        unlink($badFile);
+        unlink($file);
+        rmdir($tempDir);
+    }
+});
+
+it('reports declared type mismatch with source.type_matches in resolve mode', function (): void {
+    $tempDir = sys_get_temp_dir().'/arazzo_val_resolve_'.uniqid();
+    mkdir($tempDir);
+    $openapiFile = $tempDir.'/openapi.yaml';
+    file_put_contents($openapiFile, "openapi: 3.0.0\ninfo:\n  title: Petstore\n  version: 1.0.0\npaths:\n  /pets:\n    get:\n      operationId: doSomething\n");
+    // Points to openapi.yaml, but declared type is arazzo
+    $file = createDocWithSourcesTest($tempDir, './openapi.yaml', 'arazzo');
+
+    try {
+        $tester = new CommandTester(new ValidateCommand());
+        $status = $tester->execute([
+            'file' => $file,
+            '--resolve-sources' => true,
+        ]);
+
+        expect($status)->toBe(Command::FAILURE)
+            ->and($tester->getDisplay())->toContain('✘ invalid')
+            ->and($tester->getDisplay())->toContain('source.type_matches')
+            ->and($tester->getDisplay())->toContain('/sourceDescriptions/0/type');
+    } finally {
+        unlink($openapiFile);
+        unlink($file);
+        rmdir($tempDir);
+    }
+});
+
+it('stays offline without --resolve-sources even when source file is missing', function (): void {
+    $tempDir = sys_get_temp_dir().'/arazzo_val_offline_'.uniqid();
+    mkdir($tempDir);
+    $file = createDocWithSourcesTest($tempDir, './missing.yaml', 'openapi');
+
+    try {
+        $tester = new CommandTester(new ValidateCommand());
+        $status = $tester->execute([
+            'file' => $file,
+        ]);
+
+        expect($status)->toBe(Command::SUCCESS)
+            ->and($tester->getDisplay())->toContain('✔ valid')
+            ->and($tester->getDisplay())->not->toContain('source.unreadable');
+    } finally {
+        unlink($file);
+        rmdir($tempDir);
+    }
+});

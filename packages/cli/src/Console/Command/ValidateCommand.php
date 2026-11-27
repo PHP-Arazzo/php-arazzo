@@ -9,6 +9,7 @@ use Alama\Arazzo\Contracts\Validation\Error;
 use Alama\Arazzo\Contracts\Validation\ValidatorPolicy;
 use Alama\Arazzo\Contracts\Validation\Warning;
 use Alama\Arazzo\Document\Document;
+use Alama\Arazzo\Sources\Policy\FetchPolicy;
 use Alama\Arazzo\Sources\Sources;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -72,6 +73,12 @@ final class ValidateCommand extends Command
                 'c',
                 InputOption::VALUE_REQUIRED,
                 'Path to validator configuration file (arazzo.validate.php or arazzo.json)',
+            )
+            ->addOption(
+                'resolve-sources',
+                null,
+                InputOption::VALUE_NONE,
+                'Fetch and validate reachability, parseability and declared type of all source descriptions',
             );
     }
 
@@ -93,16 +100,30 @@ final class ValidateCommand extends Command
             return $policyOrExit;
         }
 
+        $resolveSources = (bool) $input->getOption('resolve-sources');
         $knownOperations = null;
-        try {
-            $knownOperations = Sources::create()->knownOperations($document, (string) dirname($file));
-        } catch (Throwable) {
-            // Degrade gracefully
+        $sourceResolutions = null;
+
+        if ($resolveSources) {
+            try {
+                $inspection = Sources::create()->inspectSources($document, (string) dirname($file));
+                $knownOperations = $inspection->knownOperations;
+                $sourceResolutions = $inspection->resolutions;
+            } catch (Throwable) {
+                // Degrade gracefully
+            }
+        } else {
+            try {
+                $offlinePolicy = FetchPolicy::default()->withAllowedSchemes(['file']);
+                $knownOperations = Sources::create()->withPolicy($offlinePolicy)->knownOperations($document, (string) dirname($file));
+            } catch (Throwable) {
+                // Degrade gracefully
+            }
         }
 
         $result = Document::create()
             ->withValidatorPolicy($policyOrExit)
-            ->validate($document, $knownOperations);
+            ->validate($document, $knownOperations, $sourceResolutions);
 
         if ($result->isValid()) {
             $output->writeln('<info>✔ valid</info> '.$file);

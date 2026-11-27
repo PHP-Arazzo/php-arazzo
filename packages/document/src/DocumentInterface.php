@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Document;
 
 use Alama\Arazzo\Contracts\Data\KnownOperations;
+use Alama\Arazzo\Contracts\Data\SourceResolutionCollection;
 use Alama\Arazzo\Contracts\Interfaces\ValidationRuleInterface;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Validation\ValidationResult;
@@ -50,7 +51,11 @@ interface DocumentInterface
     /**
      * Static validation of a parsed document against spec rules.
      */
-    public function validate(ArazzoDocument $document, ?KnownOperations $operations = null): ValidationResult;
+    public function validate(
+        ArazzoDocument $document,
+        ?KnownOperations $operations = null,
+        ?SourceResolutionCollection $sourceResolutions = null,
+    ): ValidationResult;
 
     /**
      * Validate supplied runtime inputs against a workflow's declared inputs

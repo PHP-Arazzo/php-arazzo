@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Alama\Arazzo\Document\Validator;
 
 use Alama\Arazzo\Contracts\Data\KnownOperations;
+use Alama\Arazzo\Contracts\Data\SourceResolutionCollection;
 use Alama\Arazzo\Contracts\Spec\ArazzoDocument;
 use Alama\Arazzo\Contracts\Validation\Error;
 use Alama\Arazzo\Contracts\Validation\ErrorCollector;
@@ -31,8 +32,11 @@ final readonly class Validator
     /**
      * @param  KnownOperations|array<string,array<string,true>>|null  $resolvedOperations
      */
-    public function validate(ArazzoDocument $doc, KnownOperations|array|null $resolvedOperations = null): ValidationResult
-    {
+    public function validate(
+        ArazzoDocument $doc,
+        KnownOperations|array|null $resolvedOperations = null,
+        ?SourceResolutionCollection $sourceResolutions = null,
+    ): ValidationResult {
         $raw = $resolvedOperations ?? $this->resolvedOperations;
         $ops = match (true) {
             $raw instanceof KnownOperations => $raw,
@@ -40,7 +44,12 @@ final readonly class Validator
             default => KnownOperations::none(),
         };
 
-        $symbols = SymbolTable::build($doc, $ops, $this->rules->policy->isConformance());
+        $symbols = SymbolTable::build(
+            $doc,
+            $ops,
+            $this->rules->policy->isConformance(),
+            $sourceResolutions,
+        );
         $collector = new ErrorCollector($this->rules->policy);
 
         foreach ($this->rules->activeRules() as $rule) {

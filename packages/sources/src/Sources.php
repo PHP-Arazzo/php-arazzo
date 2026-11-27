@@ -6,6 +6,9 @@ namespace Alama\Arazzo\Sources;
 
 use Alama\Arazzo\Contracts\Data\KnownOperations;
 use Alama\Arazzo\Contracts\Data\ResolvedOperationCollection;
+use Alama\Arazzo\Contracts\Data\SourceInspectionResult;
+use Alama\Arazzo\Contracts\Data\SourceResolution;
+use Alama\Arazzo\Contracts\Data\SourceResolutionCollection;
 use Alama\Arazzo\Contracts\Interfaces\SourceFetcherInterface;
 use Alama\Arazzo\Contracts\Interfaces\SourceNormalizerInterface;
 use Alama\Arazzo\Contracts\Interfaces\SourceResolverInterface;
@@ -17,6 +20,7 @@ use Alama\Arazzo\Contracts\Spec\SourceDescription;
 use Alama\Arazzo\Contracts\Spec\SourceDocument;
 use Alama\Arazzo\Document\Parser\DecodePolicy;
 use Alama\Arazzo\Sources\Exceptions\SourceFetchException;
+use Alama\Arazzo\Sources\Exceptions\SourceParseException;
 use Alama\Arazzo\Sources\Exceptions\SourceResolutionException;
 use Alama\Arazzo\Sources\Policy\FetchPolicy;
 use Alama\Arazzo\Sources\Registries\SourceNormalizerRegistry;
@@ -198,6 +202,82 @@ final readonly class Sources implements SourcesInterface
     public function knownOperations(ArazzoDocument $document, string $basePath = ''): KnownOperations
     {
         return $this->normalizeSources($document, $basePath)->toKnownOperations();
+    }
+
+    public function inspectSources(ArazzoDocument $document, string $basePath = ''): SourceInspectionResult
+    {
+        $effectiveBasePath = $basePath;
+        if ($document->self !== null && trim($document->self) !== '') {
+            $effectiveBasePath = UriReferenceResolver::resolve(trim($document->self), $basePath);
+        }
+
+        $resolutions = [];
+        /** @var array<string, ResolvedOperation> $operations */
+        $operations = [];
+
+        foreach ($document->sourceDescriptions as $source) {
+            $resolution = $this->inspectSingleSource($source, $effectiveBasePath);
+            $resolutions[$source->name] = $resolution;
+
+            if ($resolution->isOk() && $resolution->document !== null) {
+                $type = $resolution->detectedType ?? $source->type;
+                if ($type !== null) {
+                    $normalizer = $this->findNormalizer($type);
+                    if ($normalizer !== null) {
+                        try {
+                            $rawContent = json_encode($resolution->document->content, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES);
+                            $effectiveSource = $source->type === null
+                                ? new SourceDescription($source->name, $source->url, $type)
+                                : $source;
+                            /** @var array<string, ResolvedOperation> $normalized */
+                            $normalized = $normalizer->normalize($effectiveSource, $rawContent, $document);
+                            $operations += $normalized;
+                        } catch (Throwable $e) {
+                            $this->runtime->logger->warning('Failed to normalize source operations during inspection.', [
+                                'source' => $source->name,
+                                'error' => $e->getMessage(),
+                            ]);
+                        }
+                    }
+                }
+            }
+        }
+
+        return new SourceInspectionResult(
+            SourceResolutionCollection::fromArray($resolutions, isResolved: true),
+            ResolvedOperationCollection::fromArray($operations)->toKnownOperations(),
+        );
+    }
+
+    private function inspectSingleSource(SourceDescription $source, string $basePath): SourceResolution
+    {
+        try {
+            $resolvedDoc = $this->resolve($source, $basePath);
+        } catch (SourceParseException $e) {
+            return SourceResolution::unparseable($source->name, $source->url, $e->getMessage());
+        } catch (Throwable $e) {
+            return SourceResolution::unreadable($source->name, $source->url, $e->getMessage());
+        }
+
+        $detectedType = SourceDescription::inferFromContent($resolvedDoc->content);
+
+        if ($source->type !== null) {
+            if ($detectedType === null || $detectedType !== $source->type) {
+                return SourceResolution::typeMismatch($source->name, $source->url, $source->type, $detectedType);
+            }
+
+            return SourceResolution::valid($source->name, $source->url, $detectedType, $resolvedDoc);
+        }
+
+        if ($detectedType === null) {
+            return SourceResolution::typeInferenceFailed(
+                $source->name,
+                $source->url,
+                "Failed to infer source type for '{$source->name}': unrecognized document format",
+            );
+        }
+
+        return SourceResolution::valid($source->name, $source->url, $detectedType, $resolvedDoc);
     }
 
     public function withPolicy(FetchPolicy $policy): static
