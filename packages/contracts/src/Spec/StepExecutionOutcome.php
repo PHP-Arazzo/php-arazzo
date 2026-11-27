@@ -108,4 +108,18 @@ final readonly class StepExecutionOutcome
     {
         return !$this->suspended && !$this->isFailed();
     }
+
+    public function targetUrl(): string
+    {
+        return is_array($this->request) && is_string($this->request['url'] ?? null)
+            ? $this->request['url']
+            : '';
+    }
+
+    public function requestMethod(): string
+    {
+        return is_array($this->request) && is_string($this->request['method'] ?? null)
+            ? $this->request['method']
+            : '';
+    }
 }

@@ -62,4 +62,30 @@ final class TransportException extends RuntimeException implements ArazzoExecuti
             $previous,
         );
     }
+
+    public static function fromThrowable(Throwable $exception, string $targetUrl = '', string $requestMethod = ''): self
+    {
+        if ($exception instanceof self) {
+            return $exception;
+        }
+
+        $message = strtolower($exception->getMessage());
+
+        if (str_contains($message, 'connection refused')) {
+            return self::connectionRefused($targetUrl, $requestMethod, $exception);
+        }
+
+        if (str_contains($message, 'timed out') || str_contains($message, 'timeout')) {
+            return self::timeout($targetUrl, $requestMethod, $exception);
+        }
+
+        if (
+            (method_exists($exception, 'getErrorCode') && $exception->getErrorCode() === 'transport.rate_limited')
+            || str_contains($message, 'rate limit')
+        ) {
+            return self::rateLimited($targetUrl, $requestMethod, $exception->getMessage(), $exception);
+        }
+
+        return self::networkError($targetUrl, $requestMethod, $exception->getMessage(), $exception);
+    }
 }

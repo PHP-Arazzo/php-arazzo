@@ -9,6 +9,7 @@ use Alama\Arazzo\Contracts\Exceptions\CriteriaException;
 use Alama\Arazzo\Contracts\Exceptions\ProtocolException;
 use Alama\Arazzo\Contracts\Exceptions\SchemaValidationException;
 use Alama\Arazzo\Contracts\Exceptions\TransportException;
+use Alama\Arazzo\Contracts\Spec\StepExecutionOutcome;
 use Throwable;
 
 /**
@@ -65,45 +66,51 @@ final class ErrorClassifier
         'ssl handshake',
     ];
 
-    public function classify(Throwable $exception): string
+    public function classify(StepExecutionOutcome|Throwable $target): string
     {
+        if ($target instanceof StepExecutionOutcome) {
+            if ($target->failureCategory !== null) {
+                return $target->failureCategory;
+            }
+
+            if ($target->exception !== null) {
+                return $this->classify($target->exception);
+            }
+
+            return self::CATEGORY_TRANSPORT;
+        }
+
         foreach (self::EXCEPTION_TYPE_MAP as $class => $category) {
-            if ($exception instanceof $class) {
+            if ($target instanceof $class) {
                 return $category;
             }
         }
 
-        if ($this->isTransportFailure($exception)) {
+        if ($this->isTransportFailure($target)) {
             return self::CATEGORY_TRANSPORT;
         }
 
         return self::CATEGORY_EXECUTION;
     }
 
-    public function toTransportException(Throwable $exception, string $targetUrl = '', string $requestMethod = ''): TransportException
-    {
-        if ($exception instanceof TransportException) {
-            return $exception;
+    public function toTransportException(
+        StepExecutionOutcome|Throwable $target,
+        string $targetUrl = '',
+        string $requestMethod = '',
+    ): ?TransportException {
+        if ($target instanceof StepExecutionOutcome) {
+            if ($target->exception === null) {
+                return null;
+            }
+
+            return TransportException::fromThrowable(
+                $target->exception,
+                $target->targetUrl(),
+                $target->requestMethod(),
+            );
         }
 
-        $message = strtolower($exception->getMessage());
-
-        if (str_contains($message, 'connection refused')) {
-            return TransportException::connectionRefused($targetUrl, $requestMethod, $exception);
-        }
-
-        if (str_contains($message, 'timed out') || str_contains($message, 'timeout')) {
-            return TransportException::timeout($targetUrl, $requestMethod, $exception);
-        }
-
-        if (
-            (method_exists($exception, 'getErrorCode') && $exception->getErrorCode() === 'transport.rate_limited')
-            || str_contains($message, 'rate limit')
-        ) {
-            return TransportException::rateLimited($targetUrl, $requestMethod, $exception->getMessage(), $exception);
-        }
-
-        return TransportException::networkError($targetUrl, $requestMethod, $exception->getMessage(), $exception);
+        return TransportException::fromThrowable($target, $targetUrl, $requestMethod);
     }
 
     private function isTransportFailure(Throwable $exception): bool
