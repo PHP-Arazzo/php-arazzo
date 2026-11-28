@@ -57,6 +57,8 @@ it('test_coding_standards_metrics_documented', function () {
         ->toContain('13')
         ->toContain('ExcessiveClassComplexity')
         ->toContain('50')
+        ->toContain('LongVariable')
+        ->toContain('20')
         ->toContain('Single-Concern')
         ->toContain('@internal');
 });
